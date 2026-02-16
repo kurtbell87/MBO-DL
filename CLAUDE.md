@@ -104,9 +104,11 @@ After every session that changes the codebase, update:
 
 ## Current State (updated 2026-02-16)
 
-**ORCHESTRATOR_SPEC.md: 28/30 exit criteria verified.** N=128 overfit tests written but not yet run.
+**ORCHESTRATOR_SPEC.md is COMPLETE.** All build phases shipped. N=128 overfit validation added.
 
 - **Build:** Green. CMake + FetchContent (databento-cpp, libtorch, xgboost, GTest).
-- **Tests:** 219 unit tests pass. 14 N=32 integration tests pass. 8 N=128 integration tests written (pending run). Default ctest excludes integration tests (~5 min).
+- **Tests:** 220 unit + 22 integration. All pass. Default ctest excludes integration tests.
+- **N=128 overfit:** MLP, CNN, GBT all reach ≥95% accuracy on 128 samples (spec: `.kit/docs/n128-overfit.md`).
 - **SSM:** Skipped (requires CUDA). Not blocking.
-- **Remaining:** Run N=128 integration tests to close criteria 23-24, then ship.
+- **Branch:** `tdd/n128-overfit` (base: `tdd/integration-overfit`). Serialization + N=128 overfit work.
+- **Next phase:** Defined by user. Overfit harness complete at both N=32 and N=128.
