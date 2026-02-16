@@ -1,0 +1,113 @@
+# Project Instructions — Master-Kit (Greenfield)
+
+## Path Convention
+
+Kit state files, working directories, and utility scripts live in `.kit/`. Project source code (`src/`, `tests/`, etc.) stays at the project root. The kit prompts reference bare filenames (e.g., `LAST_TOUCH.md`) — the `KIT_STATE_DIR` environment variable tells the scripts to resolve these inside `.kit/`.
+
+Files at project root: `CLAUDE.md`, `.claude/`, `.master-kit.env`, `.gitignore`
+Everything else kit-related: `.kit/`
+
+## Available Kits
+
+| Kit | Script | Phases |
+|-----|--------|--------|
+| **TDD** | `.kit/tdd.sh` | red, green, refactor, ship, full, watch |
+| **Research** | `.kit/experiment.sh` | survey, frame, run, read, log, cycle, full, program, status |
+| **Math** | `.kit/math.sh` | survey, specify, construct, formalize, prove, audit, log, full, program, status |
+
+## Orchestrator (Advanced)
+
+For cross-kit runs and interop, use the orchestrator:
+
+```bash
+source .master-kit.env
+master-kit/tools/kit --json <kit> <phase> [args...]
+master-kit/tools/kit --json research status
+```
+
+Run artifacts land in `master-kit/runs/<run_id>/` — capsules, manifests, logs, events.
+
+## Cross-Kit Interop (Advanced)
+
+```bash
+master-kit/tools/kit request --from research --from-phase status --to math --action math.status \
+  --run-id <parent_run_id> --json
+master-kit/tools/pump --once --request <request_id> --json
+```
+
+`--from-phase` is optional; if omitted, `master-kit/tools/pump` infers it from the parent run metadata/events.
+
+## Global Dashboard (Optional)
+
+```bash
+master-kit/tools/dashboard register --master-kit-root ./master-kit --project-root "$(pwd)"
+master-kit/tools/dashboard index
+master-kit/tools/dashboard serve --host 127.0.0.1 --port 7340
+```
+
+Open `http://127.0.0.1:7340` to explore runs across projects and filter by project.
+
+## State Files (in `.kit/`)
+
+| Kit | Read first |
+|-----|-----------|
+| TDD | `CLAUDE.md` → `.kit/LAST_TOUCH.md` → `.kit/PRD.md` |
+| Research | `CLAUDE.md` → `.kit/RESEARCH_LOG.md` → `.kit/QUESTIONS.md` |
+| Math | `CLAUDE.md` → `.kit/CONSTRUCTION_LOG.md` → `.kit/CONSTRUCTIONS.md` |
+
+## Working Directories
+
+- `.kit/docs/` — TDD specs
+- `.kit/experiments/` — Research experiment specs
+- `.kit/results/` — Research + Math results
+- `.kit/specs/` — Math specification documents
+- `.kit/handoffs/completed/` — Resolved research handoffs
+- `.kit/scripts/` — Utility scripts (symlinked from master-kit)
+
+## Don't
+
+- Don't `cd` into `master-kit/` and run kit scripts from there — run from project root.
+- Don't `cat` full log files — use `master-kit/tools/query-log`.
+- Don't explore the codebase to "understand" it — read state files first.
+- **Don't independently verify kit sub-agent work.** Each phase spawns a dedicated sub-agent that does its own verification. Trust the exit code and capsule. Do NOT re-run tests, re-read logs, re-check build output, or otherwise duplicate work the sub-agent already did. Exit 0 + capsule = done. Exit 1 = read the capsule for the failure, don't grep the log.
+- Don't read phase log files after a successful phase. Logs are for debugging failures only.
+
+## Orchestrator Discipline (MANDATORY)
+
+You are the orchestrator. Sub-agents do the work. Your job is to sequence phases and react to exit codes. Protect your context window.
+
+1. **Run phases in background, check only the exit code.** Do not read the TaskOutput content — the JSON blob wastes context. Check `status: completed/failed` and `exit_code` only.
+2. **Never run Bash for verification.** No `pytest`, `lake build`, `ls`, `cat`, `grep` to check what a sub-agent produced. If the phase exited 0, it worked.
+3. **Never read implementation files** the sub-agents wrote (source code, test files, .lean files, experiment scripts). That is their domain. You read only state files (CLAUDE.md, `.kit/LAST_TOUCH.md`, `.kit/RESEARCH_LOG.md`, etc.).
+4. **Chain phases by exit code only.** Exit 0 → next phase. Exit 1 → read the capsule (not the log), decide whether to retry or stop.
+5. **Never read capsules after success.** Capsules exist for failure diagnosis and interop handoffs. A successful phase needs no capsule read.
+6. **Minimize tool calls.** Each Bash call, Read, or Glob adds to your context. If the information isn't needed to decide the next action, don't fetch it.
+
+## Breadcrumb Maintenance (MANDATORY)
+
+After every session that changes the codebase, update:
+
+1. **`.kit/LAST_TOUCH.md`** — Current state and what to do next (TDD).
+2. **`.kit/RESEARCH_LOG.md`** — Append experiment results (Research).
+3. **`.kit/CONSTRUCTION_LOG.md`** — Progress notes (Math).
+4. **This file's "Current State" section** — Keep it current.
+
+## Project: MBO-DL (MES Microstructure Model Suite)
+
+**Master spec**: `ORCHESTRATOR_SPEC.md` — the single source of truth for all data contracts, model architectures, and build phases. Read this before doing anything.
+
+**Language**: C++20 (data pipeline + 3 models), Python (SSM only — mamba-ssm requires CUDA).
+**Build**: CMake. Dependencies via FetchContent (libtorch, databento-cpp, xgboost, GTest).
+**Data**: `DATA/GLBX-20260207-L953CAPU5B/` — 312 daily `.dbn.zst` files, MES MBO 2022 (~49 GB). Do NOT read these directly — use `databento::DbnFileStore` C++ API.
+
+**Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
+
+## Current State (updated 2026-02-16, pre-ship)
+
+- **Build:** Green. CMakeLists.txt with FetchContent (databento-cpp, libtorch, xgboost, GTest).
+- **Phases 1-6 DONE:** book_builder, feature_encoder, oracle_labeler, trajectory_builder, MLP, GBT, CNN — all TDD cycles (red/green/refactor) exit 0.
+- **Phase 7 (integration-overfit):** TDD red + green exit 0. **Refactor NOT yet done.** Integration tests labeled and excluded from default `TEST_CMD`.
+- **Phase 8 SKIPPED:** SSM model requires CUDA + Python. No GPU available.
+- **Tests:** 204/205 unit tests pass, 0 failures (1 disabled: `BookBuilderIntegrationTest.ProcessSingleDayFile`). 14 integration tests excluded from default ctest via `--label-exclude integration`. Total unit test time: ~5 min.
+- **Infra fixes:** (1) Kit scripts auto-strip `CLAUDECODE` env var. (2) `BUILD_CMD`/`TEST_CMD` now set in `.master-kit.env`. (3) Integration tests labeled in CMake — default ctest is fast.
+- **Next task:** Run refactor for integration-overfit: `source .master-kit.env && ./.kit/tdd.sh refactor .kit/docs/integration-overfit.md` → then ship.

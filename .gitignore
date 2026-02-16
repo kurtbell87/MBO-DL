@@ -1,0 +1,55 @@
+# Secrets & credentials
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+
+# Master-kit runtime
+.master-kit.env
+.mcp-token
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+build/
+dist/
+*.o
+*.a
+*.so
+*.dylib
+
+# Kit runtime artifacts (symlinks — resolved from orchestration/)
+.kit/scripts/
+.kit/tdd.sh
+.kit/experiment.sh
+.kit/math.sh
+
+# MBO-DL project data (49GB raw MBO data)
+DATA/
+*.dbn.zst
+*.zip
+
+# C++ build artifacts
+build/
+*.o
+*.a
+*.so
+*.dylib
