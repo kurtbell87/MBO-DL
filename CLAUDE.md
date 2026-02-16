@@ -102,13 +102,11 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-16, ship-ready)
+## Current State (updated 2026-02-16)
 
-- **Build:** Green. CMakeLists.txt with FetchContent (databento-cpp, libtorch, xgboost, GTest).
-- **Phases 1-6 DONE:** book_builder, feature_encoder, oracle_labeler, trajectory_builder, MLP, GBT, CNN — all TDD cycles (red/green/refactor) exit 0.
-- **Phase 7 (integration-overfit):** TDD red + green + refactor exit 0. Integration tests labeled and excluded from default `TEST_CMD`.
-- **Phase 8 SKIPPED:** SSM model requires CUDA + Python. No GPU available.
-- **Phase 9 (serialization):** TDD cycle complete (red + green + refactor exit 0). `src/serialization.hpp` and `tests/serialization_test.cpp` added. 15 serialization tests passing (MLP/CNN/GBT checkpoint round-trips, ONNX export, edge cases).
-- **Tests:** 219/219 unit tests pass, 0 failures (1 disabled: `BookBuilderIntegrationTest.ProcessSingleDayFile`). 14 integration tests excluded from default ctest via `--label-exclude integration`. Total unit test time: ~294s (~5 min).
-- **Infra fixes:** (1) Kit scripts auto-strip `CLAUDECODE` env var. (2) `BUILD_CMD`/`TEST_CMD` now set in `.master-kit.env`. (3) Integration tests labeled in CMake — default ctest is fast.
-- **Next task:** Ship serialization: `source .master-kit.env && ./.kit/tdd.sh ship .kit/docs/serialization.md`
+**ORCHESTRATOR_SPEC.md: 28/30 exit criteria verified.** N=128 overfit tests written but not yet run.
+
+- **Build:** Green. CMake + FetchContent (databento-cpp, libtorch, xgboost, GTest).
+- **Tests:** 219 unit tests pass. 14 N=32 integration tests pass. 8 N=128 integration tests written (pending run). Default ctest excludes integration tests (~5 min).
+- **SSM:** Skipped (requires CUDA). Not blocking.
+- **Remaining:** Run N=128 integration tests to close criteria 23-24, then ship.
