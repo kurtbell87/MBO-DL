@@ -109,3 +109,15 @@ target_link_libraries(integration_overfit_test PRIVATE
 )
 target_compile_options(integration_overfit_test PRIVATE ${TORCH_CXX_FLAGS})
 gtest_discover_tests(integration_overfit_test PROPERTIES LABELS "integration")
+
+# ---------- N=128 overfit test (requires libtorch + xgboost + databento) ----------
+add_executable(n128_overfit_test tests/n128_overfit_test.cpp)
+target_include_directories(n128_overfit_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(n128_overfit_test PRIVATE
+    GTest::gtest_main
+    "${TORCH_LIBRARIES}"
+    xgboost
+    databento::databento
+)
+target_compile_options(n128_overfit_test PRIVATE ${TORCH_CXX_FLAGS})
+gtest_discover_tests(n128_overfit_test PROPERTIES LABELS "integration")

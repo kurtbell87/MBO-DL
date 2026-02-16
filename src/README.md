@@ -13,9 +13,10 @@ All modules are header-only `.hpp` files.
 | `gbt_features.hpp` | GBT features | 16 hand-crafted features for XGBoost |
 | `gbt_model.hpp` | GBT model | XGBoost C API wrapper |
 | `training_loop.hpp` | training_loop | Neural network overfit training loop |
+| `serialization.hpp` | serialization | Checkpoint save/load (libtorch + XGBoost) + ONNX export |
 
 ## Pipeline order
 
 ```
-book_builder → feature_encoder → trajectory_builder + oracle_labeler → {MLP, CNN, GBT}
+book_builder → feature_encoder → trajectory_builder + oracle_labeler → {MLP, CNN, GBT} → serialization
 ```
