@@ -1,12 +1,13 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-16, pre-ship)
+## Current State (updated 2026-02-16, ship-ready)
 
 - **Build:** Green.
-- **Unit tests:** 204/205 pass, 0 failures, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`).
+- **Unit tests:** 219/219 pass, 0 failures, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`).
 - **Integration tests:** 14 tests, excluded from default ctest (`--label-exclude integration`).
-- **Phase 7 (integration-overfit):** Red + green exit 0. Refactor pending.
+- **Phase 7 (integration-overfit):** Complete (red + green + refactor exit 0).
 - **Phase 8 (SSM):** Skipped — requires CUDA + Python, no GPU available.
+- **Phase 9 (serialization):** TDD cycle complete (red + green + refactor exit 0). 15 serialization tests passing.
 
 ## Completed TDD Phases
 
@@ -18,14 +19,15 @@
 | 4 | MLP model | done | done | done |
 | 5 | GBT model | done | done | done |
 | 6 | CNN model | done | done | done |
-| 7 | integration-overfit | done | done | **pending** |
+| 7 | integration-overfit | done | done | done |
 | 8 | SSM model | skipped | skipped | skipped |
+| 9 | serialization | done | done | done |
 
 ## Next Action
 
-Run refactor for integration-overfit, then ship:
+Ship serialization:
 ```bash
-source .master-kit.env && ./.kit/tdd.sh refactor .kit/docs/integration-overfit.md
+source .master-kit.env && ./.kit/tdd.sh ship .kit/docs/serialization.md
 ```
 
 ## Agent Roles

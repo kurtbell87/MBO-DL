@@ -27,8 +27,6 @@ namespace {
 // Helpers — synthetic training data
 // ---------------------------------------------------------------------------
 
-// Generate N deterministic synthetic feature vectors with labels in {0,1,2,3,4}.
-// Each sample has a pattern that makes the label learnable.
 struct SyntheticData {
     std::vector<std::array<float, GBT_FEATURE_DIM>> features;
     std::vector<int> labels;
@@ -41,25 +39,15 @@ SyntheticData make_synthetic_data(int n) {
 
     for (int i = 0; i < n; ++i) {
         std::array<float, GBT_FEATURE_DIM> f{};
-
-        // Deterministic pattern: encode the label into the features
         int label = i % 5;
-
-        // Feature 0: class-specific signal
         f[0] = static_cast<float>(label) * 10.0f;
-
-        // Feature 1: secondary signal (unique per sample within class)
         f[1] = static_cast<float>(i) * 0.1f;
-
-        // Features 2-15: some variation to prevent trivial degenerate trees
         for (int j = 2; j < GBT_FEATURE_DIM; ++j) {
             f[j] = static_cast<float>((i * 7 + j * 13) % 100) / 100.0f;
         }
-
         data.features.push_back(f);
         data.labels.push_back(label);
     }
-
     return data;
 }
 

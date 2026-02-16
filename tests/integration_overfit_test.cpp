@@ -1,4 +1,4 @@
-// integration_overfit_test.cpp — TDD RED phase: end-to-end integration overfit tests
+// integration_overfit_test.cpp — end-to-end integration overfit tests
 // Spec: .kit/docs/integration-overfit.md
 //
 // Validates the full pipeline on real MBO data:
@@ -17,13 +17,9 @@
 
 #include "book_builder.hpp"
 #include "feature_encoder.hpp"
-#include "oracle_labeler.hpp"
 #include "trajectory_builder.hpp"
-#include "mlp_model.hpp"
-#include "cnn_model.hpp"
 #include "gbt_model.hpp"
-#include "training_loop.hpp"     // overfit_mlp, OverfitResult
-#include "gbt_features.hpp"      // GBT_FEATURE_DIM, compute_gbt_features
+#include "training_loop.hpp"
 
 #include <torch/torch.h>
 
@@ -32,8 +28,6 @@
 #include <databento/record.hpp>
 #include <databento/enums.hpp>
 
-#include <algorithm>
-#include <array>
 #include <cmath>
 #include <cstdint>
 #include <filesystem>
@@ -441,10 +435,6 @@ TEST_F(IntegrationOverfitTest, MLPOverfit) {
 
 // ---------------------------------------------------------------------------
 // Test 11: CNN overfit — reaches >=99% accuracy within 500 epochs on N=32
-//
-// NOTE: overfit_cnn() does not exist yet. This test calls the expected
-// function signature. The GREEN phase must implement it (likely in
-// training_loop.hpp or a new header).
 // ---------------------------------------------------------------------------
 TEST_F(IntegrationOverfitTest, CNNOverfit) {
     ASSERT_TRUE(data_loaded_);
