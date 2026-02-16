@@ -38,6 +38,9 @@ endforeach()
 # ---------- libtorch ----------
 find_package(Torch REQUIRED)
 
+# ---------- ONNX Runtime (for serialization header included via training_loop) ----------
+find_package(onnxruntime REQUIRED)
+
 # ---------- Tests requiring libtorch ----------
 set(TORCH_TEST_TARGETS
     mlp_model_test
@@ -82,6 +85,18 @@ foreach(target ${XGBOOST_TEST_TARGETS})
     target_link_libraries(${target} PRIVATE GTest::gtest_main xgboost)
     gtest_discover_tests(${target})
 endforeach()
+
+# ---------- Serialization test (requires libtorch + xgboost + onnxruntime) ----------
+add_executable(serialization_test tests/serialization_test.cpp)
+target_include_directories(serialization_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(serialization_test PRIVATE
+    GTest::gtest_main
+    "${TORCH_LIBRARIES}"
+    xgboost
+    onnxruntime::onnxruntime
+)
+target_compile_options(serialization_test PRIVATE ${TORCH_CXX_FLAGS})
+gtest_discover_tests(serialization_test)
 
 # ---------- Integration test (requires libtorch + xgboost + databento) ----------
 add_executable(integration_overfit_test tests/integration_overfit_test.cpp)
