@@ -37,6 +37,25 @@ master-kit/tools/pump --once --request <request_id> --json
 
 `--from-phase` is optional; if omitted, `master-kit/tools/pump` infers it from the parent run metadata/events.
 
+### Research → TDD Sub-Cycle
+
+When a research phase needs **new C++ code** (tools, libraries, APIs), spawn a TDD sub-cycle rather than writing code inline. This ensures all new code is regression-tested.
+
+**Pattern**:
+1. Write a spec: `.kit/docs/<feature>.md`
+2. Run TDD phases (all in background, check exit codes only):
+   ```bash
+   source .master-kit.env
+   .kit/tdd.sh red   .kit/docs/<feature>.md
+   .kit/tdd.sh green
+   .kit/tdd.sh refactor
+   .kit/tdd.sh ship  .kit/docs/<feature>.md
+   ```
+3. Resume research with the new tested infrastructure available.
+
+**Triggers**: Data extraction tools, new analysis APIs, infrastructure modifications.
+**Non-triggers**: Disposable Python scripts, config files, parameter sweeps — these stay in Research kit.
+
 ## Global Dashboard (Optional)
 
 ```bash
@@ -102,9 +121,9 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-17, oracle-expectancy TDD cycle)
+## Current State (updated 2026-02-17, oracle expectancy extraction)
 
-**Oracle expectancy report layer added.** `OracleExpectancyReport` struct, `to_json` serializer, and `aggregate_day_results` aggregation logic implemented in `src/backtest/oracle_expectancy_report.hpp`. Unit tests in `tests/oracle_expectancy_test.cpp`. Resolves synthesis open question #1.
+**VERDICT: GO.** Oracle expectancy extracted on 19 real MES days. Triple barrier passes all 6 success criteria: $4.00/trade expectancy, PF=3.30, WR=64.3%, Sharpe=0.362, net PnL=$19,479. CONDITIONAL GO upgraded to full GO. Triple barrier preferred over first-to-hit.
 
 **R6 (synthesis) complete — CONDITIONAL GO.** CNN + GBT Hybrid architecture recommended. R3 CNN R²=0.132 on structured (20,2) book resolves R2-R3 tension in favor of spatial encoder. Message + temporal encoders dropped. Bar type: time_5s. Horizons: h=1 and h=5. See `.kit/results/synthesis/metrics.json`.
 
@@ -131,7 +150,8 @@ After every session that changes the codebase, update:
 | R4 | `.kit/experiments/temporal-predictability.md` | Research | **Done (NO TEMPORAL SIGNAL)** |
 | 6 | `.kit/experiments/synthesis.md` | Research | **Done (CONDITIONAL GO)** |
 | 7 | `.kit/docs/oracle-expectancy.md` | TDD | **Done** |
+| 7b | `tools/oracle_expectancy.cpp` | Research | **Done (GO)** |
 
 - **Build:** Green.
 - **Tests:** 953/954 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **Next task:** Build `tools/oracle_expectancy.cpp` standalone executable to run on real data. Remaining open questions: CNN at h=1, transaction cost model. Then proceed to model architecture build spec.
+- **Next task:** Proceed to model architecture build spec. All research prerequisites resolved. Remaining open questions: CNN at h=1, transaction cost model refinement, CNN+GBT integration pipeline.

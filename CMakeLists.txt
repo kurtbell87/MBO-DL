@@ -150,3 +150,8 @@ target_link_libraries(subordination_test PRIVATE databento::databento)
 add_executable(info_decomposition_export tools/info_decomposition_export.cpp)
 target_include_directories(info_decomposition_export PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(info_decomposition_export PRIVATE databento::databento)
+
+# ---------- Oracle Expectancy Extraction ----------
+add_executable(oracle_expectancy tools/oracle_expectancy.cpp)
+target_include_directories(oracle_expectancy PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(oracle_expectancy PRIVATE databento::databento)

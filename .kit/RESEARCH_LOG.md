@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## R7-oracle-expectancy — GO
+**Date:** 2026-02-17
+**Hypothesis:** The oracle produces positive expectancy after realistic MES execution costs (commission $0.62/side, fixed spread 1 tick) across out-of-sample days.
+**Key result:** GO. Triple barrier: $4.00/trade expectancy, PF=3.30, WR=64.3%, Sharpe=0.362, net PnL=$19,479 over 19 days (4,873 trades). All 6 success criteria pass. First-to-hit: $1.56/trade, PF=2.11, WR=53.2%, 5/6 pass (DD exceeds 50× expectancy). Per-quarter TB expectancy: Q1=$5.39, Q2=$3.16, Q3=$3.41, Q4=$3.39 — stable across all quarters.
+**Lesson:** Triple barrier labeling is strictly superior to first-to-hit for MES at these oracle parameters (target=10, stop=5, TP=20 ticks, vol_horizon=500). Higher win rate (64% vs 53%) and dramatically lower drawdown ($152 vs $400) drive the difference. The oracle's edge is real and robust — it doesn't concentrate in a single quarter or regime. At 256 trades/day on time_5s bars, there is ample sample size.
+**Next:** CONDITIONAL GO upgraded to full GO. Proceed to model architecture build spec: CNN + GBT Hybrid with triple barrier labels. Remaining open questions: CNN at h=1, transaction cost sensitivity, CNN+GBT integration pipeline.
+**Details:** `.kit/results/oracle-expectancy/metrics.json`, `.kit/results/oracle-expectancy/summary.json`
+
 ## R6-synthesis — CONDITIONAL GO
 **Date:** 2026-02-17
 **Hypothesis:** Collate R1–R4 findings to determine go/no-go, architecture, bar type, feature set, and labeling method.
