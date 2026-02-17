@@ -102,9 +102,11 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-17, R2 complete)
+## Current State (updated 2026-02-17, R4 complete)
 
-**R2 (info-decomposition) complete — FEATURES SUFFICIENT.** No encoder stage (spatial CNN, message encoder, temporal SSM) passes the dual threshold. Best R²=0.0067 on 1-bar horizon only; all longer horizons negative. Book snapshot is sufficient statistic for messages. Recommendation: GBT baseline. See `.kit/RESEARCH_LOG.md` and `.kit/results/info-decomposition/metrics.json`.
+**R4 (temporal-predictability) complete — NO TEMPORAL SIGNAL.** All 36 Tier 1 AR configs produce negative R². All Tier 2 temporal augmentation gaps fail dual threshold. MES 5s returns are martingale. Converges with R2: drop SSM/temporal encoder. See `.kit/RESEARCH_LOG.md` and `.kit/results/temporal-predictability/metrics.json`.
+
+**R2 (info-decomposition) complete — FEATURES SUFFICIENT.** No encoder stage passes dual threshold. Best R²=0.0067 on 1-bar horizon only. Book snapshot is sufficient statistic.
 
 **R1 (subordination-test) complete — REFUTED.** Time bars are the baseline; no justification for event-driven bars.
 
@@ -122,9 +124,9 @@ After every session that changes the codebase, update:
 | 5 | `.kit/docs/feature-analysis.md` | TDD | **Done** |
 | R2 | `.kit/experiments/info-decomposition.md` | Research | **Done (FEATURES SUFFICIENT)** |
 | R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Unblocked** |
-| R4 | `.kit/experiments/temporal-predictability.md` | Research | **Unblocked** (R1 done) |
-| 6 | `.kit/experiments/synthesis.md` | Research | Pending (blocked by R3, R4) |
+| R4 | `.kit/experiments/temporal-predictability.md` | Research | **Done (NO TEMPORAL SIGNAL)** |
+| 6 | `.kit/experiments/synthesis.md` | Research | Pending (blocked by R3) |
 
 - **Build:** Green.
 - **Tests:** 886/887 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **Next task:** R3 (book-encoder-bias), R4 (temporal-predictability) unblocked. Phase 6 (synthesis) blocked by R3, R4.
+- **Next task:** R3 (book-encoder-bias) unblocked. Phase 6 (synthesis) blocked by R3.

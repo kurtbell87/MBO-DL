@@ -53,3 +53,7 @@ build/
 *.a
 *.so
 *.dylib
+
+# Large experiment artifacts (kept locally, not pushed)
+.kit/results/**/events/*.bin
+.kit/results/**/features.csv
