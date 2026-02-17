@@ -43,10 +43,9 @@ A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order d
 
 ## What to do next
 
-1. Ship Phase 4 (commit breadcrumbs + changed files).
-2. Start Phase 5 (feature-analysis): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md`
-3. Or start Phase R1 (subordination-test): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/subordination-test.md`
-4. Or start Phase R2 (info-decomposition): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/info-decomposition.md`
+1. Start Phase 5 (feature-analysis): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md`
+2. Or start Phase R1 (subordination-test): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/subordination-test.md`
+3. Or start Phase R2 (info-decomposition): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/info-decomposition.md`
 
 ## Key files (Phase 4)
 
