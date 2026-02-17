@@ -102,9 +102,9 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-17, Phase 5 merged to main via PR #7)
+## Current State (updated 2026-02-17, R1 complete)
 
-**Phase 5 (feature-analysis) complete.** MI analysis, Spearman correlation, GBT stability-selected importance, conditional returns, decay curves, bar type comparison (normality/heteroskedasticity/autocorrelation), Holm-Bonferroni multiple comparison correction, and power analysis — all implemented in `src/analysis/` (10 headers). 160 new tests added. `src/features/bar_features.hpp` modified (added `featureNames()` accessor).
+**R1 (subordination-test) complete — REFUTED.** Event-driven bars do not produce more IID Gaussian returns than time bars for MES. Best event bar (dollar_25k) did not beat time_1s on primary metrics. Dollar bars show higher temporal predictability (AR R², opposite of theory). Quarter robustness fails. See `.kit/RESEARCH_LOG.md` and `.kit/results/subordination-test/metrics.json`.
 
 **Spec: `TRAJECTORY.md`** — Kenoma Labs MES Backtest & Feature Discovery. 10 sequential phases (5 engineering, 5 research).
 
@@ -115,14 +115,14 @@ After every session that changes the codebase, update:
 | 1 | `.kit/docs/bar-construction.md` | TDD | **Done** |
 | 2 | `.kit/docs/oracle-replay.md` | TDD | **Done** |
 | 3 | `.kit/docs/multi-day-backtest.md` | TDD | **Done** |
-| R1 | `.kit/experiments/subordination-test.md` | Research | **Unblocked** |
+| R1 | `.kit/experiments/subordination-test.md` | Research | **Done (REFUTED)** |
 | 4 | `.kit/docs/feature-computation.md` | TDD | **Done** |
 | 5 | `.kit/docs/feature-analysis.md` | TDD | **Done** |
 | R2 | `.kit/experiments/info-decomposition.md` | Research | **Unblocked** |
 | R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Unblocked** |
-| R4 | `.kit/experiments/temporal-predictability.md` | Research | Pending (blocked by R1) |
-| 6 | `.kit/experiments/synthesis.md` | Research | Pending (blocked by all above) |
+| R4 | `.kit/experiments/temporal-predictability.md` | Research | **Unblocked** (R1 done) |
+| 6 | `.kit/experiments/synthesis.md` | Research | Pending (blocked by R2, R3, R4) |
 
 - **Build:** Green.
 - **Tests:** 886/887 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **Next task:** Start research phases — R1, R2, R3 all unblocked. R4 blocked by R1. Phase 6 (synthesis) blocked by all.
+- **Next task:** R2 (info-decomposition), R3 (book-encoder-bias), R4 (temporal-predictability) all unblocked. Phase 6 (synthesis) blocked by R2–R4.
