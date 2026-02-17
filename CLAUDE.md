@@ -102,9 +102,9 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-17, Phase 3 multi-day-backtest complete)
+## Current State (updated 2026-02-17, Phase 3 merged to main via PR #5)
 
-**Phase 3 (multi-day-backtest) TDD cycle complete.** MultiDayRunner, OracleComparison, RegimeStratification, SuccessCriteria, BacktestResultIO, RolloverCalendar — all implemented and tested. 156 new tests.
+**Phase 3 (multi-day-backtest) merged.** MultiDayRunner, OracleComparison, RegimeStratification, SuccessCriteria, BacktestResultIO, RolloverCalendar — all implemented and tested. 156 new tests.
 
 **Spec: `TRAJECTORY.md`** — Kenoma Labs MES Backtest & Feature Discovery. 10 sequential phases (5 engineering, 5 research).
 
@@ -125,5 +125,4 @@ After every session that changes the codebase, update:
 
 - **Build:** Green.
 - **Tests:** 553/554 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **New in this cycle:** 156 new unit tests (MultiDayRunner: 30, OracleComparison: 26, RegimeStratification: 16, Rollover: 8, SuccessCriteria: 5, BacktestResultIO: 4, and others).
-- **Next task:** Start Phase R1 (subordination-test) or Phase 4 (feature-computation): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-computation.md`
+- **Next task:** Start Phase 4 (feature-computation): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-computation.md`
