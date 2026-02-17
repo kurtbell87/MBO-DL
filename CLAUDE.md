@@ -121,7 +121,7 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-17, oracle expectancy extraction)
+## Current State (updated 2026-02-17, exit criteria audit)
 
 **VERDICT: GO.** Oracle expectancy extracted on 19 real MES days. Triple barrier passes all 6 success criteria: $4.00/trade expectancy, PF=3.30, WR=64.3%, Sharpe=0.362, net PnL=$19,479. CONDITIONAL GO upgraded to full GO. Triple barrier preferred over first-to-hit.
 
@@ -154,4 +154,5 @@ After every session that changes the codebase, update:
 
 - **Build:** Green.
 - **Tests:** 953/954 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
+- **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 12/13 research PASS, 1 partial (MI analysis used R² instead; GBT importance + decay done).
 - **Next task:** Proceed to model architecture build spec. All research prerequisites resolved. Remaining open questions: CNN at h=1, transaction cost model refinement, CNN+GBT integration pipeline.
