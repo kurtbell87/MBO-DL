@@ -32,6 +32,10 @@ set(TEST_TARGETS
     execution_costs_test
     oracle_replay_test
     triple_barrier_test
+    multi_day_backtest_test
+    regime_stratification_test
+    oracle_comparison_test
+    backtest_criteria_test
 )
 
 foreach(target ${TEST_TARGETS})
