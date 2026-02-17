@@ -102,9 +102,9 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-17, Phase 4 feature-computation complete)
+## Current State (updated 2026-02-17, Phase 4 merged to main via PR #6)
 
-**Phase 4 (feature-computation) complete.** Track A hand-crafted features (~45), Track B raw representations (book snapshots, message summaries), forward returns at 4 horizons, warm-up/lookahead bias enforcement, CSV export. 173 new tests.
+**Phase 4 (feature-computation) merged.** Track A hand-crafted features (~45), Track B raw representations (book snapshots, message summaries), forward returns at 4 horizons, warm-up/lookahead bias enforcement, CSV export. 173 new tests.
 
 **Spec: `TRAJECTORY.md`** — Kenoma Labs MES Backtest & Feature Discovery. 10 sequential phases (5 engineering, 5 research).
 
@@ -125,4 +125,4 @@ After every session that changes the codebase, update:
 
 - **Build:** Green.
 - **Tests:** 726/727 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **Next task:** Ship Phase 4 (commit), then start Phase 5 (feature-analysis): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md`
+- **Next task:** Start Phase 5 (feature-analysis): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md`
