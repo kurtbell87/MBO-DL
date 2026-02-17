@@ -2,23 +2,30 @@
 
 ## Project Status
 
-**Phase 4 (feature-computation) complete.** Track A hand-crafted features (~45 features across 6 categories), Track B raw representations (book snapshots, message summaries), forward returns at 4 horizons, warm-up/lookahead bias enforcement, and CSV export — all implemented and tested. 173 new unit tests added (726/727 total pass). Phases 5, R2, and R3 are now unblocked.
+**Phase 5 (feature-analysis) TDD cycle in progress.** Statistical analysis infrastructure for Track A features: MI analysis, Spearman correlation, GBT stability-selected importance, conditional returns, decay curves, bar type comparison, Holm-Bonferroni multiple comparison correction, and power analysis. 160 new unit tests added (886/887 total pass). New `src/analysis/` directory with 10 headers.
 
 ## What was completed this cycle
 
-- `src/features/bar_features.hpp` — Track A Categories 1–6: book shape, order flow, price dynamics, cross-scale dynamics, time context, message microstructure (~45 hand-crafted features)
-- `src/features/raw_representations.hpp` — Track B: PriceLadderInput (20,2) book snapshots, message sequence summaries, lookback book sequences
-- `src/features/feature_export.hpp` — CSV export with bar metadata, Track A features, Track B flattened, forward returns
-- `src/features/warmup.hpp` — Warm-up state tracking: EWMA reset at session boundaries, rolling window NaN policy, bar-level `is_warmup` flag
-- `tests/bar_features_test.cpp` — Track A feature computation tests
-- `tests/raw_representations_test.cpp` — Track B representation tests
-- `tests/feature_export_test.cpp` — Export format and metadata tests
-- `tests/feature_warmup_test.cpp` — Warm-up enforcement and session boundary tests
-- Modified: `CMakeLists.txt` (new test targets)
+- `src/analysis/mutual_information.hpp` — MI(feature, return_sign) in bits, quantile binning (5/10 bins), bootstrapped null (≥1000 shuffles)
+- `src/analysis/spearman.hpp` — Spearman rank correlation with p-value and 95% CI
+- `src/analysis/gbt_importance.hpp` — XGBoost feature importance, stability selection (20 runs, 80% subsamples, top-20 in >60% threshold)
+- `src/analysis/conditional_returns.hpp` — Quintile-bucketed mean returns, monotonicity (Q5-Q1), t-statistic
+- `src/analysis/decay_analysis.hpp` — Correlation decay curves at horizons 1,2,5,10,20,50,100; signal classification (short-horizon vs regime indicator)
+- `src/analysis/bar_comparison.hpp` — Jarque-Bera, ARCH LM, ACF, Ljung-Box, AR R² tests per bar type config
+- `src/analysis/multiple_comparison.hpp` — Holm-Bonferroni correction across 1,800 tests per metric family
+- `src/analysis/power_analysis.hpp` — Per-stratum power analysis (detectable effect size at α=0.05, power=0.80)
+- `src/analysis/statistical_tests.hpp` — Core statistical test primitives
+- `src/analysis/analysis_result.hpp` — Unified result struct (point estimate, CI, raw/corrected p-value, significance flag)
+- `src/features/bar_features.hpp` — Modified (added `featureNames()` accessor for analysis pipeline)
+- `tests/feature_mi_test.cpp` — MI, Spearman, decay analysis, Holm-Bonferroni tests
+- `tests/conditional_returns_test.cpp` — Conditional returns, warmup exclusion tests
+- `tests/bar_comparison_test.cpp` — Bar type comparison, statistical test tests
+- `tests/gbt_importance_test.cpp` — GBT stability selection tests
+- Modified: `CMakeLists.txt` (4 new test targets)
 
 ## What exists
 
-A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order data from `.dbn.zst` files. The overfit harness (MLP, CNN, GBT) is validated at N=32 and N=128 on real data. Serialization (checkpoint + ONNX) is shipped. Bar construction (Phase 1), oracle replay (Phase 2), multi-day backtest infrastructure (Phase 3), and feature computation/export (Phase 4) are complete.
+A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order data from `.dbn.zst` files. The overfit harness (MLP, CNN, GBT) is validated at N=32 and N=128 on real data. Serialization (checkpoint + ONNX) is shipped. Bar construction (Phase 1), oracle replay (Phase 2), multi-day backtest infrastructure (Phase 3), feature computation/export (Phase 4), and feature analysis statistical infrastructure (Phase 5) are complete.
 
 ## Phase Sequence
 
@@ -29,7 +36,7 @@ A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order d
 | 3 | `.kit/docs/multi-day-backtest.md` | TDD | **Done** |
 | R1 | `.kit/experiments/subordination-test.md` | Research | **Unblocked** |
 | 4 | `.kit/docs/feature-computation.md` | TDD | **Done** |
-| 5 | `.kit/docs/feature-analysis.md` | TDD | **Unblocked** |
+| 5 | `.kit/docs/feature-analysis.md` | TDD | **In Progress** |
 | R2 | `.kit/experiments/info-decomposition.md` | Research | **Unblocked** |
 | R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Unblocked** |
 | R4 | `.kit/experiments/temporal-predictability.md` | Research | Blocked by R1 |
@@ -37,30 +44,37 @@ A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order d
 
 ## Test summary
 
-- **726 unit tests** pass, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`), 727 total
+- **886 unit tests** pass, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`), 887 total
 - **22 integration tests** (14 N=32 + 8 N=128) — labeled `integration`, excluded from default ctest
-- Unit test time: ~5 min. Integration: ~20 min.
+- Unit test time: ~6 min. Integration: ~20 min.
 
 ## What to do next
 
-1. Start Phase 5 (feature-analysis): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md`
+1. Ship Phase 5 (feature-analysis): commit all changed files + breadcrumbs.
 2. Or start Phase R1 (subordination-test): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/subordination-test.md`
 3. Or start Phase R2 (info-decomposition): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/info-decomposition.md`
 
-## Key files (Phase 4)
+## Key files (Phase 5)
 
 | File | Purpose |
 |------|---------|
-| `src/features/bar_features.hpp` | Track A: 6 categories of hand-crafted features |
-| `src/features/raw_representations.hpp` | Track B: book snapshots, message summaries |
-| `src/features/feature_export.hpp` | CSV export with metadata + features + returns |
-| `src/features/warmup.hpp` | Warm-up state tracking, session boundary resets |
+| `src/analysis/mutual_information.hpp` | MI(feature, return_sign), bootstrapped null |
+| `src/analysis/spearman.hpp` | Spearman rank correlation with CI |
+| `src/analysis/gbt_importance.hpp` | XGBoost stability-selected feature importance |
+| `src/analysis/conditional_returns.hpp` | Quintile returns, monotonicity |
+| `src/analysis/decay_analysis.hpp` | Correlation decay curves, signal classification |
+| `src/analysis/bar_comparison.hpp` | Bar type statistical comparison suite |
+| `src/analysis/multiple_comparison.hpp` | Holm-Bonferroni correction |
+| `src/analysis/power_analysis.hpp` | Per-stratum power analysis |
+| `src/analysis/analysis_result.hpp` | Unified result struct |
+| `src/analysis/statistical_tests.hpp` | Core statistical test primitives |
+| `src/features/bar_features.hpp` | Track A features (modified: `featureNames()`) |
 
 ## Build commands
 
 ```bash
 cmake --build build -j12                                                  # build
-cd build && ctest --output-on-failure --label-exclude integration         # unit tests (~5 min)
+cd build && ctest --output-on-failure --label-exclude integration         # unit tests (~6 min)
 cd build && ctest --output-on-failure --label-regex integration           # integration tests (~20 min)
 ```
 

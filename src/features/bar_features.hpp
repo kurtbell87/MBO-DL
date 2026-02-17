@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <deque>
 #include <limits>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -95,6 +96,72 @@ struct BarFeatureRow {
         // Cat 5: 5
         // Cat 6: 5
         return 62;
+    }
+
+    // Get a feature value by name. Covers all Track A features (62 total).
+    float get_feature_value(const std::string& name) const {
+        // Cat 1: Book Shape
+        if (name == "book_imbalance_1") return book_imbalance_1;
+        if (name == "book_imbalance_3") return book_imbalance_3;
+        if (name == "book_imbalance_5") return book_imbalance_5;
+        if (name == "book_imbalance_10") return book_imbalance_10;
+        if (name == "weighted_imbalance") return weighted_imbalance;
+        if (name == "spread") return spread;
+        for (int i = 0; i < 10; ++i) {
+            if (name == "bid_depth_profile_" + std::to_string(i)) return bid_depth_profile[i];
+            if (name == "ask_depth_profile_" + std::to_string(i)) return ask_depth_profile[i];
+        }
+        if (name == "depth_concentration_bid") return depth_concentration_bid;
+        if (name == "depth_concentration_ask") return depth_concentration_ask;
+        if (name == "book_slope_bid") return book_slope_bid;
+        if (name == "book_slope_ask") return book_slope_ask;
+        if (name == "level_count_bid") return static_cast<float>(level_count_bid);
+        if (name == "level_count_ask") return static_cast<float>(level_count_ask);
+        // Cat 2: Order Flow
+        if (name == "net_volume") return net_volume;
+        if (name == "volume_imbalance") return volume_imbalance;
+        if (name == "trade_count") return static_cast<float>(trade_count);
+        if (name == "avg_trade_size") return avg_trade_size;
+        if (name == "large_trade_count") return static_cast<float>(large_trade_count);
+        if (name == "vwap_distance") return vwap_distance;
+        if (name == "kyle_lambda") return kyle_lambda;
+        // Cat 3: Price Dynamics
+        if (name == "return_1") return return_1;
+        if (name == "return_5") return return_5;
+        if (name == "return_20") return return_20;
+        if (name == "volatility_20") return volatility_20;
+        if (name == "volatility_50") return volatility_50;
+        if (name == "momentum") return momentum;
+        if (name == "high_low_range_20") return high_low_range_20;
+        if (name == "high_low_range_50") return high_low_range_50;
+        if (name == "close_position") return close_position;
+        // Cat 4: Cross-Scale Dynamics
+        if (name == "volume_surprise") return volume_surprise;
+        if (name == "duration_surprise") return duration_surprise;
+        if (name == "acceleration") return acceleration;
+        if (name == "vol_price_corr") return vol_price_corr;
+        // Cat 5: Time Context
+        if (name == "time_sin") return time_sin;
+        if (name == "time_cos") return time_cos;
+        if (name == "minutes_since_open") return minutes_since_open;
+        if (name == "minutes_to_close") return minutes_to_close;
+        if (name == "session_volume_frac") return session_volume_frac;
+        // Cat 6: Message Microstructure
+        if (name == "cancel_add_ratio") return cancel_add_ratio;
+        if (name == "message_rate") return message_rate;
+        if (name == "modify_fraction") return modify_fraction;
+        if (name == "order_flow_toxicity") return order_flow_toxicity;
+        if (name == "cancel_concentration") return cancel_concentration;
+        throw std::invalid_argument("Unknown feature: " + name);
+    }
+
+    // Get a forward return value by name.
+    float get_return_value(const std::string& name) const {
+        if (name == "fwd_return_1") return fwd_return_1;
+        if (name == "fwd_return_5") return fwd_return_5;
+        if (name == "fwd_return_20") return fwd_return_20;
+        if (name == "fwd_return_100") return fwd_return_100;
+        throw std::invalid_argument("Unknown return: " + name);
     }
 
     static std::vector<std::string> feature_names() {
