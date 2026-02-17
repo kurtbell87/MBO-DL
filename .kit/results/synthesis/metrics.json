@@ -1,0 +1,122 @@
+{
+  "experiment": "R6_synthesis",
+  "date": "2026-02-17",
+  "phase": 6,
+  "gpu_hours": 0,
+  "runs": 1,
+  "go_no_go": "CONDITIONAL_GO",
+  "has_positive_oos_r2": true,
+  "oracle_expectancy_known": false,
+  "signal_summary": {
+    "r2_best_h1_mlp": 0.006725,
+    "r2_best_h1_mlp_std": 0.003431,
+    "r2_best_h1_gbt": 0.004649,
+    "r3_cnn_h5": 0.131692,
+    "r3_cnn_h5_std": 0.047841,
+    "r2_mlp_h5": -0.000173,
+    "r4_best_ar": -0.000241
+  },
+  "bar_type": "time_5s",
+  "bar_param": 5,
+  "architecture": "cnn_gbt_hybrid",
+  "spatial_encoder_include": true,
+  "message_encoder_include": false,
+  "temporal_encoder_include": false,
+  "reconciliation": {
+    "r2_mlp_return5_r2": -0.000173,
+    "r3_cnn_return5_r2": 0.131692,
+    "r3_cnn_vs_attention_corrected_p": 0.042233,
+    "r3_cnn_vs_attention_cohens_d": 1.863,
+    "r3_cnn_vs_mlp_corrected_p": 0.25129,
+    "r3_cnn_16d_r2": 0.111048,
+    "r3_raw_40d_r2": 0.026722,
+    "r3_retention_ratio": 4.156,
+    "tension_resolved": true,
+    "resolution": "CNN's structured (20,2) input + conv1d bias extracts signal invisible to flattened MLP"
+  },
+  "feature_source": "cnn_16d_plus_non_spatial",
+  "feature_dim_total": 36,
+  "preprocessing": "z-score per day, warmup=50 bars",
+  "prediction_horizons": [
+    1,
+    5
+  ],
+  "labeling_method": "open_question",
+  "labeling_status": "open_question",
+  "limitations": [
+    {
+      "id": "single_year_2022",
+      "severity": "critical",
+      "description": "All data is from 2022 \u2014 a bear market with aggressive Fed rate hikes. Microstructure patterns may be regime-specific. R1 showed quarter-level reversals across all metrics."
+    },
+    {
+      "id": "r3_only_tested_h5",
+      "severity": "major",
+      "description": "R3 CNN tested only return_5 (h=5, ~25s). CNN performance at h=1 is unknown. The architecture recommendation rests on h=5 signal that R2/R4 found negative with simpler models. Must test CNN at h=1 in model build."
+    },
+    {
+      "id": "power_floor_r2_0.003",
+      "severity": "major",
+      "description": "With 5 folds x ~84k bars and R\u00b2<0.007, the 95% CI on any gap overlaps zero for effect sizes < ~0.003 R\u00b2 units. Cannot detect small-but-real gaps."
+    },
+    {
+      "id": "no_regime_conditioning",
+      "severity": "major",
+      "description": "No regime-conditional analysis performed in R2-R4. R1 showed effect reversal across quarters. Architecture decision may not hold across regimes."
+    },
+    {
+      "id": "failed_corrections",
+      "severity": "minor",
+      "description": "R2 \u0394_spatial raw p=0.025 \u2192 corrected p=0.96. R3 CNN vs MLP corrected p=0.251. These are suggestive but inconclusive after multiple comparison correction."
+    },
+    {
+      "id": "r3_fold_variance",
+      "severity": "minor",
+      "description": "R3 CNN fold R\u00b2 ranges from 0.049 to 0.180 (std=0.048). High variance across folds suggests regime sensitivity even within the single year."
+    }
+  ],
+  "limitation_count_critical": 1,
+  "limitation_count_major": 3,
+  "limitation_count_minor": 2,
+  "experiments_loaded": [
+    "R1",
+    "R2",
+    "R3",
+    "R4"
+  ],
+  "convergence_matrix_rows": 9,
+  "encoder_stages_dropped": [
+    "message_encoder",
+    "temporal_encoder"
+  ],
+  "encoder_stages_included": [
+    "spatial_encoder_conv1d"
+  ],
+  "simplification_cascade": {
+    "spatial_cnn": {
+      "r2_gap": "+0.003 (p=0.96)",
+      "r2_verdict": "DROP",
+      "r3_evidence": "CNN R\u00b2=0.132, p=0.042 vs Attention, d=1.86",
+      "final_decision": "INCLUDE \u2014 R3 supersedes R2"
+    },
+    "message_encoder": {
+      "r2_gap": "\u0394_msg < 0",
+      "r2_verdict": "DROP",
+      "r3_evidence": "N/A",
+      "final_decision": "DROP"
+    },
+    "temporal_ssm": {
+      "r2_gap": "\u0394_temporal = \u22120.006",
+      "r2_verdict": "DROP",
+      "r4_evidence": "0/52 tests pass, martingale",
+      "final_decision": "DROP"
+    }
+  },
+  "open_questions": [
+    "Oracle expectancy from Phase 3 C++ backtest",
+    "CNN performance at h=1 (R3 only tested h=5)",
+    "Regime-conditional analysis across quarters",
+    "Transaction cost estimation for R\u00b2=0.005-0.132 signals",
+    "CNN embedding + GBT integration architecture details"
+  ]
+}
