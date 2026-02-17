@@ -2,25 +2,23 @@
 
 ## Project Status
 
-**Phase 3 (multi-day-backtest) complete.** MultiDayRunner, OracleComparison, RegimeStratification, SuccessCriteria, BacktestResultIO, RolloverCalendar — all implemented and tested. 156 new unit tests added (553/554 total pass). Phases R1 and 4 are now unblocked.
+**Phase 4 (feature-computation) complete.** Track A hand-crafted features (~45 features across 6 categories), Track B raw representations (book snapshots, message summaries), forward returns at 4 horizons, warm-up/lookahead bias enforcement, and CSV export — all implemented and tested. 173 new unit tests added (726/727 total pass). Phases 5, R2, and R3 are now unblocked.
 
 ## What was completed this cycle
 
-- `src/backtest/multi_day_runner.hpp` — MultiDayRunner (bar type × oracle config × labeling method sweep across all trading days)
-- `src/backtest/oracle_comparison.hpp` — OracleComparison (first-to-hit vs triple barrier: label distribution, stability, correlation, expectancy)
-- `src/backtest/regime_stratification.hpp` — RegimeStratifier (volatility quartiles, time-of-day, volume regimes, trend classification, stability scores)
-- `src/backtest/success_criteria.hpp` — SuccessCriteria (§9.4 go/no-go: expectancy, profit factor, win rate, OOS PnL, max drawdown, trade count)
-- `src/backtest/backtest_result_io.hpp` — BacktestResultIO (JSON serialization of results + trade records)
-- `src/backtest/rollover.hpp` — RolloverCalendar (quarterly contract transitions, 3-day exclusion window)
-- `tests/multi_day_backtest_test.cpp` — 30 tests (runner construction, day iteration, config sweep, aggregation)
-- `tests/oracle_comparison_test.cpp` — 26 tests (label distribution, stability, correlation, expectancy comparison)
-- `tests/regime_stratification_test.cpp` — 16 tests (volatility/time/volume/trend stratification, stability scores)
-- `tests/backtest_criteria_test.cpp` — 5+ tests (success criteria evaluation, go/no-go logic)
-- Modified: `CMakeLists.txt`, `src/backtest/oracle_replay.hpp`
+- `src/features/bar_features.hpp` — Track A Categories 1–6: book shape, order flow, price dynamics, cross-scale dynamics, time context, message microstructure (~45 hand-crafted features)
+- `src/features/raw_representations.hpp` — Track B: PriceLadderInput (20,2) book snapshots, message sequence summaries, lookback book sequences
+- `src/features/feature_export.hpp` — CSV export with bar metadata, Track A features, Track B flattened, forward returns
+- `src/features/warmup.hpp` — Warm-up state tracking: EWMA reset at session boundaries, rolling window NaN policy, bar-level `is_warmup` flag
+- `tests/bar_features_test.cpp` — Track A feature computation tests
+- `tests/raw_representations_test.cpp` — Track B representation tests
+- `tests/feature_export_test.cpp` — Export format and metadata tests
+- `tests/feature_warmup_test.cpp` — Warm-up enforcement and session boundary tests
+- Modified: `CMakeLists.txt` (new test targets)
 
 ## What exists
 
-A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order data from `.dbn.zst` files. The overfit harness (MLP, CNN, GBT) is validated at N=32 and N=128 on real data. Serialization (checkpoint + ONNX) is shipped. Bar construction (Phase 1), oracle replay (Phase 2), and multi-day backtest infrastructure (Phase 3) are complete.
+A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order data from `.dbn.zst` files. The overfit harness (MLP, CNN, GBT) is validated at N=32 and N=128 on real data. Serialization (checkpoint + ONNX) is shipped. Bar construction (Phase 1), oracle replay (Phase 2), multi-day backtest infrastructure (Phase 3), and feature computation/export (Phase 4) are complete.
 
 ## Phase Sequence
 
@@ -30,25 +28,34 @@ A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order d
 | 2 | `.kit/docs/oracle-replay.md` | TDD | **Done** |
 | 3 | `.kit/docs/multi-day-backtest.md` | TDD | **Done** |
 | R1 | `.kit/experiments/subordination-test.md` | Research | **Unblocked** |
-| 4 | `.kit/docs/feature-computation.md` | TDD | **Unblocked** |
-| 5 | `.kit/docs/feature-analysis.md` | TDD | Blocked by 4 |
-| R2 | `.kit/experiments/info-decomposition.md` | Research | Blocked by 4 |
-| R3 | `.kit/experiments/book-encoder-bias.md` | Research | Blocked by 4 |
-| R4 | `.kit/experiments/temporal-predictability.md` | Research | Blocked by 1, R1 |
+| 4 | `.kit/docs/feature-computation.md` | TDD | **Done** |
+| 5 | `.kit/docs/feature-analysis.md` | TDD | **Unblocked** |
+| R2 | `.kit/experiments/info-decomposition.md` | Research | **Unblocked** |
+| R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Unblocked** |
+| R4 | `.kit/experiments/temporal-predictability.md` | Research | Blocked by R1 |
 | 6 | `.kit/experiments/synthesis.md` | Research | Blocked by all |
 
 ## Test summary
 
-- **553 unit tests** pass, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`), 554 total
+- **726 unit tests** pass, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`), 727 total
 - **22 integration tests** (14 N=32 + 8 N=128) — labeled `integration`, excluded from default ctest
 - Unit test time: ~5 min. Integration: ~20 min.
 
 ## What to do next
 
-1. Ship Phase 3 (commit breadcrumbs + changed files).
-2. Start Phase R1 (subordination-test): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/subordination-test.md`
-3. Or start Phase 4 (feature-computation): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-computation.md`
-4. After Phase 4, proceed sequentially through the phase table above.
+1. Ship Phase 4 (commit breadcrumbs + changed files).
+2. Start Phase 5 (feature-analysis): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md`
+3. Or start Phase R1 (subordination-test): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/subordination-test.md`
+4. Or start Phase R2 (info-decomposition): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/info-decomposition.md`
+
+## Key files (Phase 4)
+
+| File | Purpose |
+|------|---------|
+| `src/features/bar_features.hpp` | Track A: 6 categories of hand-crafted features |
+| `src/features/raw_representations.hpp` | Track B: book snapshots, message summaries |
+| `src/features/feature_export.hpp` | CSV export with metadata + features + returns |
+| `src/features/warmup.hpp` | Warm-up state tracking, session boundary resets |
 
 ## Build commands
 

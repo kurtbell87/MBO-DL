@@ -36,6 +36,10 @@ set(TEST_TARGETS
     regime_stratification_test
     oracle_comparison_test
     backtest_criteria_test
+    bar_features_test
+    raw_representations_test
+    feature_export_test
+    feature_warmup_test
 )
 
 foreach(target ${TEST_TARGETS})

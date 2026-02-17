@@ -1,11 +1,11 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-16, Phase 2 oracle-replay complete)
+## Current State (updated 2026-02-17, Phase 4 feature-computation complete)
 
 - **Build:** Green.
-- **Unit tests:** 397/398 pass, 0 failures, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`).
+- **Unit tests:** 726/727 pass, 0 failures, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`).
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **Phase 2 (oracle-replay):** Complete. ExecutionCosts, OracleReplay (first-to-hit + triple barrier), TradeRecord, BacktestResult. 73 new unit tests.
+- **Phase 4 (feature-computation):** Complete. Track A hand-crafted features (~45), Track B raw representations, forward returns, warm-up enforcement, CSV export. 173 new unit tests.
 - **`ORCHESTRATOR_SPEC.md`** archived to `completed_specs/`.
 
 ## Completed TDD Phases (Orchestrator Spec — predecessor)
@@ -28,13 +28,15 @@
 | Phase | Spec | Red | Green | Refactor | Ship |
 |-------|------|-----|-------|----------|------|
 | 1 | bar-construction | done | done | done | done |
-| 2 | oracle-replay | done | done | done | pending |
+| 2 | oracle-replay | done | done | done | done |
+| 3 | multi-day-backtest | done | done | done | done |
+| 4 | feature-computation | done | done | done | pending |
 
 ## Next Action
 
-Ship Phase 2 (commit), then start Phase 3 (multi-day-backtest):
+Ship Phase 4 (commit), then start Phase 5 (feature-analysis):
 ```bash
-source .master-kit.env && ./.kit/tdd.sh red .kit/docs/multi-day-backtest.md
+source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md
 ```
 
 ## Agent Roles
