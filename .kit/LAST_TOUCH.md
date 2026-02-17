@@ -2,7 +2,7 @@
 
 ## Project Status
 
-**Phase 5 (feature-analysis) TDD cycle in progress.** Statistical analysis infrastructure for Track A features: MI analysis, Spearman correlation, GBT stability-selected importance, conditional returns, decay curves, bar type comparison, Holm-Bonferroni multiple comparison correction, and power analysis. 160 new unit tests added (886/887 total pass). New `src/analysis/` directory with 10 headers.
+**Phase 5 (feature-analysis) complete.** Statistical analysis infrastructure for Track A features: MI analysis, Spearman correlation, GBT stability-selected importance, conditional returns, decay curves, bar type comparison, Holm-Bonferroni multiple comparison correction, and power analysis. 160 new unit tests added (886/887 total pass). New `src/analysis/` directory with 10 headers. Shipped via PR #7.
 
 ## What was completed this cycle
 
@@ -36,7 +36,7 @@ A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order d
 | 3 | `.kit/docs/multi-day-backtest.md` | TDD | **Done** |
 | R1 | `.kit/experiments/subordination-test.md` | Research | **Unblocked** |
 | 4 | `.kit/docs/feature-computation.md` | TDD | **Done** |
-| 5 | `.kit/docs/feature-analysis.md` | TDD | **In Progress** |
+| 5 | `.kit/docs/feature-analysis.md` | TDD | **Done** |
 | R2 | `.kit/experiments/info-decomposition.md` | Research | **Unblocked** |
 | R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Unblocked** |
 | R4 | `.kit/experiments/temporal-predictability.md` | Research | Blocked by R1 |
@@ -50,8 +50,8 @@ A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order d
 
 ## What to do next
 
-1. Ship Phase 5 (feature-analysis): commit all changed files + breadcrumbs.
-2. Or start Phase R1 (subordination-test): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/subordination-test.md`
+1. Merge PR #7 (feature-analysis) to main.
+2. Start Phase R1 (subordination-test): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/subordination-test.md`
 3. Or start Phase R2 (info-decomposition): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/info-decomposition.md`
 
 ## Key files (Phase 5)
