@@ -42,12 +42,51 @@ struct BacktestResult {
     float hold_fraction = 0.0f;
     float avg_bars_held = 0.0f;
     float avg_duration_s = 0.0f;
+    float trades_per_day = 0.0f;
     int safety_cap_triggered_count = 0;
     float safety_cap_fraction = 0.0f;
     std::map<int, float> pnl_by_hour;
     std::map<int, int> label_counts;
     std::map<int, int> exit_reason_counts;
+    std::vector<float> daily_pnl;
 };
+
+// ---------------------------------------------------------------------------
+// BacktestResult utilities — shared by OracleReplay and MultiDayRunner
+// ---------------------------------------------------------------------------
+namespace backtest_util {
+
+inline void compute_max_drawdown(BacktestResult& result) {
+    if (result.trades.empty()) return;
+    float peak = 0.0f;
+    float equity = 0.0f;
+    float max_dd = 0.0f;
+    for (const auto& trade : result.trades) {
+        equity += trade.net_pnl;
+        if (equity > peak) peak = equity;
+        float dd = peak - equity;
+        if (dd > max_dd) max_dd = dd;
+    }
+    result.max_drawdown = max_dd;
+}
+
+inline void compute_sharpe(BacktestResult& result) {
+    if (result.trades.size() < 2) return;
+    float n = static_cast<float>(result.trades.size());
+    float mean = result.net_pnl / n;
+    float sum_sq = 0.0f;
+    for (const auto& trade : result.trades) {
+        float diff = trade.net_pnl - mean;
+        sum_sq += diff * diff;
+    }
+    float variance = sum_sq / (n - 1.0f);
+    float stddev = std::sqrt(variance);
+    if (stddev > 0.0f) {
+        result.sharpe = mean / stddev;
+    }
+}
+
+}  // namespace backtest_util
 
 // ---------------------------------------------------------------------------
 // OracleReplay — oracle replay engine
@@ -345,43 +384,9 @@ private:
         }
 
         // Max drawdown
-        compute_max_drawdown(result);
+        backtest_util::compute_max_drawdown(result);
 
         // Sharpe ratio
-        compute_sharpe(result);
-    }
-
-    void compute_max_drawdown(BacktestResult& result) {
-        if (result.trades.empty()) return;
-
-        float peak = 0.0f;
-        float equity = 0.0f;
-        float max_dd = 0.0f;
-
-        for (const auto& trade : result.trades) {
-            equity += trade.net_pnl;
-            if (equity > peak) peak = equity;
-            float dd = peak - equity;
-            if (dd > max_dd) max_dd = dd;
-        }
-
-        result.max_drawdown = max_dd;
-    }
-
-    void compute_sharpe(BacktestResult& result) {
-        if (result.trades.size() < 2) return;
-
-        float mean = result.net_pnl / static_cast<float>(result.trades.size());
-        float sum_sq = 0.0f;
-        for (const auto& trade : result.trades) {
-            float diff = trade.net_pnl - mean;
-            sum_sq += diff * diff;
-        }
-        float variance = sum_sq / static_cast<float>(result.trades.size() - 1);
-        float stddev = std::sqrt(variance);
-
-        if (stddev > 0.0f) {
-            result.sharpe = mean / stddev;
-        }
+        backtest_util::compute_sharpe(result);
     }
 };

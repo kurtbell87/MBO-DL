@@ -102,9 +102,9 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-16, Phase 2 oracle-replay complete)
+## Current State (updated 2026-02-17, Phase 3 multi-day-backtest complete)
 
-**Phase 2 (oracle-replay) TDD cycle complete.** ExecutionCosts, OracleReplay (first-to-hit + triple barrier), TradeRecord, BacktestResult — all implemented and tested. 73 new tests.
+**Phase 3 (multi-day-backtest) TDD cycle complete.** MultiDayRunner, OracleComparison, RegimeStratification, SuccessCriteria, BacktestResultIO, RolloverCalendar — all implemented and tested. 156 new tests.
 
 **Spec: `TRAJECTORY.md`** — Kenoma Labs MES Backtest & Feature Discovery. 10 sequential phases (5 engineering, 5 research).
 
@@ -114,7 +114,7 @@ After every session that changes the codebase, update:
 |---|------|-----|--------|
 | 1 | `.kit/docs/bar-construction.md` | TDD | **Done** |
 | 2 | `.kit/docs/oracle-replay.md` | TDD | **Done** |
-| 3 | `.kit/docs/multi-day-backtest.md` | TDD | **Unblocked** |
+| 3 | `.kit/docs/multi-day-backtest.md` | TDD | **Done** |
 | R1 | `.kit/experiments/subordination-test.md` | Research | **Unblocked** |
 | 4 | `.kit/docs/feature-computation.md` | TDD | **Unblocked** |
 | 5 | `.kit/docs/feature-analysis.md` | TDD | Pending (blocked by 4) |
@@ -124,6 +124,6 @@ After every session that changes the codebase, update:
 | 6 | `.kit/experiments/synthesis.md` | Research | Pending (blocked by all above) |
 
 - **Build:** Green.
-- **Tests:** 397/398 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **New in this cycle:** 73 new unit tests (ExecutionCosts: 21, OracleReplay: 34, TripleBarrier: 18).
-- **Next task:** Start Phase 3 (multi-day-backtest): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/multi-day-backtest.md`
+- **Tests:** 553/554 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
+- **New in this cycle:** 156 new unit tests (MultiDayRunner: 30, OracleComparison: 26, RegimeStratification: 16, Rollover: 8, SuccessCriteria: 5, BacktestResultIO: 4, and others).
+- **Next task:** Start Phase R1 (subordination-test) or Phase 4 (feature-computation): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-computation.md`
