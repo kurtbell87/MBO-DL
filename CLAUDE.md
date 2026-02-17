@@ -102,9 +102,11 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-17, R4 complete)
+## Current State (updated 2026-02-17, R6 complete)
 
-**R4 (temporal-predictability) complete — NO TEMPORAL SIGNAL.** All 36 Tier 1 AR configs produce negative R². All Tier 2 temporal augmentation gaps fail dual threshold. MES 5s returns are martingale. Converges with R2: drop SSM/temporal encoder. See `.kit/RESEARCH_LOG.md` and `.kit/results/temporal-predictability/metrics.json`.
+**R6 (synthesis) complete — CONDITIONAL GO.** CNN + GBT Hybrid architecture recommended. R3 CNN R²=0.132 on structured (20,2) book resolves R2-R3 tension in favor of spatial encoder. Message + temporal encoders dropped. Bar type: time_5s. Horizons: h=1 and h=5. Oracle expectancy flagged as open question. See `.kit/results/synthesis/metrics.json`.
+
+**R4 (temporal-predictability) complete — NO TEMPORAL SIGNAL.** All 36 Tier 1 AR configs produce negative R². MES 5s returns are martingale. Drop SSM/temporal encoder.
 
 **R2 (info-decomposition) complete — FEATURES SUFFICIENT.** No encoder stage passes dual threshold. Best R²=0.0067 on 1-bar horizon only. Book snapshot is sufficient statistic.
 
@@ -123,10 +125,10 @@ After every session that changes the codebase, update:
 | 4 | `.kit/docs/feature-computation.md` | TDD | **Done** |
 | 5 | `.kit/docs/feature-analysis.md` | TDD | **Done** |
 | R2 | `.kit/experiments/info-decomposition.md` | Research | **Done (FEATURES SUFFICIENT)** |
-| R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Unblocked** |
+| R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Done (CNN BEST)** |
 | R4 | `.kit/experiments/temporal-predictability.md` | Research | **Done (NO TEMPORAL SIGNAL)** |
-| 6 | `.kit/experiments/synthesis.md` | Research | Pending (blocked by R3) |
+| 6 | `.kit/experiments/synthesis.md` | Research | **Done (CONDITIONAL GO)** |
 
 - **Build:** Green.
 - **Tests:** 886/887 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **Next task:** R3 (book-encoder-bias) unblocked. Phase 6 (synthesis) blocked by R3.
+- **Next task:** All research phases complete. Proceed to model architecture build spec. Open questions: oracle expectancy, CNN at h=1, transaction cost model.
