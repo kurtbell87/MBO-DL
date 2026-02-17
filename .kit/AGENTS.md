@@ -1,29 +1,21 @@
 # Agents — MBO-DL Session State
 
-## Current State (updated 2026-02-17, Phase 5 feature-analysis TDD cycle)
+## Current State (updated 2026-02-17, oracle-expectancy TDD cycle)
 
 **Build:** Green.
-**Tests:** 886/887 unit tests pass (1 disabled), 22 integration tests (labeled, excluded).
+**Tests:** 953/954 unit tests pass (1 disabled), 22 integration tests (labeled, excluded).
 **Branch:** `main`
 
-### Completed This Cycle (Phase 5)
+### Completed This Cycle (oracle-expectancy)
 
-- `src/analysis/mutual_information.hpp` — MI(feature, return_sign) in bits, quantile binning, bootstrapped null
-- `src/analysis/spearman.hpp` — Spearman rank correlation with p-value and 95% CI
-- `src/analysis/gbt_importance.hpp` — XGBoost feature importance with stability selection (20 runs, 80% subsamples)
-- `src/analysis/conditional_returns.hpp` — Quintile-bucketed mean returns, monotonicity Q5-Q1, t-statistic
-- `src/analysis/decay_analysis.hpp` — Correlation decay curves across horizons, signal classification
-- `src/analysis/bar_comparison.hpp` — Jarque-Bera, ARCH LM, ACF, Ljung-Box, AR R² tests per bar type
-- `src/analysis/multiple_comparison.hpp` — Holm-Bonferroni correction across metric families
-- `src/analysis/power_analysis.hpp` — Per-stratum power analysis (detectable effect size at α=0.05, power=0.80)
-- `src/analysis/statistical_tests.hpp` — Core statistical test primitives
-- `src/analysis/analysis_result.hpp` — Unified result struct (point estimate, CI, raw/corrected p-value, significance flag)
-- `src/features/bar_features.hpp` — Modified (added `featureNames()` accessor)
-- `tests/feature_mi_test.cpp` — MI + Spearman + decay + Holm-Bonferroni tests
-- `tests/conditional_returns_test.cpp` — Conditional returns + warmup exclusion tests
-- `tests/bar_comparison_test.cpp` — Bar type comparison + statistical tests
-- `tests/gbt_importance_test.cpp` — GBT stability selection tests
-- Modified: `CMakeLists.txt` (4 new test targets)
+- `src/backtest/oracle_expectancy_report.hpp` — **New.** `OracleExpectancyReport` struct, `to_json` serializer, `aggregate_day_results` aggregation with per-quarter splits
+- `tests/oracle_expectancy_test.cpp` — **New.** Unit tests for report layer (JSON output, aggregation, quarter splits, edge cases)
+- `src/backtest/multi_day_runner.hpp` — Modified (support for oracle expectancy aggregation)
+- `src/backtest/oracle_replay.hpp` — Modified (support for oracle expectancy aggregation)
+- `src/serialization.hpp` — Modified
+- `tests/bar_features_test.cpp` — Modified
+- `tests/test_bar_helpers.hpp` — Modified
+- `CMakeLists.txt` — Modified (oracle_expectancy_test target)
 
 ### Phase Sequence
 
@@ -32,14 +24,17 @@
 | 1 | bar-construction | **Done** |
 | 2 | oracle-replay | **Done** |
 | 3 | multi-day-backtest | **Done** |
-| R1 | subordination-test | **Unblocked** |
+| R1 | subordination-test | **Done** (REFUTED) |
 | 4 | feature-computation | **Done** |
-| 5 | feature-analysis | **In Progress** |
-| R2–R3 | Research phases | **Unblocked** |
-| R4 | temporal-predictability | Blocked by R1 |
-| 6 | synthesis | Blocked by all |
+| 5 | feature-analysis | **Done** |
+| R2 | info-decomposition | **Done** (FEATURES SUFFICIENT) |
+| R3 | book-encoder-bias | **Done** (CNN WINS) |
+| R4 | temporal-predictability | **Done** (NO SIGNAL) |
+| 6 | synthesis | **Done** (CONDITIONAL GO) |
+| 7 | oracle-expectancy | **Done** |
 
 ### Next Actions
 
-1. Ship Phase 5 (commit breadcrumbs + changed files).
-2. Start Phase R1 (subordination-test), R2 (info-decomposition), or R3 (book-encoder-bias).
+1. Build `tools/oracle_expectancy.cpp` standalone executable to run on real MES data.
+2. Resolve remaining open questions: CNN at h=1, transaction cost model.
+3. Proceed to model architecture build spec.

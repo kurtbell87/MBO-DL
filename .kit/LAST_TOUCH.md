@@ -2,22 +2,20 @@
 
 ## Project Status
 
-**All 10 phases complete.** 5 engineering phases (TDD) + 5 research phases (R1–R4, synthesis) done. Research verdict: **CONDITIONAL GO** — CNN + GBT Hybrid architecture recommended. All results merged to main.
+**11 phases complete (6 engineering + 5 research).** Oracle expectancy report layer added (Phase 7). Research verdict: **CONDITIONAL GO** — CNN + GBT Hybrid architecture recommended. Oracle expectancy open question partially resolved (testable layer done, standalone tool next).
 
 ## What was completed this cycle
 
-- **R1 (subordination-test)** — REFUTED. Clark/Ané-Geman subordination doesn't hold for MES. No bar type superiority. PR #8.
-- **R2 (info-decomposition)** — FEATURES SUFFICIENT. Raw book snapshot captures all linear/MLP-extractable signal. No CNN/message/SSM stages justified from flattened features. PR #9.
-- **R3 (book-encoder-bias)** — CNN WINS. Conv1d on structured (20,2) book input: R²=0.132, significantly beats Attention (p=0.042). PR #10.
-- **R4 (temporal-predictability)** — NO TEMPORAL SIGNAL. MES returns are martingale at 5s bars. All 36 AR configs negative R². Drop temporal encoder. PR #11.
-- **Phase 6 (synthesis)** — CONDITIONAL GO. CNN + GBT Hybrid. Spatial encoder included (R3), message/temporal dropped (R2+R4). Bar type: time_5s. Horizons: h=1, h=5. PR #12.
-- Fixed broken symlinks: `.kit/experiment.sh`, `.kit/math.sh` (pointed to old `claude-research-kit/`, `claude-mathematics-kit/`).
-- Added `.gitignore` entries for large experiment artifacts (`*.bin`, `features.csv`).
+- **Phase 7 (oracle-expectancy)** — TDD cycle for `OracleExpectancyReport` struct, `to_json` JSON serializer, and `aggregate_day_results` per-quarter aggregation logic. 67 new unit tests. Resolves synthesis open question #1 (testable layer).
+- New: `src/backtest/oracle_expectancy_report.hpp`
+- New: `tests/oracle_expectancy_test.cpp`
+- New: `.kit/docs/oracle-expectancy.md` (spec)
+- Modified: `CMakeLists.txt`, `src/backtest/multi_day_runner.hpp`, `src/backtest/oracle_replay.hpp`, `src/serialization.hpp`, `tests/bar_features_test.cpp`, `tests/test_bar_helpers.hpp`
 
 ## What exists
 
 A C++20 MES microstructure model suite with:
-- **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis (5 TDD phases)
+- **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report (6 TDD phases)
 - **Research results**: Subordination test, info decomposition, book encoder bias, temporal predictability, synthesis (5 research phases)
 - **Architecture decision**: CNN + GBT Hybrid — Conv1d on raw (20,2) book → 16-dim embedding → concat with ~20 non-spatial features → XGBoost
 
@@ -35,17 +33,17 @@ A C++20 MES microstructure model suite with:
 | R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Done** (CNN WINS) |
 | R4 | `.kit/experiments/temporal-predictability.md` | Research | **Done** (NO SIGNAL) |
 | 6 | `.kit/experiments/synthesis.md` | Research | **Done** (CONDITIONAL GO) |
+| 7 | `.kit/docs/oracle-expectancy.md` | TDD | **Done** |
 
 ## Test summary
 
-- **886 unit tests** pass, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`), 887 total
+- **953 unit tests** pass, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`), 954 total
 - **22 integration tests** (14 N=32 + 8 N=128) — labeled `integration`, excluded from default ctest
 - Unit test time: ~6 min. Integration: ~20 min.
 
 ## What to do next
 
-Synthesis recommends resolving open questions before model build:
-1. Extract oracle expectancy from Phase 3 C++ test output
+1. Build `tools/oracle_expectancy.cpp` standalone executable to run oracle on real MES data (20 stratified days)
 2. Test CNN at h=1 (R3 only tested h=5)
 3. Design CNN+GBT integration pipeline
 4. Estimate transaction costs

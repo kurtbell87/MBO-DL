@@ -7,8 +7,6 @@
 //   load_and_run_onnx(onnx_path, input_tensor)       — run inference via ONNX Runtime C++ API
 
 #include <torch/torch.h>
-#include <torch/script.h>
-#include <torch/csrc/jit/serialization/pickle.h>
 
 #include <onnxruntime_cxx_api.h>
 
