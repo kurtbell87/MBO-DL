@@ -102,9 +102,9 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-16, Phase 1 bar-construction complete)
+## Current State (updated 2026-02-16, Phase 2 oracle-replay complete)
 
-**Phase 1 (bar-construction) complete.** Bar struct, DayEventBuffer, 4 bar builders (volume/tick/dollar/time), BarFactory, message summaries, warm-up tracking, encoder adapters — all implemented and tested.
+**Phase 2 (oracle-replay) TDD cycle complete.** ExecutionCosts, OracleReplay (first-to-hit + triple barrier), TradeRecord, BacktestResult — all implemented and tested. 73 new tests.
 
 **Spec: `TRAJECTORY.md`** — Kenoma Labs MES Backtest & Feature Discovery. 10 sequential phases (5 engineering, 5 research).
 
@@ -113,10 +113,10 @@ After every session that changes the codebase, update:
 | # | Spec | Kit | Status |
 |---|------|-----|--------|
 | 1 | `.kit/docs/bar-construction.md` | TDD | **Done** |
-| 2 | `.kit/docs/oracle-replay.md` | TDD | Pending (blocked by 1) → **Unblocked** |
-| 3 | `.kit/docs/multi-day-backtest.md` | TDD | Pending (blocked by 2) |
-| R1 | `.kit/experiments/subordination-test.md` | Research | Pending (blocked by 1) → **Unblocked** |
-| 4 | `.kit/docs/feature-computation.md` | TDD | Pending (blocked by 1) → **Unblocked** |
+| 2 | `.kit/docs/oracle-replay.md` | TDD | **Done** |
+| 3 | `.kit/docs/multi-day-backtest.md` | TDD | **Unblocked** |
+| R1 | `.kit/experiments/subordination-test.md` | Research | **Unblocked** |
+| 4 | `.kit/docs/feature-computation.md` | TDD | **Unblocked** |
 | 5 | `.kit/docs/feature-analysis.md` | TDD | Pending (blocked by 4) |
 | R2 | `.kit/experiments/info-decomposition.md` | Research | Pending (blocked by 4) |
 | R3 | `.kit/experiments/book-encoder-bias.md` | Research | Pending (blocked by 4) |
@@ -124,6 +124,6 @@ After every session that changes the codebase, update:
 | 6 | `.kit/experiments/synthesis.md` | Research | Pending (blocked by all above) |
 
 - **Build:** Green.
-- **Tests:** 307/308 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **New in this cycle:** 87 new unit tests (bar_builder: 54, day_event_buffer, warmup, encoder adapters).
-- **Next task:** Start Phase 2 (oracle-replay): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/oracle-replay.md`
+- **Tests:** 397/398 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
+- **New in this cycle:** 73 new unit tests (ExecutionCosts: 21, OracleReplay: 34, TripleBarrier: 18).
+- **Next task:** Start Phase 3 (multi-day-backtest): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/multi-day-backtest.md`

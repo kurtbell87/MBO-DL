@@ -29,6 +29,9 @@ set(TEST_TARGETS
     bar_builder_test
     day_event_buffer_test
     warmup_test
+    execution_costs_test
+    oracle_replay_test
+    triple_barrier_test
 )
 
 foreach(target ${TEST_TARGETS})
