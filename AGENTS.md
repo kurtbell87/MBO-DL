@@ -1,11 +1,11 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-16, Phase 1 bar-construction complete)
+## Current State (updated 2026-02-16, Phase 2 oracle-replay complete)
 
 - **Build:** Green.
-- **Unit tests:** 307/308 pass, 0 failures, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`).
+- **Unit tests:** 397/398 pass, 0 failures, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`).
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **Phase 1 (bar-construction):** Complete. Bar struct, 4 bar builders, BarFactory, DayEventBuffer, warm-up tracking, encoder adapters. 87 new unit tests.
+- **Phase 2 (oracle-replay):** Complete. ExecutionCosts, OracleReplay (first-to-hit + triple barrier), TradeRecord, BacktestResult. 73 new unit tests.
 - **`ORCHESTRATOR_SPEC.md`** archived to `completed_specs/`.
 
 ## Completed TDD Phases (Orchestrator Spec — predecessor)
@@ -27,13 +27,14 @@
 
 | Phase | Spec | Red | Green | Refactor | Ship |
 |-------|------|-----|-------|----------|------|
-| 1 | bar-construction | done | done | done | pending |
+| 1 | bar-construction | done | done | done | done |
+| 2 | oracle-replay | done | done | done | pending |
 
 ## Next Action
 
-Start Phase 2 (oracle-replay):
+Ship Phase 2 (commit), then start Phase 3 (multi-day-backtest):
 ```bash
-source .master-kit.env && ./.kit/tdd.sh red .kit/docs/oracle-replay.md
+source .master-kit.env && ./.kit/tdd.sh red .kit/docs/multi-day-backtest.md
 ```
 
 ## Agent Roles
