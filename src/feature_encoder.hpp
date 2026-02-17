@@ -4,6 +4,7 @@
 
 #include <array>
 #include <cmath>
+#include <numbers>
 #include <stdexcept>
 #include <vector>
 
@@ -15,28 +16,29 @@ constexpr int T = 50;          // Trade buffer length
 constexpr int W = 600;         // Window length (snapshots)
 constexpr float TICK_SIZE = 0.25f;
 
-// Feature index ranges — contiguous, non-overlapping
-constexpr int BID_PRICE_BEGIN      = 0;
-constexpr int BID_PRICE_END        = 10;   // L
-constexpr int BID_SIZE_BEGIN       = 10;
-constexpr int BID_SIZE_END         = 20;   // 2*L
-constexpr int ASK_PRICE_BEGIN      = 20;
-constexpr int ASK_PRICE_END        = 30;   // 3*L
-constexpr int ASK_SIZE_BEGIN       = 30;
-constexpr int ASK_SIZE_END         = 40;   // 4*L
-constexpr int TRADE_PRICE_BEGIN    = 40;
-constexpr int TRADE_PRICE_END      = 90;   // 4*L + T
-constexpr int TRADE_SIZE_BEGIN     = 90;
-constexpr int TRADE_SIZE_END       = 140;  // 4*L + 2*T
-constexpr int TRADE_AGGRESSOR_BEGIN = 140;
-constexpr int TRADE_AGGRESSOR_END  = 190;  // 4*L + 3*T
-constexpr int SPREAD_TICKS_IDX    = 190;
-constexpr int TIME_SIN_IDX        = 191;
-constexpr int TIME_COS_IDX        = 192;
-constexpr int POSITION_STATE_IDX  = 193;
-constexpr int FEATURE_DIM         = 194;
+// Feature index ranges — contiguous, non-overlapping.
+// Each range begins where the previous one ends.
+constexpr int BID_PRICE_BEGIN       = 0;
+constexpr int BID_PRICE_END         = BID_PRICE_BEGIN + L;
+constexpr int BID_SIZE_BEGIN        = BID_PRICE_END;
+constexpr int BID_SIZE_END          = BID_SIZE_BEGIN + L;
+constexpr int ASK_PRICE_BEGIN       = BID_SIZE_END;
+constexpr int ASK_PRICE_END         = ASK_PRICE_BEGIN + L;
+constexpr int ASK_SIZE_BEGIN        = ASK_PRICE_END;
+constexpr int ASK_SIZE_END          = ASK_SIZE_BEGIN + L;
+constexpr int TRADE_PRICE_BEGIN     = ASK_SIZE_END;
+constexpr int TRADE_PRICE_END       = TRADE_PRICE_BEGIN + T;
+constexpr int TRADE_SIZE_BEGIN      = TRADE_PRICE_END;
+constexpr int TRADE_SIZE_END        = TRADE_SIZE_BEGIN + T;
+constexpr int TRADE_AGGRESSOR_BEGIN = TRADE_SIZE_END;
+constexpr int TRADE_AGGRESSOR_END   = TRADE_AGGRESSOR_BEGIN + T;
+constexpr int SPREAD_TICKS_IDX     = TRADE_AGGRESSOR_END;
+constexpr int TIME_SIN_IDX         = SPREAD_TICKS_IDX + 1;
+constexpr int TIME_COS_IDX         = TIME_SIN_IDX + 1;
+constexpr int POSITION_STATE_IDX   = TIME_COS_IDX + 1;
+constexpr int FEATURE_DIM          = POSITION_STATE_IDX + 1;
 
-inline constexpr float TWO_PI = 2.0f * 3.14159265358979323846f;
+inline constexpr float TWO_PI = 2.0f * std::numbers::pi_v<float>;
 
 // ---------------------------------------------------------------------------
 // encode_snapshot — transform a single BookSnapshot into a 194-dim feature vector

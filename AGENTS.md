@@ -1,10 +1,14 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Status
+## Current State (updated 2026-02-16, Phase 1 bar-construction complete)
 
-**ORCHESTRATOR_SPEC.md is COMPLETE.** All build phases shipped. N=128 overfit validation added.
+- **Build:** Green.
+- **Unit tests:** 307/308 pass, 0 failures, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`).
+- **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
+- **Phase 1 (bar-construction):** Complete. Bar struct, 4 bar builders, BarFactory, DayEventBuffer, warm-up tracking, encoder adapters. 87 new unit tests.
+- **`ORCHESTRATOR_SPEC.md`** archived to `completed_specs/`.
 
-## Completed TDD Phases
+## Completed TDD Phases (Orchestrator Spec — predecessor)
 
 | Phase | Module | Red | Green | Refactor | Ship |
 |-------|--------|-----|-------|----------|------|
@@ -19,7 +23,18 @@
 | 9 | serialization | done | done | done | done |
 | 10 | N=128 overfit validation | done | done | done | done |
 
-**Tests:** 220 unit + 22 integration. All pass.
+## Completed TDD Phases (TRAJECTORY.md — current)
+
+| Phase | Spec | Red | Green | Refactor | Ship |
+|-------|------|-----|-------|----------|------|
+| 1 | bar-construction | done | done | done | pending |
+
+## Next Action
+
+Start Phase 2 (oracle-replay):
+```bash
+source .master-kit.env && ./.kit/tdd.sh red .kit/docs/oracle-replay.md
+```
 
 ## Agent Roles
 
