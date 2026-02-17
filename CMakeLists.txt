@@ -40,6 +40,9 @@ set(TEST_TARGETS
     raw_representations_test
     feature_export_test
     feature_warmup_test
+    feature_mi_test
+    conditional_returns_test
+    bar_comparison_test
 )
 
 foreach(target ${TEST_TARGETS})
@@ -91,6 +94,7 @@ FetchContent_MakeAvailable(xgboost)
 # ---------- Tests requiring XGBoost ----------
 set(XGBOOST_TEST_TARGETS
     gbt_model_test
+    gbt_importance_test
 )
 
 foreach(target ${XGBOOST_TEST_TARGETS})
