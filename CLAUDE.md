@@ -125,4 +125,4 @@ After every session that changes the codebase, update:
 
 - **Build:** Green.
 - **Tests:** 886/887 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **Next task:** Merge PR #7, then start research phases (R1, R2, R3 all unblocked).
+- **Next task:** Start research phases — R1, R2, R3 all unblocked. R4 blocked by R1. Phase 6 (synthesis) blocked by all.
