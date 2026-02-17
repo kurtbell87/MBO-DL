@@ -144,3 +144,8 @@ gtest_discover_tests(n128_overfit_test PROPERTIES LABELS "integration")
 add_executable(subordination_test tools/subordination_test.cpp)
 target_include_directories(subordination_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(subordination_test PRIVATE databento::databento)
+
+# ---------- Information Decomposition Export (R2 experiment) ----------
+add_executable(info_decomposition_export tools/info_decomposition_export.cpp)
+target_include_directories(info_decomposition_export PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(info_decomposition_export PRIVATE databento::databento)
