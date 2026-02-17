@@ -50,9 +50,10 @@ A C++20 MES microstructure model suite that reads raw Databento MBO (L3) order d
 
 ## What to do next
 
-1. Merge PR #7 (feature-analysis) to main.
-2. Start Phase R1 (subordination-test): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/subordination-test.md`
-3. Or start Phase R2 (info-decomposition): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/info-decomposition.md`
+1. Start Phase R1 (subordination-test): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/subordination-test.md`
+2. Or start Phase R2 (info-decomposition): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/info-decomposition.md`
+3. Or start Phase R3 (book-encoder-bias): `source .master-kit.env && ./.kit/experiment.sh survey .kit/experiments/book-encoder-bias.md`
+4. R1, R2, R3 are all unblocked and can run in any order. R4 is blocked by R1. Phase 6 (synthesis) is blocked by all.
 
 ## Key files (Phase 5)
 
