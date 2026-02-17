@@ -1598,39 +1598,39 @@ Decision: Final bar type recommendation for the temporal encoder.
 This spec is COMPLETE when:
 
 **Engineering:**
-- [ ] Bar builders (volume, tick, dollar, time) produce correct bars from MBO snapshot stream
-- [ ] Bar builders compute message summary fields (add/cancel/modify counts, cancel_add_ratio, message_rate)
-- [ ] Bar builders track MBO event indices for future message encoder access
-- [ ] Bar builders account for trade deduplication (inherited from predecessor §2.7)
-- [ ] DayEventBuffer correctly manages per-day MBO event lifecycle (load, access, clear)
-- [ ] PriceLadderInput and MessageSequenceInput adapters produce correct shapes from Bar data
-- [ ] Event-denominated oracle produces labels with volume-based lookahead (both first-to-hit and triple barrier)
-- [ ] Triple barrier oracle correctly handles target, stop, and expiry exits
-- [ ] Safety cap telemetry logged and reported; cap trigger rate < 1% during RTH
-- [ ] Execution cost model correctly computes per-trade net PnL
-- [ ] Oracle replay backtest runs across all 2022 trading days (excluding rollover transition days) with correct PnL accounting
-- [ ] Oracle expectancy is computed for at least 3 bar types × 3 oracle configs × 2 labeling methods
-- [ ] Go/no-go decision is documented with supporting data
-- [ ] Regime stratification (§9.6) completed with stability scores
-- [ ] Feature taxonomy (§8.3) Track A is fully implemented with per-bar computation
-- [ ] Feature taxonomy (§8.3) Track B raw representations exported (book snapshots + message summaries)
-- [ ] Kyle's lambda computed over rolling 20-bar window (not single-bar)
-- [ ] Warm-up and lookahead bias policy (§8.6) fully implemented with is_warmup flag
-- [ ] Features exported to analyzable format (Parquet/CSV) with no unexpected NaN
-- [ ] All C++ unit tests pass
-- [ ] Results are reproducible (same data + config → same results)
+- [x] Bar builders (volume, tick, dollar, time) produce correct bars from MBO snapshot stream
+- [x] Bar builders compute message summary fields (add/cancel/modify counts, cancel_add_ratio, message_rate)
+- [x] Bar builders track MBO event indices for future message encoder access
+- [x] Bar builders account for trade deduplication (inherited from predecessor §2.7)
+- [x] DayEventBuffer correctly manages per-day MBO event lifecycle (load, access, clear)
+- [x] PriceLadderInput and MessageSequenceInput adapters produce correct shapes from Bar data
+- [x] Event-denominated oracle produces labels with volume-based lookahead (both first-to-hit and triple barrier)
+- [x] Triple barrier oracle correctly handles target, stop, and expiry exits
+- [x] Safety cap telemetry logged and reported; cap trigger rate < 1% during RTH
+- [x] Execution cost model correctly computes per-trade net PnL
+- [x] Oracle replay backtest runs across all 2022 trading days (excluding rollover transition days) with correct PnL accounting
+- [x] Oracle expectancy is computed for at least 3 bar types × 3 oracle configs × 2 labeling methods
+- [x] Go/no-go decision is documented with supporting data
+- [x] Regime stratification (§9.6) completed with stability scores
+- [x] Feature taxonomy (§8.3) Track A is fully implemented with per-bar computation
+- [x] Feature taxonomy (§8.3) Track B raw representations exported (book snapshots + message summaries)
+- [x] Kyle's lambda computed over rolling 20-bar window (not single-bar)
+- [x] Warm-up and lookahead bias policy (§8.6) fully implemented with is_warmup flag
+- [x] Features exported to analyzable format (Parquet/CSV) with no unexpected NaN
+- [x] All C++ unit tests pass
+- [x] Results are reproducible (same data + config → same results)
 
 **Research:**
-- [ ] R1: Subordination hypothesis tested — Jarque-Bera, ARCH, volatility clustering compared across bar types with Holm-Bonferroni corrected p-values
-- [ ] R1: Primary bar type recommended with empirical justification
-- [ ] R2 Tier 1: Information decomposition estimated with hand-crafted message summaries — $R^2$ gaps computed for all representation tracks × return horizons
-- [ ] R2 Tier 2: Learned message encoder (LSTM/transformer) tested on raw event sequences — definitive message encoder go/no-go
-- [ ] R2: Architecture decision (§7.2 simplification cascade) filled in using Tier 2 results and revised threshold policy (relative gap > 20% AND significant)
-- [ ] R3: Book encoder inductive bias tested — CNN vs. attention vs. MLP on raw book snapshots with significance tests
-- [ ] R3: Spatial encoder architecture recommended
-- [ ] R4: Entropy rate / temporal predictability compared across bar types with corrected p-values
-- [ ] R4: Final bar type recommendation for temporal encoder
-- [ ] MI analysis, GBT importance (stability-selected), and decay analysis completed for all feature × horizon × bar_type combinations
-- [ ] All statistical tests report raw p-values, corrected p-values, and power analysis
-- [ ] Bar type comparison completed with statistical tests per §8.5
-- [ ] Synthesis document produced with go/no-go decisions, architecture recommendations, regime robustness assessment, and documented statistical limitations
+- [x] R1: Subordination hypothesis tested — Jarque-Bera, ARCH, volatility clustering compared across bar types with Holm-Bonferroni corrected p-values
+- [x] R1: Primary bar type recommended with empirical justification
+- [x] R2 Tier 1: Information decomposition estimated with hand-crafted message summaries — $R^2$ gaps computed for all representation tracks × return horizons
+- [x] R2 Tier 2: Learned message encoder (LSTM/transformer) tested on raw event sequences — definitive message encoder go/no-go
+- [x] R2: Architecture decision (§7.2 simplification cascade) filled in using Tier 2 results and revised threshold policy (relative gap > 20% AND significant)
+- [x] R3: Book encoder inductive bias tested — CNN vs. attention vs. MLP on raw book snapshots with significance tests
+- [x] R3: Spatial encoder architecture recommended
+- [x] R4: Entropy rate / temporal predictability compared across bar types with corrected p-values
+- [x] R4: Final bar type recommendation for temporal encoder
+- [~] MI analysis, GBT importance (stability-selected), and decay analysis completed for all feature × horizon × bar_type combinations
+- [x] All statistical tests report raw p-values, corrected p-values, and power analysis
+- [x] Bar type comparison completed with statistical tests per §8.5
+- [x] Synthesis document produced with go/no-go decisions, architecture recommendations, regime robustness assessment, and documented statistical limitations

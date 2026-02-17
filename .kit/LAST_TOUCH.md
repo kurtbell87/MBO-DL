@@ -6,10 +6,8 @@
 
 ## What was completed this cycle
 
-- **Oracle expectancy extraction** — Wrote and ran `tools/oracle_expectancy.cpp` on 20 stratified days (19 valid, 1 skipped: 20221230 no data). Both FIRST_TO_HIT and TRIPLE_BARRIER oracle modes tested.
-- New: `tools/oracle_expectancy.cpp`
-- Modified: `CMakeLists.txt` (added oracle_expectancy build target)
-- Output: `.kit/results/oracle-expectancy/metrics.json`, `.kit/results/oracle-expectancy/summary.json`
+- **Exit criteria audit** — Comprehensive audit of TRAJECTORY.md §13 exit criteria against codebase. 21/21 engineering PASS, 12/13 research PASS, 1 partial (MI/stability-selection not performed; R² used throughout instead — no impact on conclusions).
+- Modified: `TRAJECTORY.md` (filled in exit criteria checkboxes), `CLAUDE.md` (breadcrumbs)
 
 ## Key oracle expectancy results
 
@@ -90,4 +88,4 @@ cd build && ctest --output-on-failure --label-regex integration           # inte
 
 ---
 
-Updated: 2026-02-17
+Updated: 2026-02-17 (exit criteria audit)
