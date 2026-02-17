@@ -11,10 +11,13 @@
 namespace test_helpers {
 
 constexpr float TICK = 0.25f;
+constexpr float TICK_SIZE = TICK;  // alias used by some test files
 constexpr uint64_t NS_PER_SEC = 1'000'000'000ULL;
+constexpr uint64_t NS_PER_MIN = 60ULL * NS_PER_SEC;
 constexpr uint64_t NS_PER_HOUR = 3600ULL * NS_PER_SEC;
 constexpr uint64_t MIDNIGHT_ET_NS = 1641186000ULL * NS_PER_SEC;  // 2022-01-03 00:00 ET
-constexpr uint64_t RTH_OPEN_NS = MIDNIGHT_ET_NS + 9ULL * NS_PER_HOUR + 30ULL * 60 * NS_PER_SEC;
+constexpr uint64_t RTH_OPEN_NS = MIDNIGHT_ET_NS + 9ULL * NS_PER_HOUR + 30ULL * NS_PER_MIN;
+constexpr uint64_t RTH_CLOSE_NS = MIDNIGHT_ET_NS + 16ULL * NS_PER_HOUR;
 
 // Build a Bar with specified mid_price, volume, and timestamp offset.
 inline Bar make_bar(float mid_price, uint32_t volume, uint64_t ts_offset_ns,

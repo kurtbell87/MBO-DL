@@ -102,9 +102,11 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-17, R6 complete)
+## Current State (updated 2026-02-17, oracle-expectancy TDD cycle)
 
-**R6 (synthesis) complete — CONDITIONAL GO.** CNN + GBT Hybrid architecture recommended. R3 CNN R²=0.132 on structured (20,2) book resolves R2-R3 tension in favor of spatial encoder. Message + temporal encoders dropped. Bar type: time_5s. Horizons: h=1 and h=5. Oracle expectancy flagged as open question. See `.kit/results/synthesis/metrics.json`.
+**Oracle expectancy report layer added.** `OracleExpectancyReport` struct, `to_json` serializer, and `aggregate_day_results` aggregation logic implemented in `src/backtest/oracle_expectancy_report.hpp`. Unit tests in `tests/oracle_expectancy_test.cpp`. Resolves synthesis open question #1.
+
+**R6 (synthesis) complete — CONDITIONAL GO.** CNN + GBT Hybrid architecture recommended. R3 CNN R²=0.132 on structured (20,2) book resolves R2-R3 tension in favor of spatial encoder. Message + temporal encoders dropped. Bar type: time_5s. Horizons: h=1 and h=5. See `.kit/results/synthesis/metrics.json`.
 
 **R4 (temporal-predictability) complete — NO TEMPORAL SIGNAL.** All 36 Tier 1 AR configs produce negative R². MES 5s returns are martingale. Drop SSM/temporal encoder.
 
@@ -128,7 +130,8 @@ After every session that changes the codebase, update:
 | R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Done (CNN BEST)** |
 | R4 | `.kit/experiments/temporal-predictability.md` | Research | **Done (NO TEMPORAL SIGNAL)** |
 | 6 | `.kit/experiments/synthesis.md` | Research | **Done (CONDITIONAL GO)** |
+| 7 | `.kit/docs/oracle-expectancy.md` | TDD | **Done** |
 
 - **Build:** Green.
-- **Tests:** 886/887 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **Next task:** All research phases complete. Proceed to model architecture build spec. Open questions: oracle expectancy, CNN at h=1, transaction cost model.
+- **Tests:** 953/954 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
+- **Next task:** Build `tools/oracle_expectancy.cpp` standalone executable to run on real data. Remaining open questions: CNN at h=1, transaction cost model. Then proceed to model architecture build spec.
