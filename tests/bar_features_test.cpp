@@ -13,6 +13,7 @@
 #include "features/bar_features.hpp"  // BarFeatureComputer, BarFeatureRow
 #include "bars/bar.hpp"               // Bar struct
 #include "book_builder.hpp"           // BOOK_DEPTH
+#include "test_bar_helpers.hpp"       // shared timestamp/tick constants
 
 #include <cmath>
 #include <cstdint>
@@ -27,12 +28,9 @@
 // ===========================================================================
 namespace {
 
-constexpr float TICK_SIZE = 0.25f;
+using test_helpers::TICK_SIZE;
+using test_helpers::RTH_OPEN_NS;
 constexpr float EPS = 1e-8f;
-constexpr uint64_t NS_PER_SEC  = 1'000'000'000ULL;
-constexpr uint64_t NS_PER_HOUR = 3600ULL * NS_PER_SEC;
-constexpr uint64_t MIDNIGHT_ET_NS = 1641186000ULL * NS_PER_SEC;  // 2022-01-03 00:00 ET
-constexpr uint64_t RTH_OPEN_NS = MIDNIGHT_ET_NS + 9ULL * NS_PER_HOUR + 30ULL * 60 * NS_PER_SEC;
 
 // Build a minimal Bar at a given offset from RTH open (in seconds).
 Bar make_bar(float close_mid, uint32_t volume = 100, float seconds_from_open = 60.0f,
