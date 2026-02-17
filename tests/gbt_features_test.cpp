@@ -12,6 +12,7 @@
 #include <array>
 #include <cmath>
 #include <limits>
+#include <numbers>
 #include <numeric>
 #include <vector>
 
@@ -22,7 +23,7 @@ namespace {
 // ---------------------------------------------------------------------------
 constexpr float TICK_SIZE = 0.25f;
 constexpr float EPSILON = 1e-8f;
-constexpr float TWO_PI_VAL = 2.0f * 3.14159265358979323846f;
+constexpr float TWO_PI_VAL = 2.0f * std::numbers::pi_v<float>;
 
 // ---------------------------------------------------------------------------
 // Helpers — build synthetic BookSnapshot windows

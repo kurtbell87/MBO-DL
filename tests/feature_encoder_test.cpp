@@ -10,6 +10,7 @@
 
 #include <array>
 #include <cmath>
+#include <numbers>
 #include <numeric>
 #include <vector>
 
@@ -18,7 +19,7 @@
 // ---------------------------------------------------------------------------
 namespace {
 
-constexpr float PI = 3.14159265358979323846f;
+constexpr float PI = std::numbers::pi_v<float>;
 
 // Build a BookSnapshot with known values for deterministic testing.
 // Bid prices descend from base_bid, ask prices ascend from base_ask,

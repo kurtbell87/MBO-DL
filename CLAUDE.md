@@ -94,7 +94,7 @@ After every session that changes the codebase, update:
 
 ## Project: MBO-DL (MES Microstructure Model Suite)
 
-**Master spec**: `ORCHESTRATOR_SPEC.md` — the single source of truth for all data contracts, model architectures, and build phases. Read this before doing anything.
+**Master spec**: `completed_specs/ORCHESTRATOR_SPEC.md` (archived) — the single source of truth for all data contracts, model architectures, and build phases.
 
 **Language**: C++20 (data pipeline + 3 models), Python (SSM only — mamba-ssm requires CUDA).
 **Build**: CMake. Dependencies via FetchContent (libtorch, databento-cpp, xgboost, GTest).
@@ -102,13 +102,28 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-16)
+## Current State (updated 2026-02-16, Phase 1 bar-construction complete)
 
-**ORCHESTRATOR_SPEC.md is COMPLETE.** All build phases shipped. N=128 overfit validation added.
+**Phase 1 (bar-construction) complete.** Bar struct, DayEventBuffer, 4 bar builders (volume/tick/dollar/time), BarFactory, message summaries, warm-up tracking, encoder adapters — all implemented and tested.
 
-- **Build:** Green. CMake + FetchContent (databento-cpp, libtorch, xgboost, GTest).
-- **Tests:** 220 unit + 22 integration. All pass. Default ctest excludes integration tests.
-- **N=128 overfit:** MLP, CNN, GBT all reach ≥95% accuracy on 128 samples (spec: `.kit/docs/n128-overfit.md`).
-- **SSM:** Skipped (requires CUDA). Not blocking.
-- **Branch:** `tdd/n128-overfit` (base: `tdd/integration-overfit`). Serialization + N=128 overfit work.
-- **Next phase:** Defined by user. Overfit harness complete at both N=32 and N=128.
+**Spec: `TRAJECTORY.md`** — Kenoma Labs MES Backtest & Feature Discovery. 10 sequential phases (5 engineering, 5 research).
+
+### Phase Sequence
+
+| # | Spec | Kit | Status |
+|---|------|-----|--------|
+| 1 | `.kit/docs/bar-construction.md` | TDD | **Done** |
+| 2 | `.kit/docs/oracle-replay.md` | TDD | Pending (blocked by 1) → **Unblocked** |
+| 3 | `.kit/docs/multi-day-backtest.md` | TDD | Pending (blocked by 2) |
+| R1 | `.kit/experiments/subordination-test.md` | Research | Pending (blocked by 1) → **Unblocked** |
+| 4 | `.kit/docs/feature-computation.md` | TDD | Pending (blocked by 1) → **Unblocked** |
+| 5 | `.kit/docs/feature-analysis.md` | TDD | Pending (blocked by 4) |
+| R2 | `.kit/experiments/info-decomposition.md` | Research | Pending (blocked by 4) |
+| R3 | `.kit/experiments/book-encoder-bias.md` | Research | Pending (blocked by 4) |
+| R4 | `.kit/experiments/temporal-predictability.md` | Research | Pending (blocked by 1, R1) |
+| 6 | `.kit/experiments/synthesis.md` | Research | Pending (blocked by all above) |
+
+- **Build:** Green.
+- **Tests:** 307/308 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
+- **New in this cycle:** 87 new unit tests (bar_builder: 54, day_event_buffer, warmup, encoder adapters).
+- **Next task:** Start Phase 2 (oracle-replay): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/oracle-replay.md`
