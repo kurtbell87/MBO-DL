@@ -1,0 +1,10 @@
+question,R1,R2,R3,R4,decision
+Bar type,time_5s (REFUTED subordination),time_5s (used as baseline),—,time_5s (used as baseline),time_5s
+Spatial encoder,—,DROP (Δ_spatial p=0.96),"INCLUDE (CNN R²=0.132, p=0.042 vs Attention)",—,INCLUDE (R3 supersedes R2 — structured input)
+Message encoder,—,DROP (Δ_msg < 0),—,—,DROP
+Temporal encoder,—,DROP (Δ_temporal = −0.006),—,DROP (all 52 tests fail),DROP
+Signal horizon,—,h=1 only (R²=0.007),h=5 (R²=0.132),h=1 only (R²=0.005),Test both h=1 and h=5
+Signal magnitude,—,"R²=0.007 (h=1, MLP)","R²=0.132 (h=5, CNN)","R²=0.005 (h=1, GBT)",CNN spatial encoding amplifies signal 20x
+Subordination theory,REFUTED,—,—,—,REFUTED
+Book sufficiency,—,CONFIRMED (book is sufficient statistic),CNN amplifies (retention ratio=4.16x),—,Book sufficient; CNN amplifies spatial structure
+Temporal predictability,—,Δ_temporal < 0,—,Martingale (0/52 pass),NONE — returns are martingale
