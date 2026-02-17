@@ -26,6 +26,9 @@ set(TEST_TARGETS
     oracle_labeler_test
     trajectory_builder_test
     gbt_features_test
+    bar_builder_test
+    day_event_buffer_test
+    warmup_test
 )
 
 foreach(target ${TEST_TARGETS})
