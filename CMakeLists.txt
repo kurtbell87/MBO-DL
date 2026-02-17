@@ -139,3 +139,8 @@ target_link_libraries(n128_overfit_test PRIVATE
 )
 target_compile_options(n128_overfit_test PRIVATE ${TORCH_CXX_FLAGS})
 gtest_discover_tests(n128_overfit_test PROPERTIES LABELS "integration")
+
+# ---------- Subordination Hypothesis Test (R1 experiment) ----------
+add_executable(subordination_test tools/subordination_test.cpp)
+target_include_directories(subordination_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(subordination_test PRIVATE databento::databento)
