@@ -1,6 +1,6 @@
 # tests/ — MBO-DL Test Suite (GTest)
 
-## Unit tests (553 pass, 1 disabled)
+## Unit tests (953 pass, 1 disabled)
 
 | File | Tests for |
 |------|-----------|
@@ -22,6 +22,7 @@
 | `oracle_comparison_test.cpp` | OracleComparison (label distribution, stability, correlation) |
 | `regime_stratification_test.cpp` | RegimeStratifier (volatility, time, volume, trend, stability) |
 | `backtest_criteria_test.cpp` | SuccessCriteria (go/no-go assessment) |
+| `oracle_expectancy_test.cpp` | OracleExpectancyReport (to_json, aggregation, per-quarter splits) |
 | `test_helpers.hpp` | Shared test utilities |
 | `test_bar_helpers.hpp` | Bar construction test helpers |
 

@@ -100,8 +100,6 @@ public:
         BacktestResult agg{};
 
         int active_days = 0;
-        float gross_wins = 0.0f;
-        float gross_losses = 0.0f;
 
         for (const auto& day : day_results) {
             if (day.skipped) continue;
@@ -116,11 +114,6 @@ public:
             // Collect all trades
             for (const auto& trade : day.result.trades) {
                 agg.trades.push_back(trade);
-                if (trade.gross_pnl > 0.0f) {
-                    gross_wins += trade.gross_pnl;
-                } else {
-                    gross_losses += std::abs(trade.gross_pnl);
-                }
             }
 
             // Track daily PnL
@@ -130,29 +123,15 @@ public:
             agg.safety_cap_triggered_count += day.result.safety_cap_triggered_count;
         }
 
-        // Recompute aggregate metrics
+        // Recompute aggregate metrics (win_rate, expectancy, profit_factor,
+        // trades_per_day, max_drawdown, sharpe)
+        backtest_util::recompute_derived(agg, active_days);
+
+        // Safety cap fraction (not covered by recompute_derived)
         if (agg.total_trades > 0) {
-            agg.win_rate = static_cast<float>(agg.winning_trades)
-                           / static_cast<float>(agg.total_trades);
-            agg.expectancy = agg.net_pnl / static_cast<float>(agg.total_trades);
             agg.safety_cap_fraction = static_cast<float>(agg.safety_cap_triggered_count)
                                        / static_cast<float>(agg.total_trades);
         }
-
-        if (gross_losses > 0.0f) {
-            agg.profit_factor = gross_wins / gross_losses;
-        }
-
-        if (active_days > 0) {
-            agg.trades_per_day = static_cast<float>(agg.total_trades)
-                                  / static_cast<float>(active_days);
-        }
-
-        // Recompute max drawdown from full equity curve
-        backtest_util::compute_max_drawdown(agg);
-
-        // Recompute Sharpe from all trades
-        backtest_util::compute_sharpe(agg);
 
         return agg;
     }

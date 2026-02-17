@@ -43,6 +43,7 @@ set(TEST_TARGETS
     feature_mi_test
     conditional_returns_test
     bar_comparison_test
+    oracle_expectancy_test
 )
 
 foreach(target ${TEST_TARGETS})

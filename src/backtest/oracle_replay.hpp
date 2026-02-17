@@ -86,6 +86,38 @@ inline void compute_sharpe(BacktestResult& result) {
     }
 }
 
+// Recompute derived metrics (win_rate, expectancy, profit_factor, trades_per_day,
+// max_drawdown, sharpe) on a BacktestResult whose trades have already been accumulated.
+inline void recompute_derived(BacktestResult& agg, int active_days) {
+    if (agg.total_trades > 0) {
+        agg.win_rate = static_cast<float>(agg.winning_trades)
+                       / static_cast<float>(agg.total_trades);
+        agg.expectancy = agg.net_pnl / static_cast<float>(agg.total_trades);
+    }
+
+    // Profit factor from individual trades
+    float gross_wins = 0.0f;
+    float gross_losses = 0.0f;
+    for (const auto& trade : agg.trades) {
+        if (trade.gross_pnl > 0.0f) {
+            gross_wins += trade.gross_pnl;
+        } else {
+            gross_losses += std::abs(trade.gross_pnl);
+        }
+    }
+    if (gross_losses > 0.0f) {
+        agg.profit_factor = gross_wins / gross_losses;
+    }
+
+    if (active_days > 0) {
+        agg.trades_per_day = static_cast<float>(agg.total_trades)
+                              / static_cast<float>(active_days);
+    }
+
+    compute_max_drawdown(agg);
+    compute_sharpe(agg);
+}
+
 }  // namespace backtest_util
 
 // ---------------------------------------------------------------------------
