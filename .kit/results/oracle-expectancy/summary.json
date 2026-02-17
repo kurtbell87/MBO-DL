@@ -1,0 +1,19 @@
+{
+  "experiment": "oracle_expectancy",
+  "bar_type": "time_5s",
+  "n_days": 19,
+  "days_used": [20220103, 20220121, 20220211, 20220304, 20220331, 20220401, 20220422, 20220513, 20220603, 20220630, 20220701, 20220722, 20220812, 20220902, 20220930, 20221003, 20221024, 20221114, 20221205],
+  "fth_expectancy": 1.55883,
+  "fth_net_pnl": 8369.33,
+  "fth_total_trades": 5369,
+  "fth_win_rate": 0.532129,
+  "fth_profit_factor": 2.10623,
+  "fth_sharpe": 0.136454,
+  "tb_expectancy": 3.99728,
+  "tb_net_pnl": 19478.8,
+  "tb_total_trades": 4873,
+  "tb_win_rate": 0.64293,
+  "tb_profit_factor": 3.2969,
+  "tb_sharpe": 0.361672,
+  "verdict": "GO"
+}
