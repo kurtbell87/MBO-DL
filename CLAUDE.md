@@ -102,9 +102,9 @@ After every session that changes the codebase, update:
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-17, Phase 4 merged to main via PR #6)
+## Current State (updated 2026-02-17, Phase 5 feature-analysis in progress)
 
-**Phase 4 (feature-computation) merged.** Track A hand-crafted features (~45), Track B raw representations (book snapshots, message summaries), forward returns at 4 horizons, warm-up/lookahead bias enforcement, CSV export. 173 new tests.
+**Phase 5 (feature-analysis) TDD cycle in progress.** MI analysis, Spearman correlation, GBT stability-selected importance, conditional returns, decay curves, bar type comparison (normality/heteroskedasticity/autocorrelation), Holm-Bonferroni multiple comparison correction, and power analysis — all implemented in `src/analysis/` (10 headers). 160 new tests added. `src/features/bar_features.hpp` modified (added `featureNames()` accessor).
 
 **Spec: `TRAJECTORY.md`** — Kenoma Labs MES Backtest & Feature Discovery. 10 sequential phases (5 engineering, 5 research).
 
@@ -117,12 +117,12 @@ After every session that changes the codebase, update:
 | 3 | `.kit/docs/multi-day-backtest.md` | TDD | **Done** |
 | R1 | `.kit/experiments/subordination-test.md` | Research | **Unblocked** |
 | 4 | `.kit/docs/feature-computation.md` | TDD | **Done** |
-| 5 | `.kit/docs/feature-analysis.md` | TDD | **Unblocked** |
+| 5 | `.kit/docs/feature-analysis.md` | TDD | **In Progress** |
 | R2 | `.kit/experiments/info-decomposition.md` | Research | **Unblocked** |
 | R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Unblocked** |
 | R4 | `.kit/experiments/temporal-predictability.md` | Research | Pending (blocked by R1) |
 | 6 | `.kit/experiments/synthesis.md` | Research | Pending (blocked by all above) |
 
 - **Build:** Green.
-- **Tests:** 726/727 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
-- **Next task:** Start Phase 5 (feature-analysis): `source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md`
+- **Tests:** 886/887 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
+- **Next task:** Ship Phase 5 (feature-analysis): commit changed files, then continue to refactor or ship phase.
