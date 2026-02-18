@@ -1,79 +1,120 @@
-"""Evaluation metrics for the hybrid model pipeline."""
+"""Evaluation metrics: R-squared, accuracy, PnL, Sharpe."""
 
 import numpy as np
-from sklearn.metrics import f1_score, accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
+
+from . import config
 
 
-def compute_pnl(direction, entry_price, exit_price, point_value, cost_rt):
-    """Compute PnL for a single trade.
+def r_squared(y_true, y_pred):
+    """Compute R-squared (coefficient of determination)."""
+    ss_res = np.sum((y_true - y_pred) ** 2)
+    ss_tot = np.sum((y_true - np.mean(y_true)) ** 2)
+    if ss_tot == 0:
+        return 0.0
+    return 1.0 - ss_res / ss_tot
 
-    PnL = direction * (exit_price - entry_price) * point_value - cost_rt
-    Direction 0 (hold) = no trade = PnL 0.
+
+def classification_metrics(y_true, y_pred):
+    """Compute classification accuracy and macro F1."""
+    acc = accuracy_score(y_true, y_pred)
+    f1 = f1_score(y_true, y_pred, average="macro", zero_division=0)
+    return {"accuracy": float(acc), "f1_macro": float(f1)}
+
+
+def compute_pnl(predictions, tb_labels, tb_exit_types, tb_bars_held,
+                entry_mids, bars_df, cost_per_trade=0.0):
+    """Compute realized PnL for model predictions.
+
+    For each prediction:
+    - pred = +1 or -1: trade in that direction
+    - pred = 0: no trade (PnL = 0)
+
+    PnL per trade = direction * (exit_price - entry_price) * $5/point - cost
+
+    The actual exit is determined by the triple barrier applied to the
+    forward price path (already computed in the export: tb_label tells us
+    the outcome, and we use the TB parameters to compute exit PnL).
+
+    Args:
+        predictions: (N,) model predictions in {-1, 0, +1}
+        tb_labels: (N,) actual TB labels (oracle)
+        tb_exit_types: (N,) "target", "stop", "expiry", "timeout"
+        tb_bars_held: (N,) bars held until exit
+        entry_mids: (N,) mid price at entry bar
+        bars_df: dataframe with bar data (unused if we use TB outcome directly)
+        cost_per_trade: round-trip cost in dollars
+
+    Returns:
+        dict with expectancy, profit_factor, trade_count, total_pnl, sharpe, pnl_array
     """
-    if direction == 0:
-        return 0.0
-    return direction * (exit_price - entry_price) * point_value - cost_rt
+    N = len(predictions)
+    pnl_per_bar = np.zeros(N)
+    trade_mask = predictions != 0
 
+    for i in range(N):
+        if predictions[i] == 0:
+            continue
 
-def compute_expectancy(pnls):
-    """Compute expectancy (mean PnL per trade)."""
-    if len(pnls) == 0:
-        return 0.0
-    return float(np.mean(pnls))
+        direction = predictions[i]
+        exit_type = tb_exit_types[i] if isinstance(tb_exit_types, np.ndarray) else tb_exit_types.iloc[i]
+        oracle_label = tb_labels[i] if isinstance(tb_labels, np.ndarray) else tb_labels.iloc[i]
 
+        # Compute PnL based on actual barrier outcome
+        if exit_type == "target":
+            # Oracle hit target: PnL = oracle_direction * target_ticks * tick_size * point_value
+            barrier_pnl = oracle_label * config.TB_TARGET_TICKS * config.TB_TICK_SIZE * config.TB_POINT_VALUE
+        elif exit_type == "stop":
+            # Oracle hit stop: PnL = oracle_direction * stop_ticks * tick_size * point_value
+            # oracle_label is -1 for stop (short side), but the stop loss amount is always negative
+            barrier_pnl = oracle_label * config.TB_STOP_TICKS * config.TB_TICK_SIZE * config.TB_POINT_VALUE
+        else:
+            # Expiry/timeout: use oracle_label sign and min_return as proxy
+            # In practice, the actual return is somewhere between 0 and the barriers
+            # Use a conservative estimate: min_return_ticks for non-zero labels, 0 for HOLD
+            if oracle_label != 0:
+                barrier_pnl = oracle_label * config.TB_STOP_TICKS * config.TB_TICK_SIZE * config.TB_POINT_VALUE * 0.5
+            else:
+                barrier_pnl = 0.0
 
-def compute_profit_factor(pnls):
-    """Compute profit factor = gross_profit / gross_loss."""
-    gross_profit = sum(p for p in pnls if p > 0)
-    gross_loss = sum(abs(p) for p in pnls if p < 0)
-    if gross_loss < 1e-10:
-        return float("inf")
-    return gross_profit / gross_loss
+        # Model PnL: if we predicted the same direction as oracle outcome, we capture the PnL
+        # If we predicted opposite, we get negative of the PnL
+        if direction == oracle_label:
+            pnl_per_bar[i] = abs(barrier_pnl) - cost_per_trade
+        elif oracle_label == 0:
+            # Oracle was HOLD, we traded: small loss from costs
+            pnl_per_bar[i] = -cost_per_trade
+        else:
+            # We predicted wrong direction
+            pnl_per_bar[i] = -abs(barrier_pnl) - cost_per_trade
 
+    trade_pnls = pnl_per_bar[trade_mask]
+    trade_count = int(trade_mask.sum())
 
-def compute_sharpe(daily_pnls):
-    """Compute Sharpe ratio from daily PnL series."""
-    if len(daily_pnls) < 2:
-        return 0.0
-    arr = np.array(daily_pnls, dtype=float)
-    mean = arr.mean()
-    std = arr.std(ddof=1)
-    if std < 1e-10:
-        return 0.0
-    return float(mean / std * np.sqrt(252))
+    if trade_count == 0:
+        return {
+            "expectancy": 0.0, "profit_factor": 0.0, "trade_count": 0,
+            "total_pnl": 0.0, "sharpe": 0.0, "pnl_array": pnl_per_bar,
+        }
 
+    gross_profit = trade_pnls[trade_pnls > 0].sum()
+    gross_loss = abs(trade_pnls[trade_pnls < 0].sum())
 
-def compute_accuracy(predictions, actuals):
-    """Compute classification accuracy."""
-    return float(accuracy_score(actuals, predictions))
+    expectancy = float(trade_pnls.mean())
+    profit_factor = float(gross_profit / (gross_loss + 1e-8))
 
-
-def compute_f1_macro(predictions, actuals):
-    """Compute macro F1 score across all classes."""
-    return float(f1_score(actuals, predictions, average="macro", zero_division=0))
-
-
-def compute_metrics_suite(predictions, actuals, entry_prices, exit_prices,
-                          point_value, cost_rt):
-    """Compute the full evaluation metrics suite.
-
-    Returns a dict with all per-fold metrics.
-    """
-    # Compute PnL for each trade
-    pnls = []
-    trade_count = 0
-    for pred, actual, entry, exit_p in zip(predictions, actuals, entry_prices, exit_prices):
-        direction = int(pred)
-        pnl = compute_pnl(direction, entry, exit_p, point_value, cost_rt)
-        if direction != 0:
-            pnls.append(pnl)
-            trade_count += 1
+    # Annualized Sharpe: assume ~4600 bars/day for time_5s, 252 trading days
+    if trade_pnls.std() > 0:
+        daily_sharpe = trade_pnls.mean() / trade_pnls.std()
+        sharpe = float(daily_sharpe * np.sqrt(252))
+    else:
+        sharpe = 0.0
 
     return {
-        "xgb_accuracy": compute_accuracy(predictions, actuals),
-        "xgb_f1_macro": compute_f1_macro(predictions, actuals),
-        "expectancy": compute_expectancy(pnls),
-        "profit_factor": compute_profit_factor(pnls),
-        "trade_count": int(trade_count),
-        "sharpe": compute_sharpe(pnls) if len(pnls) > 1 else 0.0,
+        "expectancy": expectancy,
+        "profit_factor": profit_factor,
+        "trade_count": trade_count,
+        "total_pnl": float(trade_pnls.sum()),
+        "sharpe": sharpe,
+        "pnl_array": pnl_per_bar,
     }
