@@ -1,1 +1,1 @@
-../../orchestration/mathematics-kit/.claude/prompts/math-formalize.md
+../../orchestration-kit/mathematics-kit/.claude/prompts/math-formalize.md

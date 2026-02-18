@@ -1,1 +1,1 @@
-../../orchestration/research-kit/.claude/prompts/synthesize.md
+../../orchestration-kit/research-kit/.claude/prompts/synthesize.md

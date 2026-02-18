@@ -1,1 +1,1 @@
-../../orchestration/mathematics-kit/.claude/prompts/math-specify.md
+../../orchestration-kit/mathematics-kit/.claude/prompts/math-specify.md

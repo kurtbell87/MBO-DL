@@ -1,1 +1,1 @@
-../../orchestration/research-kit/.claude/prompts/survey.md
+../../orchestration-kit/research-kit/.claude/prompts/survey.md
