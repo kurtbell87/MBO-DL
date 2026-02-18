@@ -1,21 +1,20 @@
 # Agents — MBO-DL Session State
 
-## Current State (updated 2026-02-17, oracle-expectancy TDD cycle)
+## Current State (updated 2026-02-17, bar-feature-export TDD cycle)
 
 **Build:** Green.
-**Tests:** 953/954 unit tests pass (1 disabled), 22 integration tests (labeled, excluded).
+**Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped), 22 integration tests (labeled, excluded).
 **Branch:** `main`
 
-### Completed This Cycle (oracle-expectancy)
+### Completed This Cycle (bar-feature-export)
 
-- `src/backtest/oracle_expectancy_report.hpp` — **New.** `OracleExpectancyReport` struct, `to_json` serializer, `aggregate_day_results` aggregation with per-quarter splits
-- `tests/oracle_expectancy_test.cpp` — **New.** Unit tests for report layer (JSON output, aggregation, quarter splits, edge cases)
-- `src/backtest/multi_day_runner.hpp` — Modified (support for oracle expectancy aggregation)
-- `src/backtest/oracle_replay.hpp` — Modified (support for oracle expectancy aggregation)
-- `src/serialization.hpp` — Modified
-- `tests/bar_features_test.cpp` — Modified
-- `tests/test_bar_helpers.hpp` — Modified
-- `CMakeLists.txt` — Modified (oracle_expectancy_test target)
+- `tools/bar_feature_export.cpp` — **New.** CLI tool for exporting bar-level feature CSVs with parameterized bar type/threshold. Pipeline: StreamingBookBuilder → BarFactory → BarFeatureComputer → CSV.
+- `tests/bar_feature_export_test.cpp` — **New.** Unit tests for bar_feature_export (CLI arg parsing, CSV header, metadata columns, warmup exclusion, NaN exclusion).
+- `CMakeLists.txt` — Modified (bar_feature_export target + test target with WORKING_DIRECTORY)
+- `src/features/bar_features.hpp` — Modified (weighted_imbalance → static)
+- `src/backtest/multi_day_runner.hpp` — Modified (push_back loop → vector insert)
+- `src/backtest/oracle_expectancy_report.hpp` — Modified (dead code removal: exit_reason_name, push_back → insert)
+- `src/analysis/statistical_tests.hpp` — Modified (dead code removal: t_cdf, unused include)
 
 ### Phase Sequence
 
@@ -32,9 +31,10 @@
 | R4 | temporal-predictability | **Done** (NO SIGNAL) |
 | 6 | synthesis | **Done** (CONDITIONAL GO) |
 | 7 | oracle-expectancy | **Done** |
+| 7b | oracle_expectancy tool | **Done** (GO) |
+| 8 | bar-feature-export | **Done** |
 
 ### Next Actions
 
-1. Build `tools/oracle_expectancy.cpp` standalone executable to run on real MES data.
-2. Resolve remaining open questions: CNN at h=1, transaction cost model.
-3. Proceed to model architecture build spec.
+1. Proceed to model architecture build spec.
+2. Resolve remaining open questions: CNN at h=1, transaction cost model, CNN+GBT integration pipeline.
