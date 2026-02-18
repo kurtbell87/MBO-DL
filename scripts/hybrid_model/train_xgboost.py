@@ -1,52 +1,67 @@
-"""XGBoost classifier training for triple barrier labels."""
+"""Stage 2: XGBoost classification on CNN embeddings + non-spatial features."""
 
 import numpy as np
 import xgboost as xgb
 
+from . import config
 
-def train_xgboost_classifier(X_train, y_train, seed=42):
-    """Train XGBoost classifier on features + TB labels.
 
-    Labels are {-1, 0, +1}, mapped to {0, 1, 2} for XGBoost multi:softmax.
+def _map_labels_to_xgb(labels):
+    """Map {-1, 0, +1} -> {0, 1, 2} for XGBoost multi:softmax."""
+    label_map = {-1: 0, 0: 1, 1: 2}
+    return np.array([label_map[int(l)] for l in labels])
+
+
+def _map_labels_from_xgb(preds):
+    """Map {0, 1, 2} -> {-1, 0, +1} back to triple barrier labels."""
+    inv_map = {0: -1, 1: 0, 2: 1}
+    return np.array([inv_map[int(p)] for p in preds])
+
+
+def train_xgboost(train_X, train_labels, val_X=None, val_labels=None, params=None):
+    """Train XGBoost classifier on combined features.
 
     Args:
-        X_train: (n_samples, n_features) numpy array
-        y_train: (n_samples,) numpy array with values in {-1, 0, 1}
-        seed: random seed for reproducibility
+        train_X: (N_train, D) features (embeddings + non-spatial)
+        train_labels: (N_train,) TB labels in {-1, 0, +1}
+        val_X: optional validation features
+        val_labels: optional validation labels
+        params: override XGB_PARAMS
 
     Returns:
-        Trained XGBoost Booster model
+        model: trained xgb.XGBClassifier
     """
-    # Map labels: {-1, 0, +1} -> {0, 1, 2}
-    y_mapped = y_train + 1
+    xgb_params = dict(config.XGB_PARAMS)
+    if params:
+        xgb_params.update(params)
 
-    dtrain = xgb.DMatrix(X_train, label=y_mapped)
+    n_estimators = xgb_params.pop("n_estimators", 500)
+    seed = xgb_params.pop("seed", 42)
 
-    params = {
-        "objective": "multi:softmax",
-        "num_class": 3,
-        "max_depth": 6,
-        "learning_rate": 0.05,
-        "subsample": 0.8,
-        "colsample_bytree": 0.8,
-        "min_child_weight": 10,
-        "reg_alpha": 0.1,
-        "reg_lambda": 1.0,
-        "seed": seed,
-        "verbosity": 0,
-    }
+    model = xgb.XGBClassifier(
+        n_estimators=n_estimators,
+        random_state=seed,
+        use_label_encoder=False,
+        **xgb_params,
+    )
 
-    model = xgb.train(params, dtrain, num_boost_round=500)
+    train_y = _map_labels_to_xgb(train_labels)
+
+    fit_kwargs = {}
+    if val_X is not None and val_labels is not None:
+        val_y = _map_labels_to_xgb(val_labels)
+        fit_kwargs["eval_set"] = [(val_X, val_y)]
+        fit_kwargs["verbose"] = False
+
+    model.fit(train_X, train_y, **fit_kwargs)
     return model
 
 
 def predict_xgboost(model, X):
-    """Predict labels using trained XGBoost model.
+    """Predict TB labels using trained XGBoost model.
 
-    Returns labels in {-1, 0, +1}.
+    Returns:
+        (N,) array of labels in {-1, 0, +1}
     """
-    dtest = xgb.DMatrix(X)
-    # Predictions are class indices {0, 1, 2}
-    preds = model.predict(dtest)
-    # Map back: {0, 1, 2} -> {-1, 0, +1}
-    return (preds - 1).astype(int)
+    raw_preds = model.predict(X)
+    return _map_labels_from_xgb(raw_preds)

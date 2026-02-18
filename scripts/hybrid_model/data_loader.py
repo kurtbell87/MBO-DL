@@ -1,72 +1,157 @@
-"""Data loading, feature selection, normalization, and fold splitting."""
+"""Load exported CSV, normalize features, split into folds."""
 
 import numpy as np
 import pandas as pd
+import torch
+from torch.utils.data import Dataset
 
-from .config import NON_SPATIAL_FEATURES, SELECTED_DAYS
-
-
-def select_non_spatial_features(df):
-    """Select the 20 non-spatial features from a DataFrame."""
-    return df[NON_SPATIAL_FEATURES].copy()
+from . import config
 
 
-def normalize_features(df):
-    """Z-score normalize features.
+def load_csv(path=None):
+    """Load the exported CSV and fix duplicate column names.
+
+    The C++ exporter produces duplicate column names for return_1/5/20
+    (Track A features) and forward returns. We resolve this by positional
+    renaming of the forward return columns.
+    """
+    csv_path = path or config.DATA_CSV
+    df = pd.read_csv(csv_path)
+
+    # The CSV has 62 Track A features, then book_snap, msg_summary,
+    # then 4 forward returns named return_1,return_5,return_20,return_100.
+    # Pandas auto-deduplicates to return_1.1, return_5.1, return_20.1, return_100.
+    # Rename them to fwd_return_*.
+    rename_map = {}
+    if "return_1.1" in df.columns:
+        rename_map["return_1.1"] = "fwd_return_1"
+    if "return_5.1" in df.columns:
+        rename_map["return_5.1"] = "fwd_return_5"
+    if "return_20.1" in df.columns:
+        rename_map["return_20.1"] = "fwd_return_20"
+    # return_100 is unique (no Track A duplicate)
+    if "return_100" in df.columns and "return_100.1" not in df.columns:
+        rename_map["return_100"] = "fwd_return_100"
+    elif "return_100.1" in df.columns:
+        rename_map["return_100.1"] = "fwd_return_100"
+
+    df.rename(columns=rename_map, inplace=True)
+    return df
+
+
+def split_fold(df, fold_idx):
+    """Split dataframe into train/test sets for a given fold index (0-based)."""
+    fold = config.FOLDS[fold_idx]
+    train_mask = df["day"].isin(fold["train"])
+    test_mask = df["day"].isin(fold["test"])
+    return df[train_mask].copy(), df[test_mask].copy()
+
+
+def extract_book_arrays(df):
+    """Extract (N, 2, 20) book arrays from dataframe.
+
+    Channel 0: price offsets from mid (20 levels)
+    Channel 1: sizes (20 levels)
+
+    CSV layout: book_snap_{2i} = price_offset, book_snap_{2i+1} = size
+    """
+    book_data = df[config.BOOK_SNAP_COLS].values  # (N, 40)
+    N = book_data.shape[0]
+    prices = book_data[:, 0::2]  # (N, 20) — even indices
+    sizes = book_data[:, 1::2]   # (N, 20) — odd indices
+    return np.stack([prices, sizes], axis=1)  # (N, 2, 20)
+
+
+def normalize_book_sizes(book_arr, train_mask=None):
+    """Z-score normalize book sizes (channel 1) per day or using training stats.
+
+    Args:
+        book_arr: (N, 2, 20) array
+        train_mask: if provided, compute stats only from train rows
 
     Returns:
-        (normalized_df, means, stds) where means and stds are arrays of length n_features.
+        normalized copy of book_arr
     """
-    means = df.mean().values
-    stds = df.std().values
-    stds = np.where(stds < 1e-8, 1.0, stds)
-    normalized = (df - means) / stds
-    normalized = normalized.fillna(0.0)
-    return normalized, means, stds
+    result = book_arr.copy()
+    sizes = result[:, 1, :]  # (N, 20)
+
+    if train_mask is not None:
+        train_sizes = sizes[train_mask]
+    else:
+        train_sizes = sizes
+
+    mean = train_sizes.mean()
+    std = train_sizes.std()
+    result[:, 1, :] = (sizes - mean) / (std + 1e-8)
+    return result
 
 
-def create_expanding_window_folds(df):
-    """Create 5-fold expanding window CV splits.
+def extract_non_spatial(df):
+    """Extract the 20 non-spatial features as (N, 20) array."""
+    return df[config.NON_SPATIAL_FEATURES].values.astype(np.float32)
 
-    Uses the days present in df, sorted chronologically.
-    Fold k: train on first N_k days, test on next M_k days.
 
-    Structure (19 days):
-      Fold 1: train days 1-4, test days 5-7
-      Fold 2: train days 1-7, test days 8-10
-      Fold 3: train days 1-10, test days 11-13
-      Fold 4: train days 1-13, test days 14-16
-      Fold 5: train days 1-16, test days 17-19
+def normalize_features(features, train_mask=None):
+    """Z-score normalize features using training set statistics only.
+
+    Args:
+        features: (N, D) array
+        train_mask: boolean mask for training rows
+
+    Returns:
+        normalized (N, D) array
     """
-    unique_days = sorted(df["day"].unique())
+    result = features.copy()
+    if train_mask is not None:
+        train_data = features[train_mask]
+    else:
+        train_data = features
 
-    # Define fold boundaries using day indices
-    fold_splits = [
-        (0, 4, 4, 7),    # Fold 1: train [0:4), test [4:7)
-        (0, 7, 7, 10),   # Fold 2: train [0:7), test [7:10)
-        (0, 10, 10, 13),  # Fold 3: train [0:10), test [10:13)
-        (0, 13, 13, 16),  # Fold 4: train [0:13), test [13:16)
-        (0, 16, 16, 19),  # Fold 5: train [0:16), test [16:19)
-    ]
-
-    folds = []
-    for train_start, train_end, test_start, test_end in fold_splits:
-        train_end = min(train_end, len(unique_days))
-        test_end = min(test_end, len(unique_days))
-
-        train_days = set(unique_days[train_start:train_end])
-        test_days = set(unique_days[test_start:test_end])
-
-        fold = {
-            "train": df[df["day"].isin(train_days)].copy(),
-            "test": df[df["day"].isin(test_days)].copy(),
-        }
-        folds.append(fold)
-
-    return folds
+    mean = train_data.mean(axis=0)
+    std = train_data.std(axis=0)
+    result = (result - mean) / (std + 1e-8)
+    # Handle NaN (rare, only first few bars excluded by warmup)
+    result = np.nan_to_num(result, nan=0.0)
+    return result, mean, std
 
 
-def load_and_prepare_data(csv_path):
-    """Load exported CSV and prepare for training."""
-    df = pd.read_csv(csv_path)
-    return df
+class BookDataset(Dataset):
+    """PyTorch dataset for CNN encoder training."""
+
+    def __init__(self, book_arr, targets):
+        """
+        Args:
+            book_arr: (N, 2, 20) float array
+            targets: (N,) float array (forward returns)
+        """
+        self.book = torch.tensor(book_arr, dtype=torch.float32)
+        self.targets = torch.tensor(targets, dtype=torch.float32)
+
+    def __len__(self):
+        return len(self.targets)
+
+    def __getitem__(self, idx):
+        return self.book[idx], self.targets[idx]
+
+
+class HybridDataset(Dataset):
+    """PyTorch-compatible dataset for combined embeddings + features."""
+
+    def __init__(self, embeddings, features, labels):
+        """
+        Args:
+            embeddings: (N, 16) CNN embeddings
+            features: (N, 20) non-spatial features
+            labels: (N,) triple barrier labels
+        """
+        self.X = np.concatenate([embeddings, features], axis=1)
+        self.labels = labels
+
+    def __len__(self):
+        return len(self.labels)
+
+    def get_X(self):
+        return self.X
+
+    def get_labels(self):
+        return self.labels

@@ -2,6 +2,19 @@
 
 WHEN WORKING FROM A PROVIDED SPEC ALWAYS REFER TO THE  ## Exit Criteria SECTION TO CHECK BOXES AND KEEP TRACK OF YOUR WORK
 
+## ABSOLUTE RULES — Read This First
+
+**You are the ORCHESTRATOR. You are NOT a developer. You do NOT write code. Ever.**
+
+1. **NEVER write code.** Not C++, not Python, not scripts, not tests, not config files. ALL code is written by kit sub-agents (TDD phases, Research phases). If code needs to exist, delegate to a kit phase that will create it.
+2. **NEVER grep, search, or read implementation files.** No `Grep`, no `Read` on `.cpp`, `.py`, `.hpp`, or test files. You read ONLY state files: `CLAUDE.md`, `.kit/LAST_TOUCH.md`, `.kit/RESEARCH_LOG.md`, `.kit/QUESTIONS.md`, `.kit/CONSTRUCTION_LOG.md`, spec files in `.kit/docs/` and `.kit/experiments/`.
+3. **NEVER run verification commands.** No `python3 -c`, no `pytest`, no `cmake --build`, no `ctest`, no import checks. Sub-agents verify their own work. Trust exit codes.
+4. **NEVER use Write, Edit, or Bash to create or modify source code.** The ONLY files you may write/edit are state files (`.md` files in `.kit/` and `CLAUDE.md`).
+5. **ALWAYS delegate through kit phases.** C++ work → `.kit/tdd.sh` (red/green/refactor/ship). Python experiments → `.kit/experiment.sh` (survey/frame/run/read). Math → `.kit/math.sh`.
+6. **Your only tools are:** `source .orchestration-kit.env`, `.kit/tdd.sh`, `.kit/experiment.sh`, `.kit/math.sh`, `orchestration-kit/tools/*`, reading/writing state `.md` files, and checking exit codes.
+
+**If you catch yourself about to grep a source file, write a line of code, or run a test — STOP. That is a protocol violation. Delegate to a kit phase instead.**
+
 
 ## Path Convention
 
@@ -137,6 +150,11 @@ Open `http://127.0.0.1:7340` to explore runs across projects and filter by proje
 
 ## Don't
 
+- **Don't write code.** Not a single line. Not "just a quick check". Not "let me verify the import". ALL code comes from kit sub-agents. Period.
+- **Don't read source files.** No `.cpp`, `.py`, `.hpp`, `.h`, test files. You are the orchestrator, not a code reviewer. Sub-agents handle implementation.
+- **Don't grep or search source files.** No `Grep` on implementation code. No `Glob` to find source files. If you need to know what exists, read state files.
+- **Don't run verification commands.** No `python3 -c`, `pytest`, `cmake --build`, `ctest`, `import` checks, or any other verification. Sub-agents verify themselves.
+- **Don't use Write/Edit/Bash on code files.** The only files you create or edit are `.md` state files in `.kit/` and `CLAUDE.md`.
 - Don't `cd` into `orchestration-kit/` and run kit scripts from there — run from project root.
 - Don't `cat` full log files — use `orchestration-kit/tools/query-log`.
 - Don't explore the codebase to "understand" it — read state files first.
@@ -145,14 +163,21 @@ Open `http://127.0.0.1:7340` to explore runs across projects and filter by proje
 
 ## Orchestrator Discipline (MANDATORY)
 
-You are the orchestrator. Sub-agents do the work. Your job is to sequence phases and react to exit codes. Protect your context window.
+You are the orchestrator. Sub-agents do the work. **You write ZERO code. You read ZERO source files. You run ZERO verification commands.**
+
+Your ONLY job: sequence kit phases, check exit codes, update state files.
 
 1. **Run phases in background, check only the exit code.** Do not read the TaskOutput content — the JSON blob wastes context. Check `status: completed/failed` and `exit_code` only.
-2. **Never run Bash for verification.** No `pytest`, `lake build`, `ls`, `cat`, `grep` to check what a sub-agent produced. If the phase exited 0, it worked.
-3. **Never read implementation files** the sub-agents wrote (source code, test files, .lean files, experiment scripts). That is their domain. You read only state files (CLAUDE.md, `.kit/LAST_TOUCH.md`, `.kit/RESEARCH_LOG.md`, etc.).
-4. **Chain phases by exit code only.** Exit 0 → next phase. Exit 1 → read the capsule (not the log), decide whether to retry or stop.
-5. **Never read capsules after success.** Capsules exist for failure diagnosis and interop handoffs. A successful phase needs no capsule read.
-6. **Minimize tool calls.** Each Bash call, Read, or Glob adds to your context. If the information isn't needed to decide the next action, don't fetch it.
+2. **Never run Bash for verification.** No `pytest`, `lake build`, `ls`, `cat`, `grep`, `python3 -c` to check what a sub-agent produced. If the phase exited 0, it worked.
+3. **Never read implementation files** the sub-agents wrote (source code, test files, .lean files, experiment scripts, Python modules). That is their domain. You read only state files (CLAUDE.md, `.kit/LAST_TOUCH.md`, `.kit/RESEARCH_LOG.md`, etc.) and spec files (`.kit/docs/*.md`, `.kit/experiments/*.md`).
+4. **Never write code.** Not C++, Python, shell scripts, config files, or anything else. If code must be created, it happens inside a kit phase (TDD green creates code, Research run creates scripts). You delegate, you do not implement.
+5. **Chain phases by exit code only.** Exit 0 → next phase. Exit 1 → read the capsule (not the log), decide whether to retry or stop.
+6. **Never read capsules after success.** Capsules exist for failure diagnosis and interop handoffs. A successful phase needs no capsule read.
+7. **Minimize tool calls.** Each Bash call, Read, or Glob adds to your context. If the information isn't needed to decide the next action, don't fetch it.
+8. **Allowed tool usage summary:**
+   - `Bash`: ONLY for `source .orchestration-kit.env && .kit/tdd.sh ...`, `.kit/experiment.sh ...`, `.kit/math.sh ...`, `orchestration-kit/tools/*`, `mkdir -p` for results dirs, `./build/<tool>` for data export.
+   - `Read/Edit/Write`: ONLY for `.md` state files in `.kit/` and `CLAUDE.md`.
+   - `Grep/Glob`: ONLY for finding state files and spec files. NEVER for source code.
 
 ## Breadcrumb Maintenance (MANDATORY)
 
@@ -183,11 +208,14 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-18, hybrid-model Phase A in progress)
+## Current State (updated 2026-02-18, hybrid-model Phase A COMPLETE, Phase B next)
 
 **VERDICT: GO.** Oracle expectancy extracted on 19 real MES days. Triple barrier passes all 6 success criteria: $4.00/trade expectancy, PF=3.30, WR=64.3%, Sharpe=0.362, net PnL=$19,479. CONDITIONAL GO upgraded to full GO. Triple barrier preferred over first-to-hit.
 
-**Phase 9 (hybrid-model) — Phase A (C++ TB label export) IN PROGRESS.** Triple barrier labeling added to `bar_feature_export.cpp`. `triple_barrier.hpp` extended with `label_bar()`. New test file `tests/hybrid_model_tb_label_test.cpp` + `tests/test_export_helpers.hpp`. CMakeLists.txt updated. Remaining: Python pipeline (Phases B–D: CNN encoder, XGBoost, 5-fold CV, ablation). 17 exit criteria, 26 test cases. See `.kit/docs/hybrid-model.md`.
+**Phase 9 (hybrid-model) — Phase A COMPLETE. Phase B (Python pipeline) NEXT.**
+- Phase A: TDD cycle (red→green→refactor→ship) all exit 0. C++ TB label export working. 87,970 bars exported to `.kit/results/hybrid-model/time_5s.csv` (19 days × ~4631 bars).
+- Phase B: Python CNN+GBT pipeline. Must be delegated to Research kit (`.kit/experiment.sh`). Create experiment spec, then run survey→frame→run→read.
+- **PROTOCOL NOTE:** Python files in `scripts/hybrid_model/` were incorrectly written by the orchestrator during this session. These must be recreated by a kit sub-agent. The orchestrator NEVER writes code — see §ABSOLUTE RULES above.
 
 **R4d (temporal-predictability-dollar-tick-actionable) — COMPLETE. CONFIRMED (5/5 operating points).** 0/38 dual threshold passes across all 5 operating points: dollar $5M/7s, $10M/14s, $50M/69s; tick 500/50s, 3000/300s. Full 7s–300s timescale range now covered (prior run only had 2 points). Dollar $5M AR R²=−0.00035; dollar_50M h=1 marginally positive (+0.0025) but noise (std=6×mean, p=1.0). Calibration table for 10 thresholds produced. R4b's sub-second temporal signal decays to noise by $5M/7s. Cumulative R4 chain: 0/168+ dual threshold passes across 7 bar types, 0.14s–300s. R4 line permanently closed. See `.kit/results/temporal-predictability-dollar-tick-actionable/analysis.md`.
 
@@ -225,9 +253,9 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **Done (NO SIGNAL — robust)** |
 | R4c | `.kit/experiments/temporal-predictability-completion.md` | Research | **Done (CONFIRMED — all nulls)** |
 | R4d | `.kit/experiments/temporal-predictability-dollar-tick-actionable.md` | Research | **Done (CONFIRMED)** |
-| **9** | **`.kit/docs/hybrid-model.md`** | **TDD** | **Phase A (C++ TB labels) in progress** |
+| **9** | **`.kit/docs/hybrid-model.md`** | **TDD + Research** | **Phase A DONE, Phase B next** |
 
 - **Build:** Green.
 - **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped), 22 integration tests (labeled, excluded from default ctest).
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
-- **Next task:** Complete Phase A TDD cycle (red→green→refactor→ship), then Phases B–D (Python CNN+GBT pipeline + CV).
+- **Next task:** Phase B — Python CNN+GBT pipeline. Delegate to Research kit: create experiment spec `.kit/experiments/hybrid-model-training.md`, then run `.kit/experiment.sh` phases (survey→frame→run→read). Do NOT write Python code directly.
