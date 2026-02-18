@@ -381,7 +381,7 @@ private:
         return (bid_vol - ask_vol) / (bid_vol + ask_vol + EPS);
     }
 
-    float weighted_imbalance(const Bar& bar) {
+    static float weighted_imbalance(const Bar& bar) {
         // Weight by 1/(level_index + 1) — closer levels get higher weight
         float w_bid = 0.0f, w_ask = 0.0f;
         for (int i = 0; i < BOOK_DEPTH; ++i) {

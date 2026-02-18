@@ -4,7 +4,6 @@
 #include <cmath>
 #include <cstddef>
 #include <limits>
-#include <numeric>
 #include <vector>
 
 // ---------------------------------------------------------------------------
@@ -84,24 +83,6 @@ inline float normal_quantile(float p) {
                        (1.0f + d1 * t + d2 * t * t + d3 * t * t * t);
     if (p < 0.5f) result = -result;
     return result;
-}
-
-// t-distribution CDF approximation for large df using normal approximation
-inline float t_cdf(float t, int df) {
-    if (df > 30) {
-        return normal_cdf(t);
-    }
-    // For smaller df, use the incomplete beta function approximation
-    float x = static_cast<float>(df) / (static_cast<float>(df) + t * t);
-    // Two-tailed: P(T > |t|) using regularized incomplete beta
-    // Simple approximation for moderate df
-    float a = static_cast<float>(df) / 2.0f;
-    float b = 0.5f;
-
-    // Use the normal approximation with correction
-    float g = std::sqrt(2.0f / (9.0f * a)) * (std::pow(x, 1.0f/3.0f) -
-              (1.0f - 2.0f / (9.0f * a)));
-    return normal_cdf(-std::abs(t)) * 2.0f; // crude two-tailed
 }
 
 }  // namespace detail

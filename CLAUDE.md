@@ -1,4 +1,7 @@
-# Project Instructions — Master-Kit (Greenfield)
+# Project Instructions
+
+WHEN WORKING FROM A PROVIDED SPEC ALWAYS REFER TO THE  ## Exit Criteria SECTION TO CHECK BOXES AND KEEP TRACK OF YOUR WORK
+
 
 ## Path Convention
 
@@ -119,11 +122,23 @@ After every session that changes the codebase, update:
 **Build**: CMake. Dependencies via FetchContent (libtorch, databento-cpp, xgboost, GTest).
 **Data**: `DATA/GLBX-20260207-L953CAPU5B/` — 312 daily `.dbn.zst` files, MES MBO 2022 (~49 GB). Do NOT read these directly — use `databento::DbnFileStore` C++ API.
 
+### R | API+ (Rithmic) — Available, NOT integrated
+
+R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**. It exists as a future option for live/paper trading connectivity. No targets in CMakeLists.txt currently link against it.
+
+- **Install**: `~/.local/rapi/13.6.0.0/` (include, libs, SSL cert, samples)
+- **CMake target**: `RApiPlus::RApiPlus` (found via `cmake/FindRApiPlus.cmake`)
+- **SDK docs & samples**: `/Users/brandonbell/Downloads/13.6.0.0/` — contains full Doxygen HTML docs (`doc/html/index.html`), programmer's guide, FAQ, and sample apps (SampleMD, SampleOrder, SampleBar)
+- **SSL cert**: `~/.local/rapi/13.6.0.0/etc/rithmic_ssl_cert_auth_params` — required at runtime, path set via `MML_SSL_CLNT_AUTH_FILE` env var
+- **Platform**: darwin-20.6-arm64 static libraries (Apple Silicon native)
+
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
 
-## Current State (updated 2026-02-17, exit criteria audit)
+## Current State (updated 2026-02-17, R4b in progress)
 
 **VERDICT: GO.** Oracle expectancy extracted on 19 real MES days. Triple barrier passes all 6 success criteria: $4.00/trade expectancy, PF=3.30, WR=64.3%, Sharpe=0.362, net PnL=$19,479. CONDITIONAL GO upgraded to full GO. Triple barrier preferred over first-to-hit.
+
+**R4b (temporal-predictability-event-bars) — IN PROGRESS.** Volume_100 complete (NO TEMPORAL SIGNAL, same as time_5s). Dollar_25k R4 analysis running in background (task `be954cb`). Early Tier 1 results show **positive R² at short horizons** — first evidence of autoregressive structure in any bar type. See `.kit/experiments/temporal-predictability-event-bars.md` for spec and resume protocol.
 
 **R6 (synthesis) complete — CONDITIONAL GO.** CNN + GBT Hybrid architecture recommended. R3 CNN R²=0.132 on structured (20,2) book resolves R2-R3 tension in favor of spatial encoder. Message + temporal encoders dropped. Bar type: time_5s. Horizons: h=1 and h=5. See `.kit/results/synthesis/metrics.json`.
 
@@ -151,8 +166,10 @@ After every session that changes the codebase, update:
 | 6 | `.kit/experiments/synthesis.md` | Research | **Done (CONDITIONAL GO)** |
 | 7 | `.kit/docs/oracle-expectancy.md` | TDD | **Done** |
 | 7b | `tools/oracle_expectancy.cpp` | Research | **Done (GO)** |
+| 8 | `.kit/docs/bar-feature-export.md` | TDD | **Done** |
+| R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **In Progress** |
 
 - **Build:** Green.
-- **Tests:** 953/954 unit tests pass (1 disabled), 22 integration tests (labeled, excluded from default ctest).
+- **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped), 22 integration tests (labeled, excluded from default ctest).
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 12/13 research PASS, 1 partial (MI analysis used R² instead; GBT importance + decay done).
-- **Next task:** Proceed to model architecture build spec. All research prerequisites resolved. Remaining open questions: CNN at h=1, transaction cost model refinement, CNN+GBT integration pipeline.
+- **Next task:** Complete R4b (dollar_25k R4 running, then Phase F comparison analysis + state updates). After R4b: proceed to model architecture build spec.
