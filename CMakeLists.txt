@@ -44,13 +44,18 @@ set(TEST_TARGETS
     conditional_returns_test
     bar_comparison_test
     oracle_expectancy_test
+    bar_feature_export_test
 )
 
 foreach(target ${TEST_TARGETS})
     add_executable(${target} tests/${target}.cpp)
     target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/src)
     target_link_libraries(${target} PRIVATE GTest::gtest_main)
-    gtest_discover_tests(${target})
+    if(target STREQUAL "bar_feature_export_test")
+        gtest_discover_tests(${target} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    else()
+        gtest_discover_tests(${target})
+    endif()
 endforeach()
 
 # ---------- libtorch ----------
@@ -155,3 +160,8 @@ target_link_libraries(info_decomposition_export PRIVATE databento::databento)
 add_executable(oracle_expectancy tools/oracle_expectancy.cpp)
 target_include_directories(oracle_expectancy PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(oracle_expectancy PRIVATE databento::databento)
+
+# ---------- Bar Feature Export ----------
+add_executable(bar_feature_export tools/bar_feature_export.cpp)
+target_include_directories(bar_feature_export PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(bar_feature_export PRIVATE databento::databento)

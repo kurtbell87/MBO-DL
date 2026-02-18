@@ -2,12 +2,14 @@
 
 ## Project Status
 
-**12 phases complete (7 engineering + 5 research).** Oracle expectancy extracted on 19 real MES days. **VERDICT: GO.** Triple barrier passes all 6 success criteria. CONDITIONAL GO upgraded to full GO.
+**13 phases complete (8 engineering + 5 research).** Oracle expectancy extracted on 19 real MES days. **VERDICT: GO.** Triple barrier passes all 6 success criteria. CONDITIONAL GO upgraded to full GO.
 
 ## What was completed this cycle
 
-- **Exit criteria audit** — Comprehensive audit of TRAJECTORY.md §13 exit criteria against codebase. 21/21 engineering PASS, 12/13 research PASS, 1 partial (MI/stability-selection not performed; R² used throughout instead — no impact on conclusions).
-- Modified: `TRAJECTORY.md` (filled in exit criteria checkboxes), `CLAUDE.md` (breadcrumbs)
+- **bar-feature-export TDD cycle** — CLI tool `tools/bar_feature_export.cpp` that exports bar-level feature CSVs for arbitrary bar types. Parameterized variant of `info_decomposition_export.cpp` with `--bar-type`, `--bar-param`, `--output` CLI args.
+- **Refactoring** — Dead code removal (`t_cdf`, `exit_reason_name`, unused `<numeric>` include), `push_back` loops → `vector::insert`, `weighted_imbalance` → `static`.
+- New files: `tools/bar_feature_export.cpp`, `tests/bar_feature_export_test.cpp`
+- Modified: `CMakeLists.txt`, `src/features/bar_features.hpp`, `src/backtest/multi_day_runner.hpp`, `src/backtest/oracle_expectancy_report.hpp`, `src/analysis/statistical_tests.hpp`
 
 ## Key oracle expectancy results
 
@@ -23,7 +25,7 @@ Per-quarter stability (TB): Q1=$5.39, Q2=$3.16, Q3=$3.41, Q4=$3.39 — positive 
 ## What exists
 
 A C++20 MES microstructure model suite with:
-- **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report (7 TDD phases)
+- **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report, bar feature export (8 TDD phases)
 - **Research results**: Subordination test, info decomposition, book encoder bias, temporal predictability, synthesis, oracle expectancy (6 research phases)
 - **Architecture decision**: CNN + GBT Hybrid — Conv1d on raw (20,2) book → 16-dim embedding → concat with ~20 non-spatial features → XGBoost
 - **Labeling decision**: Triple barrier (preferred over first-to-hit)
@@ -44,12 +46,13 @@ A C++20 MES microstructure model suite with:
 | 6 | `.kit/experiments/synthesis.md` | Research | **Done** (CONDITIONAL GO) |
 | 7 | `.kit/docs/oracle-expectancy.md` | TDD | **Done** |
 | 7b | `tools/oracle_expectancy.cpp` | Research | **Done** (GO) |
+| 8 | `.kit/docs/bar-feature-export.md` | TDD | **Done** |
 
 ## Test summary
 
-- **953 unit tests** pass, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`), 954 total
+- **1003 unit tests** pass, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`), 1 skipped (`MetadataColumnsTest.BarTypeReflectsCLIArgVolume`), 1004 total
 - **22 integration tests** (14 N=32 + 8 N=128) — labeled `integration`, excluded from default ctest
-- Unit test time: ~6 min. Integration: ~20 min.
+- Unit test time: ~14 min. Integration: ~20 min.
 
 ## What to do next
 
@@ -81,11 +84,12 @@ A C++20 MES microstructure model suite with:
 
 ```bash
 cmake --build build -j12                                                  # build
-cd build && ctest --output-on-failure --label-exclude integration         # unit tests (~6 min)
+cd build && ctest --output-on-failure --label-exclude integration         # unit tests (~14 min)
 cd build && ctest --output-on-failure --label-regex integration           # integration tests (~20 min)
 ./build/oracle_expectancy                                                  # oracle expectancy extraction
+./build/bar_feature_export --bar-type time --bar-param 5.0 --output out.csv  # bar feature export
 ```
 
 ---
 
-Updated: 2026-02-17 (exit criteria audit)
+Updated: 2026-02-17 (bar-feature-export TDD cycle)
