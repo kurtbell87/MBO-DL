@@ -44,22 +44,32 @@ Construct bars at each threshold on **1 representative day** (20220103) empirica
 
 **Output:** `calibration_table.json` with empirical per-threshold stats: `{bar_type, threshold, total_bars_day1, median_duration_s, mean_duration_s, p10_duration_s, p90_duration_s, bars_per_session}`.
 
-### Arm 2: Temporal Analysis at 3 Selected Operating Points
+### Arm 2: Temporal Analysis at 5 Fixed Operating Points
 
-From the calibration table, select **3 total** operating points for the R4 protocol — the minimum needed to span the untested range:
+**Phase 1 calibration is COMPLETE.** The calibration table exists at `.kit/results/temporal-predictability-dollar-tick-actionable/calibration/calibration_table.json`. Do NOT re-run calibration. Proceed directly to Phase 2 (feature export) and Phase 3 (temporal analysis) for the **MISSING** operating points listed below.
 
-1. **Dollar bar nearest 5s median** — the critical gap (R4c never tested dollar bars above $1M)
-2. **Dollar bar nearest 5min median** — tests regime-scale on dollar bars
-3. **Tick bar nearest 5min median** — extends R4c tick range from 25s to 5min
+The following 5 operating points are **mandatory** — run ALL of them. Two are already complete; three are MISSING and must be run this cycle:
 
-For each selected threshold, run the standard R4 protocol:
+| # | Bar type | Threshold | Bars (19d) | Median duration | Status |
+|---|----------|-----------|-----------|-----------------|--------|
+| 1 | dollar | $5M | 47,865 | 7.0s | **DONE** — results exist in `.kit/results/temporal-predictability-dollar-tick-actionable/dollar_5M/` |
+| 2 | dollar | $10M | 23,648 | 13.9s | **MISSING — must run** |
+| 3 | dollar | $50M | 3,994 | 69.3s | **MISSING — must run** |
+| 4 | tick | 500 | 7,923 | 50.0s | **MISSING — must run** |
+| 5 | tick | 3,000 | 513 | 300.0s | **DONE** — results exist in `.kit/results/temporal-predictability-dollar-tick-actionable/tick_3000/` |
+
+**Skip operating points marked DONE.** Only run feature export + temporal analysis for operating points 2, 3, and 4.
+
+**Infeasible thresholds (do NOT run):** dollar_250M (55 bars, too sparse), dollar_1B (0 bars), tick_10K (0 bars), tick_25K (0 bars). Document these as infeasible in analysis.
+
+For each **MISSING** operating point, run the standard R4 protocol:
 - Feature export via `bar_feature_export --bar-type {dollar|tick} --bar-param {threshold}`
-- `R4_temporal_predictability.py` with identical settings to R4/R4b/R4c
-- Horizons: h={1, 5, 20, 100} — except restrict to h={1, 5, 20} if <50 bars/session
+- `R4d_temporal_predictability_dollar_tick_actionable.py` with identical settings to R4/R4b/R4c
+- Horizons: h={1, 5, 20, 100} — except restrict to h={1, 5, 20} if <50 bars/session (applies to dollar_50M: ~210 bars/session, OK for all horizons; tick_500: ~417 bars/session, OK)
 - Feature sets: Static-Book, Book+Temporal, Temporal-Only (3 configs — drop HC variants to save time; Book configs are what matter for dual threshold)
 - Models: GBT only (R4 showed GBT ≥ Ridge ≥ Linear; GBT is the strongest candidate)
 
-**Short-circuit:** If Arm 1 calibration shows no dollar threshold produces ≥5s median bars (contradicting volume math), dollar operating points are skipped. Document and close.
+**Short-circuit:** None — calibration already confirmed ≥2 dollar thresholds at ≥5s. Proceed directly.
 
 ---
 
@@ -144,81 +154,81 @@ No baselines need reproduction — all from prior experiments in this chain.
 3. Produce `calibration_table.json`.
 4. Validate: $1M empirical duration within ±50% of R4c's 0.9s extrapolation.
 
-**MVE decision gate:**
-- If ≥2 dollar thresholds produce ≥5s median duration → proceed to Arm 2 (select 3 operating points, run R4 protocol).
-- If 0-1 dollar thresholds reach ≥5s → R4c's "sub-actionable" conclusion is largely correct. Run Arm 2 with 1 dollar point (the longest-duration threshold) + 1 tick point (5min). Reduced scope.
-- If NO threshold of any type produces ≥5s → calibration table is the final deliverable. Document that R4c was correct. Close R4d.
+**MVE decision gate: PASSED.** Calibration confirmed ≥2 dollar thresholds at ≥5s ($5M=7.0s, $10M=13.9s, $50M=69.3s). Proceed directly to Arm 2 with all 5 operating points.
 
 ---
 
 ## Full Protocol
 
-### Phase 1: Empirical Calibration (~1 hr)
+### Phase 1: Empirical Calibration — COMPLETE (skip)
 
-1. For each of the 10 thresholds (6 dollar, 4 tick):
+**Already done.** Calibration table at `.kit/results/temporal-predictability-dollar-tick-actionable/calibration/calibration_table.json`. Gate passed: ≥2 dollar thresholds at ≥5s confirmed. Do NOT re-run.
+
+### Phase 2: Feature Export for MISSING Operating Points
+
+Export features for the 3 MISSING operating points only (dollar_5M and tick_3000 already have features):
+
+1. **dollar_10M** (23,648 bars expected, 13.9s median):
    ```bash
-   ./build/bar_feature_export --bar-type {dollar|tick} --bar-param {threshold} \
-     --output .kit/results/R4d/calibration/{type}_{threshold}_day1.csv
-   ```
-   Run on day 20220103 only. Parse the CSV to extract `bar_ts` (bar timestamp) and `bar_index` columns.
-
-2. For each threshold, compute:
-   - Total bars on day 1
-   - Inter-bar durations: `bar_ts[i+1] - bar_ts[i]` for all consecutive bars
-   - Median, mean, p10, p90 of durations (in seconds)
-   - Extrapolated bars per session (use day 1 count directly — cross-day variation assessed in confounds)
-
-3. Save `calibration_table.json`. Compare empirical $1M to R4c's extrapolated 0.9s.
-
-4. **Gate: Select operating points** per MVE decision gate above.
-
-### Phase 2: Feature Export for Selected Operating Points (~2-6 hr)
-
-5. For each selected operating point (up to 3), run full 19-day feature export:
-   ```bash
-   ./build/bar_feature_export --bar-type {dollar|tick} --bar-param {threshold} \
-     --output .kit/results/R4d/{type}_{threshold}/features.csv
+   ./build/bar_feature_export --bar-type dollar --bar-param 10000000 \
+     --output .kit/results/temporal-predictability-dollar-tick-actionable/dollar_10M/features.csv
    ```
 
-6. Validate bar counts against calibration-day extrapolation (within ±20%).
-
-7. For operating points with <50 bars/session: restrict horizon list to h={1, 5, 20}. For <26 bars/session: restrict to h={1, 5}. Document restrictions.
-
-### Phase 3: Temporal Analysis (~1-2 hr)
-
-8. For each selected operating point, run R4 protocol:
+2. **dollar_50M** (3,994 bars expected, 69.3s median):
    ```bash
-   python research/R4_temporal_predictability.py \
-     --input-csv .kit/results/R4d/{type}_{threshold}/features.csv \
-     --output-dir .kit/results/R4d/{type}_{threshold} \
-     --bar-label {type}_{threshold}
+   ./build/bar_feature_export --bar-type dollar --bar-param 50000000 \
+     --output .kit/results/temporal-predictability-dollar-tick-actionable/dollar_50M/features.csv
    ```
 
-9. Extract per operating point:
+3. **tick_500** (7,923 bars expected, 50.0s median):
+   ```bash
+   ./build/bar_feature_export --bar-type tick --bar-param 500 \
+     --output .kit/results/temporal-predictability-dollar-tick-actionable/tick_500/features.csv
+   ```
+
+Validate bar counts against calibration-day extrapolation (within ±20%).
+
+For operating points with <50 bars/session: restrict horizon list to h={1, 5, 20}. For <26 bars/session: restrict to h={1, 5}. Document restrictions.
+
+### Phase 3: Temporal Analysis for MISSING Operating Points
+
+For each of the 3 MISSING operating points, run R4 protocol using the **existing analysis script**:
+
+```bash
+python research/R4d_temporal_predictability_dollar_tick_actionable.py \
+  --input-csv .kit/results/temporal-predictability-dollar-tick-actionable/{type}_{threshold}/features.csv \
+  --output-dir .kit/results/temporal-predictability-dollar-tick-actionable/{type}_{threshold} \
+  --bar-label {type}_{threshold}
+```
+
+Run this for: `dollar_10M`, `dollar_50M`, `tick_500`.
+
+Extract per operating point:
    - Tier 1: AR R² (best across AR-{10,50,100} lookbacks) per horizon
    - Tier 2: Δ_temporal_book per horizon, with paired test + Holm-Bonferroni
    - Temporal-Only R² per horizon
    - Feature importance (fold 5)
 
-10. Evaluate dual threshold for each operating point × horizon.
+Evaluate dual threshold for each operating point × horizon.
 
-### Phase 4: Cross-Timescale Synthesis (~30 min)
+### Phase 4: Cross-Timescale Synthesis
 
-11. Produce timescale response data combining:
+Produce timescale response data combining ALL 5 operating points plus prior results:
     - R4: time_5s at h=1 (AR R²=−0.0002)
     - R4c: tick_50 (~5s), tick_100 (~10s), tick_250 (~25s) — all negative
-    - R4d: new operating points from Arm 2
+    - R4d DONE: dollar_5M (7s), tick_3000 (300s)
+    - R4d NEW: dollar_10M (14s), dollar_50M (69s), tick_500 (50s)
 
     Table: `{bar_type, threshold, median_duration_s, tier1_ar_r2_h1, delta_temporal_book_h1, dual_pass}`
 
-12. Write `.kit/results/R4d/analysis.md`:
+Update `.kit/results/temporal-predictability-dollar-tick-actionable/analysis.md`:
     - Calibration table (standalone deliverable)
-    - Per-operating-point results
-    - Cross-timescale AR R² trend
+    - Per-operating-point results for ALL 5 operating points
+    - Cross-timescale AR R² trend (now with 5 data points, not 2)
     - Decision framework evaluation
     - Final recommendation
 
-13. Prepare summary entry for `.kit/RESEARCH_LOG.md`.
+Prepare updated summary entry for `.kit/RESEARCH_LOG.md`.
 
 ---
 
@@ -242,6 +252,18 @@ This is a gate check with a strong null prior (0/154+ passes). The calibration s
 - **Max seeds per configuration:** 1 (deterministic GBT, seed=42, 5-fold CV provides variance estimates)
 
 **Compute savings vs. original draft:** Reduced from ~17 hr to ~5-9 hr by: (a) 3 operating points instead of 8, (b) GBT-only instead of GBT+Linear+Ridge, (c) 3 feature configs instead of 5 (drop HC variants), (d) single calibration day instead of all 19.
+
+### Compute Profile
+```yaml
+compute_type: cpu
+estimated_rows: 500000
+model_type: xgboost
+sequential_fits: 45
+parallelizable: false
+memory_gb: 8
+gpu_type: none
+estimated_wall_hours: 8
+```
 
 ---
 
