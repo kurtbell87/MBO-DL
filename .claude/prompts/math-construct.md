@@ -1,1 +1,1 @@
-../../orchestration/claude-mathematics-kit/.claude/prompts/math-construct.md
+../../orchestration/mathematics-kit/.claude/prompts/math-construct.md

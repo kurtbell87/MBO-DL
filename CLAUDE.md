@@ -7,7 +7,7 @@ WHEN WORKING FROM A PROVIDED SPEC ALWAYS REFER TO THE  ## Exit Criteria SECTION 
 
 Kit state files, working directories, and utility scripts live in `.kit/`. Project source code (`src/`, `tests/`, etc.) stays at the project root. The kit prompts reference bare filenames (e.g., `LAST_TOUCH.md`) — the `KIT_STATE_DIR` environment variable tells the scripts to resolve these inside `.kit/`.
 
-Files at project root: `CLAUDE.md`, `.claude/`, `.master-kit.env`, `.gitignore`
+Files at project root: `CLAUDE.md`, `.claude/`, `.orchestration-kit.env`, `.gitignore`
 Everything else kit-related: `.kit/`
 
 ## Available Kits
@@ -23,22 +23,22 @@ Everything else kit-related: `.kit/`
 For cross-kit runs and interop, use the orchestrator:
 
 ```bash
-source .master-kit.env
-master-kit/tools/kit --json <kit> <phase> [args...]
-master-kit/tools/kit --json research status
+source .orchestration-kit.env
+orchestration/tools/kit --json <kit> <phase> [args...]
+orchestration/tools/kit --json research status
 ```
 
-Run artifacts land in `master-kit/runs/<run_id>/` — capsules, manifests, logs, events.
+Run artifacts land in `orchestration/runs/<run_id>/` — capsules, manifests, logs, events.
 
 ## Cross-Kit Interop (Advanced)
 
 ```bash
-master-kit/tools/kit request --from research --from-phase status --to math --action math.status \
+orchestration/tools/kit request --from research --from-phase status --to math --action math.status \
   --run-id <parent_run_id> --json
-master-kit/tools/pump --once --request <request_id> --json
+orchestration/tools/pump --once --request <request_id> --json
 ```
 
-`--from-phase` is optional; if omitted, `master-kit/tools/pump` infers it from the parent run metadata/events.
+`--from-phase` is optional; if omitted, `orchestration/tools/pump` infers it from the parent run metadata/events.
 
 ### Research → TDD Sub-Cycle
 
@@ -48,7 +48,7 @@ When a research phase needs **new C++ code** (tools, libraries, APIs), spawn a T
 1. Write a spec: `.kit/docs/<feature>.md`
 2. Run TDD phases (all in background, check exit codes only):
    ```bash
-   source .master-kit.env
+   source .orchestration-kit.env
    .kit/tdd.sh red   .kit/docs/<feature>.md
    .kit/tdd.sh green
    .kit/tdd.sh refactor
@@ -59,12 +59,61 @@ When a research phase needs **new C++ code** (tools, libraries, APIs), spawn a T
 **Triggers**: Data extraction tools, new analysis APIs, infrastructure modifications.
 **Non-triggers**: Disposable Python scripts, config files, parameter sweeps — these stay in Research kit.
 
+## Cloud / Remote Compute (Optional)
+
+For experiments whose compute profile exceeds local thresholds, use `tools/preflight` and `tools/cloud-run`.
+
+### Pre-flight Check
+
+```bash
+orchestration/tools/preflight .kit/experiments/exp-NNN-name.md --json
+```
+
+Parses the `Compute Profile` YAML block in the experiment spec and recommends local vs. cloud execution. If cloud is recommended, the RUN agent's prompt includes a **Compute Advisory**.
+
+### Remote Execution (EC2 / RunPod)
+
+```bash
+# Launch experiment on cloud
+orchestration/tools/cloud-run run "python scripts/run_experiment.py --full" \
+    --spec .kit/experiments/exp-NNN-name.md \
+    --data-dirs DATA/ \
+    --output-dir .kit/results/exp-NNN-name/ \
+    --detach
+
+# Check status
+orchestration/tools/cloud-run status <run-id>
+
+# Pull results back
+orchestration/tools/cloud-run pull <run-id> --output-dir .kit/results/exp-NNN-name/
+
+# List tracked runs
+orchestration/tools/cloud-run ls
+
+# Cleanup orphaned resources
+orchestration/tools/cloud-run gc
+
+# Force-terminate a run
+orchestration/tools/cloud-run terminate <run-id>
+
+# Manage RunPod network volumes
+orchestration/tools/cloud-run volume {create,list,delete}
+```
+
+**Key flags:**
+- `--detach`: Launch and return immediately (for long-running experiments)
+- `--data-dirs`: Comma-separated local dirs to upload alongside code
+- `--max-hours N`: Auto-terminate safety (default: 12h)
+- `--output-dir`: Where to download results locally
+
+**Backend selection:** Configured via environment variables in `.orchestration-kit.env`. Supports AWS EC2 and RunPod. The remote instance runs your command in a Docker container with Python 3.11; `requirements.txt` dependencies install automatically. Results sync back via S3.
+
 ## Global Dashboard (Optional)
 
 ```bash
-master-kit/tools/dashboard register --master-kit-root ./master-kit --project-root "$(pwd)"
-master-kit/tools/dashboard index
-master-kit/tools/dashboard serve --host 127.0.0.1 --port 7340
+orchestration/tools/dashboard register --orchestration-kit-root ./orchestration --project-root "$(pwd)"
+orchestration/tools/dashboard index
+orchestration/tools/dashboard serve --host 127.0.0.1 --port 7340
 ```
 
 Open `http://127.0.0.1:7340` to explore runs across projects and filter by project.
@@ -84,12 +133,12 @@ Open `http://127.0.0.1:7340` to explore runs across projects and filter by proje
 - `.kit/results/` — Research + Math results
 - `.kit/specs/` — Math specification documents
 - `.kit/handoffs/completed/` — Resolved research handoffs
-- `.kit/scripts/` — Utility scripts (symlinked from master-kit)
+- `.kit/scripts/` — Utility scripts (symlinked from orchestration-kit)
 
 ## Don't
 
-- Don't `cd` into `master-kit/` and run kit scripts from there — run from project root.
-- Don't `cat` full log files — use `master-kit/tools/query-log`.
+- Don't `cd` into `orchestration/` and run kit scripts from there — run from project root.
+- Don't `cat` full log files — use `orchestration/tools/query-log`.
 - Don't explore the codebase to "understand" it — read state files first.
 - **Don't independently verify kit sub-agent work.** Each phase spawns a dedicated sub-agent that does its own verification. Trust the exit code and capsule. Do NOT re-run tests, re-read logs, re-check build output, or otherwise duplicate work the sub-agent already did. Exit 0 + capsule = done. Exit 1 = read the capsule for the failure, don't grep the log.
 - Don't read phase log files after a successful phase. Logs are for debugging failures only.
@@ -132,7 +181,7 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 - **SSL cert**: `~/.local/rapi/13.6.0.0/etc/rithmic_ssl_cert_auth_params` — required at runtime, path set via `MML_SSL_CLNT_AUTH_FILE` env var
 - **Platform**: darwin-20.6-arm64 static libraries (Apple Silicon native)
 
-**Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.master-kit.env`.
+**Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
 ## Current State (updated 2026-02-17, R4b in progress)
 

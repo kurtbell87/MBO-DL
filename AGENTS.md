@@ -36,7 +36,7 @@
 
 Ship Phase 4 (commit), then start Phase 5 (feature-analysis):
 ```bash
-source .master-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md
+source .orchestration-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md
 ```
 
 ## Agent Roles
