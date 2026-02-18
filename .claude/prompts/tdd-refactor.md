@@ -1,1 +1,1 @@
-../../orchestration/tdd-kit/.claude/prompts/tdd-refactor.md
+../../orchestration-kit/tdd-kit/.claude/prompts/tdd-refactor.md

@@ -24,21 +24,21 @@ For cross-kit runs and interop, use the orchestrator:
 
 ```bash
 source .orchestration-kit.env
-orchestration/tools/kit --json <kit> <phase> [args...]
-orchestration/tools/kit --json research status
+orchestration-kit/tools/kit --json <kit> <phase> [args...]
+orchestration-kit/tools/kit --json research status
 ```
 
-Run artifacts land in `orchestration/runs/<run_id>/` — capsules, manifests, logs, events.
+Run artifacts land in `orchestration-kit/runs/<run_id>/` — capsules, manifests, logs, events.
 
 ## Cross-Kit Interop (Advanced)
 
 ```bash
-orchestration/tools/kit request --from research --from-phase status --to math --action math.status \
+orchestration-kit/tools/kit request --from research --from-phase status --to math --action math.status \
   --run-id <parent_run_id> --json
-orchestration/tools/pump --once --request <request_id> --json
+orchestration-kit/tools/pump --once --request <request_id> --json
 ```
 
-`--from-phase` is optional; if omitted, `orchestration/tools/pump` infers it from the parent run metadata/events.
+`--from-phase` is optional; if omitted, `orchestration-kit/tools/pump` infers it from the parent run metadata/events.
 
 ### Research → TDD Sub-Cycle
 
@@ -66,7 +66,7 @@ For experiments whose compute profile exceeds local thresholds, use `tools/prefl
 ### Pre-flight Check
 
 ```bash
-orchestration/tools/preflight .kit/experiments/exp-NNN-name.md --json
+orchestration-kit/tools/preflight .kit/experiments/exp-NNN-name.md --json
 ```
 
 Parses the `Compute Profile` YAML block in the experiment spec and recommends local vs. cloud execution. If cloud is recommended, the RUN agent's prompt includes a **Compute Advisory**.
@@ -75,29 +75,29 @@ Parses the `Compute Profile` YAML block in the experiment spec and recommends lo
 
 ```bash
 # Launch experiment on cloud
-orchestration/tools/cloud-run run "python scripts/run_experiment.py --full" \
+orchestration-kit/tools/cloud-run run "python scripts/run_experiment.py --full" \
     --spec .kit/experiments/exp-NNN-name.md \
     --data-dirs DATA/ \
     --output-dir .kit/results/exp-NNN-name/ \
     --detach
 
 # Check status
-orchestration/tools/cloud-run status <run-id>
+orchestration-kit/tools/cloud-run status <run-id>
 
 # Pull results back
-orchestration/tools/cloud-run pull <run-id> --output-dir .kit/results/exp-NNN-name/
+orchestration-kit/tools/cloud-run pull <run-id> --output-dir .kit/results/exp-NNN-name/
 
 # List tracked runs
-orchestration/tools/cloud-run ls
+orchestration-kit/tools/cloud-run ls
 
 # Cleanup orphaned resources
-orchestration/tools/cloud-run gc
+orchestration-kit/tools/cloud-run gc
 
 # Force-terminate a run
-orchestration/tools/cloud-run terminate <run-id>
+orchestration-kit/tools/cloud-run terminate <run-id>
 
 # Manage RunPod network volumes
-orchestration/tools/cloud-run volume {create,list,delete}
+orchestration-kit/tools/cloud-run volume {create,list,delete}
 ```
 
 **Key flags:**
@@ -111,9 +111,9 @@ orchestration/tools/cloud-run volume {create,list,delete}
 ## Global Dashboard (Optional)
 
 ```bash
-orchestration/tools/dashboard register --orchestration-kit-root ./orchestration --project-root "$(pwd)"
-orchestration/tools/dashboard index
-orchestration/tools/dashboard serve --host 127.0.0.1 --port 7340
+orchestration-kit/tools/dashboard register --orchestration-kit-root ./orchestration-kit --project-root "$(pwd)"
+orchestration-kit/tools/dashboard index
+orchestration-kit/tools/dashboard serve --host 127.0.0.1 --port 7340
 ```
 
 Open `http://127.0.0.1:7340` to explore runs across projects and filter by project.
@@ -137,8 +137,8 @@ Open `http://127.0.0.1:7340` to explore runs across projects and filter by proje
 
 ## Don't
 
-- Don't `cd` into `orchestration/` and run kit scripts from there — run from project root.
-- Don't `cat` full log files — use `orchestration/tools/query-log`.
+- Don't `cd` into `orchestration-kit/` and run kit scripts from there — run from project root.
+- Don't `cat` full log files — use `orchestration-kit/tools/query-log`.
 - Don't explore the codebase to "understand" it — read state files first.
 - **Don't independently verify kit sub-agent work.** Each phase spawns a dedicated sub-agent that does its own verification. Trust the exit code and capsule. Do NOT re-run tests, re-read logs, re-check build output, or otherwise duplicate work the sub-agent already did. Exit 0 + capsule = done. Exit 1 = read the capsule for the failure, don't grep the log.
 - Don't read phase log files after a successful phase. Logs are for debugging failures only.

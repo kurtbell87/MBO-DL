@@ -1,1 +1,1 @@
-../../orchestration/research-kit/.claude/prompts/frame.md
+../../orchestration-kit/research-kit/.claude/prompts/frame.md
