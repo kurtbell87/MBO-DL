@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## R4c-temporal-predictability-completion — CONFIRMED
+**Date:** 2026-02-18
+**Hypothesis:** Temporal features fail the dual threshold across all remaining gaps: tick bars (tick_50/100/250), extended horizons (h=200/500/1000 on time_5s, ~17-83min), and event bars at actionable timescales (≥5s).
+**Key result:** 0/54+ dual threshold passes. All Tier 1 AR R² negative across 4 bar types × 7 horizons. Extended horizons show accelerating degradation (h1000 R²=−0.152). Dollar bars entirely sub-actionable (max ~0.9s/bar at $1M). Tick bars at 10s and 25s timescales match time_5s null result.
+**Lesson:** MES returns are martingale across all bar types (time, tick, dollar, volume) and timescales (5s to 83min). The R4 chain (R4→R4b→R4c) tested 6 bar types, 7+ horizons, 3 model classes, 5 feature configs, 200+ statistical tests — zero pass Rule 2. Temporal encoder dropped permanently.
+**Next:** Proceed to model architecture build spec: CNN+GBT Hybrid, static features, time_5s bars, triple barrier labels. No temporal encoder. The R4 line is closed.
+**Details:** `.kit/results/temporal-predictability-completion/analysis.md`
+
 ## R4b-temporal-predictability-event-bars — NO TEMPORAL SIGNAL (robust)
 **Date:** 2026-02-18
 **Hypothesis:** Dollar bars (and possibly volume bars) contain exploitable autoregressive structure absent from time bars. Temporal feature augmentation improves prediction on event-driven bars.

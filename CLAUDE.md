@@ -183,9 +183,11 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-18, R4b complete)
+## Current State (updated 2026-02-18, R4c complete)
 
 **VERDICT: GO.** Oracle expectancy extracted on 19 real MES days. Triple barrier passes all 6 success criteria: $4.00/trade expectancy, PF=3.30, WR=64.3%, Sharpe=0.362, net PnL=$19,479. CONDITIONAL GO upgraded to full GO. Triple barrier preferred over first-to-hit.
+
+**R4c (temporal-predictability-completion) — COMPLETE. CONFIRMED (all nulls).** All three gaps from R4/R4b closed. 0/54+ dual threshold passes across tick_50, tick_100 (~10s), tick_250 (~25s), and time_5s extended horizons (h=200/500/1000, ~17-83min). Dollar bars entirely sub-actionable (max ~0.9s/bar at $1M). All Tier 1 AR R² negative. MES is martingale across all bar types and timescales 5s-83min. Temporal encoder dropped permanently with highest confidence. R4 line closed. See `.kit/results/temporal-predictability-completion/analysis.md`.
 
 **R4b (temporal-predictability-event-bars) — COMPLETE. MARGINAL SIGNAL (redundant).** Volume_100: NO SIGNAL (all 36 AR configs negative R², matches time_5s). Dollar_25k: positive AR R² at sub-second horizons (h=1: +0.000633, h=5: +0.000364) but temporal augmentation fails dual threshold (0/48 gaps pass across all bar types). Signal is linear, redundant with static features, at ~140ms HFT timescale. Temporal-Only R²=0.012 (p=0.0005) but adds nothing over static. R4 "no temporal encoder" conclusion is robust across all bar types. See `.kit/results/temporal-predictability-event-bars/analysis.md`.
 
@@ -217,8 +219,9 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | 7b | `tools/oracle_expectancy.cpp` | Research | **Done (GO)** |
 | 8 | `.kit/docs/bar-feature-export.md` | TDD | **Done** |
 | R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **Done (NO SIGNAL — robust)** |
+| R4c | `.kit/experiments/temporal-predictability-completion.md` | Research | **Done (CONFIRMED — all nulls)** |
 
 - **Build:** Green.
 - **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped), 22 integration tests (labeled, excluded from default ctest).
-- **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4b closes the last gap).
-- **Next task:** Proceed to model architecture build spec (CNN + GBT Hybrid with triple barrier labels on time_5s bars).
+- **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
+- **Next task:** Model architecture build spec — CNN+GBT Hybrid, static features, time_5s bars, triple barrier labels. All research phases complete.
