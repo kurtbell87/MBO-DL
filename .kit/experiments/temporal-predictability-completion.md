@@ -124,12 +124,12 @@ No baselines need reproduction — all come from prior experiments in this chain
 
 ## Success Criteria (immutable once RUN begins)
 
-- [ ] **SC1:** Arm 3 all extended horizons produce Tier 1 AR R² < 0 (mean across folds), confirming monotonic degradation trend from R4.
-- [ ] **SC2:** Arm 3 Δ_temporal_book has corrected p > 0.05 at every extended horizon {200, 500, 1000}.
-- [ ] **SC3:** Arm 1 tick_50 produces 0/16 Tier 2 dual threshold passes (same as time_5s and volume_100 in R4/R4b).
-- [ ] **SC4:** Arm 2 — if actionable-timescale thresholds exist (≥5s median duration), Δ_temporal_book fails dual threshold at those operating points.
-- [ ] **SC5:** No regression on R4 baselines — reloaded h={1,5,20,100} Static-Book R² within ±0.002 of R4 values.
-- [ ] **SC6:** Results reproducible across 5 CV folds with fold-level variance reported for all primary metrics.
+- [x] **SC1:** Arm 3 all extended horizons produce Tier 1 AR R² < 0 (mean across folds), confirming monotonic degradation trend from R4. ✓ h200=−0.0217, h500=−0.0713, h1000=−0.1522.
+- [x] **SC2:** Arm 3 Δ_temporal_book has corrected p > 0.05 at every extended horizon {200, 500, 1000}. ✓ h200 p=0.568, h500 p=0.349, h1000 p=1.0. All deltas negative.
+- [x] **SC3:** Arm 1 tick_50 produces 0/16 Tier 2 dual threshold passes (same as time_5s and volume_100 in R4/R4b). ✓ 0/16 passes.
+- [x] **SC4:** Arm 2 — if actionable-timescale thresholds exist (≥5s median duration), Δ_temporal_book fails dual threshold at those operating points. ✓ tick_100 (~10s) and tick_250 (~25s) both fail. Dollar bars entirely sub-actionable (max ~0.9s at $1M). 0/32 passes.
+- [x] **SC5:** No regression on R4 baselines — reloaded h={1,5,20,100} Static-Book R² within ±0.002 of R4 values. ✓ h=1: 0.0047 vs 0.0046, max deviation=0.0001.
+- [x] **SC6:** Results reproducible across 5 CV folds with fold-level variance reported for all primary metrics. ✓ All p(R²>0)=1.0 — every fold agrees directionally.
 
 Note: SC4 applies only if Arm 2a calibration identifies viable thresholds. If no threshold produces ≥5s bars, SC4 is vacuously satisfied and documented as such.
 
@@ -345,18 +345,18 @@ The experiment **succeeds** (produces a clear decision) if all applicable SCs pa
 
 ## Exit Criteria
 
-- [ ] Arm 3: fwd_return_{200,500,1000} computed in Python and validated against C++ fwd_return_{1,5,20,100}
-- [ ] Arm 3: Tier 1 AR R² reported for h={200,500,1000} (at minimum AR-10 GBT)
-- [ ] Arm 3: Tier 2 Δ_temporal_book reported for h={200,500,1000} with paired test + Holm-Bonferroni
-- [ ] Arm 3: Data loss at extended horizons documented
-- [ ] Arm 3: SC1 and SC2 evaluated
-- [ ] Arm 1: tick_50 features exported, bar count sanity-checked against R1 (88,521 ±10%)
-- [ ] Arm 1: Full R4 protocol (Tier 1 + Tier 2) completed, SC3 evaluated
-- [ ] Arm 2a: Calibration table produced for all 10 thresholds
-- [ ] Arm 2b: Actionable thresholds selected (or documented as non-existent)
-- [ ] Arm 2c: If actionable thresholds exist, R4 protocol completed at those thresholds. SC4 evaluated.
-- [ ] Cross-arm analysis.md written with decision framework evaluation
-- [ ] All decision rules (Rule 1-4) evaluated per arm
-- [ ] Feature importance reported for all GBT models
-- [ ] Summary entry ready for `.kit/RESEARCH_LOG.md`
-- [ ] `CLAUDE.md` Current State updated
+- [x] Arm 3: fwd_return_{200,500,1000} computed in Python and validated against C++ fwd_return_{1,5,20,100}
+- [x] Arm 3: Tier 1 AR R² reported for h={200,500,1000} (at minimum AR-10 GBT)
+- [x] Arm 3: Tier 2 Δ_temporal_book reported for h={200,500,1000} with paired test + Holm-Bonferroni
+- [x] Arm 3: Data loss at extended horizons documented
+- [x] Arm 3: SC1 and SC2 evaluated
+- [x] Arm 1: tick_50 features exported, bar count sanity-checked against R1 (88,521 ±10%)
+- [x] Arm 1: Full R4 protocol (Tier 1 + Tier 2) completed, SC3 evaluated
+- [x] Arm 2a: Calibration table produced for all 10 thresholds
+- [x] Arm 2b: Actionable thresholds selected (or documented as non-existent)
+- [x] Arm 2c: If actionable thresholds exist, R4 protocol completed at those thresholds. SC4 evaluated.
+- [x] Cross-arm analysis.md written with decision framework evaluation
+- [x] All decision rules (Rule 1-4) evaluated per arm
+- [x] Feature importance reported for all GBT models
+- [x] Summary entry ready for `.kit/RESEARCH_LOG.md`
+- [x] `CLAUDE.md` Current State updated
