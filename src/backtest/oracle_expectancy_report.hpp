@@ -57,9 +57,8 @@ inline void accumulate(BacktestResult& agg, const DayResult& day) {
     agg.gross_pnl += day.result.gross_pnl;
 
     // Collect individual trades
-    for (const auto& trade : day.result.trades) {
-        agg.trades.push_back(trade);
-    }
+    agg.trades.insert(agg.trades.end(),
+                      day.result.trades.begin(), day.result.trades.end());
 
     // Accumulate exit reason counts
     for (const auto& [reason, count] : day.result.exit_reason_counts) {
@@ -141,18 +140,6 @@ inline OracleExpectancyReport aggregate_day_results(
 // JSON serialization helpers
 // ---------------------------------------------------------------------------
 namespace detail {
-
-inline std::string exit_reason_name(int reason) {
-    switch (reason) {
-        case exit_reason::TARGET:      return "target";
-        case exit_reason::STOP:        return "stop";
-        case exit_reason::TAKE_PROFIT: return "take_profit";
-        case exit_reason::EXPIRY:      return "expiry";
-        case exit_reason::SESSION_END: return "session_end";
-        case exit_reason::SAFETY_CAP:  return "safety_cap";
-        default:                       return "unknown";
-    }
-}
 
 inline void write_backtest_result_json(std::ostringstream& ss,
                                         const BacktestResult& r) {

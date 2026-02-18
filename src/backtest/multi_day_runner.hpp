@@ -112,9 +112,8 @@ public:
             agg.gross_pnl += day.result.gross_pnl;
 
             // Collect all trades
-            for (const auto& trade : day.result.trades) {
-                agg.trades.push_back(trade);
-            }
+            agg.trades.insert(agg.trades.end(),
+                              day.result.trades.begin(), day.result.trades.end());
 
             // Track daily PnL
             agg.daily_pnl.push_back(day.result.net_pnl);
