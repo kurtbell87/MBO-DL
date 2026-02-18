@@ -325,11 +325,11 @@ This task spans multiple sessions (~13 hours total compute). If resuming with a 
 
 ## Exit Criteria
 
-- [ ] `bar_feature_export` tool built and tested (TDD sub-cycle complete)
-- [ ] Feature CSVs exported for volume_100 and dollar_25k
-- [ ] Bar counts sanity-checked against R1 expectations
-- [ ] CSV column schema validated against info-decomposition/features.csv
-- [ ] R4 Python script parameterized (backward compatible)
+- [x] `bar_feature_export` tool built and tested (TDD sub-cycle complete)
+- [x] Feature CSVs exported for volume_100 and dollar_25k
+- [x] Bar counts sanity-checked against R1 expectations
+- [x] CSV column schema validated against info-decomposition/features.csv
+- [x] R4 Python script parameterized (backward compatible)
 - [ ] Tier 1 AR R² computed for all 36 cells × 2 bar types
 - [ ] Tier 2 augmentation R² computed for all 24 cells × 2 bar types
 - [ ] Temporal features correctly constructed (no lookahead, no cross-day leakage)

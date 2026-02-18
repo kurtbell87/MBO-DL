@@ -221,6 +221,18 @@ private:
         }
 
         snap.time_of_day = time_utils::compute_time_of_day(ts);
+
+        // Fill trade buffer (left-padded, matching BookBuilder::fill_trades)
+        {
+            size_t count = trades_.size();
+            size_t start_idx = TRADE_BUF_LEN - count;
+            for (size_t i = 0; i < count; ++i) {
+                snap.trades[start_idx + i][0] = trades_[i].price;
+                snap.trades[start_idx + i][1] = trades_[i].size;
+                snap.trades[start_idx + i][2] = trades_[i].aggressor_side;
+            }
+        }
+
         snapshots_.push_back(snap);
     }
 };
