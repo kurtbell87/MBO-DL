@@ -1,0 +1,428 @@
+{
+  "operating_point": "tick_3000",
+  "bar_type": "tick",
+  "threshold": 3000,
+  "median_duration_s": 300.0,
+  "horizons": [
+    1,
+    5,
+    20
+  ],
+  "horizon_restriction": "bars_per_session < 50",
+  "n_bars_loaded": 513,
+  "n_valid_bars": 361,
+  "n_folds": 5,
+  "tier1": {
+    "AR-10_gbt_h1": {
+      "lookback": 10,
+      "horizon": 1,
+      "fold_r2s": [
+        -0.030999627545370778,
+        -0.03327750177161448,
+        -0.10425365925244923,
+        -0.16596005348297993,
+        -0.026107212126280865
+      ],
+      "mean_r2": -0.07211961083573906,
+      "std_r2": 0.05505511609510099,
+      "p_gt_zero_raw": 1.0,
+      "elapsed_s": 0.2,
+      "p_gt_zero_corrected": 1.0
+    },
+    "AR-10_gbt_h5": {
+      "lookback": 10,
+      "horizon": 5,
+      "fold_r2s": [
+        -0.0074972727543494155,
+        -0.5398993441278401,
+        -1.4367149538856832,
+        -0.42629422974442255,
+        -0.1271945126403431
+      ],
+      "mean_r2": -0.5075200626305276,
+      "std_r2": 0.5031340803610698,
+      "p_gt_zero_raw": 1.0,
+      "elapsed_s": 0.2,
+      "p_gt_zero_corrected": 1.0
+    },
+    "AR-10_gbt_h20": {
+      "lookback": 10,
+      "horizon": 20,
+      "fold_r2s": [
+        NaN,
+        NaN,
+        NaN,
+        NaN,
+        NaN
+      ],
+      "mean_r2": NaN,
+      "std_r2": NaN,
+      "p_gt_zero_raw": 1.0,
+      "elapsed_s": 0.0,
+      "p_gt_zero_corrected": 1.0
+    }
+  },
+  "tier2": {
+    "results": {
+      "Static-Book_gbt_h1": {
+        "config": "Static-Book",
+        "horizon": 1,
+        "fold_r2s": [
+          -0.021610577850211365,
+          -0.07361001203893913,
+          -0.056088401657925946,
+          -0.11814573798646033,
+          0.009107876559602879
+        ],
+        "mean_r2": -0.05206937059478678,
+        "std_r2": 0.04362712870918211,
+        "elapsed_s": 0.3
+      },
+      "Static-Book_gbt_h5": {
+        "config": "Static-Book",
+        "horizon": 5,
+        "fold_r2s": [
+          -0.027776442428014025,
+          -0.5406740912703767,
+          -1.2414201391459172,
+          -0.06476652847451847,
+          -0.19608605349117525
+        ],
+        "mean_r2": -0.4141446509620003,
+        "std_r2": 0.45150624571189973,
+        "elapsed_s": 0.2
+      },
+      "Static-Book_gbt_h20": {
+        "config": "Static-Book",
+        "horizon": 20,
+        "fold_r2s": [
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "mean_r2": NaN,
+        "std_r2": NaN,
+        "elapsed_s": 0.0
+      },
+      "Book+Temporal_gbt_h1": {
+        "config": "Book+Temporal",
+        "horizon": 1,
+        "fold_r2s": [
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "mean_r2": NaN,
+        "std_r2": NaN,
+        "elapsed_s": 0.0
+      },
+      "Book+Temporal_gbt_h5": {
+        "config": "Book+Temporal",
+        "horizon": 5,
+        "fold_r2s": [
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "mean_r2": NaN,
+        "std_r2": NaN,
+        "elapsed_s": 0.0
+      },
+      "Book+Temporal_gbt_h20": {
+        "config": "Book+Temporal",
+        "horizon": 20,
+        "fold_r2s": [
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "mean_r2": NaN,
+        "std_r2": NaN,
+        "elapsed_s": 0.0
+      },
+      "Temporal-Only_gbt_h1": {
+        "config": "Temporal-Only",
+        "horizon": 1,
+        "fold_r2s": [
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "mean_r2": NaN,
+        "std_r2": NaN,
+        "elapsed_s": 0.0
+      },
+      "Temporal-Only_gbt_h5": {
+        "config": "Temporal-Only",
+        "horizon": 5,
+        "fold_r2s": [
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "mean_r2": NaN,
+        "std_r2": NaN,
+        "elapsed_s": 0.0
+      },
+      "Temporal-Only_gbt_h20": {
+        "config": "Temporal-Only",
+        "horizon": 20,
+        "fold_r2s": [
+          NaN,
+          NaN,
+          NaN,
+          NaN,
+          NaN
+        ],
+        "mean_r2": NaN,
+        "std_r2": NaN,
+        "elapsed_s": 0.0
+      }
+    },
+    "gaps": {
+      "delta_temporal_book": [
+        {
+          "horizon": 1,
+          "delta_r2": NaN,
+          "ci_95": [
+            NaN,
+            NaN
+          ],
+          "raw_p": NaN,
+          "cohens_d": NaN,
+          "fold_diffs": [
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN
+          ],
+          "corrected_p": NaN
+        },
+        {
+          "horizon": 5,
+          "delta_r2": NaN,
+          "ci_95": [
+            NaN,
+            NaN
+          ],
+          "raw_p": NaN,
+          "cohens_d": NaN,
+          "fold_diffs": [
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN
+          ],
+          "corrected_p": NaN
+        },
+        {
+          "horizon": 20,
+          "delta_r2": NaN,
+          "ci_95": [
+            NaN,
+            NaN
+          ],
+          "raw_p": NaN,
+          "cohens_d": NaN,
+          "fold_diffs": [
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN
+          ],
+          "corrected_p": NaN
+        }
+      ],
+      "delta_temporal_only": [
+        {
+          "horizon": 1,
+          "delta_r2": NaN,
+          "ci_95": [
+            NaN,
+            NaN
+          ],
+          "raw_p": 1.0,
+          "cohens_d": NaN,
+          "fold_diffs": [
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN
+          ],
+          "corrected_p": 1.0
+        },
+        {
+          "horizon": 5,
+          "delta_r2": NaN,
+          "ci_95": [
+            NaN,
+            NaN
+          ],
+          "raw_p": 1.0,
+          "cohens_d": NaN,
+          "fold_diffs": [
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN
+          ],
+          "corrected_p": 1.0
+        },
+        {
+          "horizon": 20,
+          "delta_r2": NaN,
+          "ci_95": [
+            NaN,
+            NaN
+          ],
+          "raw_p": 1.0,
+          "cohens_d": NaN,
+          "fold_diffs": [
+            NaN,
+            NaN,
+            NaN,
+            NaN,
+            NaN
+          ],
+          "corrected_p": 1.0
+        }
+      ]
+    },
+    "threshold_evaluation": {
+      "delta_temporal_book_h1": {
+        "gap": "delta_temporal_book",
+        "horizon": 1,
+        "delta_r2": NaN,
+        "baseline_r2": -0.05206937059478678,
+        "relative_threshold": 0.010413874118957356,
+        "passes_relative": false,
+        "passes_statistical": false,
+        "passes_dual": false,
+        "corrected_p": NaN,
+        "ci_95": [
+          NaN,
+          NaN
+        ],
+        "cohens_d": NaN
+      },
+      "delta_temporal_book_h5": {
+        "gap": "delta_temporal_book",
+        "horizon": 5,
+        "delta_r2": NaN,
+        "baseline_r2": -0.4141446509620003,
+        "relative_threshold": 0.08282893019240006,
+        "passes_relative": false,
+        "passes_statistical": false,
+        "passes_dual": false,
+        "corrected_p": NaN,
+        "ci_95": [
+          NaN,
+          NaN
+        ],
+        "cohens_d": NaN
+      },
+      "delta_temporal_book_h20": {
+        "gap": "delta_temporal_book",
+        "horizon": 20,
+        "delta_r2": NaN,
+        "baseline_r2": NaN,
+        "relative_threshold": NaN,
+        "passes_relative": false,
+        "passes_statistical": false,
+        "passes_dual": false,
+        "corrected_p": NaN,
+        "ci_95": [
+          NaN,
+          NaN
+        ],
+        "cohens_d": NaN
+      },
+      "delta_temporal_only_h1": {
+        "gap": "delta_temporal_only",
+        "horizon": 1,
+        "delta_r2": NaN,
+        "baseline_r2": -0.05206937059478678,
+        "relative_threshold": 0.010413874118957356,
+        "passes_relative": false,
+        "passes_statistical": false,
+        "passes_dual": false,
+        "corrected_p": 1.0,
+        "ci_95": [
+          NaN,
+          NaN
+        ],
+        "cohens_d": NaN
+      },
+      "delta_temporal_only_h5": {
+        "gap": "delta_temporal_only",
+        "horizon": 5,
+        "delta_r2": NaN,
+        "baseline_r2": -0.4141446509620003,
+        "relative_threshold": 0.08282893019240006,
+        "passes_relative": false,
+        "passes_statistical": false,
+        "passes_dual": false,
+        "corrected_p": 1.0,
+        "ci_95": [
+          NaN,
+          NaN
+        ],
+        "cohens_d": NaN
+      },
+      "delta_temporal_only_h20": {
+        "gap": "delta_temporal_only",
+        "horizon": 20,
+        "delta_r2": NaN,
+        "baseline_r2": NaN,
+        "relative_threshold": NaN,
+        "passes_relative": false,
+        "passes_statistical": false,
+        "passes_dual": false,
+        "corrected_p": 1.0,
+        "ci_95": [
+          NaN,
+          NaN
+        ],
+        "cohens_d": NaN
+      }
+    },
+    "feature_importance": {}
+  },
+  "fold_sign_agreement": {
+    "AR-10_gbt_h1": {
+      "n_positive": 0,
+      "n_total": 5,
+      "all_agree_sign": true,
+      "p_r2_gt_0": 0.0
+    },
+    "AR-10_gbt_h5": {
+      "n_positive": 0,
+      "n_total": 5,
+      "all_agree_sign": true,
+      "p_r2_gt_0": 0.0
+    },
+    "AR-10_gbt_h20": {
+      "n_positive": 0,
+      "n_total": 5,
+      "all_agree_sign": true,
+      "p_r2_gt_0": 0.0
+    }
+  }
+}

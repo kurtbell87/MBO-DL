@@ -183,9 +183,11 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-18, R4c complete)
+## Current State (updated 2026-02-18, R4d complete)
 
 **VERDICT: GO.** Oracle expectancy extracted on 19 real MES days. Triple barrier passes all 6 success criteria: $4.00/trade expectancy, PF=3.30, WR=64.3%, Sharpe=0.362, net PnL=$19,479. CONDITIONAL GO upgraded to full GO. Triple barrier preferred over first-to-hit.
+
+**R4d (temporal-predictability-dollar-tick-actionable) — COMPLETE. CONFIRMED.** Dollar bars at actionable timescales ($5M=7s, $10M=14s) and tick bars at 5min (tick_3000=300s) produce zero temporal signal. 0/14 dual threshold passes. Empirical calibration table for 10 thresholds produced — dollar bars ARE achievable at ≥5s but contain no signal. R4b's sub-second temporal signal (R²=+0.012 at $25k/0.14s) decays to noise at $5M/7s (R²=−0.0005). Cumulative R4 chain: 0/168+ dual threshold passes across 7 bar types, 0.14s-83min. R4 line permanently closed. See `.kit/results/temporal-predictability-dollar-tick-actionable/analysis.md`.
 
 **R4c (temporal-predictability-completion) — COMPLETE. CONFIRMED (all nulls).** All three gaps from R4/R4b closed. 0/54+ dual threshold passes across tick_50, tick_100 (~10s), tick_250 (~25s), and time_5s extended horizons (h=200/500/1000, ~17-83min). Dollar bars entirely sub-actionable (max ~0.9s/bar at $1M). All Tier 1 AR R² negative. MES is martingale across all bar types and timescales 5s-83min. Temporal encoder dropped permanently with highest confidence. R4 line closed. See `.kit/results/temporal-predictability-completion/analysis.md`.
 
@@ -220,6 +222,7 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | 8 | `.kit/docs/bar-feature-export.md` | TDD | **Done** |
 | R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **Done (NO SIGNAL — robust)** |
 | R4c | `.kit/experiments/temporal-predictability-completion.md` | Research | **Done (CONFIRMED — all nulls)** |
+| R4d | `.kit/experiments/temporal-predictability-dollar-tick-actionable.md` | Research | **Done (CONFIRMED)** |
 
 - **Build:** Green.
 - **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped), 22 integration tests (labeled, excluded from default ctest).
