@@ -2,38 +2,23 @@
 
 ## Project Status
 
-**13 phases complete (8 engineering + 5 research), R4b in progress.** Oracle expectancy extracted on 19 real MES days. **VERDICT: GO.** Triple barrier passes all 6 success criteria. R4b testing temporal predictability on event-driven bars.
+**14 phases complete (8 engineering + 6 research).** Oracle expectancy extracted on 19 real MES days. **VERDICT: GO.** Triple barrier passes all 6 success criteria. R4b confirms NO TEMPORAL SIGNAL across all bar types. All research phases complete.
 
 ## What was completed this cycle
 
-- **R4b Phase A**: TDD sub-cycle for `bar_feature_export` tool — PR #14 shipped, 1003 tests pass
-- **Bug fix**: StreamingBookBuilder was not populating `snap.trades[]` — volume/dollar bar builders got `has_trade=false` for every snapshot. Added `fill_trades()` to `emit_snapshot()` in `tools/bar_feature_export.cpp`
-- **R4b Phase B**: Volume_100 feature export — 115,661 bars (matches R1 ~116K), CSV schema validated
-- **R4b Phase C**: Dollar_25k feature export — 3,124,720 bars (matches R1 ~3.1M), CSV schema validated
-- **R4b Phase D**: R4 Python script parameterized (`--input-csv`, `--output-dir`, `--bar-label`). Volume_100 R4 complete: **NO TEMPORAL SIGNAL** (all 36 Tier 1 AR configs negative R²)
-- **R4b Phase E (in progress)**: Dollar_25k R4 analysis running in background (bash task `be954cb`). Early Tier 1 results show **positive R²** at h=1 and h=5
-
-## Dollar_25k early Tier 1 results (partial — still running)
-
-| Config | R² | p>0 |
-|--------|-----|-----|
-| AR-10_linear_h1 | +0.000633 | 0.0012 |
-| AR-10_gbt_h1 | +0.000373 | 0.0131 |
-| AR-10_linear_h5 | +0.000364 | 0.0210 |
-| AR-50_linear_h1 | +0.000584 | 0.0030 |
-| AR-50_gbt_h1 | +0.000429 | 0.0067 |
-| AR-10_h20 | ~0 | ns |
-| AR-10_h100 | negative | ns |
-
-Signal is at h=1 and h=5 only (short horizons). Linear ≈ GBT (signal appears linear, not nonlinear).
+- **R4b Phase E**: Dollar_25k R4 analysis run on AWS EC2 spot instance (c7a.8xlarge, ~27 min). All 36 Tier 1 + 24 Tier 2 configs computed on 3.1M rows.
+- **R4b Phase F**: Cross-bar comparison analysis written. Dollar_25k has marginal AR R² at h=1 (R²=0.0006) but temporal augmentation fails dual threshold. Temporal-Only has standalone power (R²=0.012) but is redundant with static features.
+- **Cloud-run bug fixes**: Fixed spot instance flag being silently overridden by preflight; switched to uv for Python package management; upgraded Docker images to Python 3.12 (EC2) and 3.11 (RunPod).
+- **State updates**: RESEARCH_LOG, CLAUDE.md, exit criteria all updated. All 16 exit criteria checked off.
 
 ## What exists
 
 A C++20 MES microstructure model suite with:
 - **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report, bar feature export (8 TDD phases)
-- **Research results**: Subordination test, info decomposition, book encoder bias, temporal predictability, synthesis, oracle expectancy, R4b event bars (7 research phases, R4b partial)
+- **Research results**: Subordination test, info decomposition, book encoder bias, temporal predictability (time_5s + event bars), synthesis, oracle expectancy (6 complete research phases)
 - **Architecture decision**: CNN + GBT Hybrid — Conv1d on raw (20,2) book -> 16-dim embedding -> concat with ~20 non-spatial features -> XGBoost
 - **Labeling decision**: Triple barrier (preferred over first-to-hit)
+- **Temporal verdict**: NO TEMPORAL SIGNAL — confirmed across time_5s, volume_100, and dollar_25k bars. Drop SSM/temporal encoder.
 
 ## Phase Sequence
 
@@ -52,7 +37,7 @@ A C++20 MES microstructure model suite with:
 | 7 | `.kit/docs/oracle-expectancy.md` | TDD | **Done** |
 | 7b | `tools/oracle_expectancy.cpp` | Research | **Done** (GO) |
 | 8 | `.kit/docs/bar-feature-export.md` | TDD | **Done** |
-| R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **In Progress** |
+| R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **Done** (NO SIGNAL — robust) |
 
 ## Test summary
 
@@ -62,31 +47,13 @@ A C++20 MES microstructure model suite with:
 
 ## What to do next
 
-### Immediate: Complete R4b
+### Immediate: Model architecture build spec
 
-1. **Check if dollar_25k R4 finished**: Look for `.kit/results/temporal-predictability-event-bars/dollar_25k/metrics.json`. If not, rerun:
-   ```bash
-   python3 research/R4_temporal_predictability.py \
-     --input-csv .kit/results/temporal-predictability-event-bars/dollar_25k/features.csv \
-     --output-dir .kit/results/temporal-predictability-event-bars/dollar_25k \
-     --bar-label dollar_25k
-   ```
-
-2. **Phase F**: Write comparison analysis — see spec § "Step 6" and § "Decision Framework"
-
-3. **Update state files**: Check off exit criteria, update RESEARCH_LOG.md, CLAUDE.md
-
-### After R4b: Model architecture build spec
-
-## Resume protocol for R4b
-
-See `.kit/experiments/temporal-predictability-event-bars.md` § "Resume Protocol".
-
-| Check | File | If exists |
-|-------|------|-----------|
-| Volume_100 R4 done? | `.kit/results/temporal-predictability-event-bars/volume_100/metrics.json` | Done |
-| Dollar_25k R4 done? | `.kit/results/temporal-predictability-event-bars/dollar_25k/metrics.json` | Skip to Phase F |
-| Comparison done? | `.kit/results/temporal-predictability-event-bars/analysis.md` | Review for completeness |
+All research phases are complete. Proceed to the CNN + GBT Hybrid model architecture build:
+- Conv1d on raw (20,2) book -> 16-dim embedding
+- Concat with ~20 non-spatial features
+- XGBoost classifier with triple barrier labels
+- Bar type: time_5s, horizons h=1 and h=5
 
 ## Key research results
 
@@ -97,7 +64,7 @@ See `.kit/experiments/temporal-predictability-event-bars.md` § "Resume Protocol
 | R3 | CNN best book encoder | R²=0.132, CNN>Attention p=0.042 |
 | R4 | No temporal signal (time_5s) | All 36 AR configs negative R² |
 | R4b vol100 | No temporal signal (volume bars) | All 36 AR configs negative R² |
-| R4b dollar25k | **Positive AR R² at h=1, h=5** | AR-10 linear h1: R²=+0.000633 (partial) |
+| R4b dollar25k | Marginal signal, redundant | AR R²=0.0006 at h=1, augmentation fails |
 | Synthesis | CNN + GBT Hybrid | CONDITIONAL GO -> **GO** |
 | Oracle Expectancy | TB passes all 6 criteria | $4.00/trade, PF=3.30 |
 
@@ -113,4 +80,4 @@ cd build && ctest --output-on-failure --label-regex integration           # inte
 
 ---
 
-Updated: 2026-02-17 (R4b phases A-D complete, E in progress)
+Updated: 2026-02-18 (R4b complete, all research phases done)

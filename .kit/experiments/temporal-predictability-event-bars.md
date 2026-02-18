@@ -330,15 +330,15 @@ This task spans multiple sessions (~13 hours total compute). If resuming with a 
 - [x] Bar counts sanity-checked against R1 expectations
 - [x] CSV column schema validated against info-decomposition/features.csv
 - [x] R4 Python script parameterized (backward compatible)
-- [ ] Tier 1 AR R² computed for all 36 cells × 2 bar types
-- [ ] Tier 2 augmentation R² computed for all 24 cells × 2 bar types
-- [ ] Temporal features correctly constructed (no lookahead, no cross-day leakage)
-- [ ] Paired statistical tests with Holm-Bonferroni correction
-- [ ] Feature importance extracted from GBT for interpretability
-- [ ] Decision rules evaluated per bar type
-- [ ] Cross-bar-type comparison with time_5s results documented
-- [ ] Horizon mismatch and executability caveats documented
-- [ ] If signal found: downstream path (A vs B) recommended with justification
-- [ ] Results written to `.kit/results/temporal-predictability-event-bars/`
-- [ ] Summary entry ready for `.kit/RESEARCH_LOG.md`
-- [ ] `CLAUDE.md` Current State updated
+- [x] Tier 1 AR R² computed for all 36 cells × 2 bar types
+- [x] Tier 2 augmentation R² computed for all 24 cells × 2 bar types
+- [x] Temporal features correctly constructed (no lookahead, no cross-day leakage)
+- [x] Paired statistical tests with Holm-Bonferroni correction
+- [x] Feature importance extracted from GBT for interpretability
+- [x] Decision rules evaluated per bar type
+- [x] Cross-bar-type comparison with time_5s results documented
+- [x] Horizon mismatch and executability caveats documented
+- [x] If signal found: downstream path (A vs B) recommended with justification
+- [x] Results written to `.kit/results/temporal-predictability-event-bars/`
+- [x] Summary entry ready for `.kit/RESEARCH_LOG.md`
+- [x] `CLAUDE.md` Current State updated
