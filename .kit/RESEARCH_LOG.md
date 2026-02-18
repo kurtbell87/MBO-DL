@@ -21,8 +21,8 @@ Read this file FIRST when starting any new research task. It is the institutiona
 ## R4d-temporal-predictability-dollar-tick-actionable — CONFIRMED
 **Date:** 2026-02-18
 **Hypothesis:** Temporal features fail the dual threshold on dollar bars at empirically calibrated actionable timescales (≥5s) and tick bars at 5-minute timescales.
-**Key result:** 0/14 dual threshold passes. Dollar $5M bars (7.0s median, 47,865 bars) have AR R²=−0.00035, Δ_temporal_book=−0.0018 (p=1.0). Tick 3000 (300s) AR R²=−0.072 (underpowered). Empirical calibration table produced for 10 thresholds — dollar bars ARE achievable at actionable timescales ($5M=7s, $10M=14s) but contain no temporal signal. Cumulative: 0/168+ dual threshold passes across R4→R4b→R4c→R4d.
-**Lesson:** R4b's sub-second temporal signal (Temporal-Only R²=+0.012 at $25k/0.14s bars) decays to noise by $5M/7s bars (R²=−0.0005). The R4 line is definitively closed: 7 bar types, 0.14s-83min, zero signal. Calibration table is the lasting deliverable — volume-math underestimates empirical duration by ~1.8× systematically.
+**Key result:** 0/38 dual threshold passes across 5 operating points (dollar $5M/7s, $10M/14s, $50M/69s; tick 500/50s, 3000/300s). Dollar $5M (47,865 bars): AR R²=−0.00035, Δ_temporal_book=−0.0018 (p=1.0). All Tier 1 AR R² negative except dollar_50M h=1 (+0.0025, noise: std=6×mean, p=1.0). Empirical calibration table for 10 thresholds produced — dollar bars ARE achievable at actionable timescales but contain no temporal signal. Cumulative R4 chain: 0/168+ dual threshold passes across 7 bar types, 0.14s–300s.
+**Lesson:** R4b's sub-second temporal signal (Temporal-Only R²=+0.012 at $25k/0.14s bars) decays to noise by $5M/7s bars (R²=−0.0005). Volume-math overestimates bar duration by consistent 4× factor (empirical ≈ 0.25× estimate). Calibration table is the lasting deliverable. R4 line closed: 7 bar types, 0.14s–300s, zero signal.
 **Next:** R4 line permanently closed. Proceed to CNN at h=1 (P1) and transaction cost sensitivity (P2) — the remaining open questions before model build spec.
 **Details:** `.kit/results/temporal-predictability-dollar-tick-actionable/analysis.md`
 
