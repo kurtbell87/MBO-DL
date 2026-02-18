@@ -1,55 +1,62 @@
-# Next Steps: Model Architecture Build Spec
+# Next Steps: Implement Hybrid Model
 
-## What happened last session
+## What happened this session
 
-R4d re-run completed successfully. The original RUN agent only tested 2 of 5 needed operating points (dollar_5M, tick_3000). This session:
+1. Read all state files (LAST_TOUCH, RESEARCH_LOG, NEXT_STEPS, synthesis analysis, oracle expectancy metrics)
+2. Explored existing C++ source tree: bar.hpp, bar_features.hpp, feature_export.hpp, triple_barrier.hpp, raw_representations.hpp, bar_feature_export.cpp, and all existing TDD specs
+3. Wrote comprehensive hybrid model build spec: `.kit/docs/hybrid-model.md`
+4. Updated all breadcrumbs: LAST_TOUCH.md, CLAUDE.md, this file
 
-1. **Fixed preflight bug** — `experiment.sh` invoked `tools/cloud/preflight.py` directly (broken relative imports). Changed to `tools/preflight` wrapper. Fix is in `orchestration-kit/research-kit/experiment.sh` line 482/490.
-2. **Amended R4d spec** — Arm 2 now explicitly enumerates 5 fixed operating points with DONE/MISSING status so the RUN agent can't skip them. Phase 1 marked COMPLETE (skip calibration).
-3. **Re-ran RUN-READ-LOG cycle** — All 3 phases exited 0. Results for dollar_10M, dollar_50M, tick_500 now exist alongside dollar_5M and tick_3000.
-4. **Updated all breadcrumbs** — SC (5/6 pass), exit criteria (11/11), RESEARCH_LOG.md, CLAUDE.md Current State, this file.
+## Spec summary: `.kit/docs/hybrid-model.md`
 
-## Current state
+**Two-stage CNN+GBT Hybrid model pipeline.**
 
-**All research phases are complete.** R4d confirmed with full coverage: 0/38 dual threshold passes across 5 operating points spanning 7s–300s. Cumulative R4 chain: 0/168+ passes across 7 bar types, 0.14s–300s. R4 line permanently closed.
+### Phase A: C++ Data Export Extension
+- Add triple barrier labels (`tb_label`, `tb_exit_type`, `tb_bars_held`) to `bar_feature_export.cpp`
+- Position-independent labeling: "if we entered long here, would target or stop hit first?"
+- 10 C++ test cases
 
-The TRAJECTORY.md §13 audit stands: 21/21 engineering PASS, 13/13 research PASS.
+### Phase B: Python CNN Encoder Training
+- Conv1d on (2, 20) permuted book → 16-dim embedding (~7.5k params)
+- Trained with linear regression head on fwd_return_h (h=1 and h=5 separately)
+- Adam, lr=1e-3, batch=256, max 50 epochs, early stopping patience=5
 
-## What needs to happen now
+### Phase C: Python XGBoost Classification
+- Freeze CNN, extract 16-dim embeddings
+- Concatenate with 20 non-spatial features (selected from 62 Track A)
+- XGBoost multi:softmax, 3 classes {−1, 0, +1}, conservative hyperparameters
 
-**Write the model architecture build spec** — the CNN+GBT Hybrid. This is the next engineering phase. All research inputs are locked:
+### Phase D: 5-Fold Expanding Window CV
+- Same 19 days, same expanding window protocol as R2/R3/R4
+- Per-fold: train CNN → embeddings → XGBoost → evaluate on test fold
+- Report: R², accuracy, expectancy, Sharpe, PnL
+- Transaction cost sensitivity: 3 scenarios (optimistic, base, pessimistic)
+- Ablation: GBT-only baseline, CNN-only baseline
 
-- **Architecture:** CNN + GBT Hybrid (R6 synthesis)
-- **Spatial encoder:** CNN on structured (20,2) book input (R3: R²=0.132)
-- **Temporal encoder:** None (R4 chain: 0/168+ passes)
-- **Message encoder:** None (R2: features sufficient)
-- **Bar type:** time_5s (R1: subordination refuted)
-- **Labels:** Triple barrier (R7b: $4.00/trade expectancy, PF=3.30, WR=64.3%)
-- **Horizons:** h=1 and h=5 (R6 synthesis)
-- **Features:** Static book features only
+### Key exit criteria (17 total)
+- CNN R² at h=5 ≥ 0.08 (mean across folds)
+- XGBoost accuracy ≥ 0.38 (above 1/3 random)
+- No fold with negative CNN R² at h=5
+- Aggregate expectancy (base cost) ≥ $0.50/trade
+- Aggregate profit factor ≥ 1.5
+- Hybrid outperforms both GBT-only and CNN-only baselines
 
-### Open questions to address in the build spec
+## Implementation order
 
-1. **CNN at h=1** — R3's R²=0.132 was at h=5. Does it hold at h=1? This could be tested as part of the build or as a quick R5 experiment.
-2. **Transaction cost sensitivity** — How robust is oracle expectancy to spread widening, commission increases, adverse fills? Could be a standalone experiment or baked into the build spec's evaluation criteria.
-3. **CNN+GBT integration pipeline** — How do CNN embeddings feed into GBT? Concatenation with hand-crafted features? End-to-end? Two-stage?
+1. **C++ extension** — Add TB labels to `bar_feature_export`. Run TDD: red → green → refactor → ship.
+2. **Export data** — Run `bar_feature_export --bar-type time --bar-param 5 --output .kit/results/hybrid-model/time_5s.csv` with the updated tool.
+3. **Python pipeline** — Create `scripts/hybrid_model/` with all training and evaluation scripts.
+4. **Run CV** — Execute 5-fold CV, collect results.
+5. **Analysis** — Write `.kit/results/hybrid-model/analysis.md` summarizing findings.
 
-### Key files
+## Key design decisions in the spec
 
-- Synthesis results: `.kit/results/synthesis/analysis.md`, `.kit/results/synthesis/metrics.json`
-- Oracle expectancy: `.kit/results/oracle-expectancy/metrics.json`
-- R4d final analysis: `.kit/results/temporal-predictability-dollar-tick-actionable/analysis.md`
-- Calibration table: `.kit/results/temporal-predictability-dollar-tick-actionable/calibration/calibration_table.json`
-- TRAJECTORY.md: project-level phase sequence and exit criteria
+1. **Position-independent TB labels** — No position tracking. At each bar, label = "would long entry hit target first?" Simplifies labeling and avoids serial dependency in labels.
+2. **Two separate CNN encoders** — One for h=1, one for h=5. Resolves the R3 open question (CNN at h=1).
+3. **Conservative XGBoost** — Lower depth (6 vs 10), higher regularization than overfit-phase GBT. This is a generalization model.
+4. **20 non-spatial features** — Excludes per-level book features (redundant with CNN input). Keeps aggregate signals: weighted_imbalance, spread, order flow, price dynamics, time context, microstructure.
+5. **CPU-only training** — CNN is ~7.5k params, trains in seconds. No GPU needed.
 
 ## Branch
 
-`experiment/temporal-predictability-dollar-tick-actionable` — changes not yet committed. Uncommitted changes:
-- `orchestration-kit/research-kit/experiment.sh` (preflight fix)
-- `.kit/experiments/temporal-predictability-dollar-tick-actionable.md` (spec amendments + exit criteria)
-- `.kit/NEXT_STEPS.md` (this file)
-- `CLAUDE.md` (current state update)
-- `.kit/RESEARCH_LOG.md` (updated by LOG phase)
-- `.kit/results/temporal-predictability-dollar-tick-actionable/` (new operating point results)
-
-Consider committing these changes before starting the build spec work.
+`experiment/temporal-predictability-dollar-tick-actionable` — will need to create a new branch for Phase 9 implementation.
