@@ -2,23 +2,27 @@
 
 ## Project Status
 
-**14 phases complete (8 engineering + 6 research).** Oracle expectancy extracted on 19 real MES days. **VERDICT: GO.** Triple barrier passes all 6 success criteria. R4b confirms NO TEMPORAL SIGNAL across all bar types. All research phases complete.
+**14 phases complete (8 engineering + 6 research).** Oracle expectancy extracted on 19 real MES days. **VERDICT: GO.** All research phases complete. Model architecture build spec written.
 
 ## What was completed this cycle
 
-- **R4b Phase E**: Dollar_25k R4 analysis run on AWS EC2 spot instance (c7a.8xlarge, ~27 min). All 36 Tier 1 + 24 Tier 2 configs computed on 3.1M rows.
-- **R4b Phase F**: Cross-bar comparison analysis written. Dollar_25k has marginal AR R² at h=1 (R²=0.0006) but temporal augmentation fails dual threshold. Temporal-Only has standalone power (R²=0.012) but is redundant with static features.
-- **Cloud-run bug fixes**: Fixed spot instance flag being silently overridden by preflight; switched to uv for Python package management; upgraded Docker images to Python 3.12 (EC2) and 3.11 (RunPod).
-- **State updates**: RESEARCH_LOG, CLAUDE.md, exit criteria all updated. All 16 exit criteria checked off.
+- **Hybrid model build spec written**: `.kit/docs/hybrid-model.md` — comprehensive TDD spec for the CNN+GBT Hybrid model pipeline.
+  - Phase A: C++ data export extension (add triple barrier labels to `bar_feature_export`)
+  - Phase B: Python CNN encoder training (Conv1d on (20,2) book → 16-dim embedding)
+  - Phase C: Python XGBoost classification (embeddings + ~20 non-spatial features → TB labels)
+  - Phase D: 5-fold expanding window cross-validation
+  - Ablation comparisons (GBT-only, CNN-only baselines)
+  - Transaction cost sensitivity (3 scenarios)
+  - 17 exit criteria, 26 test cases
 
 ## What exists
 
 A C++20 MES microstructure model suite with:
 - **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report, bar feature export (8 TDD phases)
-- **Research results**: Subordination test, info decomposition, book encoder bias, temporal predictability (time_5s + event bars), synthesis, oracle expectancy (6 complete research phases)
+- **Research results**: Subordination test, info decomposition, book encoder bias, temporal predictability (time_5s + event bars + dollar/tick actionable), synthesis, oracle expectancy (8 complete research phases)
 - **Architecture decision**: CNN + GBT Hybrid — Conv1d on raw (20,2) book -> 16-dim embedding -> concat with ~20 non-spatial features -> XGBoost
 - **Labeling decision**: Triple barrier (preferred over first-to-hit)
-- **Temporal verdict**: NO TEMPORAL SIGNAL — confirmed across time_5s, volume_100, and dollar_25k bars. Drop SSM/temporal encoder.
+- **Temporal verdict**: NO TEMPORAL SIGNAL — confirmed across 7 bar types, 0.14s–300s. Drop SSM/temporal encoder.
 
 ## Phase Sequence
 
@@ -38,6 +42,9 @@ A C++20 MES microstructure model suite with:
 | 7b | `tools/oracle_expectancy.cpp` | Research | **Done** (GO) |
 | 8 | `.kit/docs/bar-feature-export.md` | TDD | **Done** |
 | R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **Done** (NO SIGNAL — robust) |
+| R4c | `.kit/experiments/temporal-predictability-completion.md` | Research | **Done** (CONFIRMED — all nulls) |
+| R4d | `.kit/experiments/temporal-predictability-dollar-tick-actionable.md` | Research | **Done** (CONFIRMED) |
+| **9** | **`.kit/docs/hybrid-model.md`** | **TDD** | **Spec written — ready for implementation** |
 
 ## Test summary
 
@@ -47,13 +54,25 @@ A C++20 MES microstructure model suite with:
 
 ## What to do next
 
-### Immediate: Model architecture build spec
+### Immediate: Implement hybrid model spec
 
-All research phases are complete. Proceed to the CNN + GBT Hybrid model architecture build:
-- Conv1d on raw (20,2) book -> 16-dim embedding
-- Concat with ~20 non-spatial features
-- XGBoost classifier with triple barrier labels
-- Bar type: time_5s, horizons h=1 and h=5
+Run the TDD phases for `.kit/docs/hybrid-model.md`:
+
+1. **Red**: Extend `bar_feature_export.cpp` with triple barrier labels — write failing tests first.
+2. **Green**: Make tests pass.
+3. **Refactor**: Clean up.
+4. **Ship**: Verify existing tests still pass.
+5. Then proceed to Python training pipeline (Phases B–D in the spec).
+
+### Implementation order
+
+1. C++ extension: Add TB labels to `bar_feature_export` (tests 1–10)
+2. Python CNN encoder + training (tests 11–15)
+3. Python data loading + normalization (tests 16–19)
+4. Python XGBoost training (tests 20–21)
+5. Python evaluation pipeline (tests 22–26)
+6. Run full 5-fold CV, collect results
+7. Write analysis document
 
 ## Key research results
 
@@ -65,6 +84,8 @@ All research phases are complete. Proceed to the CNN + GBT Hybrid model architec
 | R4 | No temporal signal (time_5s) | All 36 AR configs negative R² |
 | R4b vol100 | No temporal signal (volume bars) | All 36 AR configs negative R² |
 | R4b dollar25k | Marginal signal, redundant | AR R²=0.0006 at h=1, augmentation fails |
+| R4c | Tick + extended horizons null | 0/54+ passes across 4 bar types |
+| R4d | Dollar + tick actionable null | 0/38 passes, 7s–300s coverage |
 | Synthesis | CNN + GBT Hybrid | CONDITIONAL GO -> **GO** |
 | Oracle Expectancy | TB passes all 6 criteria | $4.00/trade, PF=3.30 |
 
@@ -80,4 +101,4 @@ cd build && ctest --output-on-failure --label-regex integration           # inte
 
 ---
 
-Updated: 2026-02-18 (R4b complete, all research phases done)
+Updated: 2026-02-18 (hybrid model build spec written)
