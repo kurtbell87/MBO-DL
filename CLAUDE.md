@@ -183,11 +183,11 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-18, hybrid model spec written)
+## Current State (updated 2026-02-18, hybrid-model Phase A in progress)
 
 **VERDICT: GO.** Oracle expectancy extracted on 19 real MES days. Triple barrier passes all 6 success criteria: $4.00/trade expectancy, PF=3.30, WR=64.3%, Sharpe=0.362, net PnL=$19,479. CONDITIONAL GO upgraded to full GO. Triple barrier preferred over first-to-hit.
 
-**Phase 9 (hybrid-model) — SPEC WRITTEN, ready for implementation.** CNN+GBT Hybrid model pipeline: C++ data export extension (triple barrier labels) + Python training pipeline (CNN encoder → embedding extraction → XGBoost classification) + 5-fold expanding window CV + ablation comparisons + transaction cost sensitivity. 17 exit criteria, 26 test cases. See `.kit/docs/hybrid-model.md`.
+**Phase 9 (hybrid-model) — Phase A (C++ TB label export) IN PROGRESS.** Triple barrier labeling added to `bar_feature_export.cpp`. `triple_barrier.hpp` extended with `label_bar()`. New test file `tests/hybrid_model_tb_label_test.cpp` + `tests/test_export_helpers.hpp`. CMakeLists.txt updated. Remaining: Python pipeline (Phases B–D: CNN encoder, XGBoost, 5-fold CV, ablation). 17 exit criteria, 26 test cases. See `.kit/docs/hybrid-model.md`.
 
 **R4d (temporal-predictability-dollar-tick-actionable) — COMPLETE. CONFIRMED (5/5 operating points).** 0/38 dual threshold passes across all 5 operating points: dollar $5M/7s, $10M/14s, $50M/69s; tick 500/50s, 3000/300s. Full 7s–300s timescale range now covered (prior run only had 2 points). Dollar $5M AR R²=−0.00035; dollar_50M h=1 marginally positive (+0.0025) but noise (std=6×mean, p=1.0). Calibration table for 10 thresholds produced. R4b's sub-second temporal signal decays to noise by $5M/7s. Cumulative R4 chain: 0/168+ dual threshold passes across 7 bar types, 0.14s–300s. R4 line permanently closed. See `.kit/results/temporal-predictability-dollar-tick-actionable/analysis.md`.
 
@@ -225,9 +225,9 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **Done (NO SIGNAL — robust)** |
 | R4c | `.kit/experiments/temporal-predictability-completion.md` | Research | **Done (CONFIRMED — all nulls)** |
 | R4d | `.kit/experiments/temporal-predictability-dollar-tick-actionable.md` | Research | **Done (CONFIRMED)** |
-| **9** | **`.kit/docs/hybrid-model.md`** | **TDD** | **Spec written — ready for implementation** |
+| **9** | **`.kit/docs/hybrid-model.md`** | **TDD** | **Phase A (C++ TB labels) in progress** |
 
 - **Build:** Green.
 - **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped), 22 integration tests (labeled, excluded from default ctest).
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
-- **Next task:** Implement hybrid model spec — Phase A (C++ TB label export), then Phases B–D (Python CNN+GBT pipeline + CV).
+- **Next task:** Complete Phase A TDD cycle (red→green→refactor→ship), then Phases B–D (Python CNN+GBT pipeline + CV).

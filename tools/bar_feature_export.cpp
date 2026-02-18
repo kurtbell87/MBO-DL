@@ -7,9 +7,9 @@
 // Usage: ./bar_feature_export --bar-type <type> --bar-param <threshold> --output <csv_path>
 
 #include "bars/bar_factory.hpp"
+#include "backtest/triple_barrier.hpp"
 #include "features/bar_features.hpp"
 #include "features/raw_representations.hpp"
-#include "backtest/rollover.hpp"
 #include "time_utils.hpp"
 
 #include <databento/dbn_file_store.hpp>
@@ -24,8 +24,6 @@
 #include <fstream>
 #include <iostream>
 #include <map>
-#include <numeric>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -369,7 +367,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Write header: 6 metadata + 62 Track A + 40 book_snap + 33 msg_summary + 4 returns + 1 event count = 146
+    // Write header: 6 metadata + 62 Track A + 40 book_snap + 33 msg_summary + 4 returns + 1 event count + 3 tb labels = 149
     csv << "timestamp,bar_type,bar_param,day,is_warmup,bar_index";
 
     auto feature_names = BarFeatureRow::feature_names();
@@ -378,9 +376,19 @@ int main(int argc, char* argv[]) {
     for (size_t i = 0; i < MessageSummary::SUMMARY_SIZE; ++i) csv << ",msg_summary_" << i;
     csv << ",return_1,return_5,return_20,return_100";
     csv << ",mbo_event_count";
+    csv << ",tb_label,tb_exit_type,tb_bars_held";
     csv << "\n";
 
     int total_bars = 0;
+
+    // Triple barrier config — constant across all days/bars
+    TripleBarrierConfig tb_cfg;
+    tb_cfg.target_ticks = 10;
+    tb_cfg.stop_ticks = 5;
+    tb_cfg.volume_horizon = 500;
+    tb_cfg.min_return_ticks = 2;
+    tb_cfg.max_time_horizon_s = 300;
+    tb_cfg.tick_size = 0.25f;
 
     for (int date : SELECTED_DAYS) {
         std::string date_str = date_to_string(date);
@@ -615,6 +623,10 @@ int main(int argc, char* argv[]) {
 
             // Event count
             csv << "," << n_events;
+
+            // Triple barrier label
+            auto tb = compute_tb_label(bars, static_cast<int>(i), tb_cfg);
+            csv << "," << tb.label << "," << tb.exit_type << "," << tb.bars_held;
 
             csv << "\n";
             total_bars++;

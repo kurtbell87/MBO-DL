@@ -2,18 +2,18 @@
 
 ## Project Status
 
-**14 phases complete (8 engineering + 6 research).** Oracle expectancy extracted on 19 real MES days. **VERDICT: GO.** All research phases complete. Model architecture build spec written.
+**14 phases complete (8 engineering + 6 research). Phase 9 (hybrid-model) Phase A in progress.** C++ triple barrier labeling added to `bar_feature_export`. Branch: `feature/hybrid-model`.
 
 ## What was completed this cycle
 
-- **Hybrid model build spec written**: `.kit/docs/hybrid-model.md` — comprehensive TDD spec for the CNN+GBT Hybrid model pipeline.
-  - Phase A: C++ data export extension (add triple barrier labels to `bar_feature_export`)
-  - Phase B: Python CNN encoder training (Conv1d on (20,2) book → 16-dim embedding)
-  - Phase C: Python XGBoost classification (embeddings + ~20 non-spatial features → TB labels)
-  - Phase D: 5-fold expanding window cross-validation
-  - Ablation comparisons (GBT-only, CNN-only baselines)
-  - Transaction cost sensitivity (3 scenarios)
-  - 17 exit criteria, 26 test cases
+- **Hybrid model Phase A — C++ TB label export**: Extended `bar_feature_export.cpp` with triple barrier label columns (`tb_label`, `tb_exit_type`, `tb_bars_held`).
+  - `src/backtest/triple_barrier.hpp` — Added `label_bar()` for position-independent TB labeling per bar.
+  - `tools/bar_feature_export.cpp` — Added TB label computation and CSV columns to export pipeline.
+  - `tests/hybrid_model_tb_label_test.cpp` — **New.** Tests for TB label computation (spec tests 1–6).
+  - `tests/test_export_helpers.hpp` — **New.** Export test helpers.
+  - `tests/bar_feature_export_test.cpp` — Updated for new TB columns.
+  - `tests/test_bar_helpers.hpp` — Extended for TB label testing.
+  - `CMakeLists.txt` — Added hybrid_model_tb_label_test target.
 
 ## What exists
 
@@ -44,7 +44,7 @@ A C++20 MES microstructure model suite with:
 | R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **Done** (NO SIGNAL — robust) |
 | R4c | `.kit/experiments/temporal-predictability-completion.md` | Research | **Done** (CONFIRMED — all nulls) |
 | R4d | `.kit/experiments/temporal-predictability-dollar-tick-actionable.md` | Research | **Done** (CONFIRMED) |
-| **9** | **`.kit/docs/hybrid-model.md`** | **TDD** | **Spec written — ready for implementation** |
+| **9** | **`.kit/docs/hybrid-model.md`** | **TDD** | **Phase A (C++ TB labels) in progress** |
 
 ## Test summary
 
@@ -54,25 +54,22 @@ A C++20 MES microstructure model suite with:
 
 ## What to do next
 
-### Immediate: Implement hybrid model spec
+### Immediate: Complete Phase A TDD cycle
 
-Run the TDD phases for `.kit/docs/hybrid-model.md`:
+Finish the C++ TB label export TDD cycle (red→green→refactor→ship) for `.kit/docs/hybrid-model.md`:
 
-1. **Red**: Extend `bar_feature_export.cpp` with triple barrier labels — write failing tests first.
-2. **Green**: Make tests pass.
-3. **Refactor**: Clean up.
-4. **Ship**: Verify existing tests still pass.
-5. Then proceed to Python training pipeline (Phases B–D in the spec).
+1. **Verify** current test state — do the new TB label tests pass?
+2. **Complete** remaining C++ tests (spec tests 7–10: label distribution, no NaN, CSV schema, backward compat).
+3. **Ship** Phase A — ensure all 1003+ unit tests still pass.
 
-### Implementation order
+### Then: Python pipeline (Phases B–D)
 
-1. C++ extension: Add TB labels to `bar_feature_export` (tests 1–10)
-2. Python CNN encoder + training (tests 11–15)
-3. Python data loading + normalization (tests 16–19)
-4. Python XGBoost training (tests 20–21)
-5. Python evaluation pipeline (tests 22–26)
-6. Run full 5-fold CV, collect results
-7. Write analysis document
+1. Python CNN encoder + training (spec tests 11–15)
+2. Python data loading + normalization (spec tests 16–19)
+3. Python XGBoost training (spec tests 20–21)
+4. Python evaluation pipeline (spec tests 22–26)
+5. Run full 5-fold CV, collect results
+6. Write analysis document to `.kit/results/hybrid-model/analysis.md`
 
 ## Key research results
 
@@ -99,6 +96,18 @@ cd build && ctest --output-on-failure --label-regex integration           # inte
 ./build/bar_feature_export --bar-type <type> --bar-param <param> --output <csv>  # feature export
 ```
 
+## Key files this cycle
+
+| File | Change |
+|------|--------|
+| `src/backtest/triple_barrier.hpp` | Added `label_bar()` function |
+| `tools/bar_feature_export.cpp` | TB label columns in CSV export |
+| `tests/hybrid_model_tb_label_test.cpp` | **New** — TB label unit tests |
+| `tests/test_export_helpers.hpp` | **New** — export test helpers |
+| `tests/bar_feature_export_test.cpp` | Updated for TB columns |
+| `tests/test_bar_helpers.hpp` | Extended for TB testing |
+| `CMakeLists.txt` | hybrid_model_tb_label_test target |
+
 ---
 
-Updated: 2026-02-18 (hybrid model build spec written)
+Updated: 2026-02-18 (hybrid-model Phase A — C++ TB label export)
