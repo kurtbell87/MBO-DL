@@ -17,6 +17,7 @@ Output:
   - .kit/results/temporal-predictability/analysis.md
 """
 
+import argparse
 import json
 import sys
 import warnings
@@ -33,8 +34,14 @@ from xgboost import XGBRegressor
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-INPUT_CSV = Path(".kit/results/info-decomposition/features.csv")
-RESULTS_DIR = Path(".kit/results/temporal-predictability")
+DEFAULT_INPUT_CSV = ".kit/results/info-decomposition/features.csv"
+DEFAULT_OUTPUT_DIR = ".kit/results/temporal-predictability"
+DEFAULT_BAR_LABEL = "time_5s"
+
+# These globals are set in main() from CLI args
+INPUT_CSV = Path(DEFAULT_INPUT_CSV)
+RESULTS_DIR = Path(DEFAULT_OUTPUT_DIR)
+BAR_LABEL = DEFAULT_BAR_LABEL
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 HORIZONS = [1, 5, 20, 100]
@@ -767,8 +774,8 @@ def generate_analysis(tier1_results, tier2_results, tier2_gaps, threshold_result
                       importance_analysis, tier1_pairwise_results, decision_rules):
     """Generate analysis.md."""
     lines = []
-    lines.append("# R4: Temporal Predictability — Analysis\n")
-    lines.append(f"**Date:** 2026-02-17\n")
+    lines.append(f"# R4: Temporal Predictability — Analysis [{BAR_LABEL}]\n")
+    lines.append(f"**Date:** 2026-02-17  \n**Bar type:** {BAR_LABEL}\n")
 
     # Table 1: Tier 1
     lines.append("## Table 1: Tier 1 — Pure Return AR\n")
@@ -875,7 +882,20 @@ def generate_analysis(tier1_results, tier2_results, tier2_gaps, threshold_result
 # Main
 # ===========================================================================
 def main():
-    print("R4: Temporal Predictability", flush=True)
+    global INPUT_CSV, RESULTS_DIR, BAR_LABEL
+
+    parser = argparse.ArgumentParser(description="R4: Temporal Predictability")
+    parser.add_argument("--input-csv", default=DEFAULT_INPUT_CSV, help="Input feature CSV path")
+    parser.add_argument("--output-dir", default=DEFAULT_OUTPUT_DIR, help="Output directory for results")
+    parser.add_argument("--bar-label", default=DEFAULT_BAR_LABEL, help="Bar type label for reporting")
+    args = parser.parse_args()
+
+    INPUT_CSV = Path(args.input_csv)
+    RESULTS_DIR = Path(args.output_dir)
+    BAR_LABEL = args.bar_label
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+
+    print(f"R4: Temporal Predictability [{BAR_LABEL}]", flush=True)
     print("=" * 70, flush=True)
 
     # Load and prepare data
@@ -908,8 +928,9 @@ def main():
 
     # Build metrics.json
     metrics = {
-        "experiment": "R4-temporal-predictability",
+        "experiment": f"R4-temporal-predictability-{BAR_LABEL}",
         "date": "2026-02-17",
+        "bar_label": BAR_LABEL,
         "data": {
             "input": str(INPUT_CSV),
             "total_bars_loaded": len(df),
