@@ -1,1 +1,1 @@
-../../orchestration-kit/mathematics-kit/.claude/prompts/math-polish.md
+../../orchestration/mathematics-kit/.claude/prompts/math-polish.md

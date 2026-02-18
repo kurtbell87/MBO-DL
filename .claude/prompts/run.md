@@ -1,1 +1,1 @@
-../../orchestration/claude-research-kit/.claude/prompts/run.md
+../../orchestration/research-kit/.claude/prompts/run.md

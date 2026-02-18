@@ -1,1 +1,1 @@
-../../orchestration/claude-mathematics-kit/.claude/prompts/math-audit.md
+../../orchestration/mathematics-kit/.claude/prompts/math-audit.md

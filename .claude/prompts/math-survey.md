@@ -1,1 +1,1 @@
-../../orchestration/claude-mathematics-kit/.claude/prompts/math-survey.md
+../../orchestration/mathematics-kit/.claude/prompts/math-survey.md
