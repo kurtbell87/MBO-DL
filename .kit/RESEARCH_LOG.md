@@ -18,6 +18,22 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## R4b-temporal-predictability-event-bars — NO TEMPORAL SIGNAL (robust)
+**Date:** 2026-02-18
+**Hypothesis:** Dollar bars (and possibly volume bars) contain exploitable autoregressive structure absent from time bars. Temporal feature augmentation improves prediction on event-driven bars.
+**Key result:** Volume_100: all 36 Tier 1 AR configs negative R² (matches time_5s). Dollar_25k: marginal positive AR R² at h=1 only (R²=0.0006, corrected p=0.014), but temporal augmentation fails dual threshold at every horizon. Temporal-Only has standalone power (h=1 R²=0.012, p<0.001) but is redundant with static features (weighted_imbalance captures the same signal). Linear >= GBT — signal is linear, not nonlinear.
+**Lesson:** R4's "NO TEMPORAL SIGNAL" conclusion generalizes across all three bar types. Dollar_25k's marginal AR signal operates at ~140ms (genuine microstructure, not retail-tradeable) and is already captured by hand-crafted features. The R1 prior (dollar_25k AR R²=0.01131, 33x higher) was inflated by in-sample bias — rigorous 5-fold CV shows 18x less (R²=0.0006). No temporal encoder or SSM is justified regardless of bar type.
+**Next:** R4b closes the experimental gap. Proceed to model architecture build spec with full confidence: CNN+GBT, no temporal encoder, time_5s bars, static features.
+**Details:** `.kit/results/temporal-predictability-event-bars/analysis.md`
+
+## R4b-temporal-predictability-event-bars — MARGINAL SIGNAL (REDUNDANT)
+**Date:** 2026-02-18
+**Hypothesis:** Dollar bars (and possibly volume bars) contain exploitable autoregressive structure absent from time bars, justifying a temporal encoder on event-driven bar sequences.
+**Key result:** Dollar_25k has weak positive AR R² at sub-second horizons (h=1: +0.000633, h=5: +0.000364) — the only bar type with positive Tier 1 R². Temporal-Only features have standalone power (h=1: R²=0.012, p=0.0005). However, temporal augmentation fails the dual threshold for ALL bar types (0/48 gaps pass). Volume_100 shows no signal (identical to time_5s). Dollar_25k static features achieve R²=0.080 at h=1 — 10-25× higher than time_5s — but temporal features add nothing on top.
+**Lesson:** Dollar bars' AR structure (33× higher than time_5s per R1) is real but operates at ~140ms timescales — genuine HFT microstructure, not tradeable at retail. The signal is LINEAR (Ridge ≥ GBT), low-dimensional, and entirely redundant with static book features. The high static-feature R² on dollar bars is the more interesting finding: book state is far more predictive at sub-second timescales, but this doesn't transfer to the 5s execution horizon. At equivalent clock time (~5s), dollar bars show no temporal advantage over time bars.
+**Next:** R4 "NO TEMPORAL SIGNAL" conclusion is robust across bar types. Proceed with CNN+GBT on time_5s, no temporal encoder, with high confidence. The experimental chain gap (R4 only tested time_5s) is closed.
+**Details:** `.kit/results/temporal-predictability-event-bars/analysis.md`, `.kit/results/temporal-predictability-event-bars/dollar_25k/metrics.json`, `.kit/results/temporal-predictability-event-bars/volume_100/metrics.json`
+
 ## R7-oracle-expectancy — GO
 **Date:** 2026-02-17
 **Hypothesis:** The oracle produces positive expectancy after realistic MES execution costs (commission $0.62/side, fixed spread 1 tick) across out-of-sample days.
