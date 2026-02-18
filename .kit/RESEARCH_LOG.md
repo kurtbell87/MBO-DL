@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## Research-Audit — COMPLETE
+**Date:** 2026-02-18
+**Hypothesis:** N/A (documentation audit, not experiment)
+**Key result:** All R1–R6, R4a–R4d findings reconciled. 0 blocking gaps. Ready for model build.
+**Lesson:** 10+ experiments reconciled into single source of truth. Temporal vs spatial predictability distinction is the core insight. time_5s + CNN + GBT Hybrid architecture validated.
+**Next:** Proceed to Phase B — Python CNN+GBT pipeline via Research kit.
+**Details:** `RESEARCH_AUDIT.md`
+
 ## R4d-temporal-predictability-dollar-tick-actionable — CONFIRMED
 **Date:** 2026-02-18
 **Hypothesis:** Temporal features fail the dual threshold on dollar bars at empirically calibrated actionable timescales (≥5s) and tick bars at 5-minute timescales.
