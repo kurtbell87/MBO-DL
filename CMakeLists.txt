@@ -4,6 +4,14 @@ project(mbo-dl LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+# ---------- R | API+ (Rithmic trading API) ----------
+find_package(RApiPlus)
+if(RApiPlus_FOUND)
+    message(STATUS "R|API+ ${RApiPlus_VERSION} found at ${RApiPlus_LIBRARY_DIR}")
+    message(STATUS "R|API+ SSL cert: ${RApiPlus_SSL_CERT}")
+endif()
 
 # ---------- GoogleTest via FetchContent ----------
 include(FetchContent)
