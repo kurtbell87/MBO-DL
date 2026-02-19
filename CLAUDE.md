@@ -12,7 +12,7 @@ WHEN WORKING FROM A PROVIDED SPEC ALWAYS REFER TO THE  ## Exit Criteria SECTION 
 4. **NEVER use Write, Edit, or Bash to create or modify source code.** The ONLY files you may write/edit are state files (`.md` files in `.kit/` and `CLAUDE.md`).
 5. **ALWAYS delegate through kit phases.** C++ work → `.kit/tdd.sh` (red/green/refactor/ship). Python experiments → `.kit/experiment.sh` (survey/frame/run/read). Math → `.kit/math.sh`.
 6. **Your only tools are:** `source .orchestration-kit.env`, `.kit/tdd.sh`, `.kit/experiment.sh`, `.kit/math.sh`, `orchestration-kit/tools/*`, reading/writing state `.md` files, and checking exit codes.
-
+7. **Exit-Criteria in Specs are 1st Class Citizens**, you must always cross off ALL exit-criteria as they are completed and include them in your final report 
 **If you catch yourself about to grep a source file, write a line of code, or run a test — STOP. That is a protocol violation. Delegate to a kit phase instead.**
 
 
@@ -148,6 +148,11 @@ Open `http://127.0.0.1:7340` to explore runs across projects and filter by proje
 - `.kit/handoffs/completed/` — Resolved research handoffs
 - `.kit/scripts/` — Utility scripts (symlinked from orchestration-kit)
 
+## Research Protocol Lessons (Institutional Memory)
+
+- **Early stopping must use a held-out validation split from training data, never test data.** Using test data for model selection (checkpoint selection via early stopping) is validation leakage that inflates reported R². R3's R²=0.132 was inflated ~36% by this bug (proper-validation R²≈0.084). All experiment specs must specify an 80/20 train/val split for early stopping.
+- **Always specify normalization in the experiment spec as concrete operations** (e.g., "divide by TICK_SIZE=0.25" not "normalize to ticks"). Ambiguous normalization language caused three failed reproduction attempts (9B, 9C, 9C diagnostic).
+
 ## Don't
 
 - **Don't write code.** Not a single line. Not "just a quick check". Not "let me verify the import". ALL code comes from kit sub-agents. Period.
@@ -208,14 +213,19 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-18, hybrid-model Phase A COMPLETE, Phase B next)
+## Current State (updated 2026-02-18, R3 Reproduction Pipeline Comparison — ROOT CAUSE FOUND)
 
-**VERDICT: GO.** Oracle expectancy extracted on 19 real MES days. Triple barrier passes all 6 success criteria: $4.00/trade expectancy, PF=3.30, WR=64.3%, Sharpe=0.362, net PnL=$19,479. CONDITIONAL GO upgraded to full GO. Triple barrier preferred over first-to-hit.
+**VERDICT: GO.** Oracle expectancy validated ($4.00/trade). R3's CNN signal **reproduced perfectly** (R²=0.1317, Δ=-0.0003 from R3). Root cause of 9B/9C failure fully identified: missing TICK_SIZE normalization + per-day z-scoring. R3's R²=0.132 includes ~36% inflation from test-as-validation leakage; proper-validation R²≈0.084. CNN+GBT path is viable with corrected normalization.
 
-**Phase 9 (hybrid-model) — Phase A COMPLETE. Phase B (Python pipeline) NEXT.**
-- Phase A: TDD cycle (red→green→refactor→ship) all exit 0. C++ TB label export working. 87,970 bars exported to `.kit/results/hybrid-model/time_5s.csv` (19 days × ~4631 bars).
-- Phase B: Python CNN+GBT pipeline. Must be delegated to Research kit (`.kit/experiment.sh`). Create experiment spec, then run survey→frame→run→read.
-- **PROTOCOL NOTE:** Python files in `scripts/hybrid_model/` were incorrectly written by the orchestrator during this session. These must be recreated by a kit sub-agent. The orchestrator NEVER writes code — see §ABSOLUTE RULES above.
+**R3 Reproduction Pipeline Comparison — COMPLETE (REFUTED Step 2 / CONFIRMED Step 1). OUTCOME C.**
+- **Step 1 CONFIRMED:** R3's CNN R²=0.132 reproduces exactly. Per-fold correlation with R3 = 0.9997. All 5 folds: train R² in [0.157, 0.196]. CNN spatial signal IS real.
+- **Step 2 REFUTED:** features.csv (R3) and time_5s.csv (9C) are **byte-identical** (identity rate=1.0, max diff=0.0). There was never a "Python vs C++ pipeline" — R3 loaded from the same C++ export as 9B/9C.
+- **Root cause of 0.132→0.002 gap:** (1) Missing TICK_SIZE division on prices (÷0.25 for tick offsets), (2) Per-fold z-scoring instead of per-day z-scoring on sizes, (3) R3's test-as-validation leakage, (4) Per-fold seed variation.
+- **Proper validation R²=0.084** — still 12× higher than R2's flattened MLP R²=0.007, but 36% lower than R3's leaked 0.132.
+- **No handoff needed.** C++ export is correct. Fix is in Python training normalization (within research scope).
+
+**Phase 9B (hybrid-model-training) — REFUTED.** CNN R²=-0.002, XGBoost acc=0.41, expectancy -$0.44/trade. GBT-only outperforms hybrid.
+- Phase A: TDD cycle all exit 0. C++ TB label export working. 87,970 bars exported.
 
 **R4d (temporal-predictability-dollar-tick-actionable) — COMPLETE. CONFIRMED (5/5 operating points).** 0/38 dual threshold passes across all 5 operating points: dollar $5M/7s, $10M/14s, $50M/69s; tick 500/50s, 3000/300s. Full 7s–300s timescale range now covered (prior run only had 2 points). Dollar $5M AR R²=−0.00035; dollar_50M h=1 marginally positive (+0.0025) but noise (std=6×mean, p=1.0). Calibration table for 10 thresholds produced. R4b's sub-second temporal signal decays to noise by $5M/7s. Cumulative R4 chain: 0/168+ dual threshold passes across 7 bar types, 0.14s–300s. R4 line permanently closed. See `.kit/results/temporal-predictability-dollar-tick-actionable/analysis.md`.
 
@@ -253,9 +263,12 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **Done (NO SIGNAL — robust)** |
 | R4c | `.kit/experiments/temporal-predictability-completion.md` | Research | **Done (CONFIRMED — all nulls)** |
 | R4d | `.kit/experiments/temporal-predictability-dollar-tick-actionable.md` | Research | **Done (CONFIRMED)** |
-| **9** | **`.kit/docs/hybrid-model.md`** | **TDD + Research** | **Phase A DONE, Phase B next** |
+| 9A | `.kit/docs/hybrid-model.md` | TDD | **Done** (C++ TB label export) |
+| 9B | `.kit/experiments/hybrid-model-training.md` | Research | **Done (REFUTED)** — CNN pipeline broken |
+| **9C** | **`.kit/experiments/cnn-reproduction-diagnostic.md`** | **Research** | **Done (REFUTED)** — deviations not root cause; data pipeline suspected |
+| **9D** | **`.kit/experiments/r3-reproduction-pipeline-comparison.md`** | **Research** | **Done (Step 1 CONFIRMED, Step 2 REFUTED)** — root cause found: normalization + leakage |
 
 - **Build:** Green.
 - **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped), 22 integration tests (labeled, excluded from default ctest).
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
-- **Next task:** Phase B — Python CNN+GBT pipeline. Delegate to Research kit: create experiment spec `.kit/experiments/hybrid-model-training.md`, then run `.kit/experiment.sh` phases (survey→frame→run→read). Do NOT write Python code directly.
+- **Next task:** CNN Pipeline Fix — apply TICK_SIZE normalization (÷0.25 on book prices) + per-day z-scoring on sizes in the production training pipeline. Re-attempt CNN+GBT integration with corrected normalization and proper validation. Expected CNN R²≈0.084. Alternative: multi-seed robustness study (5 seeds × 5 folds) to confirm R²≈0.084 before integration.

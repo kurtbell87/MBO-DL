@@ -1,0 +1,29 @@
+{
+  "cost_scenarios": {
+    "optimistic": {
+      "expectancy": 0.8811270104068111,
+      "profit_factor": 1.2070671419336803,
+      "trade_count": 8456,
+      "gross_profit": 43433.39,
+      "gross_loss": 35982.579999999994,
+      "net_pnl": 7450.809999999994
+    },
+    "base": {
+      "expectancy": -0.36887298959318887,
+      "profit_factor": 0.9241604976363295,
+      "trade_count": 8456,
+      "gross_profit": 38009.64,
+      "gross_loss": 41128.83,
+      "net_pnl": -3119.190000000005
+    },
+    "pessimistic": {
+      "expectancy": -2.878872989593188,
+      "profit_factor": 0.5269613796453728,
+      "trade_count": 8456,
+      "gross_profit": 27118.75,
+      "gross_loss": 51462.5,
+      "net_pnl": -24343.75
+    }
+  },
+  "sharpe_base": -24.13996461538743
+}

@@ -12,22 +12,30 @@
 
 ## Project Status
 
-**14 phases complete (8 engineering + 6 research). Phase 9 (hybrid-model) Phase A COMPLETE.** C++ TB label export done, 87,970 bars exported. Branch: `feature/hybrid-model`.
+**17 phases complete (8 engineering + 9 research). R3 CNN REPRODUCED (R²=0.1317). Root cause of 9B/9C failure RESOLVED: normalization + validation leakage.** Branch: `tdd/hybrid-model`.
 
 ## What was completed this cycle
 
-- **Phase A TDD cycle** — red/green/refactor/ship all exit 0 for `.kit/docs/hybrid-model.md`
-- **Data export** — `./build/bar_feature_export --bar-type time --bar-param 5 --output .kit/results/hybrid-model/time_5s.csv` → 87,970 bars, 19 days
-- **Protocol violation (corrected)** — Python files were incorrectly written by orchestrator in `scripts/hybrid_model/`. These must be deleted and recreated by a kit sub-agent.
+- **R3 Reproduction & Pipeline Comparison** — `.kit/experiments/r3-reproduction-pipeline-comparison.md`
+- **Research kit phases** — frame→run→read all exit 0
+- **Step 1 (R3 Reproduction): CONFIRMED.** Mean R²=0.1317 (Δ=-0.0003 from R3 original). Per-fold correlation with R3 = 0.9997. Near-perfect reproduction.
+- **Step 2 (Pipeline Comparison): REFUTED.** Data is byte-identical (identity rate=1.0, max diff=0.0). There was NEVER a "Python vs C++" pipeline difference — R3 loaded from the same C++ export as 9B/9C.
+- **Root cause RESOLVED:** The 9B/9C R²=0.002 failure was caused by:
+  1. **Missing TICK_SIZE normalization** — prices must be divided by 0.25 to get tick offsets (scale ±22.5), not used as raw index points (scale ±5.6)
+  2. **Per-fold z-scoring instead of per-day z-scoring** on sizes
+  3. **R3's R²=0.132 includes ~36% inflation** from test-as-validation leakage. Proper-validation R²≈0.084.
+- **CNN spatial signal is REAL** (R²≈0.084 with proper validation) — still 12× higher than flattened MLP (R²=0.007). CNN+GBT architecture is viable.
+- **No C++ export fix needed.** The fix is in the Python training pipeline normalization.
+- **Outcome C** (R3 Reproduces + Pipelines Equivalent) — the "UNEXPECTED" outcome from the spec.
 
 ## What exists
 
 A C++20 MES microstructure model suite with:
 - **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report, bar feature export (8 TDD phases)
-- **Research results**: Subordination test, info decomposition, book encoder bias, temporal predictability (time_5s + event bars + dollar/tick actionable), synthesis, oracle expectancy (8 complete research phases)
-- **Architecture decision**: CNN + GBT Hybrid — Conv1d on raw (20,2) book -> 16-dim embedding -> concat with ~20 non-spatial features -> XGBoost
+- **Research results**: 11 complete research phases. CNN spatial signal confirmed (proper-validation R²≈0.084). Root cause of reproduction failures fully resolved.
+- **Architecture decision**: CNN + GBT Hybrid — **NOW GROUNDED.** CNN spatial signal is real. True R²≈0.084 (not 0.132). R6 recommendation validated qualitatively, quantitative edge is 36% smaller than assumed.
 - **Labeling decision**: Triple barrier (preferred over first-to-hit)
-- **Temporal verdict**: NO TEMPORAL SIGNAL — confirmed across 7 bar types, 0.14s–300s. Drop SSM/temporal encoder.
+- **Temporal verdict**: NO TEMPORAL SIGNAL — confirmed across 7 bar types, 0.14s–300s
 
 ## Phase Sequence
 
@@ -49,7 +57,10 @@ A C++20 MES microstructure model suite with:
 | R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **Done** (NO SIGNAL — robust) |
 | R4c | `.kit/experiments/temporal-predictability-completion.md` | Research | **Done** (CONFIRMED — all nulls) |
 | R4d | `.kit/experiments/temporal-predictability-dollar-tick-actionable.md` | Research | **Done** (CONFIRMED) |
-| **9** | **`.kit/docs/hybrid-model.md`** | **TDD + Research** | **Phase A DONE, Phase B next** |
+| 9A | `.kit/docs/hybrid-model.md` | TDD | **Done** (C++ TB label export) |
+| 9B | `.kit/experiments/hybrid-model-training.md` | Research | **Done (REFUTED)** — normalization wrong |
+| 9C | `.kit/experiments/cnn-reproduction-diagnostic.md` | Research | **Done (REFUTED)** — deviations not root cause |
+| **9D** | **`.kit/experiments/r3-reproduction-pipeline-comparison.md`** | **Research** | **Done (CONFIRMED Step 1 / REFUTED Step 2)** — R3 reproduced, root cause resolved |
 
 ## Test summary
 
@@ -59,22 +70,27 @@ A C++20 MES microstructure model suite with:
 
 ## What to do next
 
-### Phase B: Python CNN+GBT pipeline (delegate to Research kit)
+### CNN+GBT Integration with Corrected Pipeline (HIGHEST PRIORITY)
 
-Phase A is complete. Phase B requires the Python training pipeline. **Do NOT write Python code directly.**
+Root cause is fully resolved. The fix is straightforward:
+1. **TICK_SIZE normalization**: Divide book price offsets by 0.25 to get integer tick offsets
+2. **Per-day z-scoring**: Z-score log1p(size) per day, not per fold
+3. **Proper validation**: Use 80/20 train/val split, not test-as-validation
 
-1. **Delete** the incorrectly-created `scripts/hybrid_model/` directory (orchestrator protocol violation)
-2. **Create** experiment spec: `.kit/experiments/hybrid-model-training.md`
-3. **Run Research kit phases** — all via `.kit/experiment.sh`:
-   ```bash
-   source .orchestration-kit.env
-   .kit/experiment.sh survey .kit/experiments/hybrid-model-training.md
-   .kit/experiment.sh frame
-   .kit/experiment.sh run
-   .kit/experiment.sh read
-   ```
-4. Check exit codes only. Do NOT read output, source files, or logs.
-5. After `read` exits 0, update breadcrumbs (CLAUDE.md, LAST_TOUCH.md, RESEARCH_LOG.md).
+Re-attempt Phase 9B hybrid model training with these corrections. Expected CNN R²≈0.084 (proper validation).
+
+### Multi-Seed Robustness Study (MEDIUM PRIORITY)
+
+Run 5-fold CV with 5 seeds (25 total runs) using corrected pipeline + proper validation. Confirm R²≈0.084 is robust. Fold 3 (Oct 2022) showed R²=-0.047 under proper validation — determine if this is seed-specific or regime-specific.
+
+### GBT-Only Baseline Refinement (INDEPENDENT PATH)
+
+Oracle shows $4.00/trade available. Phase B GBT-only at -$0.38/trade. Can improved feature engineering close the gap without CNN? Independent of CNN question.
+
+### Mental Model Update
+
+- **Before:** "R3's CNN signal cannot be reproduced. Data pipeline is the primary suspect."
+- **After:** "R3's CNN signal is REAL and fully reproduced (R²=0.1317). The 9B/9C failure was caused by missing TICK_SIZE normalization + per-day z-scoring. R3's reported R²=0.132 is inflated ~36% by validation leakage; true R²≈0.084. The C++ data export is correct. CNN+GBT path is viable."
 
 ## Key research results
 
@@ -82,7 +98,7 @@ Phase A is complete. Phase B requires the Python training pipeline. **Do NOT wri
 |-----------|---------|------------|
 | R1 | Subordination refuted for MES | 0/3 primary tests significant |
 | R2 | Hand-crafted features sufficient | Best R²=0.0067 (1-bar MLP) |
-| R3 | CNN best book encoder | R²=0.132, CNN>Attention p=0.042 |
+| R3 | CNN best book encoder | R²=0.132 (leaked), proper R²≈0.084 |
 | R4 | No temporal signal (time_5s) | All 36 AR configs negative R² |
 | R4b vol100 | No temporal signal (volume bars) | All 36 AR configs negative R² |
 | R4b dollar25k | Marginal signal, redundant | AR R²=0.0006 at h=1, augmentation fails |
@@ -90,6 +106,9 @@ Phase A is complete. Phase B requires the Python training pipeline. **Do NOT wri
 | R4d | Dollar + tick actionable null | 0/38 passes, 7s–300s coverage |
 | Synthesis | CNN + GBT Hybrid | CONDITIONAL GO -> **GO** |
 | Oracle Expectancy | TB passes all 6 criteria | $4.00/trade, PF=3.30 |
+| 9B Hybrid Training | CNN normalization wrong | R²=-0.002 (missing TICK_SIZE div) |
+| 9C CNN Repro Diag | Deviations not root cause | R²=0.002, same failure mode |
+| **9D R3 Reproduction** | **R3 REPRODUCED, root cause resolved** | **R²=0.1317 (leaked) / 0.084 (proper). Data byte-identical.** |
 
 ## Build commands
 
@@ -101,25 +120,6 @@ cd build && ctest --output-on-failure --label-regex integration           # inte
 ./build/bar_feature_export --bar-type <type> --bar-param <param> --output <csv>  # feature export
 ```
 
-## Key files this cycle
-
-Phase A files (created by TDD sub-agents, not the orchestrator):
-
-| File | Change |
-|------|--------|
-| `src/backtest/triple_barrier.hpp` | TB labeling function |
-| `tools/bar_feature_export.cpp` | TB label columns in CSV export |
-| `tests/hybrid_model_tb_label_test.cpp` | TB label unit tests |
-| `tests/test_export_helpers.hpp` | Export test helpers |
-| `CMakeLists.txt` | hybrid_model_tb_label_test target |
-| `.kit/results/hybrid-model/time_5s.csv` | Exported data (87,970 bars) |
-
-Protocol violation (to be cleaned up):
-
-| File | Issue |
-|------|-------|
-| `scripts/hybrid_model/*.py` | Written by orchestrator — must be deleted and recreated by Research kit sub-agent |
-
 ---
 
-Updated: 2026-02-18 (hybrid-model Phase A COMPLETE, protocol rules hardened)
+Updated: 2026-02-19 (R3 Reproduction CONFIRMED — root cause: TICK_SIZE normalization + per-day z-scoring + validation leakage)

@@ -18,6 +18,30 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## r3-reproduction-pipeline-comparison — REFUTED (Step 2) / CONFIRMED (Step 1)
+**Date:** 2026-02-18
+**Hypothesis:** R3's CNN R²=0.132 reproduces on R3-format data (Step 1), and the C++ export differs structurally from R3's Python export, causing the 9B/9C R²=0.002 collapse (Step 2).
+**Key result:** Step 1 PASS: mean R²=0.1317 (Δ=-0.0003 from R3, per-fold corr=0.9997). Step 2 FAIL: data is byte-identical (identity rate=1.0, max diff=0.0). Root cause: missing TICK_SIZE normalization + per-day z-scoring + test-as-validation leakage. Proper validation R²=0.084 (36% lower than R3's leaked 0.132).
+**Lesson:** There was never a "Python vs C++ pipeline" — R3 loaded from the same C++ export as 9B/9C. The 9B/9C failure was caused by omitting TICK_SIZE division on prices and per-day z-scoring on sizes. R3's R²=0.132 includes ~36% inflation from test-as-validation leakage; true CNN R²≈0.084 with proper validation. CNN spatial signal is real but weaker than previously believed.
+**Next:** Apply TICK_SIZE normalization + per-day z-scoring in production training pipeline. Re-attempt CNN+GBT integration with corrected normalization and proper validation. Multi-seed robustness study to confirm R²≈0.084.
+**Details:** `.kit/results/r3-reproduction-pipeline-comparison/analysis.md`
+
+## cnn-reproduction-diagnostic — REFUTED
+**Date:** 2026-02-18
+**Hypothesis:** Fixing 3 protocol deviations (z-score normalization, architecture 2→32→64, no cosine LR) would restore CNN mean OOS R² ≥ 0.10 on Phase 9A data (time_5s.csv).
+**Key result:** MVE gate FAIL. Fold 5 train R² = 0.002 (threshold: 0.05). Architecture matched R3 exactly (12,128 params, Conv1d 2→59→59, 0% deviation). 5 normalization variants tested — ALL produce R² < 0.002. Z-scored vs raw indistinguishable (0.0015 vs 0.0008). Phase B's post-mortem was wrong. 0/2 evaluated success criteria pass; 3/5 not evaluated (abort cascade).
+**Lesson:** The 3 protocol deviations were NOT the root cause — they are inconsequential. The data pipeline difference (Phase 9A C++ export vs R3's Phase 4 Python export) is the primary suspect. The predictive spatial structure is absent from `time_5s.csv`, not hidden behind configuration errors. R6's CNN+GBT recommendation is currently ungrounded — its enabling evidence has not been independently reproduced. Also: the diagnostic spec's architecture description was materially wrong (said 2→32→32 / 4k params; R3 actually used 2→59→59 / 12k params).
+**Next:** Data pipeline comparison — reproduce R3's Python-based export from raw .dbn.zst files for the same 19 days. Direct column-by-column comparison, then train CNN on R3-format data. If R3-format data works → handoff to fix C++ export. If it also fails → R3's result may be artifactual.
+**Details:** `.kit/results/cnn-reproduction-diagnostic/analysis.md`
+
+## hybrid-model-training — REFUTED
+**Date:** 2026-02-18
+**Hypothesis:** CNN+GBT Hybrid (Conv1d spatial encoder + 20 hand-crafted features → XGBoost on triple barrier labels) reproduces R3's CNN R²>=0.08 and achieves positive expectancy under base costs.
+**Key result:** CNN R²(h=5) = -0.002 across all 5 folds (R3 baseline: 0.132). Train R² = 0.001 — CNN cannot fit training data. XGBoost accuracy 0.41 (>0.33 random) but expectancy -$0.44/trade (base costs). GBT-only outperforms hybrid. 4/10 success criteria pass, 6/10 fail.
+**Lesson:** CNN signal is real (R3 proved it) but fragile — does not transfer to a new pipeline with different normalization (z-score both channels vs raw prices) and architecture (Conv1d 2→32→64 vs 2→32→32). The pipeline is broken (train R² ≈ 0), not the hypothesis. XGBoost learns regime identification (volatility, time-of-day) but the edge is thinner than 1 tick/trade.
+**Next:** Reproduce R3's exact CNN protocol in Python (raw price normalization, cosine LR, R3 architecture). Fix pipeline before re-attempting integration.
+**Details:** `.kit/results/hybrid-model-training/analysis.md`
+
 ## Research-Audit — COMPLETE
 **Date:** 2026-02-18
 **Hypothesis:** N/A (documentation audit, not experiment)

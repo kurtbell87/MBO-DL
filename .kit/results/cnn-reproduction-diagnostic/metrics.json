@@ -1,0 +1,126 @@
+{
+  "experiment": "cnn-reproduction-diagnostic",
+  "timestamp": "2026-02-19T01:48:19",
+  "baseline": {
+    "r3_mean_cnn_r2_h5": 0.132,
+    "r3_per_fold_r2_h5": [
+      0.163,
+      0.109,
+      0.049,
+      0.18,
+      0.159
+    ],
+    "r3_param_count": 12128,
+    "r3_channel_width": 59,
+    "phase_b_mean_cnn_r2_h5": -0.002,
+    "phase_b_param_count": 7664,
+    "phase_b_gbt_accuracy": 0.411,
+    "phase_b_gbt_expectancy": -0.38,
+    "random_accuracy": 0.333
+  },
+  "treatment": {
+    "mean_cnn_r2_h5": null,
+    "step1_verdict": "FAIL (MVE gate)",
+    "mve_fold5": {
+      "train_r2": 0.00211,
+      "test_r2": 7.7e-05,
+      "epochs_trained": 40,
+      "best_val_loss": 25.133,
+      "final_lr": 0.000124
+    },
+    "normalization_diagnostics": {
+      "description": "Tested 5 normalization variants on fold 5 (10 epochs each). None produced R\u00b2 > 0.002.",
+      "raw_targets_best_r2": 0.000812,
+      "normalized_targets_best_r2": 0.00151,
+      "tick_scale_ch0_normalized_targets_best_r2": 0.000792,
+      "zscore_both_channels_normalized_targets_best_r2": 0.001491,
+      "higher_lr_3e3_normalized_targets_best_r2": 0.000794,
+      "conclusion": "Normalization variant has no effect on R\u00b2. The model cannot fit this data regardless of input/target scaling."
+    }
+  },
+  "per_seed": [
+    {
+      "seed": 42,
+      "fold": 5,
+      "train_r2": 0.00211,
+      "test_r2": 7.7e-05,
+      "epochs_trained": 40,
+      "description": "MVE fold only \u2014 full 5-fold not executed due to MVE gate failure"
+    }
+  ],
+  "sanity_checks": {
+    "cnn_param_count": 12128,
+    "cnn_param_count_matches_r3": true,
+    "cnn_param_deviation_pct": 0.0,
+    "channel_0_is_raw": true,
+    "channel_0_mean": -0.0,
+    "channel_0_std": 1.4502,
+    "channel_0_range": [
+      -5.625,
+      5.625
+    ],
+    "channel_0_note": "Raw price offsets in index points (0.25 per tick). NOT z-scored. Values are 4x smaller than R3 tick units but scale-invariance tested \u2014 no effect on R\u00b2.",
+    "channel_1_log_sizes": true,
+    "channel_1_note": "Raw integer sizes -> log1p -> z-score per fold. Matches R3 protocol.",
+    "lr_decays": true,
+    "lr_start": 0.001,
+    "lr_end": 0.000124,
+    "lr_note": "CosineAnnealingLR(T_max=50, eta_min=1e-5) confirmed working.",
+    "train_r2_above_005": false,
+    "train_r2_note": "MVE fold 5 train R\u00b2 = 0.002 << 0.05. CNN cannot fit training data.",
+    "no_nan_embeddings": true,
+    "fold_boundaries_valid": true,
+    "data_row_count": 87970,
+    "data_day_count": 19,
+    "data_nan_fwd_return_5": 76
+  },
+  "resource_usage": {
+    "gpu_hours": 0,
+    "wall_clock_seconds": 1046.3,
+    "total_training_steps": 90,
+    "total_runs": 6
+  },
+  "abort_triggered": true,
+  "abort_reason": "MVE gate failure: fold 5 train R\u00b2 = 0.002110 < 0.05. Tested 5 normalization variants \u2014 none produced R\u00b2 > 0.002. The Phase 9A C++ export data does not contain the predictive signal that R3's Phase 4 Track B.1 export had.",
+  "deviations_log": [
+    {
+      "parameter": "Channel width",
+      "r3_value": "59 (R3 actual, 12,128 params)",
+      "actual_value": "59 (matching R3)",
+      "justification": "Diagnostic spec said Conv1d(2\u219232\u219232) which gives 4,001 params. R3 spec (book-encoder-bias.md) said \"Adjust channel width to hit ~12k target.\" R3 used ch=59 for exactly 12,128 params. We match R3's actual implementation."
+    },
+    {
+      "parameter": "Data source",
+      "r3_value": "Phase 4 Track B.1 export (Python)",
+      "actual_value": "Phase 9A C++ bar-feature-export (time_5s.csv)",
+      "justification": "Spec mandated time_5s.csv. This is the same data Phase B used. R3 used a different export pipeline. The two pipelines may compute price offsets, sizes, or book levels differently. This is Confound #1 from the spec."
+    }
+  ],
+  "success_criteria": {
+    "SC-1": {
+      "pass": false,
+      "value": null,
+      "threshold": 0.1,
+      "description": "mean_cnn_r2_h5 >= 0.10 \u2014 NOT EVALUATED (MVE gate failure, full 5-fold not executed)"
+    },
+    "SC-2": {
+      "pass": false,
+      "value": 0.00211,
+      "threshold": 0.05,
+      "description": "No fold train R\u00b2 < 0.05 \u2014 FAIL (MVE fold 5 train R\u00b2 = 0.002)"
+    },
+    "SC-3": {
+      "pass": null,
+      "description": "aggregate_expectancy_base >= /bin/zsh.50 \u2014 NOT EVALUATED (conditional on SC-1)"
+    },
+    "SC-4": {
+      "pass": null,
+      "description": "Hybrid outperforms GBT-only \u2014 NOT EVALUATED (conditional on SC-1)"
+    },
+    "SC-5": {
+      "pass": false,
+      "description": "No sanity check failures \u2014 FAIL (train R\u00b2 < 0.05)"
+    }
+  },
+  "notes": "PyTorch 2.8.0. Architecture matches R3 actual implementation: Conv1d(2\u219259\u219259) + BN(59) + ReLU x2 \u2192 Pool \u2192 Linear(59\u219216\u21921). Exactly 12,128 params (matching R3). Diagnostic spec incorrectly described architecture as Conv1d(2\u219232\u219232) (4,001 params). R3 spec (book-encoder-bias.md) explicitly allowed channel width adjustment to hit 12k target. Channel 0 = raw price offsets in index points (range [-5.625, 5.625]), NOT z-scored. Channel 1 = log1p(raw_sizes), z-scored per fold. AdamW(lr=1e-3, wd=1e-4) + CosineAnnealingLR(T_max=50, eta_min=1e-5). Batch=512, patience=10. MVE fold 5: train R\u00b2 = 0.002, test R\u00b2 = 0.0001 after 40 epochs. Tested 5 normalization variants (raw targets, normalized targets, tick-scale ch0, z-scored both channels, higher LR). ALL variants produce R\u00b2 < 0.002. Normalization is NOT the root cause. Root cause: Phase 9A C++ export data (time_5s.csv) does not contain the predictive signal that R3's Phase 4 Track B.1 export had. The export pipeline difference (Confound #1 in spec) is the primary alternative explanation. Three protocol deviations fixed (architecture, normalization, optimizer) are necessary but insufficient \u2014 the data pipeline must also be investigated."
+}

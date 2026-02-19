@@ -1,0 +1,29 @@
+MVE Diagnostics — Fold 5
+==================================================
+Protocol: R3-exact (test set used as validation for early stopping)
+Train size: 74080
+Test size: 13890
+Param count: 12128
+Train R²: 0.157082
+Test R²: 0.160693
+Epochs trained: 17
+Training time: 159.4s
+
+LR Schedule:
+  Epoch   1: lr=0.000999, train_loss=31.134910, val_loss=18.947222
+  Epoch   2: lr=0.000996, train_loss=28.696181, val_loss=18.333022
+  Epoch   3: lr=0.000991, train_loss=28.207411, val_loss=18.211032
+  Epoch   4: lr=0.000984, train_loss=27.988922, val_loss=17.984645
+  Epoch   5: lr=0.000976, train_loss=27.886736, val_loss=18.035293
+  Epoch   6: lr=0.000965, train_loss=27.781527, val_loss=18.009478
+  Epoch   7: lr=0.000953, train_loss=27.704902, val_loss=17.430512
+  Epoch   8: lr=0.000939, train_loss=27.679308, val_loss=18.029819
+  Epoch   9: lr=0.000923, train_loss=27.570495, val_loss=17.646166
+  Epoch  10: lr=0.000905, train_loss=27.504807, val_loss=18.054844
+  Epoch  11: lr=0.000886, train_loss=27.483151, val_loss=18.067773
+  Epoch  12: lr=0.000866, train_loss=27.427471, val_loss=17.692027
+  Epoch  13: lr=0.000844, train_loss=27.284660, val_loss=18.492508
+  Epoch  14: lr=0.000821, train_loss=27.245234, val_loss=17.663959
+  Epoch  15: lr=0.000796, train_loss=27.174625, val_loss=18.012970
+  Epoch  16: lr=0.000770, train_loss=27.111335, val_loss=18.049866
+  Epoch  17: lr=0.000743, train_loss=27.098501, val_loss=17.689013
