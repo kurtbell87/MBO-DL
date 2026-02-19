@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## r3b-genuine-tick-bars — CONFIRMED (low confidence)
+**Date:** 2026-02-19
+**Hypothesis:** At least one genuine tick-bar threshold in [50, 10000] produces CNN spatial R² ≥ 0.107 (20% above time_5s baseline of 0.089).
+**Key result:** tick_100 (100 trades/bar, ~5.7s median, ~4,171 bars/day) achieves mean R² = 0.124 (+39% vs baseline). BUT: paired t-test p=0.21, depends on fold 5 outlier (R²=0.259). Excluding fold 5, tick_100 R²=0.091 (COMPARABLE). Inverted-U curve: tick_25 R²=0.064 (WORSE), tick_100 R²=0.124 (BETTER), tick_500 R²=0.050 (WORSE, 3/5 folds only).
+**Lesson:** Genuine tick bars at ~100 trades/bar may offer modest CNN improvement, but the evidence is not statistically robust. tick_25 (sub-second) degrades signal — overfitting at fine granularity. tick_500 data-starves the CNN. The tick-bar fix is validated: all 8 thresholds cv=0.189-0.467, p10≠p90. NOTE: run agent fixed bar_feature_export.cpp in-run (StreamingBookBuilder.emit_snapshot trade_count) — needs formal TDD cycle.
+**Next:** (1) Tick_100 replication with multi-seed if pursuing event bars, (2) End-to-end CNN classification on tb_label remains HIGHEST PRIORITY, (3) XGBoost hyperparameter tuning.
+**Details:** `.kit/results/r3b-genuine-tick-bars/analysis.md`
+
 ## r3b-event-bar-cnn — INCONCLUSIVE
 **Date:** 2026-02-19
 **Hypothesis:** CNN spatial R² on tick-bar book snapshots exceeds time_5s baseline (0.084) by ≥20% at some threshold, indicating event bars improve spatial prediction.

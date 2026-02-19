@@ -12,101 +12,74 @@
 
 ## Project Status
 
-**19 phases complete (9 engineering + 10 research). Tick bar construction defect FIXED. All bar types now genuine.** Branch: `main`.
+**22 phases complete (9 engineering + 13 research). CNN signal confirmed on time_5s (R²=0.089) and tentatively on tick_100 (R²=0.124, low confidence). NOT economically viable under base costs. Branch: `experiment/r3b-genuine-tick-bars`.**
 
 ## What was completed this cycle
 
-- **Tick Bar Fix TDD** — `.kit/docs/tick-bar-fix.md`
-- **TDD phases** — red→green→refactor all exit 0
-- **Root fix:** `book_builder.hpp` now emits `trade_count` (uint32) per snapshot — counts action='T' MBO events since previous snapshot emission.
-- **Bar construction fix:** `tick_bar_builder.hpp` accumulates `trade_count` across snapshots and closes a tick bar when cumulative trades >= threshold. Remainder carries over to next bar.
-- **Regression:** Time, dollar, and volume bar construction unchanged. Existing tests pass.
-- **New tests:** `tests/tick_bar_fix_test.cpp` — validates trade counting, variable duration, no-trade gaps, daily variance, trade reconciliation, threshold proportionality.
-- **Files changed:** `src/book_builder.hpp`, `src/bars/bar_builder_base.hpp`, `src/bars/tick_bar_builder.hpp`, `src/features/bar_features.hpp`, `CMakeLists.txt`, `tests/tick_bar_fix_test.cpp`
+- **R3b Genuine Tick Bars** — `.kit/experiments/r3b-genuine-tick-bars.md`
+- **Research kit cycle** — RUN phase exit 0, READ phase exit 128 (killed, results already written)
+- **Tick bar fix VALIDATED**: All 8 thresholds show bars_per_day_cv > 0 (range 0.189–0.467). p10 != p90 at all thresholds. Genuine trade-event bars confirmed.
+- **Calibration complete** for all 8 thresholds (tick_25 through tick_5000):
+  - tick_25: 16,836 bars/day, 1.4s median
+  - tick_100: 4,171 bars/day, 5.7s median (near-match to time_5s)
+  - tick_500: 794 bars/day, 28.5s median
+  - tick_5000: 34 bars/day (dropped — below 100 bars/day threshold)
+- **CNN trained** on 3 thresholds (tick_25: 5/5 folds, tick_100: 5/5 folds, tick_500: 3/5 folds)
+  - tick_2000 not reached (wall clock budget exceeded)
+- **Key results:**
+  - tick_100 mean R2 = 0.124 (+39% vs time_5s baseline of 0.089) — BETTER nominally
+  - BUT: paired t-test p=0.21 (not statistically significant)
+  - Fold 5 outlier: tick_100 R2=0.259 (test > train, regime-dependent?)
+  - Excluding fold 5: tick_100 R2=0.091 (COMPARABLE, not BETTER)
+  - tick_25: R2=0.064 (WORSE — sub-second bars degrade signal)
+  - tick_500: R2=0.050 (WORSE, incomplete — 3/5 folds, data starvation on fold 3)
+  - Inverted-U curve shape: peak at tick_100
+  - Fold 3 diagnostic: tick_25 eliminates fold 3 deficit (+0.004 vs -0.049), tick_100 does not (-0.058)
+- **Protocol deviation noted**: Run agent fixed bar_feature_export.cpp in-run (StreamingBookBuilder.emit_snapshot trade_count field). Needs formal TDD cycle.
+- **Verdict: CONFIRMED (low confidence)** — tick_100 nominally passes BETTER threshold but evidence is statistically weak
 
 ## What exists
 
 A C++20 MES microstructure model suite with:
-- **Infrastructure**: Bar construction (time/tick/dollar/volume — all genuine), oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report, bar feature export (9 TDD phases)
-- **Research results**: 10 complete research phases. CNN spatial signal confirmed (proper-validation R²≈0.084). Root cause of reproduction failures fully resolved.
-- **Architecture decision**: CNN + GBT Hybrid — **NOW GROUNDED.** CNN spatial signal is real. True R²≈0.084 (not 0.132). R6 recommendation validated qualitatively, quantitative edge is 36% smaller than assumed.
+- **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report, bar feature export, tick bar fix (9 TDD phases)
+- **Research results**: 13 complete research phases. CNN spatial signal confirmed (proper-validation R2=0.089 on time_5s, tentatively R2=0.124 on tick_100). End-to-end Hybrid pipeline not viable under base costs.
+- **Architecture decision**: CNN + GBT Hybrid — signal is REAL but pipeline design is the bottleneck
 - **Labeling decision**: Triple barrier (preferred over first-to-hit)
-- **Temporal verdict**: NO TEMPORAL SIGNAL — confirmed across 7 bar types, 0.14s–300s
-- **Bar construction**: ALL bar types now genuine event bars. Tick bars fixed 2026-02-19.
-
-## Phase Sequence
-
-| # | Spec | Kit | Status |
-|---|------|-----|--------|
-| 1 | `.kit/docs/bar-construction.md` | TDD | **Done** |
-| 2 | `.kit/docs/oracle-replay.md` | TDD | **Done** |
-| 3 | `.kit/docs/multi-day-backtest.md` | TDD | **Done** |
-| R1 | `.kit/experiments/subordination-test.md` | Research | **Done** (REFUTED) |
-| 4 | `.kit/docs/feature-computation.md` | TDD | **Done** |
-| 5 | `.kit/docs/feature-analysis.md` | TDD | **Done** |
-| R2 | `.kit/experiments/info-decomposition.md` | Research | **Done** (FEATURES SUFFICIENT) |
-| R3 | `.kit/experiments/book-encoder-bias.md` | Research | **Done** (CNN WINS) |
-| R4 | `.kit/experiments/temporal-predictability.md` | Research | **Done** (NO SIGNAL) |
-| 6 | `.kit/experiments/synthesis.md` | Research | **Done** (CONDITIONAL GO) |
-| 7 | `.kit/docs/oracle-expectancy.md` | TDD | **Done** |
-| 7b | `tools/oracle_expectancy.cpp` | Research | **Done** (GO) |
-| 8 | `.kit/docs/bar-feature-export.md` | TDD | **Done** |
-| R4b | `.kit/experiments/temporal-predictability-event-bars.md` | Research | **Done** (NO SIGNAL — robust) |
-| R4c | `.kit/experiments/temporal-predictability-completion.md` | Research | **Done** (CONFIRMED — all nulls) |
-| R4d | `.kit/experiments/temporal-predictability-dollar-tick-actionable.md` | Research | **Done** (CONFIRMED) |
-| 9A | `.kit/docs/hybrid-model.md` | TDD | **Done** (C++ TB label export) |
-| 9B | `.kit/experiments/hybrid-model-training.md` | Research | **Done (REFUTED)** — normalization wrong |
-| 9C | `.kit/experiments/cnn-reproduction-diagnostic.md` | Research | **Done (REFUTED)** — deviations not root cause |
-| 9D | `.kit/experiments/r3-reproduction-pipeline-comparison.md` | Research | **Done (CONFIRMED Step 1 / REFUTED Step 2)** — R3 reproduced, root cause resolved |
-| R3b | `.kit/experiments/r3b-event-bar-cnn.md` | Research | **Done (INCONCLUSIVE)** — bar construction defect |
-| **TB-Fix** | **`.kit/docs/tick-bar-fix.md`** | **TDD** | **Done** — tick bars count trades, not snapshots |
-
-## Test summary
-
-- **1003/1004 unit tests** pass (baseline) + new tick_bar_fix tests. TDD phases exited 0.
-- **22 integration tests** (14 N=32 + 8 N=128) — labeled `integration`, excluded from default ctest
-- Unit test time: ~14 min. Integration: ~20 min.
+- **Temporal verdict**: NO TEMPORAL SIGNAL — confirmed across 7 bar types, 0.14s-300s
 
 ## What to do next
 
-### R3b Rerun with Genuine Tick Bars (UNBLOCKED)
+### 1. End-to-End CNN Classification (HIGHEST PRIORITY — unchanged)
+Train CNN directly on tb_label (3-class cross-entropy) instead of regression->frozen embedding->XGBoost. Eliminates the regression-to-classification bottleneck. Run on time_5s first.
 
-Tick bars are now genuine event bars. Rerun R3b experiment (`.kit/experiments/r3b-event-bar-cnn.md`) to test whether CNN spatial R² on activity-normalized event bars exceeds the time_5s baseline of 0.084.
+### 2. XGBoost Hyperparameter Tuning (LOW-HANGING FRUIT — unchanged)
+Grid search to close the 2pp win rate gap. Current hyperparameters inherited from 9B (broken pipeline era).
 
-### CNN+GBT Integration with Corrected Pipeline (HIGHEST PRIORITY)
+### 3. Label Design Sensitivity (ARCHITECTURAL — unchanged)
+Test wider target (15 ticks) / narrower stop (3 ticks). At 15:3 ratio, breakeven win rate drops to ~42.5%.
 
-Root cause is fully resolved. The fix is straightforward:
-1. **TICK_SIZE normalization**: Divide book price offsets by 0.25 to get integer tick offsets
-2. **Per-day z-scoring**: Z-score log1p(size) per day, not per fold
-3. **Proper validation**: Use 80/20 train/val split, not test-as-validation
+### 4. Tick_100 Replication with Multi-Seed (if pursuing event bars)
+Run tick_50, tick_100, tick_200, tick_500, tick_2000 each with 3 seeds per fold (75 CNN fits). Budget ~6h.
 
-Re-attempt Phase 9B hybrid model training with these corrections. Expected CNN R²≈0.084 (proper validation).
+### 5. TDD: bar_feature_export StreamingBookBuilder Fix
+Formalize the in-run fix with a proper TDD cycle. Run agent patched StreamingBookBuilder.emit_snapshot to populate trade_count.
 
-### Multi-Seed Robustness Study (MEDIUM PRIORITY)
+## Key research results
 
-Run 5-fold CV with 5 seeds (25 total runs) using corrected pipeline + proper validation. Confirm R²≈0.084 is robust.
-
-## Key files changed this cycle
-
-| File | Change |
-|------|--------|
-| `src/book_builder.hpp` | Added `trade_count` field to BookSnapshot |
-| `src/bars/bar_builder_base.hpp` | Base class updates for trade-count bar construction |
-| `src/bars/tick_bar_builder.hpp` | Tick bars now accumulate `trade_count`, not snapshot count |
-| `src/features/bar_features.hpp` | Updated for new tick bar boundary logic |
-| `CMakeLists.txt` | Added `tick_bar_fix_test` target |
-| `tests/tick_bar_fix_test.cpp` | New: trade counting, variable duration, reconciliation tests |
-
-## Build commands
-
-```bash
-cmake --build build -j12                                                  # build
-cd build && ctest --output-on-failure --label-exclude integration         # unit tests (~14 min)
-cd build && ctest --output-on-failure --label-regex integration           # integration tests (~20 min)
-./build/oracle_expectancy                                                  # oracle expectancy extraction
-./build/bar_feature_export --bar-type <type> --bar-param <param> --output <csv>  # feature export
-```
+| Experiment | Finding | Key Number |
+|-----------|---------|------------|
+| R1 | Subordination refuted for MES | 0/3 primary tests significant |
+| R2 | Hand-crafted features sufficient | Best R2=0.0067 (1-bar MLP) |
+| R3 | CNN best book encoder | R2=0.132 (leaked), proper R2=0.084 |
+| R4-R4d | No temporal signal | 0/168+ dual threshold passes |
+| Synthesis | CNN + GBT Hybrid | CONDITIONAL GO -> GO |
+| Oracle | TB passes all 6 criteria | $4.00/trade, PF=3.30 |
+| 9B-9C | CNN normalization wrong | R2=-0.002 |
+| 9D | R3 reproduced, root cause resolved | R2=0.1317 (leaked) / 0.084 (proper) |
+| R3b-orig | Tick bars are time bars | Peak R2=0.057, all < baseline |
+| 9E | CNN viable, pipeline not | R2=0.089, exp=-$0.37/trade |
+| **R3b-genuine** | **tick_100 tentatively BETTER** | **R2=0.124, p=0.21 (low confidence)** |
 
 ---
 
-Updated: 2026-02-19 (Tick Bar Fix TDD — complete. Tick bars now count action='T' trade events, not snapshots.)
+Updated: 2026-02-19 (R3b Genuine Tick Bars — CONFIRMED low confidence. tick_100 R2=0.124 vs time_5s R2=0.089. Fold-5-dependent, not statistically significant.)
