@@ -1,0 +1,24 @@
+TICK_SIZE Normalization Verification
+Channel 0 fraction integer-valued: 0.071661
+Channel 0 range: [-22.5, 22.5]
+
+Per-Day Z-Score Verification (Channel 1)
+Day  1: n= 4630, log1p mean=4.5609, std=0.4332, z-scored mean=-0.000000, std=1.0000
+Day  2: n= 4630, log1p mean=3.6828, std=0.5531, z-scored mean=-0.000000, std=1.0000
+Day  3: n= 4630, log1p mean=3.6986, std=0.6011, z-scored mean=0.000000, std=1.0000
+Day  4: n= 4630, log1p mean=3.7958, std=0.4057, z-scored mean=0.000000, std=1.0000
+Day  5: n= 4630, log1p mean=4.1486, std=0.6578, z-scored mean=-0.000000, std=1.0000
+Day  6: n= 4630, log1p mean=4.0234, std=0.7305, z-scored mean=0.000000, std=1.0000
+Day  7: n= 4630, log1p mean=3.9949, std=0.5687, z-scored mean=0.000000, std=1.0000
+Day  8: n= 4630, log1p mean=3.8507, std=0.5350, z-scored mean=-0.000000, std=1.0000
+Day  9: n= 4630, log1p mean=4.1465, std=0.5530, z-scored mean=-0.000000, std=1.0000
+Day 10: n= 4630, log1p mean=3.8471, std=0.5932, z-scored mean=0.000000, std=1.0000
+Day 11: n= 4630, log1p mean=3.7408, std=0.4804, z-scored mean=0.000000, std=1.0000
+Day 12: n= 4630, log1p mean=4.6968, std=0.6699, z-scored mean=0.000000, std=1.0000
+Day 13: n= 4630, log1p mean=4.5673, std=0.5335, z-scored mean=0.000000, std=1.0000
+Day 14: n= 4630, log1p mean=4.1025, std=0.5496, z-scored mean=0.000000, std=1.0000
+Day 15: n= 4630, log1p mean=4.1978, std=0.5707, z-scored mean=0.000000, std=1.0000
+Day 16: n= 4630, log1p mean=4.3644, std=0.5245, z-scored mean=0.000000, std=1.0000
+Day 17: n= 4630, log1p mean=4.2233, std=0.4836, z-scored mean=0.000000, std=1.0000
+Day 18: n= 4630, log1p mean=4.4797, std=0.4524, z-scored mean=0.000000, std=1.0000
+Day 19: n= 4630, log1p mean=4.4707, std=0.4058, z-scored mean=0.000000, std=1.0000

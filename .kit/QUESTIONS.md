@@ -38,6 +38,7 @@ Status: `Not started` | `In progress` | `Answered` | `Blocked` | `Deferred`
 | Priority | Question | Status | Parent | Blocker | Decision Gate | Experiment(s) |
 |----------|----------|--------|--------|---------|---------------|---------------|
 | P2 | How sensitive is oracle expectancy to transaction cost assumptions? | Not started | — | — | Determines edge robustness under realistic execution | — |
+| P3 | Does CNN spatial R² improve on genuine trade-triggered tick bars vs time_5s? | Blocked | — | bar_feature_export tick bar construction counts snapshots not trades | Determines whether event bars should replace time_5s before full-year export | R3b (INCONCLUSIVE — tested time bars, not event bars) |
 
 ---
 

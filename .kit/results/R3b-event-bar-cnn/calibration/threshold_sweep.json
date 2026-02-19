@@ -1,0 +1,53 @@
+{
+  "tick_100": {
+    "bars_per_day": 2289,
+    "total_bars": 43491,
+    "median_duration_s": 10.0,
+    "mean_duration_s": 10.0,
+    "p10_duration_s": 10.0,
+    "p90_duration_s": 10.0,
+    "viable": true,
+    "note": "Bar count identical every day (std=0). Duration variance = 0."
+  },
+  "tick_500": {
+    "bars_per_day": 417,
+    "total_bars": 7923,
+    "median_duration_s": 50.0,
+    "mean_duration_s": 50.0,
+    "p10_duration_s": 50.0,
+    "p90_duration_s": 50.0,
+    "viable": true,
+    "note": "Reused from R4d export. Bar count identical every day."
+  },
+  "tick_1000": {
+    "bars_per_day": 183,
+    "total_bars": 3477,
+    "median_duration_s": 100.0,
+    "mean_duration_s": 100.0,
+    "p10_duration_s": 100.0,
+    "p90_duration_s": 100.0,
+    "viable": true,
+    "note": "Below 200/day sanity check but above 100/day abort criterion."
+  },
+  "tick_1500": {
+    "bars_per_day": 105,
+    "total_bars": 1995,
+    "median_duration_s": 150.0,
+    "mean_duration_s": 150.0,
+    "p10_duration_s": 150.0,
+    "p90_duration_s": 150.0,
+    "viable": true,
+    "note": "Borderline viable (105 > 100 bars/day). Below 200/day sanity check."
+  },
+  "tick_3000": {
+    "bars_per_day": 27,
+    "total_bars": 513,
+    "median_duration_s": 300.0,
+    "mean_duration_s": 300.0,
+    "p10_duration_s": 300.0,
+    "p90_duration_s": 300.0,
+    "viable": false,
+    "note": "DROPPED: 27 bars/day < 100 abort criterion. Data from R4d calibration."
+  },
+  "observation": "All tick-bar thresholds produce constant bar counts per day (bars_per_day_std=0.0) and constant duration. This indicates the bar construction counts fixed-frequency book snapshots (10/second), not variable-rate trade events."
+}
