@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## r3b-event-bar-cnn — INCONCLUSIVE
+**Date:** 2026-02-19
+**Hypothesis:** CNN spatial R² on tick-bar book snapshots exceeds time_5s baseline (0.084) by ≥20% at some threshold, indicating event bars improve spatial prediction.
+**Key result:** All 4 thresholds WORSE than baseline (peak R²=0.057 at tick_100, Δ=-0.027). BUT: bar construction defect — "tick" bars are actually time bars at different frequencies (bars_per_day std=0.0, duration variance=0 at all thresholds). Hypothesis was never testable.
+**Lesson:** The C++ bar_feature_export tool's tick bar construction counts fixed-rate book snapshots (10/s), not trade events. tick_100 = time_10s, tick_500 = time_50s, etc. CNN spatial signal degrades at slower frequencies (time_5s > time_10s > time_50s). Data starvation at tick_1000/tick_1500 (420–732 train samples for 12,128-param CNN) makes those comparison points invalid. Event-bar hypothesis survives untested.
+**Next:** Handoff: fix bar_feature_export tick bar construction to count trades. Proceed with time_5s CNN+GBT pipeline (main direction unchanged). Low-priority rerun of R3b with genuine tick bars if bar construction is fixed.
+**Details:** `.kit/results/R3b-event-bar-cnn/analysis.md`
+
 ## r3-reproduction-pipeline-comparison — REFUTED (Step 2) / CONFIRMED (Step 1)
 **Date:** 2026-02-18
 **Hypothesis:** R3's CNN R²=0.132 reproduces on R3-format data (Step 1), and the C++ export differs structurally from R3's Python export, causing the 9B/9C R²=0.002 collapse (Step 2).

@@ -1,0 +1,50 @@
+{
+  "thresholds": ["tick_100", "tick_500", "tick_1000", "tick_1500"],
+  "baseline": "time_5s",
+  "baseline_r2": 0.084,
+  "summary": {
+    "tick_100": {
+      "mean_r2": 0.0566,
+      "std_r2": 0.1040,
+      "fold3_r2": -0.1076,
+      "bars_per_day": 2289,
+      "median_duration_s": 10.0,
+      "total_bars": 43491,
+      "assessment": "WORSE"
+    },
+    "tick_500": {
+      "mean_r2": 0.0465,
+      "std_r2": 0.0963,
+      "fold3_r2": -0.0090,
+      "bars_per_day": 417,
+      "median_duration_s": 50.0,
+      "total_bars": 7923,
+      "assessment": "WORSE"
+    },
+    "tick_1000": {
+      "mean_r2": -0.0027,
+      "std_r2": 0.0376,
+      "fold3_r2": -0.0364,
+      "bars_per_day": 183,
+      "median_duration_s": 100.0,
+      "total_bars": 3477,
+      "assessment": "WORSE"
+    },
+    "tick_1500": {
+      "mean_r2": -0.0219,
+      "std_r2": 0.0298,
+      "fold3_r2": -0.0717,
+      "bars_per_day": 105,
+      "median_duration_s": 150.0,
+      "total_bars": 1995,
+      "assessment": "WORSE"
+    }
+  },
+  "peak": {
+    "threshold": "tick_100",
+    "r2": 0.0566,
+    "delta_from_baseline": -0.0274
+  },
+  "curve_shape": "Monotonic down",
+  "cross_threshold_outcome": "All WORSE"
+}
