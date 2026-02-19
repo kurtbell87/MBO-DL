@@ -1,0 +1,54 @@
+CNN Reproduction Diagnostic — MVE (Fold 5)
+============================================================
+
+Train size: 74080
+Test size: 13890
+Train R²: 0.002110
+Test R²: 0.000077
+Epochs trained: 40
+Best val loss: 25.132692
+Final LR: 0.000124
+Param count: 12128
+Training time: 345.6s
+
+LR Schedule:
+  Epoch   1: lr=0.001000, train_loss=34.737896, val_loss=25.178465
+  Epoch   2: lr=0.000999, train_loss=34.719217, val_loss=25.177753
+  Epoch   3: lr=0.000996, train_loss=34.721288, val_loss=25.162943
+  Epoch   4: lr=0.000991, train_loss=34.722430, val_loss=25.166241
+  Epoch   5: lr=0.000984, train_loss=34.715904, val_loss=25.167040
+  Epoch   6: lr=0.000976, train_loss=34.738551, val_loss=25.180666
+  Epoch   7: lr=0.000965, train_loss=34.706449, val_loss=25.178368
+  Epoch   8: lr=0.000953, train_loss=34.737702, val_loss=25.208410
+  Epoch   9: lr=0.000939, train_loss=34.719577, val_loss=25.158827
+  Epoch  10: lr=0.000923, train_loss=34.748530, val_loss=25.161848
+  Epoch  11: lr=0.000905, train_loss=34.737655, val_loss=25.162092
+  Epoch  12: lr=0.000886, train_loss=34.717726, val_loss=25.185301
+  Epoch  13: lr=0.000866, train_loss=34.737687, val_loss=25.156750
+  Epoch  14: lr=0.000844, train_loss=34.701448, val_loss=25.162830
+  Epoch  15: lr=0.000821, train_loss=34.718682, val_loss=25.178143
+  Epoch  16: lr=0.000796, train_loss=34.735415, val_loss=25.150700
+  Epoch  17: lr=0.000770, train_loss=34.718868, val_loss=25.155226
+  Epoch  18: lr=0.000743, train_loss=34.713698, val_loss=25.158817
+  Epoch  19: lr=0.000716, train_loss=34.690811, val_loss=25.153381
+  Epoch  20: lr=0.000687, train_loss=34.707084, val_loss=25.158510
+  Epoch  21: lr=0.000658, train_loss=34.699369, val_loss=25.170059
+  Epoch  22: lr=0.000628, train_loss=34.707394, val_loss=25.142941
+  Epoch  23: lr=0.000598, train_loss=34.695032, val_loss=25.151709
+  Epoch  24: lr=0.000567, train_loss=34.657091, val_loss=25.182112
+  Epoch  25: lr=0.000536, train_loss=34.683842, val_loss=25.135315
+  Epoch  26: lr=0.000505, train_loss=34.692458, val_loss=25.153360
+  Epoch  27: lr=0.000474, train_loss=34.676200, val_loss=25.136448
+  Epoch  28: lr=0.000443, train_loss=34.664061, val_loss=25.147541
+  Epoch  29: lr=0.000412, train_loss=34.664564, val_loss=25.157864
+  Epoch  30: lr=0.000382, train_loss=34.650421, val_loss=25.132692
+  Epoch  31: lr=0.000352, train_loss=34.689022, val_loss=25.158134
+  Epoch  32: lr=0.000323, train_loss=34.654488, val_loss=25.138882
+  Epoch  33: lr=0.000294, train_loss=34.657043, val_loss=25.154419
+  Epoch  34: lr=0.000267, train_loss=34.648900, val_loss=25.146168
+  Epoch  35: lr=0.000240, train_loss=34.651852, val_loss=25.169508
+  Epoch  36: lr=0.000214, train_loss=34.658386, val_loss=25.151623
+  Epoch  37: lr=0.000189, train_loss=34.649121, val_loss=25.146044
+  Epoch  38: lr=0.000166, train_loss=34.653971, val_loss=25.152918
+  Epoch  39: lr=0.000144, train_loss=34.650769, val_loss=25.170074
+  Epoch  40: lr=0.000124, train_loss=34.641321, val_loss=25.143560

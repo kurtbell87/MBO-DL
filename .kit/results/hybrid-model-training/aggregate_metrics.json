@@ -1,0 +1,290 @@
+{
+  "mean_cnn_r2_h1": 0.0017115570146681637,
+  "mean_cnn_r2_h5": -0.001969814995894925,
+  "per_fold_r2_std": 0.000386890467222634,
+  "neg_fold_count_h5": 5,
+  "mean_xgb_accuracy": 0.4103239740820734,
+  "mean_xgb_f1_macro": 0.3923244920039838,
+  "aggregate_expectancy_base": -0.4433417697787782,
+  "aggregate_profit_factor_base": 0.9095874154121023,
+  "aggregate_sharpe_base": -14.812866062221353,
+  "ablation_delta_accuracy": -0.0011663066954644141,
+  "ablation_delta_expectancy": -0.13601483145029097,
+  "per_fold": [
+    {
+      "fold": 1,
+      "train_days": [
+        20220103,
+        20220121,
+        20220211,
+        20220304
+      ],
+      "test_days": [
+        20220331,
+        20220401,
+        20220422
+      ],
+      "train_size": 18520,
+      "test_size": 13890,
+      "cnn_r2_h1": -0.0020504634046949466,
+      "cnn_r2_h5": -0.0019879448281412415,
+      "cnn_train_r2_h5": -0.0008184795837054004,
+      "xgb_accuracy": 0.34290856731461483,
+      "xgb_f1_macro": 0.3375852751411709,
+      "pnl": {
+        "optimistic": {
+          "expectancy": 0.9681819617753904,
+          "profit_factor": 1.2297159038526841,
+          "trade_count": 6331,
+          "gross_profit": 32812.78000000001,
+          "gross_loss": 26683.219999999998,
+          "net_pnl": 6129.559999999997
+        },
+        "base": {
+          "expectancy": -0.2818180382246096,
+          "profit_factor": 0.9415009506722578,
+          "trade_count": 6331,
+          "gross_profit": 28715.280000000006,
+          "gross_loss": 30499.469999999998,
+          "net_pnl": -1784.1900000000032
+        },
+        "pessimistic": {
+          "expectancy": -2.791818038224609,
+          "profit_factor": 0.53684900098264,
+          "trade_count": 6331,
+          "gross_profit": 20487.5,
+          "gross_loss": 38162.5,
+          "net_pnl": -17675.0
+        }
+      },
+      "sharpe_base": -6.841255932822199,
+      "selected_horizon": "h5"
+    },
+    {
+      "fold": 2,
+      "train_days": [
+        20220103,
+        20220121,
+        20220211,
+        20220304,
+        20220331,
+        20220401,
+        20220422
+      ],
+      "test_days": [
+        20220513,
+        20220603,
+        20220630
+      ],
+      "train_size": 32410,
+      "test_size": 13890,
+      "cnn_r2_h1": 0.0011015625692436526,
+      "cnn_r2_h5": -0.002169724647704152,
+      "cnn_train_r2_h5": 0.0014876777113557171,
+      "xgb_accuracy": 0.4037437005039597,
+      "xgb_f1_macro": 0.38209122787715105,
+      "pnl": {
+        "optimistic": {
+          "expectancy": 0.8811270104068111,
+          "profit_factor": 1.2070671419336803,
+          "trade_count": 8456,
+          "gross_profit": 43433.39,
+          "gross_loss": 35982.579999999994,
+          "net_pnl": 7450.809999999994
+        },
+        "base": {
+          "expectancy": -0.36887298959318887,
+          "profit_factor": 0.9241604976363295,
+          "trade_count": 8456,
+          "gross_profit": 38009.64,
+          "gross_loss": 41128.83,
+          "net_pnl": -3119.190000000005
+        },
+        "pessimistic": {
+          "expectancy": -2.878872989593188,
+          "profit_factor": 0.5269613796453728,
+          "trade_count": 8456,
+          "gross_profit": 27118.75,
+          "gross_loss": 51462.5,
+          "net_pnl": -24343.75
+        }
+      },
+      "sharpe_base": -24.13996461538743,
+      "selected_horizon": "h1"
+    },
+    {
+      "fold": 3,
+      "train_days": [
+        20220103,
+        20220121,
+        20220211,
+        20220304,
+        20220331,
+        20220401,
+        20220422,
+        20220513,
+        20220603,
+        20220630
+      ],
+      "test_days": [
+        20220701,
+        20220722,
+        20220812
+      ],
+      "train_size": 46300,
+      "test_size": 13890,
+      "cnn_r2_h1": 0.0018289744229120775,
+      "cnn_r2_h5": -0.002574982245587165,
+      "cnn_train_r2_h5": 0.0010894902887466085,
+      "xgb_accuracy": 0.4796976241900648,
+      "xgb_f1_macro": 0.431815264132881,
+      "pnl": {
+        "optimistic": {
+          "expectancy": 0.565789917738873,
+          "profit_factor": 1.128522570901801,
+          "trade_count": 4741,
+          "gross_profit": 23553.53,
+          "gross_loss": 20871.120000000003,
+          "net_pnl": 2682.409999999997
+        },
+        "base": {
+          "expectancy": -0.684210082261127,
+          "profit_factor": 0.8640248288489493,
+          "trade_count": 4741,
+          "gross_profit": 20612.28,
+          "gross_loss": 23856.120000000003,
+          "net_pnl": -3243.840000000003
+        },
+        "pessimistic": {
+          "expectancy": -3.1942100822611263,
+          "profit_factor": 0.4926716917922948,
+          "trade_count": 4741,
+          "gross_profit": 14706.25,
+          "gross_loss": 29850.0,
+          "net_pnl": -15143.75
+        }
+      },
+      "sharpe_base": -12.97702735925523,
+      "selected_horizon": "h1"
+    },
+    {
+      "fold": 4,
+      "train_days": [
+        20220103,
+        20220121,
+        20220211,
+        20220304,
+        20220331,
+        20220401,
+        20220422,
+        20220513,
+        20220603,
+        20220630,
+        20220701,
+        20220722,
+        20220812
+      ],
+      "test_days": [
+        20220902,
+        20220930,
+        20221003
+      ],
+      "train_size": 60190,
+      "test_size": 13890,
+      "cnn_r2_h1": 0.0018135970535523294,
+      "cnn_r2_h5": -0.0015190546048040598,
+      "cnn_train_r2_h5": 0.001232283761864017,
+      "xgb_accuracy": 0.4320374370050396,
+      "xgb_f1_macro": 0.4279649045027551,
+      "pnl": {
+        "optimistic": {
+          "expectancy": 0.7488771186440671,
+          "profit_factor": 1.1734749432171026,
+          "trade_count": 7080,
+          "gross_profit": 35865.83000000001,
+          "gross_loss": 30563.779999999995,
+          "net_pnl": 5302.049999999996
+        },
+        "base": {
+          "expectancy": -0.5011228813559329,
+          "profit_factor": 0.8984414783671292,
+          "trade_count": 7080,
+          "gross_profit": 31387.08000000001,
+          "gross_loss": 34935.03,
+          "net_pnl": -3547.9500000000044
+        },
+        "pessimistic": {
+          "expectancy": -3.011122881355932,
+          "profit_factor": 0.5122962539319417,
+          "trade_count": 7080,
+          "gross_profit": 22393.75,
+          "gross_loss": 43712.5,
+          "net_pnl": -21318.75
+        }
+      },
+      "sharpe_base": -21.201627099492853,
+      "selected_horizon": "h1"
+    },
+    {
+      "fold": 5,
+      "train_days": [
+        20220103,
+        20220121,
+        20220211,
+        20220304,
+        20220331,
+        20220401,
+        20220422,
+        20220513,
+        20220603,
+        20220630,
+        20220701,
+        20220722,
+        20220812,
+        20220902,
+        20220930,
+        20221003
+      ],
+      "test_days": [
+        20221024,
+        20221114,
+        20221205
+      ],
+      "train_size": 74080,
+      "test_size": 13890,
+      "cnn_r2_h1": 0.005864114432327705,
+      "cnn_r2_h5": -0.0015973686532380071,
+      "cnn_train_r2_h5": 0.0006662317209287227,
+      "xgb_accuracy": 0.3932325413966883,
+      "xgb_f1_macro": 0.3821657883659606,
+      "pnl": {
+        "optimistic": {
+          "expectancy": 0.7878910303928831,
+          "profit_factor": 1.1832845029910386,
+          "trade_count": 5396,
+          "gross_profit": 27447.420000000006,
+          "gross_loss": 23195.959999999995,
+          "net_pnl": 4251.459999999997
+        },
+        "base": {
+          "expectancy": -0.4621089696071169,
+          "profit_factor": 0.9059519202699312,
+          "trade_count": 5396,
+          "gross_profit": 24019.920000000006,
+          "gross_loss": 26513.459999999995,
+          "net_pnl": -2493.5400000000027
+        },
+        "pessimistic": {
+          "expectancy": -2.9721089696071163,
+          "profit_factor": 0.5165787490580256,
+          "trade_count": 5396,
+          "gross_profit": 17137.5,
+          "gross_loss": 33175.0,
+          "net_pnl": -16037.5
+        }
+      },
+      "sharpe_base": -116.77244601412892,
+      "selected_horizon": "h1"
+    }
+  ]
+}

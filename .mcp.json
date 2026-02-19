@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "orchestration-kit": {
+      "command": "python3",
+      "args": [
+        "orchestration-kit/mcp/server.py",
+        "--transport", "stdio",
+        "--root", "orchestration-kit"
+      ],
+      "env": {
+        "PROJECT_ROOT": "."
+      }
+    }
+  }
+}

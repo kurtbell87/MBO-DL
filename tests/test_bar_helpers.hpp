@@ -1,7 +1,8 @@
 #pragma once
 
 // Shared test helpers for constructing synthetic Bar sequences.
-// Used by oracle_replay_test.cpp and triple_barrier_test.cpp.
+// Used by oracle_replay_test.cpp, triple_barrier_test.cpp,
+// hybrid_model_tb_label_test.cpp, and others.
 
 #include "bars/bar.hpp"
 
@@ -72,6 +73,33 @@ inline std::vector<Bar> make_bar_path(float start_mid, const std::vector<float>&
         bars.push_back(make_bar(mid, vol_per_bar, ts_offset));
         if (i < static_cast<int>(deltas.size())) {
             mid += deltas[i];
+        }
+    }
+    return bars;
+}
+
+// Build a bar series with fine-grained control over per-bar volume and timestamps.
+// Each bar has specified close_mid (via cumulative deltas), volume, and time spacing.
+inline std::vector<Bar> make_bar_sequence(float start_mid,
+                                           const std::vector<float>& mid_deltas,
+                                           const std::vector<uint32_t>& volumes,
+                                           float seconds_per_bar = 5.0f) {
+    int count = static_cast<int>(mid_deltas.size()) + 1;
+    std::vector<Bar> bars;
+    bars.reserve(count);
+    float mid = start_mid;
+    for (int i = 0; i < count; ++i) {
+        uint64_t ts_offset = static_cast<uint64_t>(i * seconds_per_bar) * NS_PER_SEC;
+        uint32_t vol = (i < static_cast<int>(volumes.size())) ? volumes[i] : 50;
+        bars.push_back(make_bar(mid, vol, ts_offset));
+        if (i > 0) {
+            bars[i].open_ts = bars[i - 1].close_ts;
+            bars[i].close_ts = bars[i].open_ts +
+                               static_cast<uint64_t>(seconds_per_bar * 1e9f);
+        }
+        bars[i].bar_duration_s = seconds_per_bar;
+        if (i < static_cast<int>(mid_deltas.size())) {
+            mid += mid_deltas[i];
         }
     }
     return bars;

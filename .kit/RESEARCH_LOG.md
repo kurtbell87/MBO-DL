@@ -18,6 +18,62 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## r3b-event-bar-cnn — INCONCLUSIVE
+**Date:** 2026-02-19
+**Hypothesis:** CNN spatial R² on tick-bar book snapshots exceeds time_5s baseline (0.084) by ≥20% at some threshold, indicating event bars improve spatial prediction.
+**Key result:** All 4 thresholds WORSE than baseline (peak R²=0.057 at tick_100, Δ=-0.027). BUT: bar construction defect — "tick" bars are actually time bars at different frequencies (bars_per_day std=0.0, duration variance=0 at all thresholds). Hypothesis was never testable.
+**Lesson:** The C++ bar_feature_export tool's tick bar construction counts fixed-rate book snapshots (10/s), not trade events. tick_100 = time_10s, tick_500 = time_50s, etc. CNN spatial signal degrades at slower frequencies (time_5s > time_10s > time_50s). Data starvation at tick_1000/tick_1500 (420–732 train samples for 12,128-param CNN) makes those comparison points invalid. Event-bar hypothesis survives untested.
+**Next:** Handoff: fix bar_feature_export tick bar construction to count trades. Proceed with time_5s CNN+GBT pipeline (main direction unchanged). Low-priority rerun of R3b with genuine tick bars if bar construction is fixed.
+**Details:** `.kit/results/R3b-event-bar-cnn/analysis.md`
+
+## r3-reproduction-pipeline-comparison — REFUTED (Step 2) / CONFIRMED (Step 1)
+**Date:** 2026-02-18
+**Hypothesis:** R3's CNN R²=0.132 reproduces on R3-format data (Step 1), and the C++ export differs structurally from R3's Python export, causing the 9B/9C R²=0.002 collapse (Step 2).
+**Key result:** Step 1 PASS: mean R²=0.1317 (Δ=-0.0003 from R3, per-fold corr=0.9997). Step 2 FAIL: data is byte-identical (identity rate=1.0, max diff=0.0). Root cause: missing TICK_SIZE normalization + per-day z-scoring + test-as-validation leakage. Proper validation R²=0.084 (36% lower than R3's leaked 0.132).
+**Lesson:** There was never a "Python vs C++ pipeline" — R3 loaded from the same C++ export as 9B/9C. The 9B/9C failure was caused by omitting TICK_SIZE division on prices and per-day z-scoring on sizes. R3's R²=0.132 includes ~36% inflation from test-as-validation leakage; true CNN R²≈0.084 with proper validation. CNN spatial signal is real but weaker than previously believed.
+**Next:** Apply TICK_SIZE normalization + per-day z-scoring in production training pipeline. Re-attempt CNN+GBT integration with corrected normalization and proper validation. Multi-seed robustness study to confirm R²≈0.084.
+**Details:** `.kit/results/r3-reproduction-pipeline-comparison/analysis.md`
+
+## cnn-reproduction-diagnostic — REFUTED
+**Date:** 2026-02-18
+**Hypothesis:** Fixing 3 protocol deviations (z-score normalization, architecture 2→32→64, no cosine LR) would restore CNN mean OOS R² ≥ 0.10 on Phase 9A data (time_5s.csv).
+**Key result:** MVE gate FAIL. Fold 5 train R² = 0.002 (threshold: 0.05). Architecture matched R3 exactly (12,128 params, Conv1d 2→59→59, 0% deviation). 5 normalization variants tested — ALL produce R² < 0.002. Z-scored vs raw indistinguishable (0.0015 vs 0.0008). Phase B's post-mortem was wrong. 0/2 evaluated success criteria pass; 3/5 not evaluated (abort cascade).
+**Lesson:** The 3 protocol deviations were NOT the root cause — they are inconsequential. The data pipeline difference (Phase 9A C++ export vs R3's Phase 4 Python export) is the primary suspect. The predictive spatial structure is absent from `time_5s.csv`, not hidden behind configuration errors. R6's CNN+GBT recommendation is currently ungrounded — its enabling evidence has not been independently reproduced. Also: the diagnostic spec's architecture description was materially wrong (said 2→32→32 / 4k params; R3 actually used 2→59→59 / 12k params).
+**Next:** Data pipeline comparison — reproduce R3's Python-based export from raw .dbn.zst files for the same 19 days. Direct column-by-column comparison, then train CNN on R3-format data. If R3-format data works → handoff to fix C++ export. If it also fails → R3's result may be artifactual.
+**Details:** `.kit/results/cnn-reproduction-diagnostic/analysis.md`
+
+## hybrid-model-training — REFUTED
+**Date:** 2026-02-18
+**Hypothesis:** CNN+GBT Hybrid (Conv1d spatial encoder + 20 hand-crafted features → XGBoost on triple barrier labels) reproduces R3's CNN R²>=0.08 and achieves positive expectancy under base costs.
+**Key result:** CNN R²(h=5) = -0.002 across all 5 folds (R3 baseline: 0.132). Train R² = 0.001 — CNN cannot fit training data. XGBoost accuracy 0.41 (>0.33 random) but expectancy -$0.44/trade (base costs). GBT-only outperforms hybrid. 4/10 success criteria pass, 6/10 fail.
+**Lesson:** CNN signal is real (R3 proved it) but fragile — does not transfer to a new pipeline with different normalization (z-score both channels vs raw prices) and architecture (Conv1d 2→32→64 vs 2→32→32). The pipeline is broken (train R² ≈ 0), not the hypothesis. XGBoost learns regime identification (volatility, time-of-day) but the edge is thinner than 1 tick/trade.
+**Next:** Reproduce R3's exact CNN protocol in Python (raw price normalization, cosine LR, R3 architecture). Fix pipeline before re-attempting integration.
+**Details:** `.kit/results/hybrid-model-training/analysis.md`
+
+## Research-Audit — COMPLETE
+**Date:** 2026-02-18
+**Hypothesis:** N/A (documentation audit, not experiment)
+**Key result:** All R1–R6, R4a–R4d findings reconciled. 0 blocking gaps. Ready for model build.
+**Lesson:** 10+ experiments reconciled into single source of truth. Temporal vs spatial predictability distinction is the core insight. time_5s + CNN + GBT Hybrid architecture validated.
+**Next:** Proceed to Phase B — Python CNN+GBT pipeline via Research kit.
+**Details:** `RESEARCH_AUDIT.md`
+
+## R4d-temporal-predictability-dollar-tick-actionable — CONFIRMED
+**Date:** 2026-02-18
+**Hypothesis:** Temporal features fail the dual threshold on dollar bars at empirically calibrated actionable timescales (≥5s) and tick bars at 5-minute timescales.
+**Key result:** 0/38 dual threshold passes across 5 operating points (dollar $5M/7s, $10M/14s, $50M/69s; tick 500/50s, 3000/300s). Dollar $5M (47,865 bars): AR R²=−0.00035, Δ_temporal_book=−0.0018 (p=1.0). All Tier 1 AR R² negative except dollar_50M h=1 (+0.0025, noise: std=6×mean, p=1.0). Empirical calibration table for 10 thresholds produced — dollar bars ARE achievable at actionable timescales but contain no temporal signal. Cumulative R4 chain: 0/168+ dual threshold passes across 7 bar types, 0.14s–300s.
+**Lesson:** R4b's sub-second temporal signal (Temporal-Only R²=+0.012 at $25k/0.14s bars) decays to noise by $5M/7s bars (R²=−0.0005). Volume-math overestimates bar duration by consistent 4× factor (empirical ≈ 0.25× estimate). Calibration table is the lasting deliverable. R4 line closed: 7 bar types, 0.14s–300s, zero signal.
+**Next:** R4 line permanently closed. Proceed to CNN at h=1 (P1) and transaction cost sensitivity (P2) — the remaining open questions before model build spec.
+**Details:** `.kit/results/temporal-predictability-dollar-tick-actionable/analysis.md`
+
+## R4c-temporal-predictability-completion — CONFIRMED
+**Date:** 2026-02-18
+**Hypothesis:** Temporal features fail the dual threshold across all remaining gaps: tick bars (tick_50/100/250), extended horizons (h=200/500/1000 on time_5s, ~17-83min), and event bars at actionable timescales (≥5s).
+**Key result:** 0/54+ dual threshold passes. All Tier 1 AR R² negative across 4 bar types × 7 horizons. Extended horizons show accelerating degradation (h1000 R²=−0.152). Dollar bars entirely sub-actionable (max ~0.9s/bar at $1M). Tick bars at 10s and 25s timescales match time_5s null result.
+**Lesson:** MES returns are martingale across all bar types (time, tick, dollar, volume) and timescales (5s to 83min). The R4 chain (R4→R4b→R4c) tested 6 bar types, 7+ horizons, 3 model classes, 5 feature configs, 200+ statistical tests — zero pass Rule 2. Temporal encoder dropped permanently.
+**Next:** Proceed to model architecture build spec: CNN+GBT Hybrid, static features, time_5s bars, triple barrier labels. No temporal encoder. The R4 line is closed.
+**Details:** `.kit/results/temporal-predictability-completion/analysis.md`
+
 ## R4b-temporal-predictability-event-bars — NO TEMPORAL SIGNAL (robust)
 **Date:** 2026-02-18
 **Hypothesis:** Dollar bars (and possibly volume bars) contain exploitable autoregressive structure absent from time bars. Temporal feature augmentation improves prediction on event-driven bars.

@@ -1,6 +1,6 @@
 # tests/ — MBO-DL Test Suite (GTest)
 
-## Unit tests (953 pass, 1 disabled)
+## Unit tests (1003 pass, 1 disabled, 1 skipped)
 
 | File | Tests for |
 |------|-----------|
@@ -23,8 +23,11 @@
 | `regime_stratification_test.cpp` | RegimeStratifier (volatility, time, volume, trend, stability) |
 | `backtest_criteria_test.cpp` | SuccessCriteria (go/no-go assessment) |
 | `oracle_expectancy_test.cpp` | OracleExpectancyReport (to_json, aggregation, per-quarter splits) |
+| `bar_feature_export_test.cpp` | bar_feature_export CLI (arg parsing, CSV header, metadata, warmup/NaN exclusion, TB columns) |
+| `hybrid_model_tb_label_test.cpp` | Triple barrier label computation (label correctness, exit type, bars held, volume, time cap, min_return) |
 | `test_helpers.hpp` | Shared test utilities |
 | `test_bar_helpers.hpp` | Bar construction test helpers |
+| `test_export_helpers.hpp` | Export test helpers |
 
 ## Integration tests (22, excluded from default ctest)
 
@@ -39,6 +42,6 @@ Run integration tests explicitly: `cd build && ctest --output-on-failure --label
 
 ```bash
 cmake --build build -j12
-cd build && ctest --output-on-failure --label-exclude integration   # unit tests only (~5 min)
+cd build && ctest --output-on-failure --label-exclude integration   # unit tests only (~14 min)
 cd build && ctest --output-on-failure --label-regex integration     # integration tests only (~20 min)
 ```

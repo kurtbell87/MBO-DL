@@ -17,12 +17,9 @@
 
 #include "features/bar_features.hpp"         // BarFeatureRow::feature_names()
 #include "features/raw_representations.hpp"  // MessageSummary::SUMMARY_SIZE
+#include "test_export_helpers.hpp"
 
-#include <algorithm>
-#include <cstdio>
-#include <cstdlib>
 #include <filesystem>
-#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -32,65 +29,11 @@
 // ===========================================================================
 namespace {
 
-// Path to the built binary (relative to build dir, or absolute)
-const std::string BINARY_PATH = "build/bar_feature_export";
-
-// Run a command and capture stdout + return code.
-struct RunResult {
-    int exit_code;
-    std::string output;
-};
-
-RunResult run_command(const std::string& cmd) {
-    RunResult result;
-    std::string full_cmd = cmd + " 2>&1";
-    FILE* pipe = popen(full_cmd.c_str(), "r");
-    if (!pipe) {
-        result.exit_code = -1;
-        result.output = "popen failed";
-        return result;
-    }
-    char buffer[256];
-    while (fgets(buffer, sizeof(buffer), pipe)) {
-        result.output += buffer;
-    }
-    int status = pclose(pipe);
-    result.exit_code = WEXITSTATUS(status);
-    return result;
-}
-
-// Parse a CSV header line into individual column names.
-std::vector<std::string> parse_csv_header(const std::string& line) {
-    std::vector<std::string> cols;
-    std::istringstream ss(line);
-    std::string col;
-    while (std::getline(ss, col, ',')) {
-        // Trim whitespace
-        while (!col.empty() && (col.back() == '\r' || col.back() == '\n'))
-            col.pop_back();
-        cols.push_back(col);
-    }
-    return cols;
-}
-
-// Read the first line of a file (the CSV header).
-std::string read_first_line(const std::string& path) {
-    std::ifstream f(path);
-    std::string line;
-    if (f.is_open()) std::getline(f, line);
-    return line;
-}
-
-// Read all lines of a file.
-std::vector<std::string> read_all_lines(const std::string& path) {
-    std::vector<std::string> lines;
-    std::ifstream f(path);
-    std::string line;
-    while (std::getline(f, line)) {
-        if (!line.empty()) lines.push_back(line);
-    }
-    return lines;
-}
+using export_test_helpers::BINARY_PATH;
+using export_test_helpers::run_command;
+using export_test_helpers::parse_csv_header;
+using export_test_helpers::read_first_line;
+using export_test_helpers::read_all_lines;
 
 // Temp output CSV path for tests.
 std::string temp_csv_path(const std::string& suffix = "") {
@@ -99,8 +42,8 @@ std::string temp_csv_path(const std::string& suffix = "") {
 }
 
 // The expected CSV header — must match info-decomposition/features.csv exactly.
-// 146 columns: 6 metadata + 62 Track A + 40 book_snap + 33 msg_summary
-//              + 4 returns + 1 mbo_event_count
+// 149 columns: 6 metadata + 62 Track A + 40 book_snap + 33 msg_summary
+//              + 4 returns + 1 mbo_event_count + 3 tb_labels
 std::string expected_csv_header() {
     std::ostringstream ss;
     // Metadata (6)
@@ -127,6 +70,9 @@ std::string expected_csv_header() {
 
     // Event count (1)
     ss << ",mbo_event_count";
+
+    // Triple barrier labels (3)
+    ss << ",tb_label,tb_exit_type,tb_bars_held";
 
     return ss.str();
 }
@@ -290,13 +236,13 @@ TEST_F(CLIArgParsingTest, OutputFileOpenFailureReturnsNonZero) {
 
 class CSVHeaderSchemaTest : public ::testing::Test {};
 
-TEST_F(CSVHeaderSchemaTest, ExpectedHeaderHas146Columns) {
-    // Verify our reference: 6 + 62 + 40 + 33 + 4 + 1 = 146
+TEST_F(CSVHeaderSchemaTest, ExpectedHeaderHas149Columns) {
+    // Verify our reference: 6 + 62 + 40 + 33 + 4 + 1 + 3 = 149
     auto header = expected_csv_header();
     auto cols = parse_csv_header(header);
-    EXPECT_EQ(cols.size(), 146u)
-        << "Expected CSV header must have exactly 146 columns (6 meta + 62 Track A "
-        << "+ 40 book_snap + 33 msg_summary + 4 returns + 1 event_count)";
+    EXPECT_EQ(cols.size(), 149u)
+        << "Expected CSV header must have exactly 149 columns (6 meta + 62 Track A "
+        << "+ 40 book_snap + 33 msg_summary + 4 returns + 1 event_count + 3 tb_labels)";
 }
 
 TEST_F(CSVHeaderSchemaTest, MetadataColumnsInOrder) {
@@ -363,15 +309,18 @@ TEST_F(CSVHeaderSchemaTest, ForwardReturnColumnsAt141Through144) {
     EXPECT_EQ(cols[ret_start + 3], "return_100");
 }
 
-TEST_F(CSVHeaderSchemaTest, EventCountIsLastColumn) {
+TEST_F(CSVHeaderSchemaTest, EventCountPrecedesTBColumns) {
     auto header = expected_csv_header();
     auto cols = parse_csv_header(header);
-    EXPECT_EQ(cols.back(), "mbo_event_count");
+    EXPECT_EQ(cols[145], "mbo_event_count");
+    EXPECT_EQ(cols[146], "tb_label");
+    EXPECT_EQ(cols[147], "tb_exit_type");
+    EXPECT_EQ(cols[148], "tb_bars_held");
 }
 
-TEST_F(CSVHeaderSchemaTest, HeaderMatchesReferenceCSVExactly) {
-    // Compare against the actual info-decomposition/features.csv header
-    // Try both relative to project root and relative to build dir
+TEST_F(CSVHeaderSchemaTest, HeaderPrefixMatchesReferenceCSV) {
+    // Compare the first 146 columns against the info-decomposition reference CSV.
+    // The reference predates the TB label extension (3 extra columns at the end).
     std::vector<std::string> candidates = {
         ".kit/results/info-decomposition/features.csv",
         "../.kit/results/info-decomposition/features.csv",
@@ -383,10 +332,13 @@ TEST_F(CSVHeaderSchemaTest, HeaderMatchesReferenceCSVExactly) {
     if (ref_path.empty()) {
         GTEST_SKIP() << "Reference CSV not available";
     }
-    auto ref_header = read_first_line(ref_path);
-    auto expected = expected_csv_header();
-    EXPECT_EQ(expected, ref_header)
-        << "Generated header must match reference features.csv header exactly";
+    auto ref_cols = parse_csv_header(read_first_line(ref_path));
+    auto expected_cols = parse_csv_header(expected_csv_header());
+    ASSERT_GE(expected_cols.size(), ref_cols.size());
+    for (size_t i = 0; i < ref_cols.size(); ++i) {
+        EXPECT_EQ(expected_cols[i], ref_cols[i])
+            << "Column " << i << " mismatch with reference CSV";
+    }
 }
 
 // ===========================================================================
@@ -479,7 +431,7 @@ TEST_F(CSVOutputTest, OutputCSVFirstLineIsHeader) {
         << "First line of output CSV must be the header matching the spec";
 }
 
-TEST_F(CSVOutputTest, AllDataRowsHave146Columns) {
+TEST_F(CSVOutputTest, AllDataRowsHave149Columns) {
     auto csv = temp_csv_path("_colcount");
     track_temp(csv);
     auto result = run_command(
@@ -726,10 +678,10 @@ TEST_F(FeatureCountTest, FeatureNamesCountIs62) {
     EXPECT_EQ(BarFeatureRow::feature_names().size(), 62u);
 }
 
-TEST_F(FeatureCountTest, TotalColumnCountIs146) {
-    // 6 metadata + 62 Track A + 40 book snap + 33 msg summary + 4 returns + 1 event count
-    size_t total = 6 + BarFeatureRow::feature_count() + 40 + MessageSummary::SUMMARY_SIZE + 4 + 1;
-    EXPECT_EQ(total, 146u);
+TEST_F(FeatureCountTest, TotalColumnCountIs149) {
+    // 6 metadata + 62 Track A + 40 book snap + 33 msg summary + 4 returns + 1 event count + 3 tb labels
+    size_t total = 6 + BarFeatureRow::feature_count() + 40 + MessageSummary::SUMMARY_SIZE + 4 + 1 + 3;
+    EXPECT_EQ(total, 149u);
 }
 
 // ===========================================================================
@@ -929,10 +881,10 @@ TEST_F(DataIntegrityTest, MboEventCountIsNonNegative) {
         GTEST_SKIP() << "No data rows produced";
     }
 
-    // mbo_event_count is the last column (index 145)
+    // mbo_event_count is at index 145, followed by 3 TB label columns (149 total)
     for (size_t i = 1; i < std::min(lines.size(), size_t(10)); ++i) {
         auto cols = parse_csv_header(lines[i]);
-        ASSERT_EQ(cols.size(), 146u) << "Row " << i << " should have 146 columns";
+        ASSERT_EQ(cols.size(), 149u) << "Row " << i << " should have 149 columns";
         int event_count = std::stoi(cols[145]);
         EXPECT_GE(event_count, 0)
             << "mbo_event_count must be non-negative at row " << i;

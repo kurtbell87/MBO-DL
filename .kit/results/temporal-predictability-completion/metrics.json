@@ -1,0 +1,291 @@
+{
+  "experiment": "R4c-temporal-predictability-completion",
+  "timestamp": "2026-02-18T12:00:00.000000",
+  "arms_completed": ["arm3", "arm1", "arm2a", "arm2b", "arm2c_tick100", "arm2c_tick250"],
+  "arm3": {
+    "bar_type": "time_5s",
+    "horizons": [200, 500, 1000],
+    "tier1_best_per_horizon": {
+      "h200": {
+        "config": "AR-10",
+        "model": "gbt",
+        "mean_r2": -0.0217,
+        "std_r2": 0.031,
+        "p_gt_zero": 1.0
+      },
+      "h500": {
+        "config": "AR-10",
+        "model": "gbt",
+        "mean_r2": -0.0713,
+        "std_r2": 0.100,
+        "p_gt_zero": 1.0
+      },
+      "h1000": {
+        "config": "AR-10",
+        "model": "gbt",
+        "mean_r2": -0.1522,
+        "std_r2": 0.222,
+        "p_gt_zero": 1.0
+      }
+    },
+    "tier2_models": {
+      "Static-Book_gbt": {
+        "h200": {"mean_r2": -0.0237},
+        "h500": {"mean_r2": -0.0670},
+        "h1000": {"mean_r2": -0.1483}
+      },
+      "Book+Temporal_gbt": {
+        "h200": {"mean_r2": -0.0258},
+        "h500": {"mean_r2": -0.0764},
+        "h1000": {"mean_r2": -0.2663}
+      },
+      "Temporal-Only_gbt": {
+        "h200": {"mean_r2": -0.0199},
+        "h500": {"mean_r2": -0.0609},
+        "h1000": {"mean_r2": -0.1670}
+      }
+    },
+    "tier2_delta_temporal_book": {
+      "h200": {"delta_r2": -0.0021, "corrected_p": 0.568},
+      "h500": {"delta_r2": -0.0094, "corrected_p": 0.349},
+      "h1000": {"delta_r2": -0.118, "corrected_p": 1.0}
+    },
+    "training_rows_per_horizon": {
+      "h200": 82270,
+      "h500": 76570,
+      "h1000": 67070
+    },
+    "sc1_pass": true,
+    "sc2_pass": true
+  },
+  "arm1": {
+    "bar_type": "tick_50",
+    "total_bars": 87951,
+    "r1_expected_bars": 88521,
+    "bar_ratio": 0.994,
+    "tier1_all_negative": true,
+    "tier1_best_per_horizon": {
+      "h1": {
+        "config": "AR-10",
+        "model": "gbt",
+        "mean_r2": -0.000187,
+        "std_r2": 0.000225,
+        "p_gt_zero": 1.0
+      },
+      "h5": {
+        "config": "AR-100",
+        "model": "gbt",
+        "mean_r2": -0.000641,
+        "std_r2": 0.000983,
+        "p_gt_zero": 1.0
+      },
+      "h20": {
+        "config": "AR-50",
+        "model": "gbt",
+        "mean_r2": -0.00269,
+        "std_r2": 0.00366,
+        "p_gt_zero": 1.0
+      },
+      "h100": {
+        "config": "AR-100",
+        "model": "gbt",
+        "mean_r2": -0.01086,
+        "std_r2": 0.01284,
+        "p_gt_zero": 1.0
+      }
+    },
+    "tier2_dual_passes": 0,
+    "tier2_total_tests": 16,
+    "tier2_delta_temporal_book": {
+      "h1": {"delta_r2": 0.00153, "corrected_p": 1.0},
+      "h5": {"delta_r2": 0.00007, "corrected_p": 1.0},
+      "h20": {"delta_r2": 0.00127, "corrected_p": 1.0},
+      "h100": {"delta_r2": 0.000975, "corrected_p": 1.0}
+    },
+    "sc3_pass": true
+  },
+  "arm2": {
+    "calibration": {
+      "dollar_bars": {
+        "status": "all_sub_actionable",
+        "max_median_duration_s": 0.8963,
+        "thresholds_tested": [50000, 100000, 250000, 500000, 1000000],
+        "note": "No dollar threshold produces bars with median duration >= 5s"
+      },
+      "tick_bars": {
+        "actionable_thresholds": [100, 250],
+        "tick_100_median_duration_s": 10.0,
+        "tick_100_bars_per_day": 2340,
+        "tick_250_median_duration_s": 25.0,
+        "tick_250_bars_per_day": 936
+      }
+    },
+    "selected_thresholds": {
+      "dollar": "NONE — all sub-actionable, skipped for Arm 2c",
+      "tick": [100, 250]
+    },
+    "tick_100": {
+      "total_bars": 43491,
+      "n_days": 19,
+      "median_duration_s": 10.0,
+      "tier1_all_negative": true,
+      "tier1_best_per_horizon": {
+        "h1": {
+          "config": "AR-100",
+          "model": "gbt",
+          "mean_r2": -0.000297,
+          "std_r2": 0.000460,
+          "p_gt_zero": 1.0
+        },
+        "h5": {
+          "config": "AR-100",
+          "model": "gbt",
+          "mean_r2": -0.000924,
+          "std_r2": 0.001010,
+          "p_gt_zero": 1.0
+        },
+        "h20": {
+          "config": "AR-50",
+          "model": "gbt",
+          "mean_r2": -0.00405,
+          "std_r2": 0.00468,
+          "p_gt_zero": 1.0
+        },
+        "h100": {
+          "config": "AR-100",
+          "model": "gbt",
+          "mean_r2": -0.01478,
+          "std_r2": 0.02408,
+          "p_gt_zero": 1.0
+        }
+      },
+      "tier2_dual_passes": 0,
+      "tier2_total_tests": 16,
+      "tier2_delta_temporal_book": {
+        "h1": {"delta_r2": -0.00452, "corrected_p": 0.492},
+        "h5": {"delta_r2": -0.000365, "corrected_p": 1.0},
+        "h20": {"delta_r2": 0.000120, "corrected_p": 1.0},
+        "h100": {"delta_r2": -0.01127, "corrected_p": 0.938}
+      }
+    },
+    "tick_250": {
+      "total_bars": 16815,
+      "n_days": 19,
+      "median_duration_s": 25.0,
+      "tier1_all_negative": true,
+      "tier1_best_per_horizon": {
+        "h1": {
+          "config": "AR-10",
+          "model": "gbt",
+          "mean_r2": -0.000762,
+          "std_r2": 0.000705,
+          "p_gt_zero": 1.0
+        },
+        "h5": {
+          "config": "AR-100",
+          "model": "gbt",
+          "mean_r2": -0.00205,
+          "std_r2": 0.00245,
+          "p_gt_zero": 1.0
+        },
+        "h20": {
+          "config": "AR-100",
+          "model": "gbt",
+          "mean_r2": -0.00853,
+          "std_r2": 0.00977,
+          "p_gt_zero": 1.0
+        },
+        "h100": {
+          "config": "AR-10",
+          "model": "gbt",
+          "mean_r2": -0.06394,
+          "std_r2": 0.0995,
+          "p_gt_zero": 1.0
+        }
+      },
+      "tier2_dual_passes": 0,
+      "tier2_total_tests": 16,
+      "tier2_delta_temporal_book": {
+        "h1": {"delta_r2": -0.00409, "corrected_p": 0.938},
+        "h5": {"delta_r2": 0.00259, "corrected_p": 0.5},
+        "h20": {"delta_r2": -0.00724, "corrected_p": 1.0},
+        "h100": {"delta_r2": -0.14293, "corrected_p": 0.938}
+      }
+    },
+    "sc4_pass": true
+  },
+  "success_criteria": {
+    "SC1": true,
+    "SC2": true,
+    "SC3": true,
+    "SC4": true,
+    "SC5": true,
+    "SC6": true
+  },
+  "decision_rules": {
+    "rule1_ar_structure": {
+      "passes": false,
+      "arms_tested": ["arm3", "arm1", "arm2c_tick100", "arm2c_tick250"],
+      "detail": "No AR R² > 0 at any horizon in any arm"
+    },
+    "rule2_temporal_augmentation": {
+      "passes": false,
+      "total_dual_passes": 0,
+      "total_tests": "48+ across all arms (16 per tick bar type + 6 extended horizons)",
+      "detail": "0 dual threshold passes across all bar types x horizons"
+    },
+    "rule3_temporal_standalone": {
+      "passes": false,
+      "detail": "No Temporal-Only R² > 0 with corrected p < 0.05 in any arm"
+    },
+    "rule4_reconciliation": {
+      "outcome": "all_arms_fail_rule2",
+      "all_arms_converge": true,
+      "action": "Proceed with CNN+GBT static. Close R4 line."
+    }
+  },
+  "cross_arm_summary": {
+    "arm3_time_5s_extended": "NO SIGNAL — monotonic R² degradation confirmed at h=200/500/1000 (~17-83min)",
+    "arm1_tick_50": "NO SIGNAL — 0/16 dual threshold passes, all 36 Tier 1 AR configs negative",
+    "arm2c_tick_100": "NO SIGNAL — 0/16 dual threshold passes at ~10s actionable timescale",
+    "arm2c_tick_250": "NO SIGNAL — 0/16 dual threshold passes at ~25s actionable timescale",
+    "overall": "Temporal encoder question closed permanently. All bar types, all timescales (5s-83min), all horizons (h=1 to h=1000)."
+  },
+  "sanity_checks": {
+    "sc5_baseline_verification": {
+      "h1_baseline_r2": 0.0047,
+      "h5_baseline_r2": -0.00093,
+      "h20_baseline_r2": -0.00302,
+      "h100_baseline_r2": -0.01347,
+      "r4_h1_baseline_r2": 0.0046,
+      "max_deviation_from_r4": 0.0001,
+      "within_tolerance": true
+    },
+    "arm1_bar_count": {
+      "loaded": 87951,
+      "expected": 88521,
+      "ratio": 0.994,
+      "within_10pct": true
+    },
+    "fwd_return_validation": {
+      "fwd_return_1": {"status": "PASS", "max_abs_diff": 0.0},
+      "fwd_return_5": {"status": "PASS", "max_abs_diff": 0.0},
+      "fwd_return_20": {"status": "PASS", "max_abs_diff": 0.0},
+      "fwd_return_100": {"status": "PASS", "max_abs_diff": 0.0}
+    },
+    "data_loss_extended_horizons": {
+      "h200": {"bars_lost": 3800, "pct": 4.32},
+      "h500": {"bars_lost": 9500, "pct": 10.8},
+      "h1000": {"bars_lost": 19000, "pct": 21.6}
+    }
+  },
+  "resource_usage": {
+    "gpu_hours": 0,
+    "total_training_runs": 4,
+    "total_model_fits": "~660 (arm3: 60, arm1: 300, arm2c_tick100: ~150, arm2c_tick250: ~150)",
+    "wall_clock_hours_approx": 5
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "All 3 arms completed successfully. Dollar bars entirely sub-actionable (max ~0.9s/bar at $1M) — skipped for Arm 2c per spec. Tick bar calibration used R1 data analytically instead of running expensive single-day exports. Forward return computation: fwd_return_h[i] = sum(return_1[i+1:i+h+1]), validated against C++ with exact match."
+}
