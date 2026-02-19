@@ -24,6 +24,7 @@ struct BookSnapshot {
     float mid_price = 0.0f;
     float spread = 0.0f;
     float time_of_day = 0.0f;            // fractional hours since midnight ET
+    uint32_t trade_count = 0;            // number of action='T' events since previous snapshot
 };
 
 // ---------------------------------------------------------------------------
@@ -67,8 +68,8 @@ public:
         constexpr uint64_t BOUNDARY = SNAPSHOT_INTERVAL_NS;
 
         // Clamp to RTH window
-        uint64_t rth_open = rth_open_ns(start_ns);
-        uint64_t rth_close = rth_close_ns(start_ns);
+        uint64_t rth_open = time_utils::rth_open_ns(start_ns);
+        uint64_t rth_close = time_utils::rth_close_ns(start_ns);
 
         uint64_t eff_start = std::max(start_ns, rth_open);
         uint64_t eff_end = std::min(end_ns, rth_close);
@@ -147,7 +148,7 @@ public:
             fill_trades(snap);
 
             // Time of day: fractional hours since midnight ET
-            snap.time_of_day = compute_time_of_day(ts);
+            snap.time_of_day = time_utils::compute_time_of_day(ts);
 
             result.push_back(snap);
         }
@@ -308,15 +309,4 @@ private:
         }
     }
 
-    static uint64_t rth_open_ns(uint64_t ts) {
-        return time_utils::rth_open_ns(ts);
-    }
-
-    static uint64_t rth_close_ns(uint64_t ts) {
-        return time_utils::rth_close_ns(ts);
-    }
-
-    static float compute_time_of_day(uint64_t ts) {
-        return time_utils::compute_time_of_day(ts);
-    }
 };
