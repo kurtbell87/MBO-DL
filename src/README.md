@@ -4,7 +4,7 @@ All modules are header-only `.hpp` files.
 
 | File | Module | Description |
 |------|--------|-------------|
-| `book_builder.hpp` | book_builder | BookSnapshot struct + BookBuilder (MBO → L2 book reconstruction) |
+| `book_builder.hpp` | book_builder | BookSnapshot struct (incl. `trade_count`) + BookBuilder (MBO → L2 book reconstruction) |
 | `feature_encoder.hpp` | feature_encoder | 194-dim feature encoding from BookSnapshot windows |
 | `oracle_labeler.hpp` | oracle_labeler | Stateless oracle with lookahead for position-dependent labels |
 | `trajectory_builder.hpp` | trajectory_builder | TrainingSample struct + position state management |
@@ -14,6 +14,19 @@ All modules are header-only `.hpp` files.
 | `gbt_model.hpp` | GBT model | XGBoost C API wrapper |
 | `training_loop.hpp` | training_loop | Neural network overfit training loop |
 | `serialization.hpp` | serialization | Checkpoint save/load (libtorch + XGBoost) + ONNX export |
+
+### `bars/` — Bar Construction
+
+| File | Description |
+|------|-------------|
+| `bar_builder_base.hpp` | Base class for bar builders (time, tick, dollar, volume) |
+| `tick_bar_builder.hpp` | Tick bar builder — accumulates `trade_count` from snapshots, closes at threshold |
+
+### `features/` — Feature Computation
+
+| File | Description |
+|------|-------------|
+| `bar_features.hpp` | Bar-level feature computation for export |
 
 ## Pipeline order
 
