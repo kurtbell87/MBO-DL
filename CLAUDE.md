@@ -11,7 +11,7 @@ WHEN WORKING FROM A PROVIDED SPEC ALWAYS REFER TO THE  ## Exit Criteria SECTION 
 3. **NEVER run verification commands.** No `python3 -c`, no `pytest`, no `cmake --build`, no `ctest`, no import checks. Sub-agents verify their own work. Trust exit codes.
 4. **NEVER use Write, Edit, or Bash to create or modify source code.** The ONLY files you may write/edit are state files (`.md` files in `.kit/` and `CLAUDE.md`).
 5. **ALWAYS delegate through kit phases.** C++ work → `.kit/tdd.sh` (red/green/refactor/ship). Python experiments → `.kit/experiment.sh` (survey/frame/run/read). Math → `.kit/math.sh`.
-6. **Your only tools are:** `source .orchestration-kit.env`, `.kit/tdd.sh`, `.kit/experiment.sh`, `.kit/math.sh`, `orchestration-kit/tools/*`, reading/writing state `.md` files, and checking exit codes.
+6. **Your only tools are:** MCP tools (`kit.tdd`, `kit.research_cycle`, `kit.research_full`, `kit.research_program`, `kit.math`, `kit.status`, `kit.runs`, `kit.capsule`, `kit.research_status`), bash fallbacks (`source .orchestration-kit.env`, `.kit/tdd.sh`, `.kit/experiment.sh`, `.kit/math.sh`, `orchestration-kit/tools/*`), reading/writing state `.md` files, and checking exit codes.
 7. **Exit-Criteria in Specs are 1st Class Citizens**, you must always cross off ALL exit-criteria as they are completed and include them in your final report 
 **If you catch yourself about to grep a source file, write a line of code, or run a test — STOP. That is a protocol violation. Delegate to a kit phase instead.**
 
@@ -89,45 +89,54 @@ Everything else kit-related: `.kit/`
 
 **Never run individual phases manually.** Use block commands that run the full cycle in one shot. This ensures automatic tracking in `program_state.json` and reduces orchestrator tool calls.
 
-### Research Experiments
+### Primary Interface: MCP Tools
+
+The orchestration-kit exposes MCP tools via `.mcp.json` (stdio transport). **Use MCP tools as the primary interface** — they handle environment setup, run tracking, and dashboard integration automatically.
+
+#### Execution (fire-and-forget — returns `run_id` immediately)
+
+| MCP Tool | Parameters | Equivalent |
+|----------|-----------|------------|
+| `kit.tdd` | `spec_path` | `tdd.sh full <spec>` |
+| `kit.research_cycle` | `spec_path` | `experiment.sh cycle <spec>` |
+| `kit.research_full` | `question`, `spec_path` | `experiment.sh full <q> <spec>` |
+| `kit.research_program` | _(none)_ | `experiment.sh program` |
+| `kit.math` | `spec_path` | `math.sh full <spec>` |
+
+#### Dashboard Queries (synchronous — returns data inline)
+
+| MCP Tool | Parameters | Equivalent |
+|----------|-----------|------------|
+| `kit.status` | _(none)_ | `GET /api/summary` |
+| `kit.runs` | `status?`, `kit?`, `phase?`, `limit?` | `GET /api/runs?...` |
+| `kit.capsule` | `run_id` | `GET /api/capsule-preview?run_id=` |
+| `kit.research_status` | _(none)_ | `experiment.sh status` |
+
+### Fallback: Bash Commands
+
+If MCP tools are unavailable, use bash block commands:
 
 ```bash
-# PREFERRED: Full cycle from a pre-written spec (frame→run→read→log)
+# Research
 source .orchestration-kit.env
 .kit/experiment.sh cycle .kit/experiments/<spec>.md
-
-# Full cycle including survey (survey→frame→run→read→log)
 .kit/experiment.sh full "research question" .kit/experiments/<spec>.md
-
-# Auto-advancing program mode (picks from QUESTIONS.md)
 .kit/experiment.sh program
-
-# Check status (reads program_state.json + results dirs)
 .kit/experiment.sh status
-```
 
-**Do NOT** call `survey`, `frame`, `run`, `read`, `log` individually. Block commands handle sequencing, error recovery, and automatic registration.
-
-### TDD Features
-
-```bash
-# PREFERRED: Full cycle in one shot (red→green→refactor→ship)
+# TDD
 source .orchestration-kit.env
 .kit/tdd.sh full .kit/docs/<feature>.md
 ```
 
-**Do NOT** call `red`, `green`, `refactor`, `ship` individually unless you need to retry a single failed phase.
+**Do NOT** call individual phases (`survey`, `frame`, `run`, `read`, `red`, `green`) unless retrying a single failed phase.
 
 ### Research → TDD Sub-Cycle
 
 When a research phase needs **new C++ code**, spawn a TDD sub-cycle:
 
 1. Write a spec: `.kit/docs/<feature>.md`
-2. Run the full TDD cycle as a single block command:
-   ```bash
-   source .orchestration-kit.env
-   .kit/tdd.sh full .kit/docs/<feature>.md
-   ```
+2. Run: `kit.tdd` with `spec_path=".kit/docs/<feature>.md"` (or bash fallback: `.kit/tdd.sh full .kit/docs/<feature>.md`)
 3. Resume research with the new tested infrastructure available.
 
 **Triggers**: Data extraction tools, new analysis APIs, infrastructure modifications.
@@ -135,44 +144,30 @@ When a research phase needs **new C++ code**, spawn a TDD sub-cycle:
 
 ## Dashboard as Status Interface (MANDATORY)
 
-The project-local dashboard (scoped to this repo only) is the single source of truth for run status. **Do not read capsule files, log files, or events.jsonl directly.** Query the dashboard API instead.
+The project-local dashboard (scoped to this repo only) is the single source of truth for run status. **Do not read capsule files, log files, or events.jsonl directly.** Use MCP query tools (preferred) or the dashboard API.
 
-```bash
-# Ensure the dashboard is running
-source .orchestration-kit.env
-orchestration-kit/tools/dashboard ensure-service --wait-seconds 3
+### Primary: MCP Tools
 
-# Quick summary — total/running/ok/failed counts
-curl -s http://127.0.0.1:7340/api/summary | python3 -m json.tool
-
-# List all runs (filterable)
-curl -s 'http://127.0.0.1:7340/api/runs'                    # all runs
-curl -s 'http://127.0.0.1:7340/api/runs?status=failed'      # failures only
-curl -s 'http://127.0.0.1:7340/api/runs?kit=research'       # research runs only
-
-# Re-index after a phase completes
-curl -s -X POST http://127.0.0.1:7340/api/refresh
-
-# Research program status (experiments + questions)
-.kit/experiment.sh status
-```
+- **Quick summary:** `kit.status` → total/running/ok/failed counts
+- **List runs:** `kit.runs` → filterable by `status`, `kit`, `phase`, `limit`
+- **Failed runs only:** `kit.runs` with `status="failed"`
+- **Capsule drill-down:** `kit.capsule` with `run_id="<id>"` → 30-line failure summary
+- **Research program:** `kit.research_status` → experiments + questions overview
 
 ### On Failure — Capsule Drill-Down
 
 When a phase fails (exit code != 0):
-1. Query the dashboard API for the failed run's `capsule_path`
-2. Use `orchestration-kit/tools/query-log` to inspect the capsule with bounded output
-3. Do NOT `cat` or `Read` the full log — capsules are the 30-line summary
+1. `kit.runs` with `status="failed"` → find the failed `run_id`
+2. `kit.capsule` with `run_id="<id>"` → read the 30-line failure summary
+3. Do NOT `cat` or `Read` the full log — capsules are the summary
+
+### Fallback: curl
 
 ```bash
-# Find the failed run's capsule
-curl -s 'http://127.0.0.1:7340/api/runs?status=failed' | python3 -c "
-import json,sys
-for r in json.load(sys.stdin).get('runs',[]):
-    print(f\"{r['run_id']} {r['kit']}/{r['phase']} → {r.get('capsule_path','N/A')}\")
-"
-
-# Read the capsule (bounded)
+source .orchestration-kit.env
+orchestration-kit/tools/dashboard ensure-service --wait-seconds 3
+curl -s http://127.0.0.1:7340/api/summary | python3 -m json.tool
+curl -s 'http://127.0.0.1:7340/api/runs?status=failed'
 orchestration-kit/tools/query-log tail <capsule_path> 30
 ```
 
@@ -298,19 +293,20 @@ Open `http://127.0.0.1:7340` to explore runs across projects and filter by proje
 
 You are the orchestrator. Sub-agents do the work. **You write ZERO code. You read ZERO source files. You run ZERO verification commands.**
 
-Your ONLY job: launch block commands, check exit codes via the dashboard, update state files.
+Your ONLY job: launch kit phases (via MCP tools or bash fallback), check status via dashboard, update state files.
 
-1. **Use block commands only.** `experiment.sh cycle`, `experiment.sh full`, `experiment.sh program`, `tdd.sh full`. Never call individual phases (`survey`, `frame`, `run`, `read`, `red`, `green`) unless retrying a single failed phase.
-2. **Run phases in background, check only the exit code.** Do not read the TaskOutput content — the JSON blob wastes context. Check `status: completed/failed` and `exit_code` only.
-3. **Check status via the dashboard API, not by reading files.** Use `curl http://127.0.0.1:7340/api/summary` for quick counts. Use `curl .../api/runs?status=failed` to find failures. Use `experiment.sh status` for research program overview.
+1. **Use MCP tools or block commands only.** `kit.tdd`, `kit.research_cycle`, `kit.research_full`, `kit.research_program`, `kit.math`. Or bash equivalents: `experiment.sh cycle`, `tdd.sh full`, etc. Never call individual phases unless retrying a single failed phase.
+2. **Execution tools are fire-and-forget.** They return a `run_id` immediately. Check completion via `kit.status` or `kit.runs`.
+3. **Check status via MCP query tools, not by reading files.** Use `kit.status` for quick counts. Use `kit.runs` with `status="failed"` to find failures. Use `kit.research_status` for research program overview. Fallback: `curl` to dashboard API.
 4. **Never run Bash for verification.** No `pytest`, `lake build`, `ls`, `cat`, `grep`, `python3 -c` to check what a sub-agent produced. If the phase exited 0, it worked.
 5. **Never read implementation files** the sub-agents wrote (source code, test files, .lean files, experiment scripts, Python modules). That is their domain. You read only state files (CLAUDE.md, `.kit/LAST_TOUCH.md`, `.kit/RESEARCH_LOG.md`, etc.) and spec files (`.kit/docs/*.md`, `.kit/experiments/*.md`).
 6. **Never write code.** Not C++, Python, shell scripts, config files, or anything else. If code must be created, it happens inside a kit phase (TDD green creates code, Research run creates scripts). You delegate, you do not implement.
-7. **Chain phases by exit code only.** Exit 0 → next phase. Exit 1 → query the dashboard for the failed run's capsule path, read the capsule via `query-log`, decide whether to retry or stop.
-8. **Never read capsules or logs directly after success.** On failure, find the capsule via the dashboard API, then read it with `query-log`. Never `cat` or `Read` raw log files.
+7. **Chain phases by run status only.** `kit.runs` shows status. On failure → `kit.capsule` with the `run_id` → decide whether to retry or stop.
+8. **Never read capsules or logs directly after success.** On failure, use `kit.capsule` (or dashboard API + `query-log`). Never `cat` or `Read` raw log files.
 9. **Minimize tool calls.** Each Bash call, Read, or Glob adds to your context. If the information isn't needed to decide the next action, don't fetch it.
 10. **Allowed tool usage summary:**
-    - `Bash`: ONLY for `source .orchestration-kit.env && .kit/tdd.sh full ...`, `.kit/experiment.sh cycle|full|program ...`, `orchestration-kit/tools/*`, `curl` to dashboard API, `mkdir -p` for results dirs, `./build/<tool>` for data export.
+    - `MCP tools`: `kit.tdd`, `kit.research_cycle`, `kit.research_full`, `kit.research_program`, `kit.math`, `kit.status`, `kit.runs`, `kit.capsule`, `kit.research_status`. Plus legacy `orchestrator.*` tools.
+    - `Bash` (fallback): `source .orchestration-kit.env && .kit/tdd.sh full ...`, `.kit/experiment.sh cycle|full|program ...`, `orchestration-kit/tools/*`, `curl` to dashboard API, `mkdir -p` for results dirs, `./build/<tool>` for data export.
     - `Read/Edit/Write`: ONLY for `.md` state files in `.kit/` and `CLAUDE.md`.
     - `Grep/Glob`: ONLY for finding state files and spec files. NEVER for source code.
 
