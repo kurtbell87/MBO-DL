@@ -1,0 +1,328 @@
+{
+  "experiment": "hybrid-model-training",
+  "timestamp": "2026-02-18T21:59:35",
+  "baseline": {
+    "r3_cnn_r2_h5": 0.132,
+    "oracle_expectancy": 4.0,
+    "oracle_pf": 3.3,
+    "oracle_wr": 0.643,
+    "random_accuracy": 0.333
+  },
+  "treatment": {
+    "mean_cnn_r2_h1": 0.0017115570146681637,
+    "mean_cnn_r2_h5": -0.001969814995894925,
+    "per_fold_r2_std": 0.000386890467222634,
+    "neg_fold_count_h5": 5,
+    "mean_xgb_accuracy": 0.4103239740820734,
+    "mean_xgb_f1_macro": 0.3923244920039838,
+    "aggregate_expectancy_base": -0.4433417697787782,
+    "aggregate_profit_factor_base": 0.9095874154121023,
+    "aggregate_sharpe_base": -14.812866062221353,
+    "ablation_delta_accuracy": -0.0011663066954644141,
+    "ablation_delta_expectancy": -0.13601483145029097,
+    "cost_sensitivity_table": {
+      "optimistic": {
+        "expectancy": 0.8066582302212217,
+        "profit_factor": 1.1880329062629786,
+        "trade_count": 32004,
+        "gross_profit": 163112.95,
+        "gross_loss": 137296.65999999997,
+        "net_pnl": 25816.28999999998,
+        "sharpe": 28.151798615261644
+      },
+      "base": {
+        "expectancy": -0.4433417697787782,
+        "profit_factor": 0.9095874154121023,
+        "trade_count": 32004,
+        "gross_profit": 142744.20000000004,
+        "gross_loss": 156932.90999999997,
+        "net_pnl": -14188.710000000017,
+        "sharpe": -14.812866062221353
+      },
+      "pessimistic": {
+        "expectancy": -2.9533417697787776,
+        "profit_factor": 0.518651728308613,
+        "trade_count": 32004,
+        "gross_profit": 101843.75,
+        "gross_loss": 196362.5,
+        "net_pnl": -94518.75,
+        "sharpe": -39.313905434109124
+      }
+    },
+    "xgb_top10_features": [
+      {
+        "feature": "volatility_50",
+        "index": "f27",
+        "mean_gain": 17.254195976257325
+      },
+      {
+        "feature": "message_rate",
+        "index": "f31",
+        "mean_gain": 6.816735363006591
+      },
+      {
+        "feature": "volatility_20",
+        "index": "f26",
+        "mean_gain": 6.303247261047363
+      },
+      {
+        "feature": "high_low_range_50",
+        "index": "f28",
+        "mean_gain": 4.4897778034210205
+      },
+      {
+        "feature": "spread",
+        "index": "f17",
+        "mean_gain": 4.390798330307007
+      },
+      {
+        "feature": "minutes_since_open",
+        "index": "f35",
+        "mean_gain": 4.158765602111816
+      },
+      {
+        "feature": "time_sin",
+        "index": "f33",
+        "mean_gain": 3.8657124519348143
+      },
+      {
+        "feature": "time_cos",
+        "index": "f34",
+        "mean_gain": 3.823030614852905
+      },
+      {
+        "feature": "cnn_emb_11",
+        "index": "f11",
+        "mean_gain": 3.775542974472046
+      },
+      {
+        "feature": "return_20",
+        "index": "f25",
+        "mean_gain": 3.5107592582702636
+      }
+    ],
+    "label_distribution": {
+      "fold_1": {
+        "-1": 4783,
+        "0": 4904,
+        "1": 4203
+      },
+      "fold_2": {
+        "-1": 5027,
+        "0": 4002,
+        "1": 4861
+      },
+      "fold_3": {
+        "-1": 3716,
+        "0": 6325,
+        "1": 3849
+      },
+      "fold_4": {
+        "-1": 4813,
+        "0": 4740,
+        "1": 4337
+      },
+      "fold_5": {
+        "-1": 4644,
+        "0": 4865,
+        "1": 4381
+      }
+    }
+  },
+  "ablation_gbt_only": {
+    "mean_accuracy": 0.4114902807775378,
+    "mean_f1_macro": 0.3941529551434265,
+    "aggregate_expectancy_base": -0.3756233181050135,
+    "aggregate_profit_factor_base": 0.922829707878838
+  },
+  "ablation_cnn_only": {
+    "mean_accuracy": 0.3796400287976962,
+    "mean_f1_macro": 0.28601569788421977,
+    "aggregate_expectancy_base": -0.30732693832848723,
+    "aggregate_profit_factor_base": 0.9363853505985488
+  },
+  "per_fold": [
+    {
+      "fold": 1,
+      "train_days": [
+        20220103,
+        20220121,
+        20220211,
+        20220304
+      ],
+      "test_days": [
+        20220331,
+        20220401,
+        20220422
+      ],
+      "train_size": 18520,
+      "test_size": 13890,
+      "cnn_r2_h1": -0.0020504634046949466,
+      "cnn_r2_h5": -0.0019879448281412415,
+      "cnn_train_r2_h5": -0.0008184795837054004,
+      "xgb_accuracy": 0.34290856731461483,
+      "xgb_f1_macro": 0.3375852751411709,
+      "pnl_base_expectancy": -0.2818180382246096,
+      "pnl_base_pf": 0.9415009506722578,
+      "selected_horizon": "h5"
+    },
+    {
+      "fold": 2,
+      "train_days": [
+        20220103,
+        20220121,
+        20220211,
+        20220304,
+        20220331,
+        20220401,
+        20220422
+      ],
+      "test_days": [
+        20220513,
+        20220603,
+        20220630
+      ],
+      "train_size": 32410,
+      "test_size": 13890,
+      "cnn_r2_h1": 0.0011015625692436526,
+      "cnn_r2_h5": -0.002169724647704152,
+      "cnn_train_r2_h5": 0.0014876777113557171,
+      "xgb_accuracy": 0.4037437005039597,
+      "xgb_f1_macro": 0.38209122787715105,
+      "pnl_base_expectancy": -0.36887298959318887,
+      "pnl_base_pf": 0.9241604976363295,
+      "selected_horizon": "h1"
+    },
+    {
+      "fold": 3,
+      "train_days": [
+        20220103,
+        20220121,
+        20220211,
+        20220304,
+        20220331,
+        20220401,
+        20220422,
+        20220513,
+        20220603,
+        20220630
+      ],
+      "test_days": [
+        20220701,
+        20220722,
+        20220812
+      ],
+      "train_size": 46300,
+      "test_size": 13890,
+      "cnn_r2_h1": 0.0018289744229120775,
+      "cnn_r2_h5": -0.002574982245587165,
+      "cnn_train_r2_h5": 0.0010894902887466085,
+      "xgb_accuracy": 0.4796976241900648,
+      "xgb_f1_macro": 0.431815264132881,
+      "pnl_base_expectancy": -0.684210082261127,
+      "pnl_base_pf": 0.8640248288489493,
+      "selected_horizon": "h1"
+    },
+    {
+      "fold": 4,
+      "train_days": [
+        20220103,
+        20220121,
+        20220211,
+        20220304,
+        20220331,
+        20220401,
+        20220422,
+        20220513,
+        20220603,
+        20220630,
+        20220701,
+        20220722,
+        20220812
+      ],
+      "test_days": [
+        20220902,
+        20220930,
+        20221003
+      ],
+      "train_size": 60190,
+      "test_size": 13890,
+      "cnn_r2_h1": 0.0018135970535523294,
+      "cnn_r2_h5": -0.0015190546048040598,
+      "cnn_train_r2_h5": 0.001232283761864017,
+      "xgb_accuracy": 0.4320374370050396,
+      "xgb_f1_macro": 0.4279649045027551,
+      "pnl_base_expectancy": -0.5011228813559329,
+      "pnl_base_pf": 0.8984414783671292,
+      "selected_horizon": "h1"
+    },
+    {
+      "fold": 5,
+      "train_days": [
+        20220103,
+        20220121,
+        20220211,
+        20220304,
+        20220331,
+        20220401,
+        20220422,
+        20220513,
+        20220603,
+        20220630,
+        20220701,
+        20220722,
+        20220812,
+        20220902,
+        20220930,
+        20221003
+      ],
+      "test_days": [
+        20221024,
+        20221114,
+        20221205
+      ],
+      "train_size": 74080,
+      "test_size": 13890,
+      "cnn_r2_h1": 0.005864114432327705,
+      "cnn_r2_h5": -0.0015973686532380071,
+      "cnn_train_r2_h5": 0.0006662317209287227,
+      "xgb_accuracy": 0.3932325413966883,
+      "xgb_f1_macro": 0.3821657883659606,
+      "pnl_base_expectancy": -0.4621089696071169,
+      "pnl_base_pf": 0.9059519202699312,
+      "selected_horizon": "h1"
+    }
+  ],
+  "sanity_checks": {
+    "cnn_train_r2_h5_max": 0.0014876777113557171,
+    "cnn_train_r2_h5_check": false,
+    "fold4_r2_h5": -0.0015190546048040598,
+    "fold5_r2_h5": -0.0015973686532380071,
+    "late_fold_positive_r2_check": false,
+    "xgb_accuracy_above_random": true,
+    "no_nan_embeddings": true,
+    "fold_boundaries_valid": true,
+    "xgb_accuracy_below_ceiling": true
+  },
+  "success_criteria": {
+    "SC-1": false,
+    "SC-2": true,
+    "SC-3": true,
+    "SC-4": false,
+    "SC-5": false,
+    "SC-6": false,
+    "SC-7": false,
+    "SC-8": true,
+    "SC-9": true,
+    "SC-10": false
+  },
+  "resource_usage": {
+    "gpu_hours": 0,
+    "wall_clock_seconds": 1930.6138710975647,
+    "total_training_runs": 30,
+    "total_runs": 30
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Feature mapping: 20/20 non-spatial features found. Duplicate return_1/return_5 columns in CSV handled (used .1 suffix as fwd targets). Book snap columns interleaved as (price, size) pairs, reshaped to (N, 2, 20) for CNN. All feature columns for GBT-only ablation: 62. CNN architecture mismatch with R3: spec uses Conv1d(2->32->64) + BatchNorm + Linear(64->16) (~7.7k params); R3 used Conv1d(2->32->32) + BatchNorm + Linear(32->16) + ReLU + Linear(16->1) (~12k params with cosine LR schedule). CNN R² at h=5 is -0.002 across all 5 folds (R3 reported 0.132). CNN cannot predict forward 5-bar returns from book snapshots in this pipeline. Target return_5.1 has 76 NaN values (filtered before CNN training). return_5.1 confirmed as true forward return (not the backward-looking feature return_5). XGBoost mean accuracy 0.41 > 0.33 random baseline, driven by volatility_50, message_rate, volatility_20 features. Hybrid does NOT outperform GBT-only baseline (delta accuracy = -0.001, delta expectancy = -$0.14). CNN embeddings are noise; the non-spatial features carry all the signal. Aggregate base-cost expectancy is negative (-$0.44/trade). Only profitable under optimistic cost scenario ($0.81/trade at $2.49 RT). CNN early stopping patience increased from spec's 5 to 10 to allow more training time; both channels z-score normalized (spec said price raw, sizes z-score). Wall clock: 1930.6s (~32.2 min). All 30 training runs completed."
+}

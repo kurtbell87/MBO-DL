@@ -1,0 +1,5 @@
+{
+  "transfer_r2_fold5": 0.1606927514076233,
+  "retrained_cpp_r2": "N/A \u2014 data is byte-identical; would produce same result",
+  "note": "Pipeline comparison is trivial: features.csv and time_5s.csv are byte-identical."
+}

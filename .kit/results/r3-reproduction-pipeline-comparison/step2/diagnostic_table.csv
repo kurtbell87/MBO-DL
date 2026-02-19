@@ -1,0 +1,10 @@
+dimension,r3_python,cpp_export,match
+bar_count_per_day,"{np.int64(20220103): 4630, np.int64(20220121): 4630, np.int64(20220211): 4630, np.int64(20220304): 4630, np.int64(20220331): 4630, np.int64(20220401): 4630, np.int64(20220422): 4630, np.int64(20220513): 4630, np.int64(20220603): 4630, np.int64(20220630): 4630, np.int64(20220701): 4630, np.int64(20220722): 4630, np.int64(20220812): 4630, np.int64(20220902): 4630, np.int64(20220930): 4630, np.int64(20221003): 4630, np.int64(20221024): 4630, np.int64(20221114): 4630, np.int64(20221205): 4630}","{np.int64(20220103): 4630, np.int64(20220121): 4630, np.int64(20220211): 4630, np.int64(20220304): 4630, np.int64(20220331): 4630, np.int64(20220401): 4630, np.int64(20220422): 4630, np.int64(20220513): 4630, np.int64(20220603): 4630, np.int64(20220630): 4630, np.int64(20220701): 4630, np.int64(20220722): 4630, np.int64(20220812): 4630, np.int64(20220902): 4630, np.int64(20220930): 4630, np.int64(20221003): 4630, np.int64(20221024): 4630, np.int64(20221114): 4630, np.int64(20221205): 4630}",YES (identical)
+channel_0_units,index_points (pre-normalization),index_points,YES (same raw data)
+channel_0_range,"[-5.6250, 5.6250]","[-5.6250, 5.6250]",YES
+channel_1_normalization,raw sizes (pre-normalization),raw sizes,YES (same raw data)
+channel_1_range,"[1.0000, 697.0000]","[1.0000, 697.0000]",YES
+level_ordering_bids,same C++ export,same C++ export,YES
+level_ordering_asks,same C++ export,same C++ export,YES
+mid_price_formula,C++ bar_feature_export,C++ bar_feature_export,YES
+data_source,features.csv (R2 output),time_5s.csv (Phase 8 output),YES (byte-identical)

@@ -1,0 +1,66 @@
+{
+  "experiment": "hybrid-model-training",
+  "data_path": ".kit/results/hybrid-model/time_5s.csv",
+  "data_rows": 87970,
+  "data_days": 19,
+  "seed": 42,
+  "cnn": {
+    "architecture": "Conv1d(2->32,k=3,p=1) + BN + ReLU -> Conv1d(32->64,k=3,p=1) + BN + ReLU -> AdaptiveAvgPool1d(1) -> Linear(64->16)",
+    "params": 7664,
+    "input_shape": [null, 2, 20],
+    "output_dim": 16,
+    "optimizer": "Adam",
+    "lr": 0.001,
+    "weight_decay": 1e-5,
+    "batch_size": 256,
+    "max_epochs": 50,
+    "early_stop_patience": 10,
+    "early_stop_validation_fraction": 0.2
+  },
+  "xgboost": {
+    "objective": "multi:softprob",
+    "num_class": 3,
+    "max_depth": 6,
+    "learning_rate": 0.05,
+    "n_estimators": 500,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "min_child_weight": 10,
+    "reg_alpha": 0.1,
+    "reg_lambda": 1.0
+  },
+  "features": {
+    "book_snap_cols": 40,
+    "nonspatial_features": 20,
+    "hybrid_input_dim": 36,
+    "gbt_only_input_dim": 62
+  },
+  "cv": {
+    "n_folds": 5,
+    "strategy": "expanding_window_by_day",
+    "folds": [
+      {"train_days": "1-4", "test_days": "5-7"},
+      {"train_days": "1-7", "test_days": "8-10"},
+      {"train_days": "1-10", "test_days": "11-13"},
+      {"train_days": "1-13", "test_days": "14-16"},
+      {"train_days": "1-16", "test_days": "17-19"}
+    ]
+  },
+  "triple_barrier": {
+    "target_ticks": 10,
+    "stop_ticks": 5,
+    "vol_horizon": 500,
+    "tick_value": 1.25
+  },
+  "cost_scenarios": {
+    "optimistic_rt": 2.49,
+    "base_rt": 3.74,
+    "pessimistic_rt": 6.25
+  },
+  "normalization": {
+    "book_prices": "z-score per fold (train stats)",
+    "book_sizes": "z-score per fold (train stats)",
+    "nonspatial_features": "z-score per fold (train stats), NaN -> 0.0",
+    "cnn_targets": "z-score per fold (train stats)"
+  }
+}
