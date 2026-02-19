@@ -1,0 +1,162 @@
+[
+  {
+    "fold": 1,
+    "accuracy": 0.33959683225341974,
+    "f1_macro": 0.3393762491868333,
+    "pnl": {
+      "optimistic": {
+        "expectancy": 1.0438024731532698,
+        "profit_factor": 1.2497467576807757,
+        "trade_count": 6146,
+        "gross_profit": 32102.070000000007,
+        "gross_loss": 25686.859999999997,
+        "net_pnl": 6415.2099999999955
+      },
+      "base": {
+        "expectancy": -0.20619752684673012,
+        "profit_factor": 0.9568370684396547,
+        "trade_count": 6146,
+        "gross_profit": 28093.320000000007,
+        "gross_loss": 29360.609999999997,
+        "net_pnl": -1267.2900000000034
+      },
+      "pessimistic": {
+        "expectancy": -2.7161975268467295,
+        "profit_factor": 0.5455937393671316,
+        "trade_count": 6146,
+        "gross_profit": 20043.75,
+        "gross_loss": 36737.5,
+        "net_pnl": -16693.75
+      }
+    },
+    "n_test": 13890
+  },
+  {
+    "fold": 2,
+    "accuracy": 0.4031677465802736,
+    "f1_macro": 0.38266185028222965,
+    "pnl": {
+      "optimistic": {
+        "expectancy": 0.8863697831662386,
+        "profit_factor": 1.2084189035535446,
+        "trade_count": 8578,
+        "gross_profit": 44084.04,
+        "gross_loss": 36480.759999999995,
+        "net_pnl": 7603.279999999994
+      },
+      "base": {
+        "expectancy": -0.36363021683376145,
+        "profit_factor": 0.9251954398097189,
+        "trade_count": 8578,
+        "gross_profit": 38579.04,
+        "gross_loss": 41698.259999999995,
+        "net_pnl": -3119.2200000000057
+      },
+      "pessimistic": {
+        "expectancy": -2.8736302168337606,
+        "profit_factor": 0.5275515093435553,
+        "trade_count": 8578,
+        "gross_profit": 27525.0,
+        "gross_loss": 52175.0,
+        "net_pnl": -24650.0
+      }
+    },
+    "n_test": 13890
+  },
+  {
+    "fold": 3,
+    "accuracy": 0.4837293016558675,
+    "f1_macro": 0.4373903793026983,
+    "pnl": {
+      "optimistic": {
+        "expectancy": 0.842371609924985,
+        "profit_factor": 1.1971226641844925,
+        "trade_count": 5199,
+        "gross_profit": 26596.570000000007,
+        "gross_loss": 22217.08,
+        "net_pnl": 4379.489999999997
+      },
+      "base": {
+        "expectancy": -0.4076283900750149,
+        "profit_factor": 0.9165467591903471,
+        "trade_count": 5199,
+        "gross_profit": 23275.320000000007,
+        "gross_loss": 25394.58,
+        "net_pnl": -2119.2600000000025
+      },
+      "pessimistic": {
+        "expectancy": -2.9176283900750146,
+        "profit_factor": 0.5226199842643587,
+        "trade_count": 5199,
+        "gross_profit": 16606.25,
+        "gross_loss": 31775.0,
+        "net_pnl": -15168.75
+      }
+    },
+    "n_test": 13890
+  },
+  {
+    "fold": 4,
+    "accuracy": 0.43376529877609793,
+    "f1_macro": 0.431974486073571,
+    "pnl": {
+      "optimistic": {
+        "expectancy": 0.8496946564885489,
+        "profit_factor": 1.1989952803203665,
+        "trade_count": 7074,
+        "gross_profit": 36216.18000000001,
+        "gross_loss": 30205.439999999995,
+        "net_pnl": 6010.739999999995
+      },
+      "base": {
+        "expectancy": -0.4003053435114509,
+        "profit_factor": 0.9179804804804809,
+        "trade_count": 7074,
+        "gross_profit": 31693.680000000008,
+        "gross_loss": 34525.439999999995,
+        "net_pnl": -2831.760000000004
+      },
+      "pessimistic": {
+        "expectancy": -2.9103053435114505,
+        "profit_factor": 0.5234375,
+        "trade_count": 7074,
+        "gross_profit": 22612.5,
+        "gross_loss": 43200.0,
+        "net_pnl": -20587.5
+      }
+    },
+    "n_test": 13890
+  },
+  {
+    "fold": 5,
+    "accuracy": 0.39114470842332616,
+    "f1_macro": 0.37733648218846927,
+    "pnl": {
+      "optimistic": {
+        "expectancy": 0.6666366704161975,
+        "profit_factor": 1.1530649668631294,
+        "trade_count": 5334,
+        "gross_profit": 26786.760000000002,
+        "gross_loss": 23230.919999999995,
+        "net_pnl": 3555.8399999999974
+      },
+      "base": {
+        "expectancy": -0.5833633295838025,
+        "profit_factor": 0.8828150950047116,
+        "trade_count": 5334,
+        "gross_profit": 23441.760000000002,
+        "gross_loss": 26553.419999999995,
+        "net_pnl": -3111.6600000000026
+      },
+      "pessimistic": {
+        "expectancy": -3.093363329583802,
+        "profit_factor": 0.5033860045146726,
+        "trade_count": 5334,
+        "gross_profit": 16725.0,
+        "gross_loss": 33225.0,
+        "net_pnl": -16500.0
+      }
+    },
+    "n_test": 13890
+  }
+]

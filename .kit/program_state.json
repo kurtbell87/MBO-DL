@@ -1,0 +1,32 @@
+{
+  "cycles_completed": 2,
+  "gpu_hours_used": 0.0,
+  "started_at": "2026-02-19T08:16:08.796351",
+  "last_cycle_at": "2026-02-19T13:10:18.725849",
+  "question_history": {
+    "hybrid-model-corrected": [
+      "REFUTED(OutcomeB)"
+    ],
+    "r3b-genuine-tick-bars": [
+      "CONFIRMED(lowconfidence)"
+    ]
+  },
+  "cycle_log": [
+    {
+      "cycle": 1,
+      "question": "hybrid-model-corrected",
+      "verdict": "REFUTED(OutcomeB)",
+      "gpu_hours": 0.0,
+      "spec_file": ".kit/experiments/hybrid-model-corrected.md",
+      "timestamp": "2026-02-19T08:16:08.909337"
+    },
+    {
+      "cycle": 2,
+      "question": "r3b-genuine-tick-bars",
+      "verdict": "CONFIRMED(lowconfidence)",
+      "gpu_hours": 0.0,
+      "spec_file": ".kit/experiments/r3b-genuine-tick-bars.md",
+      "timestamp": "2026-02-19T13:10:18.725854"
+    }
+  ]
+}

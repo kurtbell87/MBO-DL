@@ -339,11 +339,15 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-19, Tick Bar Fix TDD — COMPLETE)
+## Current State (updated 2026-02-19, R3b Genuine Tick Bars + Corrected Hybrid Model)
 
-**VERDICT: GO.** Oracle expectancy validated ($4.00/trade). CNN+GBT on time_5s remains the pipeline direction. Tick bar construction defect FIXED: `bar_feature_export --bar-type tick` now counts action='T' trade events via `trade_count` field on book snapshots, not fixed-rate snapshots. Event-bar research (R3b rerun) is now unblocked.
+**VERDICT: CNN signal REAL but NOT economically viable under base costs. Genuine tick bars show promising but fragile improvement.** CNN R²=0.089 on time_5s (proper validation, 3rd independent reproduction). Genuine tick_100 R²=0.124 (+39% vs baseline) but p=0.21 — driven by single anomalous fold, not actionable without replication. XGBoost accuracy 0.419. Expectancy=-$0.37/trade (base $3.74 RT), PF=0.924. Gross edge $3.37/trade consumed by costs. Breakeven requires +2.0pp win rate (51.3% → 53.3%). The regression→frozen-embedding→classification pipeline loses information at the handoff. Next: end-to-end CNN classification, XGBoost hyperparameter tuning, or label design sensitivity.
 
-**R3b (CNN on Event Bars) — INCONCLUSIVE + SYSTEMIC TICK BAR DEFECT.** Tick bars from bar_feature_export are actually time bars at different frequencies (bars_per_day std=0.0 at all thresholds). Peak R²=0.057 (tick_100 ≈ time_10s), all WORSE than time_5s baseline (0.084). **Blast radius:** Every experiment that used "tick bars" (R1 tick configs, R4c tick_50/100/250, R4d tick_500/3000, R3b) was actually testing time bars at different frequencies. **Dollar and volume bars are genuine** (daily counts vary: dollar CV=2-6%, volume CV=9-10%). R4b dollar_25k and volume_100 results stand. **Only tick bars are void.** RESEARCH_AUDIT "Closed" on bar type should be "Closed for dollar/volume, open for tick only." See `.kit/results/R3b-event-bar-cnn/analysis.md` and RESEARCH_LOG correction notice.
+**9E (hybrid-model-corrected) — REFUTED (Outcome B).** CNN normalization fix VERIFIED (3rd independent reproduction: R²=0.089 vs 9D's 0.084). All 5 folds within ±0.015 of 9D. But end-to-end pipeline not viable: XGBoost acc=0.419, expectancy=-$0.37/trade (base), PF=0.924. Hybrid > GBT-nobook (+$0.075 exp) and GBT-book (+$0.013 exp). volatility_50 dominates feature importance (19.9 gain). return_5 ranked ~26th (no leakage). CNN acts as denoiser (16-dim embedding beats raw 40-dim book for XGBoost). See `.kit/results/hybrid-model-corrected/analysis.md`.
+
+**R3b-genuine (CNN on Genuine Tick Bars) — CONFIRMED (low confidence).** Tick bar fix validated: all 8 thresholds have CV 0.188–0.467, p10≠p90 (genuine event bars). tick_100 mean OOS R²=0.124 (Δ+0.035 vs 0.089 baseline), but paired t-test p=0.21 — driven by fold 5's anomalous R²=0.259 (excluding fold 5: mean=0.091, COMPARABLE). tick_25 WORSE (0.064), tick_500 WORSE (0.050, 3/5 folds). Inverted-U curve. Not actionable without multi-seed replication. See `.kit/results/r3b-genuine-tick-bars/analysis.md`.
+
+**R3b-original (CNN on Event Bars) — INCONCLUSIVE + SYSTEMIC TICK BAR DEFECT.** Tick bars from bar_feature_export were actually time bars at different frequencies (bars_per_day std=0.0 at all thresholds). Peak R²=0.057 (tick_100 ≈ time_10s), all WORSE than time_5s baseline (0.084). Tick bar fix TDD complete — `bar_feature_export --bar-type tick` now counts action='T' trade events.
 
 **R3 Reproduction Pipeline Comparison — COMPLETE (REFUTED Step 2 / CONFIRMED Step 1). OUTCOME C.**
 - **Step 1 CONFIRMED:** R3's CNN R²=0.132 reproduces exactly. Per-fold correlation with R3 = 0.9997. All 5 folds: train R² in [0.157, 0.196]. CNN spatial signal IS real.
@@ -397,11 +401,18 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | **9D** | **`.kit/experiments/r3-reproduction-pipeline-comparison.md`** | **Research** | **Done (Step 1 CONFIRMED, Step 2 REFUTED)** — root cause found: normalization + leakage |
 | **R3b** | **`.kit/experiments/r3b-event-bar-cnn.md`** | **Research** | **Done (INCONCLUSIVE)** — bar construction defect; tick bars are time bars |
 | **TB-Fix** | **`.kit/docs/tick-bar-fix.md`** | **TDD** | **Done** — tick bars now count trades, not snapshots |
+| **9E** | **`.kit/experiments/hybrid-model-corrected.md`** | **Research** | **Done (REFUTED — Outcome B)** — CNN R²=0.089, expectancy=-$0.37/trade |
+| **R3b-genuine** | **`.kit/experiments/r3b-genuine-tick-bars.md`** | **Research** | **Done (CONFIRMED low confidence)** — tick_100 R²=0.124, p=0.21, not actionable |
 
 - **Build:** Green.
 - **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped) + new tick_bar_fix tests. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
-- **Tick bar fix COMPLETE (2026-02-19):** `book_builder.hpp` emits `trade_count` per snapshot. `tick_bar_builder.hpp` accumulates trade counts and closes bars at threshold. Regression tests: time/dollar/volume bars unchanged. RESEARCH_AUDIT bar type status is now "Closed for all bar types."
-- **Next task:** CNN Pipeline Fix — apply TICK_SIZE normalization (÷0.25 on book prices) + per-day z-scoring on sizes in the production training pipeline. Re-attempt CNN+GBT integration with corrected normalization and proper validation. Expected CNN R²≈0.084.
-- **Next task (event-bar research):** Rerun R3b experiment with genuine tick bars now that construction is fixed. Test whether CNN spatial R² on activity-normalized event bars exceeds time_5s baseline of 0.084.
-- **Volume bars confirmed genuine** (2026-02-19): R1 metrics show bar_count_cv=9-10% for vol_50/100/200. Cross-check: vol_100 = 6,087 bars/day vs 2,315 predicted by snapshot-counting model (2.6× discrepancy). R4b volume_100 null result is valid.
+- **Corrected Hybrid Model COMPLETE (2026-02-19):** CNN normalization fix verified (3rd independent reproduction). R²=0.089 with proper validation. But end-to-end pipeline not economically viable: expectancy=-$0.37/trade (base), PF=0.924. Breakeven RT=$3.37. Hybrid outperforms GBT-only but delta too small to flip sign.
+- **Next task options (in priority order):**
+  1. **End-to-end CNN classification** — train CNN directly on tb_label (3-class cross-entropy) instead of regression + frozen embedding + XGBoost. Eliminates the regression-to-classification bottleneck. Most architecturally promising.
+  2. **XGBoost hyperparameter tuning** — grid search to close the 2pp win rate gap. Current hyperparameters inherited from 9B (broken pipeline). Low-hanging fruit.
+  3. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks). At 15:3 ratio, breakeven win rate drops to ~42.5% (well below current 51.3%).
+  4. **CNN at h=1** — R2 showed signal strongest at h=1. Test with corrected normalization.
+  5. **Tick_100 multi-seed replication** — R3b-genuine showed tick_100 R²=0.124 (+39%) but p=0.21. 3 seeds/fold + adjacent thresholds (tick_50, tick_200) needed to confirm.
+- **Volume bars confirmed genuine** (2026-02-19): R1 metrics show bar_count_cv=9-10% for vol_50/100/200. R4b volume_100 null result is valid.
+- **R3b-genuine tick bars COMPLETE** (2026-02-19): tick_100 R²=0.124 (Δ+0.035 vs 0.089), inverted-U curve, but p=0.21 — statistically fragile, driven by fold 5 anomaly.

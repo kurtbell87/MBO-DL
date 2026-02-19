@@ -1,0 +1,72 @@
+======================================================================
+EXPERIMENT: CNN+GBT Hybrid Model (Corrected Pipeline)
+======================================================================
+
+─── Step 0: Environment Setup ───
+PyTorch: 2.8.0
+XGBoost: 2.1.4
+Pandas:  2.3.3
+NumPy:   2.0.2
+Seed:    42
+Device:  CPU
+
+─── Step 1: Data Loading and Normalization ───
+Loaded 87970 bars, 19 days
+Day mapping: {np.int64(20220103): 1, np.int64(20220121): 2, np.int64(20220211): 3, np.int64(20220304): 4, np.int64(20220331): 5, np.int64(20220401): 6, np.int64(20220422): 7, np.int64(20220513): 8, np.int64(20220603): 9, np.int64(20220630): 10, np.int64(20220701): 11, np.int64(20220722): 12, np.int64(20220812): 13, np.int64(20220902): 14, np.int64(20220930): 15, np.int64(20221003): 16, np.int64(20221024): 17, np.int64(20221114): 18, np.int64(20221205): 19}
+
+[NORM] Channel 0 TICK_SIZE division:
+  Sample raw values:  [-2.375 -2.125 -1.875 -1.625 -1.375]
+  Sample tick values: [-9.5 -8.5 -7.5 -6.5 -5.5]
+  Fraction half-integer quantized: 1.000000
+  Scale expansion: 4.0x (expected 4.0x)
+  Range: raw [-5.625, 5.625] -> ticks [-22.5, 22.5]
+
+[NORM] Channel 1 per-day z-scoring (log1p + z-score):
+  Day 20220103: mean=0.000000, std=1.000000
+  Day 20220121: mean=0.000000, std=1.000000
+  Day 20220211: mean=-0.000000, std=1.000000
+  ... (19 days total, all verified)
+  All days: mean~=0, std~=1 ✓
+
+Book tensor shape: (87970, 2, 20)
+fwd_return_5: 87894 valid / 87970 total (76 NaN)
+Non-spatial features: 20 columns loaded
+Normalization verification written to .kit/results/hybrid-model-corrected/step1_cnn/normalization_verification.txt
+
+─── Step 2: 5-Fold Expanding-Window Splits ───
+  Fold 1: train days=[1, 2, 3], val days=[4], test days=[5, 6, 7]  (train=13890, val=4630, test=13890)
+  Fold 2: train days=[1, 2, 3, 4, 5], val days=[6, 7], test days=[8, 9, 10]  (train=23150, val=9260, test=13890)
+  Fold 3: train days=[1, 2, 3, 4, 5, 6, 7, 8], val days=[9, 10], test days=[11, 12, 13]  (train=37040, val=9260, test=13890)
+  Fold 4: train days=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10], val days=[11, 12, 13], test days=[14, 15, 16]  (train=46300, val=13890, test=13890)
+  Fold 5: train days=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], val days=[14, 15, 16], test days=[17, 18, 19]  (train=60190, val=13890, test=13890)
+
+─── Step 3: Minimum Viable Experiment ───
+[MVE-1] Normalization: PASS (channel 0 integer-like, channel 1 per-day z-scored)
+[MVE-2] CNN param count: 12128
+  Architecture: BookCNN(
+  (conv1): Conv1d(2, 59, kernel_size=(3,), stride=(1,), padding=(1,))
+  (bn1): BatchNorm1d(59, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (conv2): Conv1d(59, 59, kernel_size=(3,), stride=(1,), padding=(1,))
+  (bn2): BatchNorm1d(59, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (pool): AdaptiveAvgPool1d(output_size=1)
+  (fc1): Linear(in_features=59, out_features=16, bias=True)
+  (fc2): Linear(in_features=16, out_features=1, bias=True)
+  (relu): ReLU()
+)
+  Param count: 12128 (expected 12,128, deviation 0.0%)
+
+[MVE-3] Single-fold CNN training (fold 5)...
+    Data: train=60138, val=13878, test=13878
+  Train R²: 0.0001
+  Val R²:   -0.0002
+  Test R²:  -0.0003
+  Epochs:   11
+  *** ABORT: Gate A — train R² < 0.05, pipeline still broken ***
+Traceback (most recent call last):
+  File "/Users/brandonbell/LOCAL_DEV/MBO-DL-02152026/.kit/results/hybrid-model-corrected/run_experiment.py", line 1232, in <module>
+    main()
+  File "/Users/brandonbell/LOCAL_DEV/MBO-DL-02152026/.kit/results/hybrid-model-corrected/run_experiment.py", line 382, in main
+    write_abort_metrics(start_time, "MVE Gate A: train R² < 0.05", mve_result)
+  File "/Users/brandonbell/LOCAL_DEV/MBO-DL-02152026/.kit/results/hybrid-model-corrected/run_experiment.py", line 1093, in write_abort_metrics
+    with open(RESULTS_DIR / "metrics.json", "w") as f:
+PermissionError: [Errno 13] Permission denied: '.kit/results/hybrid-model-corrected/metrics.json'

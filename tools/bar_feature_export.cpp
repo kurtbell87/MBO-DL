@@ -61,6 +61,10 @@ public:
                 ev.ts_event = ts_event;
                 mbo_events_.push_back(ev);
             }
+            // Count trade events for tick bar construction
+            if (action == 'T') {
+                pending_trade_count_++;
+            }
         }
 
         switch (action) {
@@ -107,6 +111,8 @@ private:
     float last_mid_ = 0.0f;
     float last_spread_ = 0.0f;
     bool ever_had_both_ = false;
+
+    uint32_t pending_trade_count_ = 0;  // action='T' events since last snapshot
 
     std::vector<BookSnapshot> snapshots_;
     std::vector<MBOEvent> mbo_events_;
@@ -219,6 +225,10 @@ private:
         }
 
         snap.time_of_day = time_utils::compute_time_of_day(ts);
+
+        // Set trade count for tick bar construction
+        snap.trade_count = pending_trade_count_;
+        pending_trade_count_ = 0;
 
         // Fill trade buffer (left-padded, matching BookBuilder::fill_trades)
         {

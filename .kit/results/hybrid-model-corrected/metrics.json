@@ -1,0 +1,307 @@
+{
+  "experiment": "hybrid-model-corrected",
+  "timestamp": "2026-02-19T13:33:06",
+  "baseline": {
+    "9d_proper_val_mean_r2": 0.084,
+    "9d_proper_val_per_fold_r2": [
+      0.134,
+      0.083,
+      -0.047,
+      0.117,
+      0.135
+    ],
+    "9b_broken_cnn_r2": -0.002,
+    "9b_xgb_accuracy": 0.41,
+    "9b_gbt_expectancy": -0.38,
+    "oracle_expectancy": 4.0
+  },
+  "treatment": {
+    "mean_cnn_r2_h5": 0.08926549834379716,
+    "aggregate_expectancy_base": -0.3716105769230775,
+    "aggregate_profit_factor_base": 0.9236205603431668,
+    "mean_xgb_accuracy": 0.4189344852411807,
+    "mean_xgb_f1_macro": 0.4053133455812281,
+    "ablation_delta_vs_gbt_book_accuracy": 0.008653707703383695,
+    "ablation_delta_vs_gbt_book_expectancy": 0.013443705344715673,
+    "ablation_delta_vs_gbt_nobook_accuracy": 0.004247660187184976,
+    "ablation_delta_vs_gbt_nobook_expectancy": 0.0754375485112001,
+    "gbt_book_accuracy": 0.410280777537797,
+    "gbt_book_expectancy_base": -0.38505428226779315,
+    "gbt_nobook_accuracy": 0.41468682505399573,
+    "gbt_nobook_expectancy_base": -0.4470481254342776
+  },
+  "per_seed": [
+    {
+      "seed": 42,
+      "fold": 1,
+      "cnn_train_r2": 0.16547842058523476,
+      "cnn_val_r2": 0.18511630918149624,
+      "cnn_test_r2": 0.13892748475022698,
+      "epochs_trained": 50,
+      "xgb_accuracy": 0.3873290136789057,
+      "xgb_f1_macro": 0.37247754013270273,
+      "xgb_expectancy_base": -0.25836033814723547,
+      "gbt_book_accuracy": 0.33959683225341974,
+      "gbt_book_f1_macro": 0.3393762491868333,
+      "gbt_book_expectancy_base": -0.20619752684673012,
+      "gbt_nobook_accuracy": 0.37861771058315336,
+      "gbt_nobook_f1_macro": 0.3694737244810596,
+      "gbt_nobook_expectancy_base": -0.3441629284048094
+    },
+    {
+      "seed": 42,
+      "fold": 2,
+      "cnn_train_r2": 0.19680122135949063,
+      "cnn_val_r2": 0.1899964864516035,
+      "cnn_test_r2": 0.08632154453049279,
+      "epochs_trained": 48,
+      "xgb_accuracy": 0.4061195104391649,
+      "xgb_f1_macro": 0.3871058578248216,
+      "xgb_expectancy_base": -0.3926023840434327,
+      "gbt_book_accuracy": 0.4031677465802736,
+      "gbt_book_f1_macro": 0.38266185028222965,
+      "gbt_book_expectancy_base": -0.36363021683376145,
+      "gbt_nobook_accuracy": 0.4066234701223902,
+      "gbt_nobook_f1_macro": 0.3889460483716381,
+      "gbt_nobook_expectancy_base": -0.44382724719101185
+    },
+    {
+      "seed": 42,
+      "fold": 3,
+      "cnn_train_r2": 0.1972675807445723,
+      "cnn_val_r2": 0.10740109767412553,
+      "cnn_test_r2": -0.04942077742140061,
+      "epochs_trained": 48,
+      "xgb_accuracy": 0.46983441324694025,
+      "xgb_f1_macro": 0.44490784772589054,
+      "xgb_expectancy_base": -0.4396039103320416,
+      "gbt_book_accuracy": 0.4837293016558675,
+      "gbt_book_f1_macro": 0.4373903793026983,
+      "gbt_book_expectancy_base": -0.4076283900750149,
+      "gbt_nobook_accuracy": 0.46551475881929444,
+      "gbt_nobook_f1_macro": 0.44276313551366364,
+      "gbt_nobook_expectancy_base": -0.48255319148936227
+    },
+    {
+      "seed": 42,
+      "fold": 4,
+      "cnn_train_r2": 0.18323849853344776,
+      "cnn_val_r2": 0.04798193428111308,
+      "cnn_test_r2": 0.130610185105136,
+      "epochs_trained": 34,
+      "xgb_accuracy": 0.43354931605471564,
+      "xgb_f1_macro": 0.43275620454001035,
+      "xgb_expectancy_base": -0.34416114497747213,
+      "gbt_book_accuracy": 0.43376529877609793,
+      "gbt_book_f1_macro": 0.431974486073571,
+      "gbt_book_expectancy_base": -0.4003053435114509,
+      "gbt_nobook_accuracy": 0.43376529877609793,
+      "gbt_nobook_f1_macro": 0.4345973291304765,
+      "gbt_nobook_expectancy_base": -0.3125806451612909
+    },
+    {
+      "seed": 42,
+      "fold": 5,
+      "cnn_train_r2": 0.19000287635475377,
+      "cnn_val_r2": 0.17149261461416254,
+      "cnn_test_r2": 0.13988905475453062,
+      "epochs_trained": 50,
+      "xgb_accuracy": 0.3978401727861771,
+      "xgb_f1_macro": 0.3893192776827153,
+      "xgb_expectancy_base": -0.41920353982300934,
+      "gbt_book_accuracy": 0.39114470842332616,
+      "gbt_book_f1_macro": 0.37733648218846927,
+      "gbt_book_expectancy_base": -0.5833633295838025,
+      "gbt_nobook_accuracy": 0.38891288696904247,
+      "gbt_nobook_f1_macro": 0.3792566488303189,
+      "gbt_nobook_expectancy_base": -0.6990656384505027
+    }
+  ],
+  "sanity_checks": {
+    "cnn_param_count": 12128,
+    "cnn_param_count_pass": true,
+    "channel_0_frac_integer": 0.07166079345231328,
+    "channel_0_frac_half_tick": 1.0,
+    "channel_0_tick_pass": true,
+    "channel_1_max_mean_dev": 4.518008237748888e-16,
+    "channel_1_max_std_dev": 2.220446049250313e-16,
+    "channel_1_zscored_pass": true,
+    "min_train_r2": 0.16547842058523476,
+    "train_r2_pass": true,
+    "val_test_separate": true,
+    "no_nan_outputs": true,
+    "fold_boundaries_ok": true,
+    "xgb_acc_in_range": true,
+    "lr_schedule_applied": true
+  },
+  "cost_sensitivity": {
+    "hybrid": {
+      "optimistic": {
+        "expectancy": 0.8783894230769224,
+        "profit_factor": 1.2063619174981535,
+        "trade_count": 33280,
+        "gross_profit": 170890.72,
+        "gross_loss": 141657.91999999998,
+        "net_pnl": 29232.799999999977
+      },
+      "base": {
+        "expectancy": -0.3716105769230775,
+        "profit_factor": 0.9236205603431668,
+        "trade_count": 33280,
+        "gross_profit": 149550.72000000003,
+        "gross_loss": 161917.91999999998,
+        "net_pnl": -12367.200000000019
+      },
+      "pessimistic": {
+        "expectancy": -2.881610576923077,
+        "profit_factor": 0.5266535044422508,
+        "trade_count": 33280,
+        "gross_profit": 106700.0,
+        "gross_loss": 202600.0,
+        "net_pnl": -95900.0
+      }
+    },
+    "gbt_book": {
+      "optimistic": {
+        "expectancy": 0.8649457177322069,
+        "profit_factor": 1.2029048390717647,
+        "trade_count": 32331,
+        "gross_profit": 165785.62,
+        "gross_loss": 137821.05999999997,
+        "net_pnl": 27964.55999999998
+      },
+      "base": {
+        "expectancy": -0.38505428226779315,
+        "profit_factor": 0.9209737354832163,
+        "trade_count": 32331,
+        "gross_profit": 145083.12000000002,
+        "gross_loss": 157532.31,
+        "net_pnl": -12449.19000000002
+      },
+      "pessimistic": {
+        "expectancy": -2.8950542822677927,
+        "profit_factor": 0.5251442704039572,
+        "trade_count": 32331,
+        "gross_profit": 103512.5,
+        "gross_loss": 197112.5,
+        "net_pnl": -93600.0
+      }
+    },
+    "gbt_nobook": {
+      "optimistic": {
+        "expectancy": 0.8029518745657225,
+        "profit_factor": 1.1870936047004381,
+        "trade_count": 33101,
+        "gross_profit": 168638.47,
+        "gross_loss": 142059.95999999996,
+        "net_pnl": 26578.50999999998
+      },
+      "base": {
+        "expectancy": -0.4470481254342776,
+        "profit_factor": 0.908868262873431,
+        "trade_count": 33101,
+        "gross_profit": 147579.72000000003,
+        "gross_loss": 162377.46,
+        "net_pnl": -14797.740000000022
+      },
+      "pessimistic": {
+        "expectancy": -2.957048125434277,
+        "profit_factor": 0.5182416635905008,
+        "trade_count": 33101,
+        "gross_profit": 105293.75,
+        "gross_loss": 203175.0,
+        "net_pnl": -97881.25
+      }
+    }
+  },
+  "xgb_top10_features": [
+    {
+      "feature": "volatility_50",
+      "gain": 19.915149688720703
+    },
+    {
+      "feature": "message_rate",
+      "gain": 9.23519515991211
+    },
+    {
+      "feature": "volatility_20",
+      "gain": 6.081918239593506
+    },
+    {
+      "feature": "high_low_range_50",
+      "gain": 4.7210774421691895
+    },
+    {
+      "feature": "spread",
+      "gain": 4.199774742126465
+    },
+    {
+      "feature": "minutes_since_open",
+      "gain": 4.166365146636963
+    },
+    {
+      "feature": "time_cos",
+      "gain": 3.881528854370117
+    },
+    {
+      "feature": "time_sin",
+      "gain": 3.8683149814605713
+    },
+    {
+      "feature": "return_20",
+      "gain": 3.426398992538452
+    },
+    {
+      "feature": "cnn_emb_15",
+      "gain": 3.4039230346679688
+    }
+  ],
+  "return_5_importance_rank": null,
+  "label_distribution": {
+    "fold_1": {
+      "-1": 4783,
+      "0": 4904,
+      "1": 4203
+    },
+    "fold_2": {
+      "-1": 5027,
+      "0": 4002,
+      "1": 4861
+    },
+    "fold_3": {
+      "-1": 3716,
+      "0": 6325,
+      "1": 3849
+    },
+    "fold_4": {
+      "-1": 4813,
+      "0": 4740,
+      "1": 4337
+    },
+    "fold_5": {
+      "-1": 4644,
+      "0": 4865,
+      "1": 4381
+    }
+  },
+  "success_criteria": {
+    "SC-1": true,
+    "SC-2": true,
+    "SC-3": true,
+    "SC-4": false,
+    "SC-5": false,
+    "SC-6": true,
+    "SC-7": true,
+    "SC-8": true
+  },
+  "outcome": "B",
+  "resource_usage": {
+    "gpu_hours": 0.0,
+    "wall_clock_seconds": 2607.336086988449,
+    "total_training_steps": 230,
+    "total_runs": 21
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Seed=42+fold_idx (matching 9D). Wall clock: 2607s. 3-config ablation: Hybrid (36 features), GBT-book (60 features), GBT-nobook (20 features)."
+}

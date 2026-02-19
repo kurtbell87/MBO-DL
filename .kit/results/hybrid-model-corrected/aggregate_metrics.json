@@ -1,0 +1,217 @@
+{
+  "mean_cnn_r2_h5": 0.08926549834379716,
+  "per_fold_cnn_r2_h5": [
+    0.13892748475022698,
+    0.08632154453049279,
+    -0.04942077742140061,
+    0.130610185105136,
+    0.13988905475453062
+  ],
+  "per_fold_cnn_train_r2_h5": [
+    0.16547842058523476,
+    0.19680122135949063,
+    0.1972675807445723,
+    0.18323849853344776,
+    0.19000287635475377
+  ],
+  "epochs_trained_per_fold": [
+    50,
+    48,
+    48,
+    34,
+    50
+  ],
+  "mean_xgb_accuracy": 0.4189344852411807,
+  "mean_xgb_f1_macro": 0.4053133455812281,
+  "aggregate_expectancy_base": -0.3716105769230775,
+  "aggregate_profit_factor_base": 0.9236205603431668,
+  "ablation_delta_vs_gbt_book_accuracy": 0.008653707703383695,
+  "ablation_delta_vs_gbt_book_expectancy": 0.013443705344715673,
+  "ablation_delta_vs_gbt_nobook_accuracy": 0.004247660187184976,
+  "ablation_delta_vs_gbt_nobook_expectancy": 0.0754375485112001,
+  "mean_gbt_book_accuracy": 0.410280777537797,
+  "mean_gbt_book_f1_macro": 0.3937478894067603,
+  "gbt_book_expectancy_base": -0.38505428226779315,
+  "gbt_book_profit_factor_base": 0.9209737354832163,
+  "mean_gbt_nobook_accuracy": 0.41468682505399573,
+  "mean_gbt_nobook_f1_macro": 0.40300737726543134,
+  "gbt_nobook_expectancy_base": -0.4470481254342776,
+  "gbt_nobook_profit_factor_base": 0.908868262873431,
+  "cost_sensitivity_hybrid": {
+    "optimistic": {
+      "expectancy": 0.8783894230769224,
+      "profit_factor": 1.2063619174981535,
+      "trade_count": 33280,
+      "gross_profit": 170890.72,
+      "gross_loss": 141657.91999999998,
+      "net_pnl": 29232.799999999977
+    },
+    "base": {
+      "expectancy": -0.3716105769230775,
+      "profit_factor": 0.9236205603431668,
+      "trade_count": 33280,
+      "gross_profit": 149550.72000000003,
+      "gross_loss": 161917.91999999998,
+      "net_pnl": -12367.200000000019
+    },
+    "pessimistic": {
+      "expectancy": -2.881610576923077,
+      "profit_factor": 0.5266535044422508,
+      "trade_count": 33280,
+      "gross_profit": 106700.0,
+      "gross_loss": 202600.0,
+      "net_pnl": -95900.0
+    }
+  },
+  "cost_sensitivity_gbt_book": {
+    "optimistic": {
+      "expectancy": 0.8649457177322069,
+      "profit_factor": 1.2029048390717647,
+      "trade_count": 32331,
+      "gross_profit": 165785.62,
+      "gross_loss": 137821.05999999997,
+      "net_pnl": 27964.55999999998
+    },
+    "base": {
+      "expectancy": -0.38505428226779315,
+      "profit_factor": 0.9209737354832163,
+      "trade_count": 32331,
+      "gross_profit": 145083.12000000002,
+      "gross_loss": 157532.31,
+      "net_pnl": -12449.19000000002
+    },
+    "pessimistic": {
+      "expectancy": -2.8950542822677927,
+      "profit_factor": 0.5251442704039572,
+      "trade_count": 32331,
+      "gross_profit": 103512.5,
+      "gross_loss": 197112.5,
+      "net_pnl": -93600.0
+    }
+  },
+  "cost_sensitivity_gbt_nobook": {
+    "optimistic": {
+      "expectancy": 0.8029518745657225,
+      "profit_factor": 1.1870936047004381,
+      "trade_count": 33101,
+      "gross_profit": 168638.47,
+      "gross_loss": 142059.95999999996,
+      "net_pnl": 26578.50999999998
+    },
+    "base": {
+      "expectancy": -0.4470481254342776,
+      "profit_factor": 0.908868262873431,
+      "trade_count": 33101,
+      "gross_profit": 147579.72000000003,
+      "gross_loss": 162377.46,
+      "net_pnl": -14797.740000000022
+    },
+    "pessimistic": {
+      "expectancy": -2.957048125434277,
+      "profit_factor": 0.5182416635905008,
+      "trade_count": 33101,
+      "gross_profit": 105293.75,
+      "gross_loss": 203175.0,
+      "net_pnl": -97881.25
+    }
+  },
+  "xgb_top10_features": [
+    {
+      "feature": "volatility_50",
+      "gain": 19.915149688720703
+    },
+    {
+      "feature": "message_rate",
+      "gain": 9.23519515991211
+    },
+    {
+      "feature": "volatility_20",
+      "gain": 6.081918239593506
+    },
+    {
+      "feature": "high_low_range_50",
+      "gain": 4.7210774421691895
+    },
+    {
+      "feature": "spread",
+      "gain": 4.199774742126465
+    },
+    {
+      "feature": "minutes_since_open",
+      "gain": 4.166365146636963
+    },
+    {
+      "feature": "time_cos",
+      "gain": 3.881528854370117
+    },
+    {
+      "feature": "time_sin",
+      "gain": 3.8683149814605713
+    },
+    {
+      "feature": "return_20",
+      "gain": 3.426398992538452
+    },
+    {
+      "feature": "cnn_emb_15",
+      "gain": 3.4039230346679688
+    }
+  ],
+  "return_5_importance_rank": null,
+  "label_distribution": {
+    "fold_1": {
+      "-1": 4783,
+      "0": 4904,
+      "1": 4203
+    },
+    "fold_2": {
+      "-1": 5027,
+      "0": 4002,
+      "1": 4861
+    },
+    "fold_3": {
+      "-1": 3716,
+      "0": 6325,
+      "1": 3849
+    },
+    "fold_4": {
+      "-1": 4813,
+      "0": 4740,
+      "1": 4337
+    },
+    "fold_5": {
+      "-1": 4644,
+      "0": 4865,
+      "1": 4381
+    }
+  },
+  "sanity_checks": {
+    "cnn_param_count": 12128,
+    "cnn_param_count_pass": true,
+    "channel_0_frac_integer": 0.07166079345231328,
+    "channel_0_frac_half_tick": 1.0,
+    "channel_0_tick_pass": true,
+    "channel_1_max_mean_dev": 4.518008237748888e-16,
+    "channel_1_max_std_dev": 2.220446049250313e-16,
+    "channel_1_zscored_pass": true,
+    "min_train_r2": 0.16547842058523476,
+    "train_r2_pass": true,
+    "val_test_separate": true,
+    "no_nan_outputs": true,
+    "fold_boundaries_ok": true,
+    "xgb_acc_in_range": true,
+    "lr_schedule_applied": true
+  },
+  "success_criteria": {
+    "SC-1": true,
+    "SC-2": true,
+    "SC-3": true,
+    "SC-4": false,
+    "SC-5": false,
+    "SC-6": true,
+    "SC-7": true,
+    "SC-8": true
+  },
+  "outcome": "B",
+  "wall_seconds": 2607.336086988449
+}

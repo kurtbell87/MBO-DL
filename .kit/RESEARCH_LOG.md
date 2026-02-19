@@ -18,6 +18,22 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## r3b-genuine-tick-bars — CONFIRMED (low confidence)
+**Date:** 2026-02-19
+**Hypothesis:** At least one genuine tick-bar threshold produces CNN spatial R² >= 0.107 (20%+ above time_5s baseline of 0.089).
+**Key result:** tick_100 mean OOS R² = 0.124 (delta +0.035 vs baseline), but paired t-test p = 0.21 (not significant) — verdict depends entirely on fold 5's anomalous R² = 0.259 (excluding fold 5: mean = 0.091, COMPARABLE). tick_25 WORSE (0.064), tick_500 WORSE (0.050, incomplete 3/5 folds). Inverted-U curve. Data volume confound ruled out (r = -0.149). Tick-bar fix validated: all 8 thresholds have cv 0.188-0.467, p10 != p90.
+**Lesson:** Genuine trade-event tick bars at ~100 trades/bar (~5.7s, ~4,171 bars/day — near-matched to time_5s) show a promising but statistically fragile improvement. The 39% relative R² gain is driven by a single fold and a single threshold. Not actionable without replication. Sub-second tick bars (tick_25) degrade signal — there is an optimal granularity, not a monotonic benefit from event bars.
+**Next:** (1) End-to-end CNN classification on tb_label (P1, unchanged — the regression-to-classification bottleneck is the main obstacle regardless of bar type). (2) If pursuing event bars: tick_100 replication with 3 seeds/fold and adjacent thresholds (tick_50, tick_200) to test whether the peak is broad or noise.
+**Details:** `.kit/results/r3b-genuine-tick-bars/analysis.md`
+
+## hybrid-model-corrected — REFUTED (Outcome B)
+**Date:** 2026-02-19
+**Hypothesis:** CNN+GBT Hybrid with corrected normalization (TICK_SIZE division + per-day z-scoring) and proper validation achieves R²>=0.05, XGBoost accuracy>=0.38, and expectancy>=$0.50/trade under base costs.
+**Key result:** CNN R²=0.089 (reproduces 9D's 0.084, 5/5 folds within +/-0.015). XGBoost accuracy 0.419. But expectancy=-$0.37/trade, PF=0.924. Gross edge $3.37/trade consumed by base costs $3.74/trade — 0.30 ticks short of breakeven. Profitable only under optimistic costs (+$0.88/trade at $2.49 RT). Hybrid beats GBT-nobook (+0.4pp acc, +$0.075 exp) and GBT-book (+0.9pp acc). Raw book features hurt XGBoost; CNN acts as denoiser.
+**Lesson:** CNN spatial signal is real and reproducible (3rd independent reproduction). The regression-to-classification gap is the bottleneck — R²=0.089 on returns does not efficiently convert to viable 3-class classification through frozen embeddings. volatility_50 dominates XGBoost feature importance (19.9 gain). Model needs +2.0pp win rate (51.3% to 53.3%) for breakeven.
+**Next:** (1) End-to-end CNN classification on tb_label (eliminate regression-to-classification gap), (2) XGBoost hyperparameter tuning, (3) Label design sensitivity (wider target to lower breakeven win rate), (4) CNN at h=1 with corrected normalization.
+**Details:** `.kit/results/hybrid-model-corrected/analysis.md`
+
 ## r3b-event-bar-cnn — INCONCLUSIVE
 **Date:** 2026-02-19
 **Hypothesis:** CNN spatial R² on tick-bar book snapshots exceeds time_5s baseline (0.084) by ≥20% at some threshold, indicating event bars improve spatial prediction.
