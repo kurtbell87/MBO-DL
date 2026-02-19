@@ -1,0 +1,463 @@
+{
+  "experiment": "r3b-genuine-tick-bars",
+  "timestamp": "2026-02-19T17:31:41",
+  "baseline": {
+    "source": "9E (hybrid-model-corrected)",
+    "bar_type": "time_5s",
+    "mean_test_r2": 0.089,
+    "per_fold_test_r2": [
+      0.139,
+      0.086,
+      -0.049,
+      0.131,
+      0.14
+    ],
+    "bars_per_day": 4630
+  },
+  "treatment": {
+    "tick_25": {
+      "mean_test_r2": 0.06356699466705322,
+      "std_test_r2": 0.05373167179984335,
+      "mean_train_r2": 0.26081318855285646,
+      "per_fold_test_r2": [
+        0.00913172960281372,
+        0.05328822135925293,
+        0.003698289394378662,
+        0.12916892766952515,
+        0.12254780530929565
+      ],
+      "per_fold_train_r2": [
+        0.3140948414802551,
+        0.3017982244491577,
+        0.23285764455795288,
+        0.2309308648109436,
+        0.2243843674659729
+      ],
+      "fold3_test_r2": 0.003698289394378662,
+      "fold5_test_r2": 0.12254780530929565,
+      "bars_per_day_mean": 16835.57894736842,
+      "bars_per_day_cv": 0.18846031619960912
+    },
+    "tick_100": {
+      "mean_test_r2": 0.12442463636398315,
+      "std_test_r2": 0.10736507091081567,
+      "mean_train_r2": 0.2602615594863892,
+      "per_fold_test_r2": [
+        0.1980072259902954,
+        0.09549140930175781,
+        -0.05826127529144287,
+        0.12831389904022217,
+        0.25857192277908325
+      ],
+      "per_fold_train_r2": [
+        0.28673386573791504,
+        0.2897440791130066,
+        0.25396859645843506,
+        0.22280824184417725,
+        0.24805301427841187
+      ],
+      "fold3_test_r2": -0.05826127529144287,
+      "fold5_test_r2": 0.25857192277908325,
+      "bars_per_day_mean": 4171.1578947368425,
+      "bars_per_day_cv": 0.190230508354912
+    },
+    "tick_500": {
+      "mean_test_r2": 0.049894750118255615,
+      "std_test_r2": 0.05458637325251486,
+      "mean_train_r2": 0.1315048336982727,
+      "per_fold_test_r2": [
+        0.12458616495132446,
+        0.029442906379699707,
+        -0.004344820976257324
+      ],
+      "per_fold_train_r2": [
+        0.17982155084609985,
+        0.21459585428237915,
+        9.709596633911133e-05
+      ],
+      "fold3_test_r2": -0.004344820976257324,
+      "fold5_test_r2": null,
+      "bars_per_day_mean": 793.7894736842105,
+      "bars_per_day_cv": 0.20001207876468766
+    }
+  },
+  "per_seed": [
+    {
+      "threshold": "tick_25",
+      "seed": 42,
+      "fold": 1,
+      "test_r2": 0.00913172960281372,
+      "train_r2": 0.3140948414802551
+    },
+    {
+      "threshold": "tick_25",
+      "seed": 43,
+      "fold": 2,
+      "test_r2": 0.05328822135925293,
+      "train_r2": 0.3017982244491577
+    },
+    {
+      "threshold": "tick_25",
+      "seed": 44,
+      "fold": 3,
+      "test_r2": 0.003698289394378662,
+      "train_r2": 0.23285764455795288
+    },
+    {
+      "threshold": "tick_25",
+      "seed": 45,
+      "fold": 4,
+      "test_r2": 0.12916892766952515,
+      "train_r2": 0.2309308648109436
+    },
+    {
+      "threshold": "tick_25",
+      "seed": 46,
+      "fold": 5,
+      "test_r2": 0.12254780530929565,
+      "train_r2": 0.2243843674659729
+    },
+    {
+      "threshold": "tick_100",
+      "seed": 42,
+      "fold": 1,
+      "test_r2": 0.1980072259902954,
+      "train_r2": 0.28673386573791504
+    },
+    {
+      "threshold": "tick_100",
+      "seed": 43,
+      "fold": 2,
+      "test_r2": 0.09549140930175781,
+      "train_r2": 0.2897440791130066
+    },
+    {
+      "threshold": "tick_100",
+      "seed": 44,
+      "fold": 3,
+      "test_r2": -0.05826127529144287,
+      "train_r2": 0.25396859645843506
+    },
+    {
+      "threshold": "tick_100",
+      "seed": 45,
+      "fold": 4,
+      "test_r2": 0.12831389904022217,
+      "train_r2": 0.22280824184417725
+    },
+    {
+      "threshold": "tick_100",
+      "seed": 46,
+      "fold": 5,
+      "test_r2": 0.25857192277908325,
+      "train_r2": 0.24805301427841187
+    },
+    {
+      "threshold": "tick_500",
+      "seed": 42,
+      "fold": 1,
+      "test_r2": 0.12458616495132446,
+      "train_r2": 0.17982155084609985
+    },
+    {
+      "threshold": "tick_500",
+      "seed": 43,
+      "fold": 2,
+      "test_r2": 0.029442906379699707,
+      "train_r2": 0.21459585428237915
+    },
+    {
+      "threshold": "tick_500",
+      "seed": 44,
+      "fold": 3,
+      "test_r2": -0.004344820976257324,
+      "train_r2": 9.709596633911133e-05
+    }
+  ],
+  "calibration": {
+    "tick_25": {
+      "bars_per_day_mean": 16835.57894736842,
+      "bars_per_day_std": 3172.838531824535,
+      "bars_per_day_cv": 0.18846031619960912,
+      "total_bars": 319876,
+      "duration_median_s": 1.4,
+      "duration_p10_s": 0.4,
+      "duration_p90_s": 2.3
+    },
+    "tick_50": {
+      "bars_per_day_mean": 8392.842105263158,
+      "bars_per_day_std": 1586.9140613867996,
+      "bars_per_day_cv": 0.18907946098397876,
+      "total_bars": 159464,
+      "duration_median_s": 2.8,
+      "duration_p10_s": 1.0,
+      "duration_p90_s": 4.5
+    },
+    "tick_100": {
+      "bars_per_day_mean": 4171.1578947368425,
+      "bars_per_day_std": 793.4814867443941,
+      "bars_per_day_cv": 0.190230508354912,
+      "total_bars": 79252,
+      "duration_median_s": 5.7,
+      "duration_p10_s": 2.3,
+      "duration_p90_s": 8.7
+    },
+    "tick_250": {
+      "bars_per_day_mean": 1638.157894736842,
+      "bars_per_day_std": 317.3467741592028,
+      "bars_per_day_cv": 0.19372172559115997,
+      "total_bars": 31125,
+      "duration_median_s": 14.2,
+      "duration_p10_s": 6.5,
+      "duration_p90_s": 21.1
+    },
+    "tick_500": {
+      "bars_per_day_mean": 793.7894736842105,
+      "bars_per_day_std": 158.76748273310628,
+      "bars_per_day_cv": 0.20001207876468766,
+      "total_bars": 15082,
+      "duration_median_s": 28.5,
+      "duration_p10_s": 14.0,
+      "duration_p90_s": 41.7
+    },
+    "tick_1000": {
+      "bars_per_day_mean": 371.6842105263158,
+      "bars_per_day_std": 79.40969888501222,
+      "bars_per_day_cv": 0.21364829776483038,
+      "total_bars": 7062,
+      "duration_median_s": 57.8,
+      "duration_p10_s": 30.8,
+      "duration_p90_s": 82.78000000000002
+    },
+    "tick_2000": {
+      "bars_per_day_mean": 160.57894736842104,
+      "bars_per_day_std": 39.64887439760718,
+      "bars_per_day_cv": 0.246912033285656,
+      "total_bars": 3051,
+      "duration_median_s": 117.6,
+      "duration_p10_s": 66.91000000000001,
+      "duration_p90_s": 168.5
+    },
+    "tick_5000": {
+      "bars_per_day_mean": 34.0,
+      "bars_per_day_std": 15.861240410775604,
+      "bars_per_day_cv": 0.46650707090516486,
+      "total_bars": 646,
+      "duration_median_s": 279.6,
+      "duration_p10_s": 173.20000000000002,
+      "duration_p90_s": 474.47999999999996
+    }
+  },
+  "primary_metrics": {
+    "peak_tick_r2": 0.12442463636398315,
+    "peak_tick_threshold": "tick_100",
+    "peak_delta": 0.03542463636398316
+  },
+  "secondary_metrics": {
+    "r2_by_threshold": {
+      "tick_25": 0.06356699466705322,
+      "tick_100": 0.12442463636398315,
+      "tick_500": 0.049894750118255615
+    },
+    "per_fold_r2": {
+      "tick_25": [
+        0.00913172960281372,
+        0.05328822135925293,
+        0.003698289394378662,
+        0.12916892766952515,
+        0.12254780530929565
+      ],
+      "tick_100": [
+        0.1980072259902954,
+        0.09549140930175781,
+        -0.05826127529144287,
+        0.12831389904022217,
+        0.25857192277908325
+      ],
+      "tick_500": [
+        0.12458616495132446,
+        0.029442906379699707,
+        -0.004344820976257324
+      ]
+    },
+    "per_fold_train_r2": {
+      "tick_25": [
+        0.3140948414802551,
+        0.3017982244491577,
+        0.23285764455795288,
+        0.2309308648109436,
+        0.2243843674659729
+      ],
+      "tick_100": [
+        0.28673386573791504,
+        0.2897440791130066,
+        0.25396859645843506,
+        0.22280824184417725,
+        0.24805301427841187
+      ],
+      "tick_500": [
+        0.17982155084609985,
+        0.21459585428237915,
+        9.709596633911133e-05
+      ]
+    },
+    "fold3_r2": {
+      "tick_25": 0.003698289394378662,
+      "tick_100": -0.05826127529144287,
+      "tick_500": -0.004344820976257324
+    },
+    "r2_std_by_threshold": {
+      "tick_25": 0.05373167179984335,
+      "tick_100": 0.10736507091081567,
+      "tick_500": 0.05458637325251486
+    },
+    "curve_shape": "Inverted-U",
+    "bars_per_day": {
+      "tick_25": 16835.57894736842,
+      "tick_50": 8392.842105263158,
+      "tick_100": 4171.1578947368425,
+      "tick_250": 1638.157894736842,
+      "tick_500": 793.7894736842105,
+      "tick_1000": 371.6842105263158,
+      "tick_2000": 160.57894736842104,
+      "tick_5000": 34.0
+    },
+    "bar_duration": {
+      "tick_25": {
+        "median": 1.4,
+        "p10": 0.4,
+        "p90": 2.3
+      },
+      "tick_50": {
+        "median": 2.8,
+        "p10": 1.0,
+        "p90": 4.5
+      },
+      "tick_100": {
+        "median": 5.7,
+        "p10": 2.3,
+        "p90": 8.7
+      },
+      "tick_250": {
+        "median": 14.2,
+        "p10": 6.5,
+        "p90": 21.1
+      },
+      "tick_500": {
+        "median": 28.5,
+        "p10": 14.0,
+        "p90": 41.7
+      },
+      "tick_1000": {
+        "median": 57.8,
+        "p10": 30.8,
+        "p90": 82.78000000000002
+      },
+      "tick_2000": {
+        "median": 117.6,
+        "p10": 66.91000000000001,
+        "p90": 168.5
+      },
+      "tick_5000": {
+        "median": 279.6,
+        "p10": 173.20000000000002,
+        "p90": 474.47999999999996
+      }
+    },
+    "total_bar_count": {
+      "tick_25": 319876,
+      "tick_50": 159464,
+      "tick_100": 79252,
+      "tick_250": 31125,
+      "tick_500": 15082,
+      "tick_1000": 7062,
+      "tick_2000": 3051,
+      "tick_5000": 646
+    },
+    "data_volume_correlation": -0.14885412265799522,
+    "fold3_improvements": {
+      "tick_25": 0.052698289394378664,
+      "tick_100": -0.00926127529144287,
+      "tick_500": 0.04465517902374268
+    },
+    "selected_thresholds": [
+      "tick_25",
+      "tick_100",
+      "tick_500",
+      "tick_2000"
+    ]
+  },
+  "sanity_checks": {
+    "tick_25": {
+      "price_tick_quantized_fraction": 1.0,
+      "price_range": [
+        -22.5,
+        22.5
+      ],
+      "param_count": 12128,
+      "param_count_ok": true,
+      "has_nan": false,
+      "size_per_day_mean_range": [
+        -2.666056673206185e-07,
+        3.812619411291962e-07
+      ],
+      "size_per_day_std_range": [
+        0.9999998211860657,
+        1.0000001192092896
+      ]
+    },
+    "tick_100": {
+      "price_tick_quantized_fraction": 1.0,
+      "price_range": [
+        -19.5,
+        19.5
+      ],
+      "param_count": 12128,
+      "param_count_ok": true,
+      "has_nan": false,
+      "size_per_day_mean_range": [
+        -4.830829993807129e-07,
+        2.691790541575756e-07
+      ],
+      "size_per_day_std_range": [
+        0.9999999403953552,
+        1.0
+      ]
+    },
+    "tick_500": {
+      "price_tick_quantized_fraction": 1.0,
+      "price_range": [
+        -19.5,
+        19.5
+      ],
+      "param_count": 12128,
+      "param_count_ok": true,
+      "has_nan": false,
+      "size_per_day_mean_range": [
+        -1.2113019920434454e-07,
+        1.4564331252131524e-07
+      ],
+      "size_per_day_std_range": [
+        1.0,
+        1.0
+      ]
+    }
+  },
+  "mve": {
+    "threshold": "tick_25",
+    "fold5_train_r2": 0.2243843674659729
+  },
+  "decision": {
+    "outcome": "BETTER",
+    "detail": "Peak R2=0.1244 >= 0.107 at tick_100. Single-threshold peak -- multiple-testing concern noted."
+  },
+  "resource_usage": {
+    "gpu_hours": 0,
+    "wall_clock_seconds": 7330.525703907013,
+    "total_training_runs": 13,
+    "total_runs": 21
+  },
+  "abort_triggered": false,
+  "abort_reason": "Wall clock budget exceeded during sweep",
+  "notes": "Wall clock budget (7200s) exceeded at 7330s during tick_500 fold 3. tick_500 completed 3/5 folds. tick_2000 not reached. 13/20 planned training runs completed. Per-fold times exceeded 300s abort threshold on multiple folds (tick_25 folds 2-5: 349-927s; tick_100 fold 5: 1887s; tick_500 fold 3: 926s) -- ignored per protocol since data sizes make 300s/fold unrealistic on CPU. Original bar_feature_export required fix: StreamingBookBuilder.emit_snapshot() was not populating snap.trade_count field, causing tick bars to fall back to snapshot-counting. Fix applied to tools/bar_feature_export.cpp (3 edits: added pending_trade_count_ member, increment on action='T', assign and reset in emit_snapshot). All 8 CSVs re-exported after fix. Gate A confirmed all thresholds now have cv>0 (range 0.188-0.467)."
+}
