@@ -1,0 +1,13 @@
+Normalization Verification -- tick_500
+==================================================
+Price offsets (/ TICK_SIZE=0.25):
+  Range: [-19.5, 19.5]
+  Tick-quantized fraction: 1.0000
+
+Size (log1p + per-day z-score):
+  Per-day mean range: [-0.0000, 0.0000]
+  Per-day std range: [1.0000, 1.0000]
+
+NaN/inf: book=0, target=0
+Has NaN after cleanup: False
+Param count: 12128 (ok: True)
