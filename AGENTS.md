@@ -1,12 +1,12 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-17, Phase 4 feature-computation complete)
+## Current State (updated 2026-02-19, Tick Bar Fix TDD — COMPLETE)
 
 - **Build:** Green.
-- **Unit tests:** 726/727 pass, 0 failures, 1 disabled (`BookBuilderIntegrationTest.ProcessSingleDayFile`).
+- **Unit tests:** 1003/1004 pass (1 disabled, 1 skipped) + new tick_bar_fix tests. TDD phases exited 0.
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **Phase 4 (feature-computation):** Complete. Track A hand-crafted features (~45), Track B raw representations, forward returns, warm-up enforcement, CSV export. 173 new unit tests.
-- **`ORCHESTRATOR_SPEC.md`** archived to `completed_specs/`.
+- **Tick bar fix (TB-Fix):** Complete. `book_builder.hpp` emits `trade_count` per snapshot. `tick_bar_builder.hpp` accumulates trade counts, closes bars at threshold. Regression: time/dollar/volume bars unchanged.
+- **19 phases complete** (9 engineering + 10 research). Tick bars now genuine event bars. R3b rerun unblocked.
 
 ## Completed TDD Phases (Orchestrator Spec — predecessor)
 
@@ -30,14 +30,17 @@
 | 1 | bar-construction | done | done | done | done |
 | 2 | oracle-replay | done | done | done | done |
 | 3 | multi-day-backtest | done | done | done | done |
-| 4 | feature-computation | done | done | done | pending |
+| 4 | feature-computation | done | done | done | done |
+| 5 | feature-analysis | done | done | done | done |
+| 7 | oracle-expectancy | done | done | done | done |
+| 8 | bar-feature-export | done | done | done | done |
+| 9A | hybrid-model | done | done | done | done |
+| TB-Fix | tick-bar-fix | done | done | done | done |
 
 ## Next Action
 
-Ship Phase 4 (commit), then start Phase 5 (feature-analysis):
-```bash
-source .orchestration-kit.env && ./.kit/tdd.sh red .kit/docs/feature-analysis.md
-```
+1. **CNN Pipeline Fix (HIGHEST PRIORITY):** Apply TICK_SIZE normalization (÷0.25) + per-day z-scoring in Python training pipeline. Re-attempt CNN+GBT with proper validation. Expected R²≈0.084.
+2. **R3b Rerun (event-bar research):** Rerun R3b with genuine tick bars now that construction is fixed.
 
 ## Agent Roles
 

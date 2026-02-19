@@ -12,30 +12,27 @@
 
 ## Project Status
 
-**17 phases complete (8 engineering + 9 research). R3 CNN REPRODUCED (R²=0.1317). Root cause of 9B/9C failure RESOLVED: normalization + validation leakage.** Branch: `tdd/hybrid-model`.
+**19 phases complete (9 engineering + 10 research). Tick bar construction defect FIXED. All bar types now genuine.** Branch: `main`.
 
 ## What was completed this cycle
 
-- **R3 Reproduction & Pipeline Comparison** — `.kit/experiments/r3-reproduction-pipeline-comparison.md`
-- **Research kit phases** — frame→run→read all exit 0
-- **Step 1 (R3 Reproduction): CONFIRMED.** Mean R²=0.1317 (Δ=-0.0003 from R3 original). Per-fold correlation with R3 = 0.9997. Near-perfect reproduction.
-- **Step 2 (Pipeline Comparison): REFUTED.** Data is byte-identical (identity rate=1.0, max diff=0.0). There was NEVER a "Python vs C++" pipeline difference — R3 loaded from the same C++ export as 9B/9C.
-- **Root cause RESOLVED:** The 9B/9C R²=0.002 failure was caused by:
-  1. **Missing TICK_SIZE normalization** — prices must be divided by 0.25 to get tick offsets (scale ±22.5), not used as raw index points (scale ±5.6)
-  2. **Per-fold z-scoring instead of per-day z-scoring** on sizes
-  3. **R3's R²=0.132 includes ~36% inflation** from test-as-validation leakage. Proper-validation R²≈0.084.
-- **CNN spatial signal is REAL** (R²≈0.084 with proper validation) — still 12× higher than flattened MLP (R²=0.007). CNN+GBT architecture is viable.
-- **No C++ export fix needed.** The fix is in the Python training pipeline normalization.
-- **Outcome C** (R3 Reproduces + Pipelines Equivalent) — the "UNEXPECTED" outcome from the spec.
+- **Tick Bar Fix TDD** — `.kit/docs/tick-bar-fix.md`
+- **TDD phases** — red→green→refactor all exit 0
+- **Root fix:** `book_builder.hpp` now emits `trade_count` (uint32) per snapshot — counts action='T' MBO events since previous snapshot emission.
+- **Bar construction fix:** `tick_bar_builder.hpp` accumulates `trade_count` across snapshots and closes a tick bar when cumulative trades >= threshold. Remainder carries over to next bar.
+- **Regression:** Time, dollar, and volume bar construction unchanged. Existing tests pass.
+- **New tests:** `tests/tick_bar_fix_test.cpp` — validates trade counting, variable duration, no-trade gaps, daily variance, trade reconciliation, threshold proportionality.
+- **Files changed:** `src/book_builder.hpp`, `src/bars/bar_builder_base.hpp`, `src/bars/tick_bar_builder.hpp`, `src/features/bar_features.hpp`, `CMakeLists.txt`, `tests/tick_bar_fix_test.cpp`
 
 ## What exists
 
 A C++20 MES microstructure model suite with:
-- **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report, bar feature export (8 TDD phases)
-- **Research results**: 11 complete research phases. CNN spatial signal confirmed (proper-validation R²≈0.084). Root cause of reproduction failures fully resolved.
+- **Infrastructure**: Bar construction (time/tick/dollar/volume — all genuine), oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report, bar feature export (9 TDD phases)
+- **Research results**: 10 complete research phases. CNN spatial signal confirmed (proper-validation R²≈0.084). Root cause of reproduction failures fully resolved.
 - **Architecture decision**: CNN + GBT Hybrid — **NOW GROUNDED.** CNN spatial signal is real. True R²≈0.084 (not 0.132). R6 recommendation validated qualitatively, quantitative edge is 36% smaller than assumed.
 - **Labeling decision**: Triple barrier (preferred over first-to-hit)
 - **Temporal verdict**: NO TEMPORAL SIGNAL — confirmed across 7 bar types, 0.14s–300s
+- **Bar construction**: ALL bar types now genuine event bars. Tick bars fixed 2026-02-19.
 
 ## Phase Sequence
 
@@ -60,15 +57,21 @@ A C++20 MES microstructure model suite with:
 | 9A | `.kit/docs/hybrid-model.md` | TDD | **Done** (C++ TB label export) |
 | 9B | `.kit/experiments/hybrid-model-training.md` | Research | **Done (REFUTED)** — normalization wrong |
 | 9C | `.kit/experiments/cnn-reproduction-diagnostic.md` | Research | **Done (REFUTED)** — deviations not root cause |
-| **9D** | **`.kit/experiments/r3-reproduction-pipeline-comparison.md`** | **Research** | **Done (CONFIRMED Step 1 / REFUTED Step 2)** — R3 reproduced, root cause resolved |
+| 9D | `.kit/experiments/r3-reproduction-pipeline-comparison.md` | Research | **Done (CONFIRMED Step 1 / REFUTED Step 2)** — R3 reproduced, root cause resolved |
+| R3b | `.kit/experiments/r3b-event-bar-cnn.md` | Research | **Done (INCONCLUSIVE)** — bar construction defect |
+| **TB-Fix** | **`.kit/docs/tick-bar-fix.md`** | **TDD** | **Done** — tick bars count trades, not snapshots |
 
 ## Test summary
 
-- **1003 unit tests** pass, 1 disabled, 1 skipped, 1004 total
+- **1003/1004 unit tests** pass (baseline) + new tick_bar_fix tests. TDD phases exited 0.
 - **22 integration tests** (14 N=32 + 8 N=128) — labeled `integration`, excluded from default ctest
 - Unit test time: ~14 min. Integration: ~20 min.
 
 ## What to do next
+
+### R3b Rerun with Genuine Tick Bars (UNBLOCKED)
+
+Tick bars are now genuine event bars. Rerun R3b experiment (`.kit/experiments/r3b-event-bar-cnn.md`) to test whether CNN spatial R² on activity-normalized event bars exceeds the time_5s baseline of 0.084.
 
 ### CNN+GBT Integration with Corrected Pipeline (HIGHEST PRIORITY)
 
@@ -81,34 +84,18 @@ Re-attempt Phase 9B hybrid model training with these corrections. Expected CNN R
 
 ### Multi-Seed Robustness Study (MEDIUM PRIORITY)
 
-Run 5-fold CV with 5 seeds (25 total runs) using corrected pipeline + proper validation. Confirm R²≈0.084 is robust. Fold 3 (Oct 2022) showed R²=-0.047 under proper validation — determine if this is seed-specific or regime-specific.
+Run 5-fold CV with 5 seeds (25 total runs) using corrected pipeline + proper validation. Confirm R²≈0.084 is robust.
 
-### GBT-Only Baseline Refinement (INDEPENDENT PATH)
+## Key files changed this cycle
 
-Oracle shows $4.00/trade available. Phase B GBT-only at -$0.38/trade. Can improved feature engineering close the gap without CNN? Independent of CNN question.
-
-### Mental Model Update
-
-- **Before:** "R3's CNN signal cannot be reproduced. Data pipeline is the primary suspect."
-- **After:** "R3's CNN signal is REAL and fully reproduced (R²=0.1317). The 9B/9C failure was caused by missing TICK_SIZE normalization + per-day z-scoring. R3's reported R²=0.132 is inflated ~36% by validation leakage; true R²≈0.084. The C++ data export is correct. CNN+GBT path is viable."
-
-## Key research results
-
-| Experiment | Finding | Key Number |
-|-----------|---------|------------|
-| R1 | Subordination refuted for MES | 0/3 primary tests significant |
-| R2 | Hand-crafted features sufficient | Best R²=0.0067 (1-bar MLP) |
-| R3 | CNN best book encoder | R²=0.132 (leaked), proper R²≈0.084 |
-| R4 | No temporal signal (time_5s) | All 36 AR configs negative R² |
-| R4b vol100 | No temporal signal (volume bars) | All 36 AR configs negative R² |
-| R4b dollar25k | Marginal signal, redundant | AR R²=0.0006 at h=1, augmentation fails |
-| R4c | Tick + extended horizons null | 0/54+ passes across 4 bar types |
-| R4d | Dollar + tick actionable null | 0/38 passes, 7s–300s coverage |
-| Synthesis | CNN + GBT Hybrid | CONDITIONAL GO -> **GO** |
-| Oracle Expectancy | TB passes all 6 criteria | $4.00/trade, PF=3.30 |
-| 9B Hybrid Training | CNN normalization wrong | R²=-0.002 (missing TICK_SIZE div) |
-| 9C CNN Repro Diag | Deviations not root cause | R²=0.002, same failure mode |
-| **9D R3 Reproduction** | **R3 REPRODUCED, root cause resolved** | **R²=0.1317 (leaked) / 0.084 (proper). Data byte-identical.** |
+| File | Change |
+|------|--------|
+| `src/book_builder.hpp` | Added `trade_count` field to BookSnapshot |
+| `src/bars/bar_builder_base.hpp` | Base class updates for trade-count bar construction |
+| `src/bars/tick_bar_builder.hpp` | Tick bars now accumulate `trade_count`, not snapshot count |
+| `src/features/bar_features.hpp` | Updated for new tick bar boundary logic |
+| `CMakeLists.txt` | Added `tick_bar_fix_test` target |
+| `tests/tick_bar_fix_test.cpp` | New: trade counting, variable duration, reconciliation tests |
 
 ## Build commands
 
@@ -122,4 +109,4 @@ cd build && ctest --output-on-failure --label-regex integration           # inte
 
 ---
 
-Updated: 2026-02-19 (R3 Reproduction CONFIRMED — root cause: TICK_SIZE normalization + per-day z-scoring + validation leakage)
+Updated: 2026-02-19 (Tick Bar Fix TDD — complete. Tick bars now count action='T' trade events, not snapshots.)

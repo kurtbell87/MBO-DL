@@ -54,6 +54,7 @@ set(TEST_TARGETS
     oracle_expectancy_test
     bar_feature_export_test
     hybrid_model_tb_label_test
+    tick_bar_fix_test
 )
 
 foreach(target ${TEST_TARGETS})

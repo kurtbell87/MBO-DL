@@ -589,7 +589,7 @@ private:
         }
     }
 
-    float rolling_std(const std::deque<float>& data, size_t window) {
+    static float rolling_std(const std::deque<float>& data, size_t window) {
         if (data.size() < window) return std::numeric_limits<float>::quiet_NaN();
         float sum = 0.0f, sum_sq = 0.0f;
         for (size_t i = data.size() - window; i < data.size(); ++i) {
