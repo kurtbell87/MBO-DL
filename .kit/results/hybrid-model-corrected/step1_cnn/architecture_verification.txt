@@ -1,0 +1,27 @@
+Parameter count: 12128 (expected: 12,128)
+Deviation: 0.0%
+
+Architecture:
+CNNEncoderR3(
+  (conv1): Conv1d(2, 59, kernel_size=(3,), stride=(1,), padding=(1,))
+  (bn1): BatchNorm1d(59, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (conv2): Conv1d(59, 59, kernel_size=(3,), stride=(1,), padding=(1,))
+  (bn2): BatchNorm1d(59, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (pool): AdaptiveAvgPool1d(output_size=1)
+  (fc_embed): Linear(in_features=59, out_features=16, bias=True)
+  (fc_out): Linear(in_features=16, out_features=1, bias=True)
+  (relu): ReLU()
+)
+
+  conv1.weight: [59, 2, 3] (354 params)
+  conv1.bias: [59] (59 params)
+  bn1.weight: [59] (59 params)
+  bn1.bias: [59] (59 params)
+  conv2.weight: [59, 59, 3] (10443 params)
+  conv2.bias: [59] (59 params)
+  bn2.weight: [59] (59 params)
+  bn2.bias: [59] (59 params)
+  fc_embed.weight: [16, 59] (944 params)
+  fc_embed.bias: [16] (16 params)
+  fc_out.weight: [1, 16] (16 params)
+  fc_out.bias: [1] (1 params)

@@ -1,0 +1,256 @@
+{
+  "experiment": "r3b-event-bar-cnn",
+  "timestamp": "2026-02-19T12:00:00",
+  "spec": ".kit/experiments/r3b-event-bar-cnn.md",
+
+  "baseline": {
+    "bar_type": "time_5s",
+    "r2_time5s_baseline": 0.084,
+    "source": "R3 reproduction diagnostic (proper validation, no test leakage)"
+  },
+
+  "primary_metrics": {
+    "r2_by_threshold": {
+      "tick_100": 0.0566,
+      "tick_500": 0.0465,
+      "tick_1000": -0.0027,
+      "tick_1500": -0.0219
+    },
+    "r2_time5s_baseline": 0.084,
+    "peak_threshold": "tick_100",
+    "peak_r2": 0.0566,
+    "peak_delta": -0.0274,
+    "curve_shape": "Monotonic down"
+  },
+
+  "per_threshold": {
+    "tick_100": {
+      "mean_test_r2": 0.0566,
+      "std_test_r2": 0.1040,
+      "mean_train_r2": 0.1531,
+      "per_fold_test_r2": [0.1808, 0.0599, -0.1076, 0.0009, 0.1492],
+      "per_fold_train_r2": [0.1646, 0.1985, 0.1782, 0.0295, 0.1950],
+      "fold3_test_r2": -0.1076,
+      "total_bars": 43491,
+      "bars_per_day_mean": 2289,
+      "bars_per_day_min": 2289,
+      "bars_per_day_max": 2289,
+      "bars_per_day_std": 0.0,
+      "duration_mean_s": 10.0,
+      "duration_median_s": 10.0,
+      "duration_p10_s": 10.0,
+      "duration_p90_s": 10.0,
+      "assessment": "WORSE",
+      "wall_clock_s": 639.0
+    },
+    "tick_500": {
+      "mean_test_r2": 0.0465,
+      "std_test_r2": 0.0963,
+      "mean_train_r2": 0.0392,
+      "per_fold_test_r2": [0.0175, -0.0001, -0.0090, -0.0140, 0.2379],
+      "per_fold_train_r2": [0.0403, -0.0049, 0.0168, 0.0004, 0.1432],
+      "fold3_test_r2": -0.0090,
+      "total_bars": 7923,
+      "bars_per_day_mean": 417,
+      "bars_per_day_min": 417,
+      "bars_per_day_max": 417,
+      "bars_per_day_std": 0.0,
+      "duration_mean_s": 50.0,
+      "duration_median_s": 50.0,
+      "duration_p10_s": 50.0,
+      "duration_p90_s": 50.0,
+      "assessment": "WORSE",
+      "wall_clock_s": 94.8
+    },
+    "tick_1000": {
+      "mean_test_r2": -0.0027,
+      "std_test_r2": 0.0376,
+      "mean_train_r2": 0.0013,
+      "per_fold_test_r2": [-0.0198, -0.0003, -0.0364, -0.0257, 0.0687],
+      "per_fold_train_r2": [-0.0092, -0.0124, -0.0019, -0.0010, 0.0307],
+      "fold3_test_r2": -0.0364,
+      "total_bars": 3477,
+      "bars_per_day_mean": 183,
+      "bars_per_day_min": 183,
+      "bars_per_day_max": 183,
+      "bars_per_day_std": 0.0,
+      "duration_mean_s": 100.0,
+      "duration_median_s": 100.0,
+      "duration_p10_s": 100.0,
+      "duration_p90_s": 100.0,
+      "assessment": "WORSE",
+      "wall_clock_s": 58.7
+    },
+    "tick_1500": {
+      "mean_test_r2": -0.0219,
+      "std_test_r2": 0.0298,
+      "mean_train_r2": -0.0088,
+      "per_fold_test_r2": [-0.0260, -0.0057, -0.0717, -0.0253, 0.0190],
+      "per_fold_train_r2": [-0.0187, -0.0160, -0.0108, -0.0048, 0.0064],
+      "fold3_test_r2": -0.0717,
+      "total_bars": 1995,
+      "bars_per_day_mean": 105,
+      "bars_per_day_min": 105,
+      "bars_per_day_max": 105,
+      "bars_per_day_std": 0.0,
+      "duration_mean_s": 150.0,
+      "duration_median_s": 150.0,
+      "duration_p10_s": 150.0,
+      "duration_p90_s": 150.0,
+      "assessment": "WORSE",
+      "wall_clock_s": 45.8
+    }
+  },
+
+  "per_seed": [
+    {"threshold": "tick_100", "fold": 1, "seed": 42, "train_r2": 0.1646, "test_r2": 0.1808, "train_size": 9156, "test_size": 6867, "epochs": 44},
+    {"threshold": "tick_100", "fold": 2, "seed": 43, "train_r2": 0.1985, "test_r2": 0.0599, "train_size": 16023, "test_size": 6867, "epochs": 46},
+    {"threshold": "tick_100", "fold": 3, "seed": 44, "train_r2": 0.1782, "test_r2": -0.1076, "train_size": 22890, "test_size": 6867, "epochs": 31},
+    {"threshold": "tick_100", "fold": 4, "seed": 45, "train_r2": 0.0295, "test_r2": 0.0009, "train_size": 29757, "test_size": 6867, "epochs": 11},
+    {"threshold": "tick_100", "fold": 5, "seed": 46, "train_r2": 0.1950, "test_r2": 0.1492, "train_size": 36624, "test_size": 6867, "epochs": 50},
+    {"threshold": "tick_500", "fold": 1, "seed": 42, "train_r2": 0.0403, "test_r2": 0.0175, "train_size": 1668, "test_size": 1251, "epochs": 50},
+    {"threshold": "tick_500", "fold": 2, "seed": 43, "train_r2": -0.0049, "test_r2": -0.0001, "train_size": 2919, "test_size": 1251, "epochs": 12},
+    {"threshold": "tick_500", "fold": 3, "seed": 44, "train_r2": 0.0168, "test_r2": -0.0090, "train_size": 4170, "test_size": 1251, "epochs": 22},
+    {"threshold": "tick_500", "fold": 4, "seed": 45, "train_r2": 0.0004, "test_r2": -0.0140, "train_size": 5421, "test_size": 1251, "epochs": 11},
+    {"threshold": "tick_500", "fold": 5, "seed": 46, "train_r2": 0.1432, "test_r2": 0.2379, "train_size": 6672, "test_size": 1251, "epochs": 50},
+    {"threshold": "tick_1000", "fold": 1, "seed": 42, "train_r2": -0.0092, "test_r2": -0.0198, "train_size": 732, "test_size": 549, "epochs": 11},
+    {"threshold": "tick_1000", "fold": 2, "seed": 43, "train_r2": -0.0124, "test_r2": -0.0003, "train_size": 1281, "test_size": 549, "epochs": 15},
+    {"threshold": "tick_1000", "fold": 3, "seed": 44, "train_r2": -0.0019, "test_r2": -0.0364, "train_size": 1830, "test_size": 549, "epochs": 31},
+    {"threshold": "tick_1000", "fold": 4, "seed": 45, "train_r2": -0.0010, "test_r2": -0.0257, "train_size": 2379, "test_size": 549, "epochs": 11},
+    {"threshold": "tick_1000", "fold": 5, "seed": 46, "train_r2": 0.0307, "test_r2": 0.0687, "train_size": 2928, "test_size": 549, "epochs": 50},
+    {"threshold": "tick_1500", "fold": 1, "seed": 42, "train_r2": -0.0187, "test_r2": -0.0260, "train_size": 420, "test_size": 315, "epochs": 12},
+    {"threshold": "tick_1500", "fold": 2, "seed": 43, "train_r2": -0.0160, "test_r2": -0.0057, "train_size": 735, "test_size": 315, "epochs": 37},
+    {"threshold": "tick_1500", "fold": 3, "seed": 44, "train_r2": -0.0108, "test_r2": -0.0717, "train_size": 1050, "test_size": 315, "epochs": 50},
+    {"threshold": "tick_1500", "fold": 4, "seed": 45, "train_r2": -0.0048, "test_r2": -0.0253, "train_size": 1365, "test_size": 315, "epochs": 11},
+    {"threshold": "tick_1500", "fold": 5, "seed": 46, "train_r2": 0.0064, "test_r2": 0.0190, "train_size": 1680, "test_size": 315, "epochs": 50}
+  ],
+
+  "r2_vs_barsize_curve": {
+    "thresholds": [100, 500, 1000, 1500],
+    "log_thresholds": [4.605, 6.215, 6.908, 7.313],
+    "mean_durations_s": [10.0, 50.0, 100.0, 150.0],
+    "mean_r2": [0.0566, 0.0465, -0.0027, -0.0219],
+    "std_r2": [0.1040, 0.0963, 0.0376, 0.0298],
+    "fold3_r2": [-0.1076, -0.0090, -0.0364, -0.0717],
+    "slope_r2_vs_log_barsize": -0.0285,
+    "shape": "Monotonic down"
+  },
+
+  "fold3_diagnostic": {
+    "time_5s_fold3_r2": -0.047,
+    "tick_100_fold3_r2": -0.1076,
+    "tick_500_fold3_r2": -0.0090,
+    "tick_1000_fold3_r2": -0.0364,
+    "tick_1500_fold3_r2": -0.0717,
+    "fold3_positive_at_any_threshold": false
+  },
+
+  "hypothesis_assessment": {
+    "H1_primary": {
+      "criterion": "CNN R2 at any threshold >= 0.101 (20% above 0.084)",
+      "result": "REFUTED",
+      "peak_r2": 0.0566,
+      "peak_threshold": "tick_100",
+      "peak_delta_from_baseline": -0.0274
+    },
+    "H2_shape": {
+      "criterion": "R2 vs bar size is non-monotonic (inverted-U)",
+      "result": "REFUTED",
+      "observed_shape": "Monotonic down — R2 decreases as bar size increases",
+      "slope": -0.0285
+    },
+    "H3_stability": {
+      "criterion": "Per-fold R2 std at optimal point < 0.048 (time_5s std)",
+      "result": "REFUTED",
+      "tick_100_std": 0.1040,
+      "tick_500_std": 0.0963,
+      "tick_1000_std": 0.0376,
+      "tick_1500_std": 0.0298,
+      "note": "tick_1000 and tick_1500 have lower std but with negative mean R2. Lower variance of a worse estimator."
+    },
+    "H4_fold3": {
+      "criterion": "Fold 3 R2 is positive at any event-bar threshold",
+      "result": "REFUTED",
+      "fold3_all_negative": true,
+      "worst_fold3": -0.1076,
+      "best_fold3": -0.0090
+    },
+    "H_null": {
+      "criterion": "CNN spatial R2 <= 0.084 at all event-bar sizes tested",
+      "result": "CONFIRMED",
+      "all_below_baseline": true,
+      "all_below_comparable_threshold": true
+    }
+  },
+
+  "decision_framework": {
+    "per_threshold_assessment": {
+      "tick_100": "WORSE (0.057 < 0.068)",
+      "tick_500": "WORSE (0.047 < 0.068)",
+      "tick_1000": "WORSE (-0.003 < 0.068)",
+      "tick_1500": "WORSE (-0.022 < 0.068)"
+    },
+    "cross_threshold_outcome": "All WORSE: time_5s beats every tick-bar threshold",
+    "action": "Time_5s definitively vindicated. Close this line of inquiry."
+  },
+
+  "sanity_checks": {
+    "price_tick_quantized_all_thresholds": true,
+    "price_quantized_fractions": {
+      "tick_100": 1.0,
+      "tick_500": 1.0,
+      "tick_1000": 1.0,
+      "tick_1500": 1.0
+    },
+    "param_count": 12128,
+    "param_count_deviation_pct": 0.0,
+    "lr_decays_properly": true,
+    "no_nan_any_threshold": true,
+    "bars_per_day_in_200_5000_range": {
+      "tick_100": true,
+      "tick_500": true,
+      "tick_1000": false,
+      "tick_1500": false
+    },
+    "bars_per_day_above_100": {
+      "tick_100": true,
+      "tick_500": true,
+      "tick_1000": true,
+      "tick_1500": true
+    }
+  },
+
+  "calibration": {
+    "thresholds_tested": [100, 500, 1000, 1500],
+    "target_durations_s": {"Small": "5-10", "Medium": "30-60", "Large": "120-300", "XL": "600-900"},
+    "actual_durations_s": {"tick_100": 10.0, "tick_500": 50.0, "tick_1000": 100.0, "tick_1500": 150.0},
+    "total_bars": {"tick_100": 43491, "tick_500": 7923, "tick_1000": 3477, "tick_1500": 1995},
+    "bars_per_day": {"tick_100": 2289, "tick_500": 417, "tick_1000": 183, "tick_1500": 105},
+    "xl_threshold_not_viable": true,
+    "xl_note": "tick_3000 (R4d calibration: 27 bars/day) fails < 100 bars/day criterion. tick_1500 (105/day) used as largest viable threshold."
+  },
+
+  "resource_usage": {
+    "gpu_hours": 0,
+    "wall_clock_seconds": 838.3,
+    "total_training_steps": "4 thresholds x 5 folds = 20 CNN training runs",
+    "total_runs": 20,
+    "export_time_s": {
+      "tick_100": "~60s",
+      "tick_1000": "~60s",
+      "tick_1500": "~60s",
+      "tick_500": "reused from R4d"
+    },
+    "training_time_s": {
+      "tick_100": 639.0,
+      "tick_500": 94.8,
+      "tick_1000": 58.7,
+      "tick_1500": 45.8
+    }
+  },
+
+  "abort_triggered": false,
+  "abort_reason": null,
+
+  "notes": "CRITICAL OBSERVATION: All tick-bar thresholds produce identical bar counts per day (std=0.0) and identical bar durations (p10=median=p90). tick_100 yields exactly 2289 bars every day, tick_500 yields exactly 417 bars every day, regardless of market activity level. Duration variance is zero at every threshold (e.g., tick_100: p10=p90=10.0s). This pattern indicates the C++ bar_feature_export 'tick' bar construction counts book-state snapshots (arriving at a fixed 10/s rate from the data feed) rather than trade events. Consequence: tick_100 is equivalent to time_10s, tick_500 is equivalent to time_50s, tick_1000 is equivalent to time_100s, tick_1500 is equivalent to time_150s. These are NOT activity-normalized event bars. The experiment's core hypothesis (activity normalization helps the CNN) was not testable with this bar construction. The experiment instead measured CNN spatial R2 at different time frequencies, all of which underperform time_5s. A confound: smaller bar counts at larger thresholds (tick_1000: 3477 total, tick_1500: 1995 total) may cause data-starvation for the 12,128-parameter CNN, depressing R2 independently of any bar-type effect. Train R2 at tick_1000/tick_1500 folds 1-4 is negative, confirming the CNN cannot learn from these sample sizes."
+}

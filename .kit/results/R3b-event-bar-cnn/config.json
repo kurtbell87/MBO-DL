@@ -1,0 +1,66 @@
+{
+  "experiment": "r3b-event-bar-cnn",
+  "spec": ".kit/experiments/r3b-event-bar-cnn.md",
+  "date": "2026-02-19",
+
+  "thresholds": {
+    "tick_100": {"bar_type": "tick", "bar_param": 100, "target_duration": "5-10s", "label": "Small"},
+    "tick_500": {"bar_type": "tick", "bar_param": 500, "target_duration": "30-60s", "label": "Medium"},
+    "tick_1000": {"bar_type": "tick", "bar_param": 1000, "target_duration": "2-5min", "label": "Large"},
+    "tick_1500": {"bar_type": "tick", "bar_param": 1500, "target_duration": "10-15min", "label": "XL (adjusted)"}
+  },
+
+  "data": {
+    "source": "DATA/GLBX-20260207-L953CAPU5B/*.dbn.zst",
+    "days": 19,
+    "export_tool": "build/bar_feature_export",
+    "tick_500_source": ".kit/results/temporal-predictability-dollar-tick-actionable/tick_500/features.csv"
+  },
+
+  "cnn": {
+    "architecture": "Conv1d(2->59->59) + BN + ReLU x 2 -> AdaptiveAvgPool1d -> Linear(59->16->1)",
+    "params": 12128,
+    "optimizer": "AdamW",
+    "lr": 0.001,
+    "lr_min": 0.00001,
+    "weight_decay": 0.0001,
+    "scheduler": "CosineAnnealingLR(T_max=50)",
+    "batch_size": 512,
+    "max_epochs": 50,
+    "patience": 10,
+    "loss": "MSE",
+    "device": "cpu"
+  },
+
+  "normalization": {
+    "price": "raw_value / TICK_SIZE(0.25) -> tick offsets",
+    "size": "log1p(abs(value)) -> z-score per day"
+  },
+
+  "validation": {
+    "method": "80/20 train/val split (chronological, last 20% as val)",
+    "leakage": "none (test set NOT used for early stopping)"
+  },
+
+  "cv": {
+    "type": "5-fold expanding window",
+    "fold_1": {"train": "days 1-4", "test": "days 5-7"},
+    "fold_2": {"train": "days 1-7", "test": "days 8-10"},
+    "fold_3": {"train": "days 1-10", "test": "days 11-13"},
+    "fold_4": {"train": "days 1-13", "test": "days 14-16"},
+    "fold_5": {"train": "days 1-16", "test": "days 17-19"}
+  },
+
+  "seeds": {
+    "base": 42,
+    "per_fold": "42 + fold_idx (matching R3)"
+  },
+
+  "target": "return_5 (forward return, 5 bars ahead)",
+
+  "baseline": {
+    "bar_type": "time_5s",
+    "r2": 0.084,
+    "source": "R3 reproduction diagnostic with proper validation"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "selected": [
+    {
+      "label": "dollar_5000000",
+      "bar_type": "dollar",
+      "threshold": 5000000,
+      "target": "5s",
+      "median_duration_s": 7.0,
+      "total_bars_all_days": 47865,
+      "horizons": [
+        1,
+        5,
+        20,
+        100
+      ],
+      "horizon_restriction": null
+    },
+    {
+      "label": "tick_3000",
+      "bar_type": "tick",
+      "threshold": 3000,
+      "target": "5min",
+      "median_duration_s": 300.0,
+      "total_bars_all_days": 513,
+      "horizons": [
+        1,
+        5,
+        20
+      ],
+      "horizon_restriction": "bars_per_session < 50"
+    }
+  ],
+  "log": {
+    "sc2_dollar_actionable_count": 5,
+    "sc2_pass": true,
+    "skip_dollar_250000000": "insufficient_sample",
+    "selected_count": 2,
+    "selected_labels": [
+      "dollar_5000000",
+      "tick_3000"
+    ]
+  }
+}

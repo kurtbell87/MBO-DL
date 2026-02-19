@@ -1,0 +1,260 @@
+{
+  "experiment": "r3-reproduction-pipeline-comparison",
+  "timestamp": "2026-02-19T04:20:19",
+  "baseline": {
+    "r3_mean_cnn_r2_h5": 0.132,
+    "r3_per_fold_r2_h5": [
+      0.163,
+      0.109,
+      0.049,
+      0.18,
+      0.159
+    ],
+    "phase_9c_fold5_train_r2": 0.002,
+    "phase_9c_fold5_test_r2": 0.0001
+  },
+  "treatment": {
+    "mean_cnn_r2_h5": 0.13171350955963135,
+    "per_fold_cnn_r2_h5": [
+      0.16282975673675537,
+      0.10797512531280518,
+      0.04885530471801758,
+      0.17821460962295532,
+      0.1606927514076233
+    ],
+    "per_fold_cnn_train_r2_h5": [
+      0.17035794258117676,
+      0.1951557993888855,
+      0.18854033946990967,
+      0.19597405195236206,
+      0.15708249807357788
+    ],
+    "epochs_trained_per_fold": [
+      27,
+      41,
+      42,
+      50,
+      17
+    ],
+    "step1_verdict": "PASS",
+    "per_fold_corr_with_r3": 0.999704558184417,
+    "pipeline_structural_equivalence": true,
+    "tensor_identity_rate": 1.0,
+    "channel_0_per_level_corr": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.9999999999999998,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "channel_1_per_level_corr": [
+      0.9999999999999998,
+      0.9999999999999998,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.9999999999999998,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.9999999999999998,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "bar_count_discrepancy": {
+      "20220930": 0,
+      "20220422": 0,
+      "20220812": 0,
+      "20220304": 0,
+      "20221205": 0,
+      "20220701": 0,
+      "20220331": 0,
+      "20220722": 0,
+      "20220211": 0,
+      "20221114": 0,
+      "20220603": 0,
+      "20220103": 0,
+      "20221003": 0,
+      "20220630": 0,
+      "20220121": 0,
+      "20221024": 0,
+      "20220513": 0,
+      "20220902": 0,
+      "20220401": 0
+    },
+    "value_range_comparison": {
+      "r3_ch0_min": -5.625,
+      "r3_ch0_max": 5.625,
+      "r3_ch0_mean": -3.1260656214726623e-06,
+      "r3_ch0_std": 1.4502233266830444,
+      "cpp_ch0_min": -5.625,
+      "cpp_ch0_max": 5.625,
+      "cpp_ch0_mean": -3.1260656214726623e-06,
+      "cpp_ch0_std": 1.4502233266830444,
+      "r3_ch1_min": 1.0,
+      "r3_ch1_max": 697.0,
+      "r3_ch1_mean": 72.516357421875,
+      "r3_ch1_std": 37.98279571533203,
+      "cpp_ch1_min": 1.0,
+      "cpp_ch1_max": 697.0,
+      "cpp_ch1_mean": 72.516357421875,
+      "cpp_ch1_std": 37.98279571533203
+    },
+    "structural_differences_list": [
+      "NONE \u2014 data is byte-identical. R3 and 9C used the same C++ export.",
+      "Differences are in POST-LOADING normalization and validation methodology.",
+      "1. R3 divides prices by TICK_SIZE; 9C does not",
+      "2. R3 z-scores sizes per day; 9C z-scores per fold",
+      "3. R3 uses test set as validation (leakage); 9C uses proper 80/20 split",
+      "4. R3 uses seed=SEED+fold_idx; 9C uses fixed seed"
+    ],
+    "transfer_r2": 0.1606927514076233,
+    "retrained_cpp_r2": "N/A (data is byte-identical)"
+  },
+  "proper_validation_comparison": {
+    "description": "Same R3 architecture+normalization but with proper 80/20 train/val split",
+    "proper_mean_test_r2": 0.08434618711471557,
+    "proper_per_fold_test_r2": [
+      0.1339017152786255,
+      0.08273947238922119,
+      -0.04710352420806885,
+      0.11722540855407715,
+      0.1349678635597229
+    ],
+    "proper_per_fold_train_r2": [
+      0.1752403974533081,
+      0.19546478986740112,
+      0.18086087703704834,
+      0.1555386185646057,
+      0.18869304656982422
+    ],
+    "r3_exact_mean_test_r2": 0.13171350955963135,
+    "delta_mean_r2": 0.047367322444915774,
+    "note": "Difference measures the inflation from test-as-validation leakage"
+  },
+  "per_seed": [
+    {
+      "seed": 42,
+      "fold": 1,
+      "train_r2": 0.17035794258117676,
+      "test_r2": 0.16282975673675537,
+      "epochs_trained": 27,
+      "protocol": "r3_exact_test_as_val"
+    },
+    {
+      "seed": 43,
+      "fold": 2,
+      "train_r2": 0.1951557993888855,
+      "test_r2": 0.10797512531280518,
+      "epochs_trained": 41,
+      "protocol": "r3_exact_test_as_val"
+    },
+    {
+      "seed": 44,
+      "fold": 3,
+      "train_r2": 0.18854033946990967,
+      "test_r2": 0.04885530471801758,
+      "epochs_trained": 42,
+      "protocol": "r3_exact_test_as_val"
+    },
+    {
+      "seed": 45,
+      "fold": 4,
+      "train_r2": 0.19597405195236206,
+      "test_r2": 0.17821460962295532,
+      "epochs_trained": 50,
+      "protocol": "r3_exact_test_as_val"
+    },
+    {
+      "seed": 46,
+      "fold": 5,
+      "train_r2": 0.15708249807357788,
+      "test_r2": 0.1606927514076233,
+      "epochs_trained": 17,
+      "protocol": "r3_exact_test_as_val"
+    }
+  ],
+  "sanity_checks": {
+    "cnn_param_count": 12128,
+    "cnn_param_within_5pct": true,
+    "channel_0_tick_quantized": true,
+    "channel_0_quantized_fraction": 1.0,
+    "channel_1_z_scored_per_day": true,
+    "lr_decays": true,
+    "lr_epoch_1": 0.0009990232305719944,
+    "lr_epoch_25": 0.0007434680686803488,
+    "lr_final": 0.0007434680686803488,
+    "train_r2_all_above_005": true,
+    "min_train_r2": 0.15708249807357788,
+    "no_nan_outputs": true,
+    "fold_boundaries_non_overlapping": true,
+    "day_count": 19,
+    "total_bars": 87970,
+    "bars_per_day_range": "4630-4630"
+  },
+  "resource_usage": {
+    "gpu_hours": 0,
+    "wall_clock_seconds": 2177.959711074829,
+    "total_training_steps": 379,
+    "total_runs": 11
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "success_criteria": {
+    "SC-1": {
+      "pass": true,
+      "value": 0.13171350955963135,
+      "threshold": 0.1,
+      "description": "mean_cnn_r2_h5 >= 0.10 on R3-format data"
+    },
+    "SC-2": {
+      "pass": true,
+      "value": 0.15708249807357788,
+      "threshold": 0.05,
+      "description": "No fold train R\u00b2 < 0.05"
+    },
+    "SC-3": {
+      "pass": true,
+      "value": 0.999704558184417,
+      "threshold": 0.5,
+      "description": "Per-fold R\u00b2 correlation with R3 > 0.5"
+    },
+    "SC-4": {
+      "pass": false,
+      "value": true,
+      "description": "pipeline_structural_equivalence == False (conditional on SC-1)"
+    },
+    "SC-5": {
+      "pass": null,
+      "description": "At least one structural difference identified (conditional on SC-1)"
+    },
+    "SC-6": {
+      "pass": true,
+      "description": "No sanity check failures"
+    }
+  },
+  "notes": "CRITICAL FINDING: R3's features.csv and 9C's time_5s.csv are byte-identical (87,970 rows x 40 book columns, max diff = 0.0). There is NO 'Python vs C++' data pipeline difference. R3 loaded from the same C++ export as 9B/9C. R3's R\u00b2=0.132 was achieved with test-set-as-validation leakage. R3-exact reproduction (test-as-val): mean R\u00b2=0.131714. Proper validation (80/20 split): mean R\u00b2=0.084346. Delta = 0.047367. PyTorch 2.8.0. Polars 1.36.1."
+}

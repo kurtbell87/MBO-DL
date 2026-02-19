@@ -1,0 +1,102 @@
+[
+  {
+    "bar_type": "dollar",
+    "threshold": 50000,
+    "status": "extrapolated_from_R1",
+    "estimated_bars_per_day": 118894,
+    "estimated_median_duration_s": 0.1968,
+    "mean_duration_s": 0.1968,
+    "p10_duration_s": 0.0984,
+    "p90_duration_s": 0.3936
+  },
+  {
+    "bar_type": "dollar",
+    "threshold": 100000,
+    "status": "extrapolated_from_R1",
+    "estimated_bars_per_day": 83718,
+    "estimated_median_duration_s": 0.2795,
+    "mean_duration_s": 0.2795,
+    "p10_duration_s": 0.1398,
+    "p90_duration_s": 0.559
+  },
+  {
+    "bar_type": "dollar",
+    "threshold": 250000,
+    "status": "extrapolated_from_R1",
+    "estimated_bars_per_day": 52654,
+    "estimated_median_duration_s": 0.4444,
+    "mean_duration_s": 0.4444,
+    "p10_duration_s": 0.2222,
+    "p90_duration_s": 0.8888
+  },
+  {
+    "bar_type": "dollar",
+    "threshold": 500000,
+    "status": "extrapolated_from_R1",
+    "estimated_bars_per_day": 37076,
+    "estimated_median_duration_s": 0.6311,
+    "mean_duration_s": 0.6311,
+    "p10_duration_s": 0.3156,
+    "p90_duration_s": 1.2623
+  },
+  {
+    "bar_type": "dollar",
+    "threshold": 1000000,
+    "status": "extrapolated_from_R1",
+    "estimated_bars_per_day": 26107,
+    "estimated_median_duration_s": 0.8963,
+    "mean_duration_s": 0.8963,
+    "p10_duration_s": 0.4482,
+    "p90_duration_s": 1.7926
+  },
+  {
+    "bar_type": "tick",
+    "threshold": 100,
+    "status": "extrapolated_from_R1",
+    "estimated_bars_per_day": 2340,
+    "estimated_median_duration_s": 10.0,
+    "mean_duration_s": 10.0,
+    "p10_duration_s": 5.0,
+    "p90_duration_s": 20.0
+  },
+  {
+    "bar_type": "tick",
+    "threshold": 250,
+    "status": "extrapolated_from_R1",
+    "estimated_bars_per_day": 936,
+    "estimated_median_duration_s": 25.0,
+    "mean_duration_s": 25.0,
+    "p10_duration_s": 12.5,
+    "p90_duration_s": 50.0
+  },
+  {
+    "bar_type": "tick",
+    "threshold": 500,
+    "status": "extrapolated_from_R1",
+    "estimated_bars_per_day": 468,
+    "estimated_median_duration_s": 50.0,
+    "mean_duration_s": 50.0,
+    "p10_duration_s": 25.0,
+    "p90_duration_s": 100.0
+  },
+  {
+    "bar_type": "tick",
+    "threshold": 1000,
+    "status": "extrapolated_from_R1",
+    "estimated_bars_per_day": 234,
+    "estimated_median_duration_s": 100.0,
+    "mean_duration_s": 100.0,
+    "p10_duration_s": 50.0,
+    "p90_duration_s": 200.0
+  },
+  {
+    "bar_type": "tick",
+    "threshold": 2500,
+    "status": "extrapolated_from_R1",
+    "estimated_bars_per_day": 94,
+    "estimated_median_duration_s": 250.0,
+    "mean_duration_s": 250.0,
+    "p10_duration_s": 125.0,
+    "p90_duration_s": 500.0
+  }
+]
