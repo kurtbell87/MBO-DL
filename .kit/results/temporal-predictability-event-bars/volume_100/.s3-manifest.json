@@ -1,0 +1,11 @@
+{
+  "files": {
+    "features.csv": {
+      "original_path": ".kit/results/temporal-predictability-event-bars/volume_100/features.csv",
+      "s3_key": "artifact-store/81/81346845456b1c3d62d3ba5c6660201372e67e06b1e104acd089b228ac311a04.csv",
+      "sha256": "81346845456b1c3d62d3ba5c6660201372e67e06b1e104acd089b228ac311a04",
+      "size": 83764299
+    }
+  },
+  "version": 1
+}

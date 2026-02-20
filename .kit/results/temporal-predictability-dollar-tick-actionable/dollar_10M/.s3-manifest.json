@@ -1,0 +1,11 @@
+{
+  "files": {
+    "features.csv": {
+      "original_path": ".kit/results/temporal-predictability-dollar-tick-actionable/dollar_10M/features.csv",
+      "s3_key": "artifact-store/c8/c8a5d158de974b80bbf452011b3eeeaff15f5d2a61cf0babbe1bbfcf3b760804.csv",
+      "sha256": "c8a5d158de974b80bbf452011b3eeeaff15f5d2a61cf0babbe1bbfcf3b760804",
+      "size": 18049730
+    }
+  },
+  "version": 1
+}

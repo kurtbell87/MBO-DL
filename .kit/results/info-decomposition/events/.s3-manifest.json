@@ -1,0 +1,119 @@
+{
+  "files": {
+    "events_20220103.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220103.bin",
+      "s3_key": "artifact-store/61/6159b8f03f2641db517ee9127592c0612fd4bfb04900d86a19e122628d720957.bin",
+      "sha256": "6159b8f03f2641db517ee9127592c0612fd4bfb04900d86a19e122628d720957",
+      "size": 150610528
+    },
+    "events_20220121.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220121.bin",
+      "s3_key": "artifact-store/27/27c899aa25f6370fea80d8cb2158af76ad16bd78efc95cbc2881676b6282974b.bin",
+      "sha256": "27c899aa25f6370fea80d8cb2158af76ad16bd78efc95cbc2881676b6282974b",
+      "size": 300654208
+    },
+    "events_20220211.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220211.bin",
+      "s3_key": "artifact-store/fb/fb67b06647e9ff1f86686276c0479b41f1929533eda9dea6c6394b41a0213d3d.bin",
+      "sha256": "fb67b06647e9ff1f86686276c0479b41f1929533eda9dea6c6394b41a0213d3d",
+      "size": 322150480
+    },
+    "events_20220304.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220304.bin",
+      "s3_key": "artifact-store/f3/f31e3930b7062cd9d62391221c9b4d295842f1c161e117f54defb423efca02e6.bin",
+      "sha256": "f31e3930b7062cd9d62391221c9b4d295842f1c161e117f54defb423efca02e6",
+      "size": 245016976
+    },
+    "events_20220331.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220331.bin",
+      "s3_key": "artifact-store/b5/b52dcdfa9071e562478011234eafbf3e2fb050716e62a8dd43da9740bdc41883.bin",
+      "sha256": "b52dcdfa9071e562478011234eafbf3e2fb050716e62a8dd43da9740bdc41883",
+      "size": 105128344
+    },
+    "events_20220401.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220401.bin",
+      "s3_key": "artifact-store/57/57b1a921887e72d79efbd1315ea1327ca680a1e4b8b68a9e6807b9edfde2f0cb.bin",
+      "sha256": "57b1a921887e72d79efbd1315ea1327ca680a1e4b8b68a9e6807b9edfde2f0cb",
+      "size": 111609976
+    },
+    "events_20220422.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220422.bin",
+      "s3_key": "artifact-store/a9/a9301ff6c9341b7fc9397dccb9ea24706ae422f200449348cbd8b9c1dec0aa00.bin",
+      "sha256": "a9301ff6c9341b7fc9397dccb9ea24706ae422f200449348cbd8b9c1dec0aa00",
+      "size": 167574280
+    },
+    "events_20220513.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220513.bin",
+      "s3_key": "artifact-store/b9/b9327ae5967f8dee0d42dc819e90c1c2242e28681960641a7c33661025495ce9.bin",
+      "sha256": "b9327ae5967f8dee0d42dc819e90c1c2242e28681960641a7c33661025495ce9",
+      "size": 166417504
+    },
+    "events_20220603.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220603.bin",
+      "s3_key": "artifact-store/14/14833a980a6af7cf6ee45094779701952d5b512beb0cbebf7e8bd7c73ab7a029.bin",
+      "sha256": "14833a980a6af7cf6ee45094779701952d5b512beb0cbebf7e8bd7c73ab7a029",
+      "size": 158449480
+    },
+    "events_20220630.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220630.bin",
+      "s3_key": "artifact-store/0b/0b4fa7ca85bef93d7206e059d6c98319450cc3595d4faef22cafc2f1c6522672.bin",
+      "sha256": "0b4fa7ca85bef93d7206e059d6c98319450cc3595d4faef22cafc2f1c6522672",
+      "size": 177825064
+    },
+    "events_20220701.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220701.bin",
+      "s3_key": "artifact-store/20/209595a351eb0c81830206e05ca113ecdba800c205e96495e7b00edee2f15a2c.bin",
+      "sha256": "209595a351eb0c81830206e05ca113ecdba800c205e96495e7b00edee2f15a2c",
+      "size": 154887544
+    },
+    "events_20220722.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220722.bin",
+      "s3_key": "artifact-store/f1/f1f9fb36cefda72a21ac8ca6a05987fbfc3abd24835216cf7ab8d04444951be6.bin",
+      "sha256": "f1f9fb36cefda72a21ac8ca6a05987fbfc3abd24835216cf7ab8d04444951be6",
+      "size": 147507712
+    },
+    "events_20220812.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220812.bin",
+      "s3_key": "artifact-store/4d/4d6bda9b95057face2497de2f35e77a2865bed67efc7b566aeb8d9626ac0bf25.bin",
+      "sha256": "4d6bda9b95057face2497de2f35e77a2865bed67efc7b566aeb8d9626ac0bf25",
+      "size": 72130816
+    },
+    "events_20220902.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220902.bin",
+      "s3_key": "artifact-store/6e/6eb9fef0ad4b2bf34960622f6674424f6505389f7a6c18a6df8803f1aa36b745.bin",
+      "sha256": "6eb9fef0ad4b2bf34960622f6674424f6505389f7a6c18a6df8803f1aa36b745",
+      "size": 198268888
+    },
+    "events_20220930.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20220930.bin",
+      "s3_key": "artifact-store/a4/a49a0d57f5eff3e10be6b87f6f09360884ad5dc6dbdd632398556e9c9018fcd8.bin",
+      "sha256": "a49a0d57f5eff3e10be6b87f6f09360884ad5dc6dbdd632398556e9c9018fcd8",
+      "size": 201925960
+    },
+    "events_20221003.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20221003.bin",
+      "s3_key": "artifact-store/75/75301e0747fa87f6f530c60fca3f06fdda9c717fc2bf34123bc03bfff16fcadb.bin",
+      "sha256": "75301e0747fa87f6f530c60fca3f06fdda9c717fc2bf34123bc03bfff16fcadb",
+      "size": 122902456
+    },
+    "events_20221024.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20221024.bin",
+      "s3_key": "artifact-store/3a/3a5c651343d59ba14bd5a34c7f2b28ffa993d47e60a4e3858554aa899935dfe8.bin",
+      "sha256": "3a5c651343d59ba14bd5a34c7f2b28ffa993d47e60a4e3858554aa899935dfe8",
+      "size": 158661928
+    },
+    "events_20221114.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20221114.bin",
+      "s3_key": "artifact-store/6f/6f7d4414870ab82a8c6030cd9c4b7abc5e0d2b7428b83918fc4e24160510acfa.bin",
+      "sha256": "6f7d4414870ab82a8c6030cd9c4b7abc5e0d2b7428b83918fc4e24160510acfa",
+      "size": 154723960
+    },
+    "events_20221205.bin": {
+      "original_path": ".kit/results/info-decomposition/events/events_20221205.bin",
+      "s3_key": "artifact-store/da/daefd889a3e625bbaac6aa3b7d21f4a37b2ec1651d956a3e289ac8788580e53e.bin",
+      "sha256": "daefd889a3e625bbaac6aa3b7d21f4a37b2ec1651d956a3e289ac8788580e53e",
+      "size": 135528592
+    }
+  },
+  "version": 1
+}

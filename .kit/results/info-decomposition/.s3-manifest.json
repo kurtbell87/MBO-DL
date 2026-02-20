@@ -1,0 +1,11 @@
+{
+  "files": {
+    "features.csv": {
+      "original_path": ".kit/results/info-decomposition/features.csv",
+      "s3_key": "artifact-store/f6/f6802f081ace38aa6468460c3093604de35cfaa8b8a40e6ab05aa468c4a7e273.csv",
+      "sha256": "f6802f081ace38aa6468460c3093604de35cfaa8b8a40e6ab05aa468c4a7e273",
+      "size": 59295040
+    }
+  },
+  "version": 1
+}

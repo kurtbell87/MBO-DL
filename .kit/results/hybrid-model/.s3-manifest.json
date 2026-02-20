@@ -1,0 +1,11 @@
+{
+  "files": {
+    "time_5s.csv": {
+      "original_path": ".kit/results/hybrid-model/time_5s.csv",
+      "s3_key": "artifact-store/bf/bf79d49b61607d0fbaaf5599dc9af0116dea64d8c2f353cc173628a75308c5ca.csv",
+      "sha256": "bf79d49b61607d0fbaaf5599dc9af0116dea64d8c2f353cc173628a75308c5ca",
+      "size": 63944580
+    }
+  },
+  "version": 1
+}

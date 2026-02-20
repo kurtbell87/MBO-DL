@@ -1,0 +1,11 @@
+{
+  "files": {
+    "features.csv": {
+      "original_path": ".kit/results/temporal-predictability-completion/arm1_tick_bars/features.csv",
+      "s3_key": "artifact-store/78/78944b39730f1ab6db65f35dedf7f0859b83840cfae83f9c06c72115ffaff53d.csv",
+      "sha256": "78944b39730f1ab6db65f35dedf7f0859b83840cfae83f9c06c72115ffaff53d",
+      "size": 63777733
+    }
+  },
+  "version": 1
+}
