@@ -1,0 +1,11 @@
+{
+  "files": {
+    "tick_250.csv": {
+      "original_path": ".kit/results/r3b-genuine-tick-bars/tick_250/tick_250.csv",
+      "s3_key": "artifact-store/f1/f19330fcd07058322ad58b0f1773be2358928057b014ee40411db311f0f54a5d.csv",
+      "sha256": "f19330fcd07058322ad58b0f1773be2358928057b014ee40411db311f0f54a5d",
+      "size": 23889104
+    }
+  },
+  "version": 1
+}

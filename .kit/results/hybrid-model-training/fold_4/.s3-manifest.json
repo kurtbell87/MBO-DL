@@ -1,0 +1,11 @@
+{
+  "files": {
+    "xgb_model.json": {
+      "original_path": ".kit/results/hybrid-model-training/fold_4/xgb_model.json",
+      "s3_key": "artifact-store/81/8186f7e24aff07819e6596258b9dae829451dbcc27618c13c8168b41ab07c033.json",
+      "sha256": "8186f7e24aff07819e6596258b9dae829451dbcc27618c13c8168b41ab07c033",
+      "size": 8087082
+    }
+  },
+  "version": 1
+}

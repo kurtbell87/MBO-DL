@@ -1,0 +1,11 @@
+{
+  "files": {
+    "tick_1000.csv": {
+      "original_path": ".kit/results/r3b-genuine-tick-bars/tick_1000/tick_1000.csv",
+      "s3_key": "artifact-store/0d/0d1cf39b69d9f28a79eeb57e104949aec697cc8ecae30585f482682b26f679cd.csv",
+      "sha256": "0d1cf39b69d9f28a79eeb57e104949aec697cc8ecae30585f482682b26f679cd",
+      "size": 5580299
+    }
+  },
+  "version": 1
+}
