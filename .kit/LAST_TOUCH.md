@@ -12,32 +12,20 @@
 
 ## Project Status
 
-**21 phases complete (9 engineering + 12 research). CNN signal confirmed (3rd reproduction, R²=0.089) but NOT economically viable under base costs. Branch: `main`.**
+**21 phases complete (9 engineering + 12 research). Branch: `feat/nested-run-visibility`. Infrastructure TDD cycle for orchestrator observability — spec written, submodule updated, TDD full cycle pending.**
 
 ## What was completed this cycle
 
-- **Corrected Hybrid Model (9E)** — `.kit/experiments/hybrid-model-corrected.md`
-- **Research kit phases** — frame→run→read all exit 0
-- **CNN normalization fix VERIFIED (3rd independent reproduction):**
-  - Mean R²=0.089 (proper validation) — matches 9D's 0.084 within +0.005
-  - All 5 folds within ±0.015 of 9D reference
-  - TICK_SIZE division applied (range [-22.5, 22.5], 100% half-tick quantized)
-  - Per-day z-scoring verified (all days mean≈0, std=1.0)
-  - Architecture: 12,128 params exactly
-- **End-to-end pipeline NOT viable under base costs:**
-  - XGBoost accuracy = 0.419 (above random 0.333)
-  - Expectancy = -$0.37/trade (base $3.74 RT) — FAIL (needed +$0.50)
-  - Profit factor = 0.924 — FAIL (needed 1.50)
-  - Gross edge $3.37/trade, breakeven RT = $3.37 ($0.37 short of base costs)
-  - Profitable ONLY under optimistic costs: +$0.88/trade at $2.49 RT, PF=1.21
-- **Hybrid outperforms GBT-only** (small delta: +0.4pp acc, +$0.075 exp vs GBT-nobook)
-- **Key insights:**
-  - Regression→frozen-embedding→classification loses information at handoff
-  - volatility_50 dominates feature importance (19.9 gain, 2.2× next)
-  - CNN embeddings outperform raw book features for XGBoost (CNN = denoiser)
-  - Win rate 51.3% vs needed 53.3% — only 2pp gap to breakeven
-- **Outcome B: REFUTED** — SC 7/9 PASS, 2 FAIL (SC-4 expectancy, SC-5 profit factor)
-- All state files updated (CLAUDE.md, RESEARCH_LOG.md, spec exit criteria)
+- **Nested Run Visibility spec created** — `.kit/docs/nested-run-visibility.md`
+  - Defines `child_run_spawned` event (R1), dashboard parent-child filter (R2), `kit.run_tree` MCP tool (R3), `kit.run_events` MCP tool (R4)
+  - 10 exit criteria, 16 test cases (T1–T16)
+  - Scope: `orchestration-kit/tools/kit`, `orchestration-kit/mcp/server.py`, `orchestration-kit/tools/dashboard`
+- **Orchestration-kit submodule updated** (`d16d0cc`) — MCP server bug fixes:
+  - `--run-id` swallowed by argparse REMAINDER → fixed (placed before positionals)
+  - DEVNULL error blindness → fixed (capture to `runs/mcp-launches/{run_id}.log`)
+  - `--reasoning` swallowed by REMAINDER → fixed
+  - Missing `KIT_STATE_DIR` → fixed (auto-detect + forward to subprocesses)
+- **`.orchestration-kit.env` updated** — environment config changes for new MCP tools
 
 ## What exists
 
@@ -75,6 +63,7 @@ A C++20 MES microstructure model suite with:
 | R3b | `.kit/experiments/r3b-event-bar-cnn.md` | Research | **Done (INCONCLUSIVE)** — bar defect |
 | TB-Fix | `.kit/docs/tick-bar-fix.md` | TDD | **Done** — tick bars fixed |
 | **9E** | **`.kit/experiments/hybrid-model-corrected.md`** | **Research** | **Done (REFUTED — Outcome B)** — CNN R²=0.089, exp=-$0.37 |
+| **NRV** | **`.kit/docs/nested-run-visibility.md`** | **TDD** | **In progress** — spec written, submodule updated, TDD cycle pending |
 
 ## Test summary
 
@@ -84,27 +73,26 @@ A C++20 MES microstructure model suite with:
 
 ## What to do next
 
-The CNN spatial signal is real but the pipeline doesn't convert it to viable trading. Five options (in priority order):
+### 1. Run NRV TDD Cycle (IMMEDIATE)
+Run `kit.tdd` with `spec_path=".kit/docs/nested-run-visibility.md"`. This implements:
+- `child_run_spawned` event in parent's events.jsonl (R1)
+- Dashboard `/api/runs?parent_run_id=X` filter (R2)
+- `kit.run_tree` MCP tool — full execution tree with status (R3)
+- `kit.run_events` MCP tool — tail last N events (R4)
+- MCP bug fixes already in submodule (R5/EC-5)
 
-### 1. End-to-End CNN Classification (HIGHEST PRIORITY)
-Train CNN directly on tb_label (3-class cross-entropy) instead of regression→frozen embedding→XGBoost. Eliminates the regression-to-classification bottleneck identified as the key loss point. The CNN's 16-dim penultimate layer would learn class-discriminative features rather than return-prediction features.
+Files to be modified by TDD sub-agent:
+- `orchestration-kit/tools/kit` (child_run_spawned event emission)
+- `orchestration-kit/mcp/server.py` (new MCP tools + bug fixes)
+- `orchestration-kit/tools/dashboard` (parent-child query)
+- New test file(s)
 
-### 2. XGBoost Hyperparameter Tuning (LOW-HANGING FRUIT)
-Grid search on max_depth, learning_rate, n_estimators, min_child_weight with 5-fold CV. Current hyperparameters inherited from 9B (broken pipeline era). The 2pp win rate gap is small enough that tuning could close it.
-
-### 3. Label Design Sensitivity (ARCHITECTURAL)
-Test alternative triple barrier parameters: wider target (15 ticks), narrower stop (3 ticks). At 15:3 ratio, breakeven win rate drops to ~42.5% — well below current 51.3%.
-
-### 4. CNN at h=1 with Corrected Normalization (EXPLORATORY)
-R2 showed signal strongest at h=1. Test with corrected normalization to see if shorter horizon improves classification.
-
-### 5. R3b Rerun with Genuine Tick Bars (INDEPENDENT)
-Now that tick bar construction is fixed, rerun event-bar CNN experiment.
-
-### Mental Model Update
-
-- **Before:** "CNN signal is real (R²≈0.084). Corrected normalization should yield viable hybrid trading signals."
-- **After:** "CNN signal is real and fully verified (R²=0.089, 3rd reproduction). But the regression→frozen-embedding→classification pipeline loses too much information. Gross edge is $3.37/trade — only $0.37 short of breakeven. The model needs either a better architecture (end-to-end classification), better hyperparameters, or different label design to close the gap."
+### 2. After NRV: Model Pipeline Work
+- End-to-end CNN classification (highest priority)
+- XGBoost hyperparameter tuning
+- Label design sensitivity
+- CNN at h=1
+- Tick_100 multi-seed replication
 
 ## Key research results
 
@@ -137,4 +125,4 @@ cd build && ctest --output-on-failure --label-regex integration           # inte
 
 ---
 
-Updated: 2026-02-19 (Corrected Hybrid Model — REFUTED Outcome B. CNN R²=0.089 confirmed, expectancy -$0.37/trade. Pipeline bottleneck: regression→classification gap.)
+Updated: 2026-02-20 (Nested Run Visibility — spec + submodule setup. Branch `feat/nested-run-visibility`. TDD cycle pending: 10 exit criteria, 16 tests.)

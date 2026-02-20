@@ -339,9 +339,11 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-19, R3b Genuine Tick Bars + Corrected Hybrid Model)
+## Current State (updated 2026-02-20, Nested Run Visibility — spec + submodule setup)
 
-**VERDICT: CNN signal REAL but NOT economically viable under base costs. Genuine tick bars show promising but fragile improvement.** CNN R²=0.089 on time_5s (proper validation, 3rd independent reproduction). Genuine tick_100 R²=0.124 (+39% vs baseline) but p=0.21 — driven by single anomalous fold, not actionable without replication. XGBoost accuracy 0.419. Expectancy=-$0.37/trade (base $3.74 RT), PF=0.924. Gross edge $3.37/trade consumed by costs. Breakeven requires +2.0pp win rate (51.3% → 53.3%). The regression→frozen-embedding→classification pipeline loses information at the handoff. Next: end-to-end CNN classification, XGBoost hyperparameter tuning, or label design sensitivity.
+**Branch: `feat/nested-run-visibility`.** Infrastructure TDD cycle for orchestrator observability. Spec written, orchestration-kit submodule updated with MCP bug fixes and new tools (`kit.run_tree`, `kit.run_events`). TDD full cycle pending — 0/10 exit criteria completed.
+
+**VERDICT (unchanged): CNN signal REAL but NOT economically viable under base costs. Genuine tick bars show promising but fragile improvement.** CNN R²=0.089 on time_5s (proper validation, 3rd independent reproduction). Genuine tick_100 R²=0.124 (+39% vs baseline) but p=0.21 — driven by single anomalous fold, not actionable without replication. XGBoost accuracy 0.419. Expectancy=-$0.37/trade (base $3.74 RT), PF=0.924. Gross edge $3.37/trade consumed by costs. Breakeven requires +2.0pp win rate (51.3% → 53.3%). The regression→frozen-embedding→classification pipeline loses information at the handoff. Next: end-to-end CNN classification, XGBoost hyperparameter tuning, or label design sensitivity.
 
 **9E (hybrid-model-corrected) — REFUTED (Outcome B).** CNN normalization fix VERIFIED (3rd independent reproduction: R²=0.089 vs 9D's 0.084). All 5 folds within ±0.015 of 9D. But end-to-end pipeline not viable: XGBoost acc=0.419, expectancy=-$0.37/trade (base), PF=0.924. Hybrid > GBT-nobook (+$0.075 exp) and GBT-book (+$0.013 exp). volatility_50 dominates feature importance (19.9 gain). return_5 ranked ~26th (no leakage). CNN acts as denoiser (16-dim embedding beats raw 40-dim book for XGBoost). See `.kit/results/hybrid-model-corrected/analysis.md`.
 
@@ -403,12 +405,14 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | **TB-Fix** | **`.kit/docs/tick-bar-fix.md`** | **TDD** | **Done** — tick bars now count trades, not snapshots |
 | **9E** | **`.kit/experiments/hybrid-model-corrected.md`** | **Research** | **Done (REFUTED — Outcome B)** — CNN R²=0.089, expectancy=-$0.37/trade |
 | **R3b-genuine** | **`.kit/experiments/r3b-genuine-tick-bars.md`** | **Research** | **Done (CONFIRMED low confidence)** — tick_100 R²=0.124, p=0.21, not actionable |
+| **NRV** | **`.kit/docs/nested-run-visibility.md`** | **TDD** | **In progress** — spec written, submodule updated, TDD cycle pending |
 
 - **Build:** Green.
 - **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped) + new tick_bar_fix tests. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
 - **Corrected Hybrid Model COMPLETE (2026-02-19):** CNN normalization fix verified (3rd independent reproduction). R²=0.089 with proper validation. But end-to-end pipeline not economically viable: expectancy=-$0.37/trade (base), PF=0.924. Breakeven RT=$3.37. Hybrid outperforms GBT-only but delta too small to flip sign.
-- **Next task options (in priority order):**
+- **Current task: Nested Run Visibility (NRV)** — TDD spec at `.kit/docs/nested-run-visibility.md`. Adds `kit.run_tree` and `kit.run_events` MCP tools, `child_run_spawned` event, dashboard parent-child filter. Submodule updated with MCP bug fixes (EC-5). Run `kit.tdd` with `spec_path=".kit/docs/nested-run-visibility.md"` to execute.
+- **Next task options (after NRV, in priority order):**
   1. **End-to-end CNN classification** — train CNN directly on tb_label (3-class cross-entropy) instead of regression + frozen embedding + XGBoost. Eliminates the regression-to-classification bottleneck. Most architecturally promising.
   2. **XGBoost hyperparameter tuning** — grid search to close the 2pp win rate gap. Current hyperparameters inherited from 9B (broken pipeline). Low-hanging fruit.
   3. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks). At 15:3 ratio, breakeven win rate drops to ~42.5% (well below current 51.3%).

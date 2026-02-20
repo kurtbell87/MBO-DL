@@ -1,12 +1,13 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-19, Tick Bar Fix TDD — COMPLETE)
+## Current State (updated 2026-02-20, Nested Run Visibility — spec + submodule setup)
 
+- **Branch:** `feat/nested-run-visibility`
 - **Build:** Green.
-- **Unit tests:** 1003/1004 pass (1 disabled, 1 skipped) + new tick_bar_fix tests. TDD phases exited 0.
+- **Unit tests:** 1003/1004 pass (1 disabled, 1 skipped) + tick_bar_fix tests. TDD phases exited 0.
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **Tick bar fix (TB-Fix):** Complete. `book_builder.hpp` emits `trade_count` per snapshot. `tick_bar_builder.hpp` accumulates trade counts, closes bars at threshold. Regression: time/dollar/volume bars unchanged.
-- **19 phases complete** (9 engineering + 10 research). Tick bars now genuine event bars. R3b rerun unblocked.
+- **Nested Run Visibility (NRV):** Spec written at `.kit/docs/nested-run-visibility.md`. Orchestration-kit submodule updated with MCP bug fixes (`--run-id` REMAINDER, DEVNULL error blindness, `--reasoning` REMAINDER, missing `KIT_STATE_DIR`). New MCP tools `kit.run_tree` and `kit.run_events` defined in spec. TDD full cycle pending — 0/10 exit criteria completed.
+- **21 phases complete** (9 engineering + 12 research). NRV is infrastructure TDD (not model research).
 
 ## Completed TDD Phases (Orchestrator Spec — predecessor)
 
@@ -36,11 +37,12 @@
 | 8 | bar-feature-export | done | done | done | done |
 | 9A | hybrid-model | done | done | done | done |
 | TB-Fix | tick-bar-fix | done | done | done | done |
+| NRV | nested-run-visibility | pending | pending | pending | pending |
 
 ## Next Action
 
-1. **CNN Pipeline Fix (HIGHEST PRIORITY):** Apply TICK_SIZE normalization (÷0.25) + per-day z-scoring in Python training pipeline. Re-attempt CNN+GBT with proper validation. Expected R²≈0.084.
-2. **R3b Rerun (event-bar research):** Rerun R3b with genuine tick bars now that construction is fixed.
+1. **Run NRV TDD cycle:** `kit.tdd` with `spec_path=".kit/docs/nested-run-visibility.md"`. Implements `child_run_spawned` event, dashboard parent-child filter, `kit.run_tree` + `kit.run_events` MCP tools. 10 exit criteria, 16 test cases.
+2. **After NRV:** End-to-end CNN classification (highest model priority), XGBoost tuning, or label sensitivity.
 
 ## Agent Roles
 

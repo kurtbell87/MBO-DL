@@ -1,20 +1,16 @@
 # Agents — MBO-DL Session State
 
-## Current State (updated 2026-02-18, hybrid-model Phase A in progress)
+## Current State (updated 2026-02-20, Nested Run Visibility — spec + submodule setup)
 
 **Build:** Green.
 **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped), 22 integration tests (labeled, excluded).
-**Branch:** `feature/hybrid-model`
+**Branch:** `feat/nested-run-visibility`
 
-### Completed This Cycle (hybrid-model Phase A — C++ TB label export)
+### Completed This Cycle
 
-- `src/backtest/triple_barrier.hpp` — Modified (added `label_bar()` function for position-independent TB labeling).
-- `tools/bar_feature_export.cpp` — Modified (added `tb_label`, `tb_exit_type`, `tb_bars_held` columns to CSV export).
-- `tests/bar_feature_export_test.cpp` — Modified (updated for new TB label columns).
-- `tests/test_bar_helpers.hpp` — Modified (extended helpers for TB label testing).
-- `tests/hybrid_model_tb_label_test.cpp` — **New.** TB label computation tests (label correctness, exit type, bars held, volume accumulation, time cap, min_return filter).
-- `tests/test_export_helpers.hpp` — **New.** Export test helpers.
-- `CMakeLists.txt` — Modified (hybrid_model_tb_label_test target).
+- **Spec created:** `.kit/docs/nested-run-visibility.md` (10 exit criteria, 16 test cases)
+- **Submodule updated:** `orchestration-kit` with MCP server bug fixes (REMAINDER, DEVNULL, KIT_STATE_DIR)
+- **Env updated:** `.orchestration-kit.env` for new MCP tool support
 
 ### Phase Sequence
 
@@ -36,11 +32,13 @@
 | R4b | temporal-predictability-event-bars | **Done** (NO SIGNAL — robust) |
 | R4c | temporal-predictability-completion | **Done** (CONFIRMED — all nulls) |
 | R4d | temporal-predictability-dollar-tick-actionable | **Done** (CONFIRMED) |
-| **9** | **hybrid-model** | **Phase A (C++ TB labels) in progress** |
+| 9A | hybrid-model | **Done** (C++ TB labels) |
+| 9B-9E | hybrid pipeline research | **Done** (CNN R²=0.089, pipeline not viable) |
+| R3b | event-bar CNN | **Done** (tick_100 R²=0.124, p=0.21) |
+| TB-Fix | tick-bar-fix | **Done** |
+| **NRV** | **nested-run-visibility** | **In progress** — TDD cycle pending |
 
 ### Next Actions
 
-1. Complete Phase A TDD cycle: red → green → refactor → ship for C++ TB label export.
-2. Phase B: Python CNN encoder training pipeline (`scripts/hybrid_model/`).
-3. Phase C: Python XGBoost classification + evaluation.
-4. Phase D: 5-fold expanding window CV + ablation comparisons + analysis document.
+1. Run NRV TDD cycle: `kit.tdd` with `spec_path=".kit/docs/nested-run-visibility.md"`
+2. After NRV: end-to-end CNN classification, XGBoost tuning, or label sensitivity
