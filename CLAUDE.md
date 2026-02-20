@@ -242,6 +242,52 @@ orchestration-kit/tools/cloud-run volume {create,list,delete}
 
 **Backend selection:** Configured via environment variables in `.orchestration-kit.env`. Supports AWS EC2 and RunPod. EC2 runs in a `python:3.12-slim` Docker container; RunPod uses `pytorch:2.4.0-py3.11`. Dependencies install via `uv` from `requirements.txt`. Results sync back via S3. **Important:** `--data-dirs` preserves the directory name — if you upload `.../dollar_25k/`, the remote path is `data/dollar_25k/`, not `data/`. Use `--spot` for spot instances (default); `--force` overrides preflight "local" recommendation.
 
+## S3 Artifact Store
+
+Large experiment result files (CSVs, binary data, model checkpoints) are stored in S3 with content-addressed deduplication. Local files become symlinks to a cache directory. Git tracks the symlinks (tiny) and per-directory `.s3-manifest.json` files.
+
+**S3 bucket:** `s3://kenoma-labs-research/artifact-store/<sha256-prefix-2>/<sha256>.<ext>`
+**Local cache:** `.kit/.s3-cache/` (gitignored)
+
+### Commands
+
+```bash
+# Push a single file to S3, replace with symlink
+orchestration-kit/tools/artifact-store push <file>
+
+# Push all files >10MB in a directory tree
+orchestration-kit/tools/artifact-store push-dir .kit/results/ --threshold 10MB
+
+# After clone/checkout: download from S3 and create symlinks
+orchestration-kit/tools/artifact-store hydrate
+
+# Check which files are cached/missing
+orchestration-kit/tools/artifact-store status
+
+# Verify SHA-256 integrity of cached files
+orchestration-kit/tools/artifact-store verify
+```
+
+### New Clone / Worktree Workflow
+
+After `git clone` or `git worktree add`, large result files are symlinks pointing to `.kit/.s3-cache/` which is empty. Run:
+
+```bash
+orchestration-kit/tools/artifact-store hydrate
+```
+
+This downloads all files referenced by `.s3-manifest.json` in `.kit/results/` and creates the symlinks.
+
+### After Running Experiments
+
+If a research phase produces large result files (>10 MB), push them before committing:
+
+```bash
+orchestration-kit/tools/artifact-store push-dir .kit/results/<experiment-name>/ --threshold 10MB
+git add .kit/results/<experiment-name>/
+git commit -m "results: <experiment-name>"
+```
+
 ## Global Dashboard (Optional)
 
 ```bash
