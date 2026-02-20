@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "orchestration-kit/interop/request.schema.json",
+  "title": "Interop Request",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "from_kit",
+    "to_kit",
+    "action",
+    "args",
+    "run_id",
+    "inputs",
+    "must_read",
+    "read_budget",
+    "deliverables_expected"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "from_kit": {
+      "type": "string",
+      "enum": ["tdd", "research", "math"]
+    },
+    "from_phase": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "to_kit": {
+      "type": "string",
+      "enum": ["tdd", "research", "math"]
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1
+    },
+    "args": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "must_read": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "read_budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["max_files", "max_total_bytes", "allowed_paths"],
+      "properties": {
+        "max_files": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_total_bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "allowed_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "deliverables_expected": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "priority": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+"""Validate capsule strictness constraints.
+
+Rules:
+- <= 30 lines
+- no code blocks
+- required sections present
+"""
+
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+REQUIRED_PREFIXES = [
+    "Goal:",
+    "What happened:",
+    "Current status:",
+    "Next action requested (exactly one):",
+    "Evidence pointers:",
+    "If blocked:",
+]
+
+
+def collect_capsules(paths: list[str]) -> list[Path]:
+    found: set[Path] = set()
+    for raw in paths:
+        p = Path(raw)
+        if p.is_file() and p.suffix.lower() == ".md":
+            found.add(p.resolve())
+            continue
+        if p.is_dir():
+            for capsule in p.rglob("capsules/*.md"):
+                if capsule.is_file():
+                    found.add(capsule.resolve())
+    return sorted(found)
+
+
+def validate_capsule(path: Path) -> list[str]:
+    errors: list[str] = []
+    text = path.read_text(encoding="utf-8", errors="replace")
+    lines = text.splitlines()
+
+    if len(lines) > 30:
+        errors.append(f"line_count={len(lines)} exceeds max 30")
+
+    if any("```" in line for line in lines):
+        errors.append("contains fenced code block marker")
+
+    for prefix in REQUIRED_PREFIXES:
+        if not any(line.startswith(prefix) for line in lines):
+            errors.append(f"missing required section prefix: {prefix}")
+
+    next_action_hits = sum(line.startswith("Next action requested (exactly one):") for line in lines)
+    if next_action_hits != 1:
+        errors.append(f"expected exactly one next-action line, found {next_action_hits}")
+
+    return errors
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(prog="tools/validate-capsules", add_help=True)
+    parser.add_argument("paths", nargs="*", default=["runs"], help="Files/directories to scan")
+    args = parser.parse_args()
+
+    capsules = collect_capsules(args.paths)
+    if not capsules:
+        print("No capsule files found.")
+        return 0
+
+    failures = 0
+    for capsule in capsules:
+        errors = validate_capsule(capsule)
+        if errors:
+            failures += 1
+            print(f"FAIL {capsule}")
+            for err in errors:
+                print(f"  - {err}")
+        else:
+            print(f"OK   {capsule}")
+
+    if failures:
+        print(f"Capsule validation failed: {failures} file(s).")
+        return 1
+
+    print(f"Capsule validation passed: {len(capsules)} file(s).")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,232 @@
+#!/usr/bin/env bash
+# Monorepo bootstrap for orchestration-kit.
+#
+# This script does NOT call per-kit install.sh scripts (those do heavy
+# project-specific setup like Lean4 toolchain init).  Instead it seeds the
+# lightweight state-tracking files and working directories each kit expects
+# at runtime, then validates structure and runs the smoke test.
+#
+# Usage:
+#   tools/bootstrap
+#   tools/bootstrap --check-only
+#   tools/bootstrap --skip-smoke
+#   tools/bootstrap --install-python
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
+CHECK_ONLY=0
+SKIP_SMOKE=0
+INSTALL_PYTHON=0
+GREENFIELD=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --check-only)
+      CHECK_ONLY=1
+      shift
+      ;;
+    --skip-smoke)
+      SKIP_SMOKE=1
+      shift
+      ;;
+    --install-python)
+      INSTALL_PYTHON=1
+      shift
+      ;;
+    --greenfield)
+      GREENFIELD=1
+      shift
+      ;;
+    -h|--help)
+      cat <<'USAGE'
+Usage: tools/bootstrap [options]
+
+Options:
+  --check-only      Run checks only (no chmod fixes, no installs, no smoke run).
+  --skip-smoke      Skip tools/smoke-run.
+  --install-python  Install dependencies from requirements.txt if present.
+  --greenfield      Skip workspace seeding (install.sh seeds to project root instead).
+  -h, --help        Show this help text.
+USAGE
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+fail() {
+  echo "[bootstrap] ERROR: $*" >&2
+  exit 1
+}
+
+have_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+print_version() {
+  local label="$1"
+  shift
+  local bin="$1"
+  shift
+  if have_cmd "$bin"; then
+    local out
+    out="$("$bin" "$@" 2>/dev/null | head -n 1 || true)"
+    if [[ -z "$out" ]]; then
+      out="(version unavailable)"
+    fi
+    echo "[bootstrap] ${label}: $out"
+  else
+    echo "[bootstrap] ${label}: NOT FOUND"
+  fi
+}
+
+require_file() {
+  local file="$1"
+  [[ -f "$file" ]] || fail "Missing required file: $file"
+}
+
+require_executable() {
+  local file="$1"
+  [[ -x "$file" ]] || fail "Missing executable bit: $file"
+}
+
+chmod_if_exists() {
+  local path="$1"
+  if [[ -e "$path" ]]; then
+    chmod +x "$path" || fail "Failed to chmod $path"
+  fi
+}
+
+echo "[bootstrap] root=$ROOT_DIR"
+echo "[bootstrap] mode: monorepo bootstrap (no per-kit install.sh)"
+
+require_file ".claude/settings.json"
+require_file ".claude/hooks/pre-tool-use.sh"
+require_file "tools/kit"
+require_file "tools/pump"
+require_file "tools/smoke-run"
+
+if ! grep -q '".claude/hooks/pre-tool-use.sh"' ".claude/settings.json"; then
+  fail ".claude/settings.json does not reference the master hook path"
+fi
+echo "[bootstrap] settings check: master hook reference present"
+
+print_version "python3" python3 --version
+print_version "claude" claude --version
+print_version "gh" gh --version
+print_version "lake" lake --version
+print_version "elan" elan --version
+
+if [[ "$CHECK_ONLY" -eq 0 ]]; then
+  chmod +x tools/* || fail "Failed to chmod tools/*"
+  chmod +x .claude/hooks/pre-tool-use.sh || fail "Failed to chmod master hook"
+  chmod +x tdd-kit/.claude/hooks/pre-tool-use.sh || fail "Failed to chmod tdd hook"
+  chmod +x research-kit/.claude/hooks/pre-tool-use.sh || fail "Failed to chmod research hook"
+  chmod +x mathematics-kit/.claude/hooks/pre-tool-use.sh || fail "Failed to chmod math hook"
+
+  for script in tdd-kit/*.sh research-kit/*.sh mathematics-kit/*.sh; do
+    chmod_if_exists "$script"
+  done
+
+  while IFS= read -r script; do
+    chmod +x "$script" || fail "Failed to chmod $script"
+  done < <(find tdd-kit/scripts research-kit/scripts mathematics-kit/scripts -type f -name '*.sh' 2>/dev/null)
+
+  echo "[bootstrap] executable bits refreshed"
+else
+  echo "[bootstrap] check-only mode: skipping chmod operations"
+fi
+
+require_executable "tools/kit"
+require_executable "tools/pump"
+require_executable "tools/smoke-run"
+require_executable ".claude/hooks/pre-tool-use.sh"
+echo "[bootstrap] executable checks: ok"
+
+# ── Seed kit workspaces ──
+# Each kit's install.sh deploys state-tracking templates and working directories
+# into a target project.  In the monorepo the kit subdirectory IS the working
+# directory (tools/kit cd's into it), so we seed directly there.
+
+copy_if_missing() {
+  local src="$1" dest="$2"
+  if [[ ! -f "$dest" ]]; then
+    cp "$src" "$dest"
+    echo "[bootstrap]   created $(basename "$dest")"
+  fi
+}
+
+seed_kit_workspaces() {
+  echo "[bootstrap] seeding kit workspaces"
+
+  # ── TDD Kit ──
+  local tdd="$ROOT_DIR/tdd-kit"
+  mkdir -p "$tdd/docs"
+  copy_if_missing "$tdd/templates/LAST_TOUCH.md" "$tdd/LAST_TOUCH.md"
+  copy_if_missing "$tdd/templates/PRD.md"        "$tdd/PRD.md"
+  if [[ ! -f "$tdd/CLAUDE.md" && -f "$tdd/templates/CLAUDE.md.snippet" ]]; then
+    cp "$tdd/templates/CLAUDE.md.snippet" "$tdd/CLAUDE.md"
+    echo "[bootstrap]   created CLAUDE.md (tdd)"
+  fi
+
+  # ── Research Kit ──
+  local research="$ROOT_DIR/research-kit"
+  mkdir -p "$research/experiments" "$research/results" "$research/handoffs/completed"
+  copy_if_missing "$research/templates/RESEARCH_LOG.md"  "$research/RESEARCH_LOG.md"
+  copy_if_missing "$research/templates/QUESTIONS.md"      "$research/QUESTIONS.md"
+  copy_if_missing "$research/templates/DOMAIN_PRIORS.md" "$research/DOMAIN_PRIORS.md"
+  if [[ ! -f "$research/CLAUDE.md" && -f "$research/templates/CLAUDE.md.snippet" ]]; then
+    cp "$research/templates/CLAUDE.md.snippet" "$research/CLAUDE.md"
+    echo "[bootstrap]   created CLAUDE.md (research)"
+  fi
+
+  # ── Mathematics Kit ──
+  local math="$ROOT_DIR/mathematics-kit"
+  mkdir -p "$math/specs" "$math/results"
+  copy_if_missing "$math/templates/CONSTRUCTIONS.md"     "$math/CONSTRUCTIONS.md"
+  copy_if_missing "$math/templates/CONSTRUCTION_LOG.md"  "$math/CONSTRUCTION_LOG.md"
+  copy_if_missing "$math/templates/DOMAIN_CONTEXT.md"    "$math/DOMAIN_CONTEXT.md"
+  if [[ ! -f "$math/CLAUDE.md" && -f "$math/templates/CLAUDE.md.snippet" ]]; then
+    cp "$math/templates/CLAUDE.md.snippet" "$math/CLAUDE.md"
+    echo "[bootstrap]   created CLAUDE.md (math)"
+  fi
+
+  echo "[bootstrap] kit workspaces seeded"
+}
+
+if [[ "$CHECK_ONLY" -eq 1 ]]; then
+  echo "[bootstrap] check-only mode: skipping workspace seeding"
+elif [[ "$GREENFIELD" -eq 1 ]]; then
+  echo "[bootstrap] greenfield mode: skipping workspace seeding (install.sh seeds project root)"
+else
+  seed_kit_workspaces
+fi
+
+if [[ "$INSTALL_PYTHON" -eq 1 ]]; then
+  if [[ -f "requirements.txt" ]]; then
+    if [[ "$CHECK_ONLY" -eq 1 ]]; then
+      echo "[bootstrap] check-only mode: would run python3 -m pip install -r requirements.txt"
+    else
+      python3 -m pip install -r requirements.txt
+    fi
+  else
+    echo "[bootstrap] requirements.txt not found, skipping Python dependency install"
+  fi
+fi
+
+if [[ "$SKIP_SMOKE" -eq 1 ]]; then
+  echo "[bootstrap] smoke run skipped"
+elif [[ "$CHECK_ONLY" -eq 1 ]]; then
+  echo "[bootstrap] check-only mode: would run tools/smoke-run"
+else
+  echo "[bootstrap] running smoke validation"
+  tools/smoke-run
+fi
+
+echo "[bootstrap] done"

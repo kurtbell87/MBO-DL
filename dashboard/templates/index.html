@@ -1,0 +1,1720 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Orchestration-Kit Global Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --line: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --ok: #22c55e;
+      --bad: #ef4444;
+      --warn: #f59e0b;
+      --accent: #0ea5e9;
+      --stale: #a855f7;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top right, #1e293b, var(--bg) 55%);
+      color: var(--text);
+      font-family: var(--sans);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .header h1 { margin: 0; font-size: 18px; letter-spacing: 0.2px; white-space: nowrap; }
+    .header select, .header input, .header button {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-family: var(--sans);
+      font-size: 13px;
+    }
+    .header button {
+      cursor: pointer;
+      background: linear-gradient(180deg, #1d4ed8, #1e40af);
+      border-color: #1e3a8a;
+      font-weight: 600;
+    }
+    .header button.secondary { background: var(--panel-2); border-color: var(--line); font-weight: 500; }
+    .cards { display: flex; gap: 8px; margin-left: auto; }
+    .card { text-align: center; padding: 2px 10px; }
+    .card .k { color: var(--muted); font-size: 10px; text-transform: uppercase; }
+    .card .v { font-size: 18px; font-weight: 700; }
+    .ok { color: var(--ok); }
+    .bad { color: var(--bad); }
+    .warn { color: var(--warn); }
+    #stamp { color: var(--muted); font-size: 11px; white-space: nowrap; }
+
+    /* Tab bar */
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* Tab panels */
+    .tab-panel { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+    .tab-panel.active { display: flex; }
+
+    /* Runs toolbar */
+    .runs-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+      background: var(--panel);
+    }
+    .runs-toolbar input {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-family: var(--sans);
+      font-size: 13px;
+      width: 280px;
+    }
+
+    /* Runs table */
+    .runs-table-wrap { flex: 1; overflow: auto; }
+    .runs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .runs-table th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 10px;
+      text-align: left;
+      color: var(--muted);
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .runs-table th:hover { color: var(--text); }
+    .runs-table th:last-child { cursor: default; }
+    .runs-table th .sort-arrow { margin-left: 4px; font-size: 10px; }
+    .runs-table td {
+      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+      padding: 6px 10px;
+      vertical-align: middle;
+    }
+    .runs-table tbody tr.run-row:hover { background: rgba(30, 41, 59, 0.55); cursor: pointer; }
+    .runs-table tbody tr.run-row.expanded { background: rgba(14, 165, 233, 0.06); }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .badge-ok { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+    .badge-failed { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+    .badge-running { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .badge-stale { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+    .badge-confirmed { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+    .badge-refuted { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+    .badge-inconclusive { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+    /* Expansion row */
+    .expansion-row:hover { background: transparent !important; }
+    .expansion-cell {
+      padding: 0 !important;
+      border-bottom: 1px solid var(--line) !important;
+    }
+    .expansion-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 14px 16px;
+      border-left: 3px solid var(--accent);
+      background: rgba(15, 23, 42, 0.6);
+    }
+    .expansion-left, .expansion-right { min-width: 0; overflow: hidden; }
+    .expansion-left h4, .expansion-right h4 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .thread-table-wrap { max-height: 140px; overflow: auto; border: 1px solid var(--line); border-radius: 6px; }
+    .thread-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    .thread-table th, .thread-table td {
+      padding: 4px 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+    }
+    .thread-table th {
+      background: var(--panel);
+      color: var(--muted);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    .exp-viewer {
+      max-height: 260px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    /* Pagination */
+    .runs-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 8px 16px;
+      border-top: 1px solid var(--line);
+      flex-shrink: 0;
+      background: var(--panel);
+    }
+    .runs-pagination button {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: var(--sans);
+    }
+    .runs-pagination button:disabled { opacity: 0.4; cursor: default; }
+
+    /* Artifact buttons */
+    .artifact-buttons { display: flex; gap: 4px; flex-wrap: wrap; }
+    .abtn {
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--text);
+      cursor: pointer;
+      font-family: var(--mono);
+    }
+    .abtn:hover { background: rgba(30, 41, 59, 1); border-color: var(--accent); }
+    .exp-artifact-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      color: var(--text);
+      cursor: pointer;
+      font-family: var(--sans);
+    }
+    .exp-artifact-btn:hover { border-color: var(--accent); }
+    .result-artifacts-section { margin-top: 8px; }
+    .result-artifacts-section h5 { margin: 0 0 4px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+    .result-group-heading { font-size: 10px; color: var(--muted); margin: 6px 0 2px; }
+    .experiment-name { font-family: var(--sans); font-weight: 600; font-size: 12px; }
+    .experiment-runid { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .csv-table { border-collapse: collapse; width: 100%; margin: 0.5em 0; font-size: 11px; font-family: var(--mono); }
+    .csv-table th, .csv-table td { border: 1px solid var(--line); padding: 4px 8px; text-align: left; }
+    .csv-table th { background: rgba(30, 41, 59, 0.6); font-weight: 600; color: var(--muted); }
+    .csv-table tbody tr:hover { background: rgba(30, 41, 59, 0.3); }
+    .image-container { text-align: center; padding: 8px; }
+
+    /* DAG area */
+    .dag-area { flex: 1; overflow: auto; position: relative; }
+    .dag-area svg { display: block; }
+    .dag-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .dag-node circle.running { animation: pulse 1.5s ease-in-out infinite; }
+    .dag-legend {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .dag-legend-title { font-weight: 600; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
+    .dag-legend-item { display: flex; align-items: center; gap: 8px; }
+    .dag-legend-line { width: 28px; height: 0; border-top-width: 2px; border-top-style: solid; flex-shrink: 0; }
+
+    /* Docs layout */
+    .docs-layout { display: flex; flex: 1; overflow: hidden; }
+    .docs-nav {
+      width: 240px;
+      flex-shrink: 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--line);
+      padding: 8px 0;
+      background: var(--panel);
+    }
+    .docs-nav-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 6px 16px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: var(--sans);
+    }
+    .docs-nav-item:hover { background: rgba(30, 41, 59, 0.55); }
+    .docs-nav-item.active { background: rgba(14, 165, 233, 0.1); color: var(--accent); }
+    .docs-nav-item.template { opacity: 0.4; }
+    .docs-content-area { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+    .docs-meta {
+      padding: 8px 20px;
+      color: var(--muted);
+      font-size: 11px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+    .docs-body { flex: 1; overflow-y: auto; padding: 14px 20px; }
+
+    /* Markdown rendering */
+    .markdown { font-family: var(--sans); font-size: 13px; line-height: 1.5; }
+    .markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6 { margin: 0.4em 0 0.35em; }
+    .markdown p { margin: 0.4em 0; }
+    .markdown ul, .markdown ol { margin: 0.4em 0 0.4em 1.2em; padding: 0; }
+    .markdown code {
+      font-family: var(--mono);
+      font-size: 11px;
+      background: rgba(2, 6, 23, 0.7);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      padding: 1px 4px;
+    }
+    .markdown pre {
+      margin: 0.5em 0;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: auto;
+      background: rgba(2, 6, 23, 0.7);
+    }
+    .markdown pre code { border: 0; padding: 0; background: transparent; }
+    .markdown table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0.5em 0;
+      font-size: 12px;
+    }
+    .markdown th, .markdown td {
+      border: 1px solid var(--line);
+      padding: 6px 10px;
+      text-align: left;
+    }
+    .markdown th {
+      background: rgba(30, 41, 59, 0.6);
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .markdown tbody tr:hover {
+      background: rgba(30, 41, 59, 0.3);
+    }
+    .markdown hr {
+      border: none;
+      border-top: 1px solid var(--line);
+      margin: 0.8em 0;
+    }
+    .markdown del {
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    /* Utilities */
+    .mono { font-family: var(--mono); font-size: 11px; word-break: break-all; }
+    .muted { color: var(--muted); }
+    .text-view { white-space: pre-wrap; font-family: var(--mono); font-size: 11px; }
+
+    /* JSON / log highlighting */
+    .json-key { color: var(--accent); }
+    .json-str { color: #4ade80; }
+    .json-num { color: #fbbf24; }
+    .json-kw { color: var(--muted); }
+    .log-error { color: var(--bad); }
+    .log-warn { color: var(--warn); }
+
+    /* Capsule hover popover */
+    .capsule-popover {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      max-width: 480px;
+      max-height: 220px;
+      overflow: hidden;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      font-size: 12px;
+      pointer-events: none;
+    }
+    .capsule-popover.visible { display: block; }
+    .capsule-popover-title {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+    }
+    .capsule-popover-body {
+      overflow: hidden;
+      max-height: 180px;
+      line-height: 1.45;
+    }
+    .capsule-popover-body .markdown { font-size: 11px; }
+    .capsule-popover-fade {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: linear-gradient(transparent, var(--panel));
+    }
+
+    /* Light theme */
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --panel-2: #f1f5f9;
+      --line: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --ok: #16a34a;
+      --bad: #dc2626;
+      --warn: #d97706;
+      --accent: #0284c7;
+      --stale: #9333ea;
+    }
+    [data-theme="light"] body {
+      background: radial-gradient(circle at top right, #e2e8f0, var(--bg) 55%);
+    }
+    [data-theme="light"] .markdown code {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    [data-theme="light"] .markdown pre {
+      background: #f1f5f9;
+    }
+    [data-theme="light"] .expansion-content {
+      background: rgba(241, 245, 249, 0.8);
+    }
+    [data-theme="light"] .json-str { color: #16a34a; }
+    [data-theme="light"] .json-num { color: #d97706; }
+    [data-theme="light"] .badge-ok { background: rgba(22, 163, 74, 0.1); color: #16a34a; }
+    [data-theme="light"] .badge-failed { background: rgba(220, 38, 38, 0.1); color: #dc2626; }
+    [data-theme="light"] .badge-running { background: rgba(217, 119, 6, 0.1); color: #d97706; }
+    [data-theme="light"] .badge-stale { background: rgba(147, 51, 234, 0.1); color: #9333ea; }
+    [data-theme="light"] .badge-confirmed { background: rgba(22, 163, 74, 0.1); color: #16a34a; }
+    [data-theme="light"] .badge-refuted { background: rgba(220, 38, 38, 0.1); color: #dc2626; }
+    [data-theme="light"] .badge-inconclusive { background: rgba(217, 119, 6, 0.1); color: #d97706; }
+    [data-theme="light"] .runs-table tbody tr.run-row:hover { background: rgba(226, 232, 240, 0.5); }
+    [data-theme="light"] .capsule-popover { box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+    [data-theme="light"] .capsule-popover-fade { background: linear-gradient(transparent, var(--panel)); }
+    [data-theme="light"] .dag-legend { background: rgba(255,255,255,0.95); }
+    .theme-toggle {
+      cursor: pointer;
+      background: var(--panel-2) !important;
+      border-color: var(--line) !important;
+      font-weight: 500 !important;
+      font-size: 16px !important;
+      padding: 4px 8px !important;
+      line-height: 1;
+    }
+
+    @media (max-width: 900px) {
+      .expansion-content { grid-template-columns: 1fr; }
+      .docs-layout { flex-direction: column; }
+      .docs-nav { width: 100%; height: 160px; border-right: none; border-bottom: 1px solid var(--line); }
+      .runs-toolbar input { width: 180px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <h1>Orchestration-Kit Dashboard</h1>
+    <label>Project: <select id="project"></select></label>
+    <label>Status:
+      <select id="status">
+        <option value="">all</option>
+        <option value="running">running</option>
+        <option value="ok">ok</option>
+        <option value="failed">failed</option>
+      </select>
+    </label>
+    <label>Kit:
+      <select id="kit">
+        <option value="">all</option>
+        <option value="tdd">tdd</option>
+        <option value="research">research</option>
+        <option value="math">math</option>
+      </select>
+    </label>
+    <button id="refresh-index">Reindex</button>
+    <button id="reload" class="secondary">Reload</button>
+    <button id="theme-toggle" class="theme-toggle" title="Toggle light/dark theme"></button>
+    <div class="cards" id="cards"></div>
+    <span id="stamp"></span>
+  </div>
+
+  <!-- Capsule hover popover -->
+  <div class="capsule-popover" id="capsule-popover">
+    <div class="capsule-popover-title">Capsule Preview</div>
+    <div class="capsule-popover-body markdown" id="capsule-popover-body"></div>
+    <div class="capsule-popover-fade"></div>
+  </div>
+
+  <!-- Tab bar -->
+  <div class="tab-bar" id="tab-bar">
+    <button class="tab-btn active" data-tab="runs">Runs</button>
+    <button class="tab-btn" data-tab="dag">DAG</button>
+    <button class="tab-btn" data-tab="docs">Docs</button>
+    <button class="tab-btn" data-tab="questions">Questions</button>
+  </div>
+
+  <!-- Runs tab -->
+  <div class="tab-panel active" id="tab-runs">
+    <div class="runs-toolbar">
+      <input type="text" id="runs-search" placeholder="Filter by run ID, kit, phase..." />
+      <span id="runs-count" class="muted"></span>
+    </div>
+    <div class="runs-table-wrap">
+      <table class="runs-table">
+        <thead>
+          <tr>
+            <th data-sort="status">Status</th>
+            <th data-sort="kit">Kit</th>
+            <th data-sort="phase">Phase</th>
+            <th data-sort="experiment_name">Experiment / Run</th>
+            <th data-sort="started_at">Started</th>
+            <th>Duration</th>
+            <th>Exit</th>
+            <th>Artifacts</th>
+          </tr>
+        </thead>
+        <tbody id="runs-tbody"></tbody>
+      </table>
+    </div>
+    <div class="runs-pagination">
+      <button id="runs-prev" disabled>Previous</button>
+      <span id="runs-page-info" class="muted"></span>
+      <button id="runs-next" disabled>Next</button>
+    </div>
+  </div>
+
+  <!-- DAG tab -->
+  <div class="tab-panel" id="tab-dag">
+    <div class="dag-area" id="dag-area">
+      <div class="dag-empty" id="dag-empty">Click the DAG tab to load.</div>
+    </div>
+  </div>
+
+  <!-- Docs tab -->
+  <div class="tab-panel" id="tab-docs">
+    <div class="docs-layout">
+      <div class="docs-nav" id="docs-nav">
+        <div class="muted" style="padding:12px">Select a project.</div>
+      </div>
+      <div class="docs-content-area">
+        <div class="docs-meta" id="docs-meta">Select a project to load state files.</div>
+        <div class="docs-body markdown" id="docs-body">(no file selected)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Questions tab -->
+  <div class="tab-panel" id="tab-questions">
+    <div class="docs-content-area">
+      <div class="docs-meta" id="questions-meta">Research question agenda</div>
+      <div class="docs-body markdown" id="questions-body"><span class="muted">Loading QUESTIONS.md...</span></div>
+    </div>
+  </div>
+
+<script>
+/* ─── Core utilities ─── */
+const el = (id) => document.getElementById(id);
+
+async function api(path, options = {}) {
+  let lastErr = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await fetch(path, options);
+      if (!res.ok) {
+        const body = await res.text();
+        throw new Error(`HTTP ${res.status}: ${body}`);
+      }
+      return await res.json();
+    } catch (err) {
+      lastErr = err;
+      if (attempt < 2) await new Promise(r => setTimeout(r, 150 * (attempt + 1)));
+    }
+  }
+  throw lastErr || new Error('api request failed');
+}
+
+function qs(params) {
+  const q = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v !== '' && v !== null && v !== undefined) q.set(k, String(v));
+  });
+  return q.toString();
+}
+
+function escapeHtml(v) {
+  return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#39;');
+}
+
+function basename(p) { const s = String(p||''); return s ? s.split('/').pop() || s : ''; }
+
+/* ─── Formatting ─── */
+function fmtDuration(seconds) {
+  if (seconds == null || seconds < 0) return '-';
+  if (seconds < 60) return seconds + 's';
+  if (seconds < 3600) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return s > 0 ? m + 'm ' + s + 's' : m + 'm';
+  }
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return m > 0 ? h + 'h ' + m + 'm' : h + 'h';
+}
+
+function fmtRelativeTime(iso) {
+  if (!iso) return '-';
+  try {
+    const date = new Date(iso);
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 0) return escapeHtml(iso);
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+    return date.toLocaleDateString();
+  } catch (_) { return escapeHtml(iso); }
+}
+
+function fmtStatusBadge(status, isStale) {
+  if (isStale) return '<span class="badge badge-stale">stale</span>';
+  if (status === 'ok') return '<span class="badge badge-ok">ok</span>';
+  if (status === 'failed') return '<span class="badge badge-failed">failed</span>';
+  if (status === 'running') return '<span class="badge badge-running">running</span>';
+  return '<span class="badge">' + escapeHtml(status || 'unknown') + '</span>';
+}
+
+function fmtVerdictBadge(verdict) {
+  if (!verdict) return '';
+  const v = String(verdict).toUpperCase();
+  if (v === 'CONFIRMED') return ' <span class="badge badge-confirmed">confirmed</span>';
+  if (v === 'REFUTED') return ' <span class="badge badge-refuted">refuted</span>';
+  if (v === 'INCONCLUSIVE') return ' <span class="badge badge-inconclusive">inconclusive</span>';
+  return ' <span class="badge">' + escapeHtml(verdict) + '</span>';
+}
+
+function artifactBtns(run) {
+  const pid = escapeHtml(run.project_id || '');
+  const btns = [];
+  if (run.capsule_path) btns.push('<button class="abtn" data-pid="'+pid+'" data-path="'+escapeHtml(run.capsule_path)+'" title="Capsule">C</button>');
+  if (run.manifest_path) btns.push('<button class="abtn" data-pid="'+pid+'" data-path="'+escapeHtml(run.manifest_path)+'" title="Manifest">M</button>');
+  if (run.log_path) btns.push('<button class="abtn" data-pid="'+pid+'" data-path="'+escapeHtml(run.log_path)+'" title="Log">L</button>');
+  if (run.events_path) btns.push('<button class="abtn" data-pid="'+pid+'" data-path="'+escapeHtml(run.events_path)+'" title="Events">E</button>');
+  return btns.join('') || '<span class="muted">-</span>';
+}
+
+/* ─── Markdown / JSON / Log rendering ─── */
+function inlineMarkdown(text) {
+  let out = escapeHtml(text);
+  out = out.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, label, href) => {
+    const safe = /^(https?:\/\/|\/)/i.test(href) ? href : '#';
+    return '<a href="'+escapeHtml(safe)+'" target="_blank" rel="noopener noreferrer">'+label+'</a>';
+  });
+  out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+  out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  out = out.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  out = out.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+  return out;
+}
+
+function renderMarkdown(md) {
+  const lines = String(md || '').replace(/\r\n/g, '\n').split('\n');
+  const html = [];
+  let inCode = false, codeLang = '', codeLines = [], inUl = false, inOl = false;
+  let tableLines = [];
+  const closeLists = () => {
+    if (inUl) { html.push('</ul>'); inUl = false; }
+    if (inOl) { html.push('</ol>'); inOl = false; }
+  };
+  const flushCode = () => {
+    const cls = codeLang ? ' class="language-'+escapeHtml(codeLang)+'"' : '';
+    html.push('<pre><code'+cls+'>'+escapeHtml(codeLines.join('\n'))+'</code></pre>');
+    codeLines = []; codeLang = '';
+  };
+  const parsePipeCells = (line) => {
+    let t = line.trim();
+    if (t.startsWith('|')) t = t.slice(1);
+    if (t.endsWith('|')) t = t.slice(0, -1);
+    return t.split('|');
+  };
+  const flushTable = () => {
+    if (tableLines.length < 2 || !/^\s*\|[\s:]*-+[\s:]*(\|[\s:]*-+[\s:]*)*\|?\s*$/.test(tableLines[1])) {
+      for (const tl of tableLines) html.push('<p>'+inlineMarkdown(tl)+'</p>');
+      tableLines = [];
+      return;
+    }
+    const sepCells = parsePipeCells(tableLines[1]);
+    const aligns = sepCells.map(c => {
+      const s = c.trim();
+      if (s.startsWith(':') && s.endsWith(':')) return 'center';
+      if (s.endsWith(':')) return 'right';
+      return 'left';
+    });
+    html.push('<table><thead><tr>');
+    const hCells = parsePipeCells(tableLines[0]);
+    for (let i = 0; i < hCells.length; i++) {
+      const a = aligns[i] || 'left';
+      html.push('<th'+(a!=='left'?' style="text-align:'+a+'"':'')+'>'+inlineMarkdown(hCells[i].trim())+'</th>');
+    }
+    html.push('</tr></thead><tbody>');
+    for (let r = 2; r < tableLines.length; r++) {
+      const cells = parsePipeCells(tableLines[r]);
+      html.push('<tr>');
+      for (let i = 0; i < cells.length; i++) {
+        const a = aligns[i] || 'left';
+        html.push('<td'+(a!=='left'?' style="text-align:'+a+'"':'')+'>'+inlineMarkdown(cells[i].trim())+'</td>');
+      }
+      html.push('</tr>');
+    }
+    html.push('</tbody></table>');
+    tableLines = [];
+  };
+  for (const line of lines) {
+    const fence = line.match(/^```([A-Za-z0-9_-]+)?\s*$/);
+    if (fence) {
+      if (tableLines.length) flushTable();
+      if (inCode) { flushCode(); inCode = false; }
+      else { closeLists(); inCode = true; codeLang = fence[1] || ''; codeLines = []; }
+      continue;
+    }
+    if (inCode) { codeLines.push(line); continue; }
+    if (/^\s*\|/.test(line)) {
+      closeLists();
+      tableLines.push(line);
+      continue;
+    }
+    if (tableLines.length) flushTable();
+    if (!line.trim()) { closeLists(); continue; }
+    if (/^\s*([-*_])\s*\1\s*\1[\s\1]*$/.test(line)) { closeLists(); html.push('<hr>'); continue; }
+    const heading = line.match(/^(#{1,6})\s+(.*)$/);
+    if (heading) { closeLists(); html.push('<h'+heading[1].length+'>'+inlineMarkdown(heading[2])+'</h'+heading[1].length+'>'); continue; }
+    const ul = line.match(/^\s*[-*]\s+(.*)$/);
+    if (ul) { if (inOl) { html.push('</ol>'); inOl = false; } if (!inUl) { html.push('<ul>'); inUl = true; } html.push('<li>'+inlineMarkdown(ul[1])+'</li>'); continue; }
+    const ol = line.match(/^\s*\d+\.\s+(.*)$/);
+    if (ol) { if (inUl) { html.push('</ul>'); inUl = false; } if (!inOl) { html.push('<ol>'); inOl = true; } html.push('<li>'+inlineMarkdown(ol[1])+'</li>'); continue; }
+    closeLists();
+    html.push('<p>'+inlineMarkdown(line)+'</p>');
+  }
+  if (tableLines.length) flushTable();
+  if (inCode) flushCode();
+  closeLists();
+  return html.join('\n') || '<p class="muted">(empty)</p>';
+}
+
+function renderJson(text) {
+  let html = escapeHtml(text);
+  html = html.replace(/&quot;([^&]+?)&quot;:/g, '<span class="json-key">&quot;$1&quot;</span>:');
+  html = html.replace(/: &quot;(.*?)&quot;/g, ': <span class="json-str">&quot;$1&quot;</span>');
+  html = html.replace(/: (\d+)/g, ': <span class="json-num">$1</span>');
+  html = html.replace(/: (true|false|null)/g, ': <span class="json-kw">$1</span>');
+  return '<pre><code class="language-json">' + html + '</code></pre>';
+}
+
+function renderLog(text) {
+  const lines = String(text || '').split('\n');
+  return '<pre>' + lines.map(line => {
+    const esc = escapeHtml(line);
+    if (/ERROR/i.test(line)) return '<span class="log-error">' + esc + '</span>';
+    if (/WARN/i.test(line)) return '<span class="log-warn">' + esc + '</span>';
+    return esc;
+  }).join('\n') + '</pre>';
+}
+
+function renderArtifact(payload) {
+  if (payload.kind === 'image' && payload.data_base64) {
+    return '<div class="image-container"><img src="data:' + escapeHtml(payload.mime || 'image/png') + ';base64,' + payload.data_base64 + '" style="max-width:100%;max-height:500px" /></div>';
+  } else if (payload.kind === 'csv') {
+    return renderCsv(payload.text || '');
+  } else if (payload.kind === 'markdown') {
+    return '<div class="markdown">' + renderMarkdown(payload.text || '') + '</div>';
+  } else if (payload.kind === 'json' || payload.kind === 'jsonl') {
+    return renderJson(payload.text || '');
+  } else if (payload.path && payload.path.endsWith('.log')) {
+    return renderLog(payload.text || '');
+  } else {
+    return '<pre style="margin:0;white-space:pre-wrap;font-family:var(--mono);font-size:11px">' + escapeHtml(payload.text || '') + '</pre>';
+  }
+}
+
+function renderCsv(text) {
+  const lines = String(text || '').trim().split('\n').filter(l => l.trim());
+  if (!lines.length) return '<pre class="muted">(empty CSV)</pre>';
+  const parseRow = (line) => {
+    const cells = [];
+    let current = '', inQuote = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (inQuote) {
+        if (ch === '"' && line[i+1] === '"') { current += '"'; i++; }
+        else if (ch === '"') { inQuote = false; }
+        else { current += ch; }
+      } else {
+        if (ch === '"') { inQuote = true; }
+        else if (ch === ',') { cells.push(current.trim()); current = ''; }
+        else { current += ch; }
+      }
+    }
+    cells.push(current.trim());
+    return cells;
+  };
+  const headers = parseRow(lines[0]);
+  let html = '<table class="csv-table"><thead><tr>';
+  for (const h of headers) html += '<th>' + escapeHtml(h) + '</th>';
+  html += '</tr></thead><tbody>';
+  for (let i = 1; i < lines.length; i++) {
+    const cells = parseRow(lines[i]);
+    html += '<tr>';
+    for (let j = 0; j < headers.length; j++) html += '<td>' + escapeHtml(cells[j] || '') + '</td>';
+    html += '</tr>';
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+/* ─── DAG rendering ─── */
+const STATUS_COLOR = { ok: '#22c55e', failed: '#ef4444', running: '#f59e0b', unknown: '#64748b' };
+
+function renderDag(data) {
+  const area = el('dag-area');
+  if (!data.nodes || !data.nodes.length) {
+    area.innerHTML = '<div class="dag-empty">No runs indexed yet. Click Reindex.</div>';
+    return;
+  }
+  const w = Math.max(data.width || 600, 600);
+  const h = Math.max(data.height || 300, 300);
+  const nodeMap = {};
+  data.nodes.forEach(n => { nodeMap[n.id] = n; });
+
+  let svg = '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">';
+  svg += '<defs><marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/></marker></defs>';
+
+  for (const e of data.edges) {
+    const src = nodeMap[e.source];
+    const tgt = nodeMap[e.target];
+    if (!src || !tgt) continue;
+    // Top-to-bottom: source bottom-center → target top-center
+    const x1 = src.x + src.width / 2, y1 = src.y + src.height;
+    const x2 = tgt.x + tgt.width / 2, y2 = tgt.y;
+    const cy1 = y1 + (y2 - y1) * 0.4, cy2 = y2 - (y2 - y1) * 0.4;
+    const stroke = e.type === 'experiment' ? '#f472b6' : e.type === 'interop' ? '#0ea5e9' : e.type === 'inferred' ? '#6366f1' : '#475569';
+    const dash = e.type === 'experiment' ? ' stroke-dasharray="8 4"' : e.type === 'interop' ? ' stroke-dasharray="6 3"' : e.type === 'inferred' ? ' stroke-dasharray="4 4"' : '';
+    svg += '<path d="M '+x1+' '+y1+' C '+x1+' '+cy1+', '+x2+' '+cy2+', '+x2+' '+y2+'" fill="none" stroke="'+stroke+'" stroke-width="1.5"'+dash+' marker-end="url(#arrow)"/>';
+  }
+
+  for (const n of data.nodes) {
+    const fill = STATUS_COLOR[n.status] || STATUS_COLOR.unknown;
+    const tooltip = n.reasoning ? escapeHtml(n.reasoning) : '';
+    svg += '<g class="dag-node" data-run-id="'+escapeHtml(n.id)+'" style="cursor:pointer">';
+    if (tooltip) svg += '<title>'+tooltip+'</title>';
+    svg += '<rect x="'+n.x+'" y="'+n.y+'" width="'+n.width+'" height="'+n.height+'" rx="8" fill="#1e293b" stroke="'+fill+'" stroke-width="2"/>';
+    svg += '<circle cx="'+(n.x+12)+'" cy="'+(n.y+n.height/2)+'" r="5" fill="'+fill+'"'+(n.status==='running'?' class="running"':'')+'/>';
+    svg += '<text x="'+(n.x+22)+'" y="'+(n.y+17)+'" fill="#e2e8f0" font-size="11" font-family="ui-monospace,monospace">'+escapeHtml(n.label)+'</text>';
+    if (n.status === 'running' && n.started_at) {
+      const elapsed = Math.floor((Date.now() - new Date(n.started_at).getTime()) / 1000);
+      const mm = Math.floor(elapsed / 60), ss = elapsed % 60;
+      svg += '<text x="'+(n.x+22)+'" y="'+(n.y+32)+'" fill="#f59e0b" font-size="9" font-family="ui-monospace,monospace">'+mm+'m '+ss+'s</text>';
+    } else if (n.experiment_name) {
+      svg += '<text x="'+(n.x+22)+'" y="'+(n.y+32)+'" fill="#f472b6" font-size="9" font-family="-apple-system,sans-serif">'+escapeHtml(n.experiment_name.length>22?n.experiment_name.slice(0,22)+'...':n.experiment_name)+'</text>';
+    } else {
+      svg += '<text x="'+(n.x+22)+'" y="'+(n.y+32)+'" fill="#94a3b8" font-size="9" font-family="ui-monospace,monospace">'+escapeHtml(n.id.length>20?n.id.slice(0,20)+'...':n.id)+'</text>';
+    }
+    svg += '</g>';
+  }
+
+  svg += '</svg>';
+  area.innerHTML = svg
+    + '<div class="dag-legend">'
+    + '<div class="dag-legend-title">Edges</div>'
+    + '<div class="dag-legend-item"><span class="dag-legend-line" style="border-color:#475569"></span> Parent</div>'
+    + '<div class="dag-legend-item"><span class="dag-legend-line" style="border-color:#0ea5e9;border-top-style:dashed"></span> Interop</div>'
+    + '<div class="dag-legend-item"><span class="dag-legend-line" style="border-color:#6366f1;border-top-style:dashed"></span> Inferred</div>'
+    + '<div class="dag-legend-item"><span class="dag-legend-line" style="border-color:#f472b6;border-top-style:dashed"></span> Experiment</div>'
+    + '<div class="dag-legend-title" style="margin-top:4px">Status</div>'
+    + '<div class="dag-legend-item"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#22c55e"></span> OK</div>'
+    + '<div class="dag-legend-item"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444"></span> Failed</div>'
+    + '<div class="dag-legend-item"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b"></span> Running</div>'
+    + '</div>';
+
+  area.querySelectorAll('.dag-node').forEach(g => {
+    g.addEventListener('click', () => {
+      const runId = g.getAttribute('data-run-id');
+      if (runId) {
+        const pid = el('project').value || findProjectForRun(runId);
+        TabManager.switchTo('runs');
+        RunsView.expandByRunId(pid, runId);
+      }
+    });
+  });
+}
+
+function findProjectForRun(runId) {
+  const sel = el('project');
+  if (sel.value) return sel.value;
+  if (sel.options.length > 1) return sel.options[1].value;
+  return '';
+}
+
+/* ─── Tab Manager ─── */
+const TabManager = {
+  active: 'runs',
+  dagLoaded: false,
+  docsLoaded: false,
+  questionsLoaded: false,
+
+  switchTo(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.id === 'tab-' + tabId));
+    this.active = tabId;
+    if (tabId === 'dag' && !this.dagLoaded) {
+      this.dagLoaded = true;
+      safeRefresh(() => DagView.load());
+    }
+    if (tabId === 'docs' && !this.docsLoaded) {
+      this.docsLoaded = true;
+      safeRefresh(() => DocsView.load(true));
+    }
+    if (tabId === 'questions' && !this.questionsLoaded) {
+      this.questionsLoaded = true;
+      safeRefresh(() => QuestionsView.load());
+    }
+  },
+
+  init() {
+    el('tab-bar').addEventListener('click', (e) => {
+      const btn = e.target.closest('.tab-btn');
+      if (btn) this.switchTo(btn.dataset.tab);
+    });
+  }
+};
+
+/* ─── Runs View ─── */
+const RunsView = {
+  runs: [],
+  expandedRunId: null,
+  expandedProjectId: null,
+  _expandedContent: null,
+  sortCol: 'started_at',
+  sortDesc: true,
+  offset: 0,
+  limit: 50,
+  searchFilter: '',
+  hasMore: false,
+
+  async load() {
+    const pid = el('project').value;
+    const status = el('status').value;
+    const kitVal = el('kit').value;
+    const sortParam = (this.sortDesc ? '-' : '') + this.sortCol;
+    const data = await api('/api/runs?' + qs({
+      project_id: pid,
+      status: status,
+      kit: kitVal,
+      limit: this.limit,
+      offset: this.offset,
+      sort: sortParam,
+    }));
+    this.runs = data.runs || [];
+    this.hasMore = data.has_more || false;
+    this.render();
+  },
+
+  render() {
+    const tbody = el('runs-tbody');
+    const filter = this.searchFilter.toLowerCase();
+    const filtered = filter
+      ? this.runs.filter(r => (r.run_id + ' ' + r.kit + ' ' + r.phase + ' ' + r.status + ' ' + (r.experiment_name||'') + ' ' + (r.verdict||'')).toLowerCase().includes(filter))
+      : this.runs;
+
+    let html = '';
+    for (const r of filtered) {
+      const rid = r.run_id || '';
+      const isExpanded = this.expandedRunId === rid;
+      const expName = r.experiment_name || '';
+      const expCell = expName
+        ? '<div class="experiment-name">' + escapeHtml(expName) + '</div><div class="experiment-runid">' + escapeHtml(rid.length > 20 ? rid.slice(0,20)+'\u2026' : rid) + '</div>'
+        : '<span class="mono" title="' + escapeHtml(rid) + '">' + escapeHtml(rid.length > 24 ? rid.slice(0, 24) + '\u2026' : rid) + '</span>';
+      html += '<tr class="run-row' + (isExpanded ? ' expanded' : '') + '" data-run-id="' + escapeHtml(rid) + '" data-project-id="' + escapeHtml(r.project_id || '') + '">'
+        + '<td>' + fmtStatusBadge(r.status, r.is_stale) + fmtVerdictBadge(r.verdict) + '</td>'
+        + '<td>' + escapeHtml(r.kit || '-') + '</td>'
+        + '<td>' + escapeHtml(r.phase || '-') + '</td>'
+        + '<td title="' + escapeHtml(rid) + '">' + expCell + '</td>'
+        + '<td title="' + escapeHtml(r.started_at || '') + '">' + fmtRelativeTime(r.started_at) + '</td>'
+        + '<td>' + fmtDuration(r.duration_seconds) + '</td>'
+        + '<td class="mono">' + (r.exit_code != null ? escapeHtml(String(r.exit_code)) : '-') + '</td>'
+        + '<td class="artifact-buttons">' + artifactBtns(r) + '</td>'
+        + '</tr>';
+      if (isExpanded) {
+        const left = this._expandedContent ? this._expandedContent.left : '<div class="muted">Loading...</div>';
+        const right = this._expandedContent ? this._expandedContent.right : '<div class="muted"></div>';
+        html += '<tr class="expansion-row"><td colspan="8" class="expansion-cell">'
+          + '<div class="expansion-content" id="exp-content">'
+          + '<div class="expansion-left">' + left + '</div>'
+          + '<div class="expansion-right">' + right + '</div>'
+          + '</div></td></tr>';
+      }
+    }
+    if (!html) {
+      html = '<tr><td colspan="8" class="muted" style="text-align:center;padding:20px">No runs found.</td></tr>';
+    }
+    tbody.innerHTML = html;
+
+    el('runs-prev').disabled = this.offset === 0;
+    el('runs-next').disabled = !this.hasMore;
+    el('runs-page-info').textContent = filtered.length ? (this.offset + 1) + '\u2013' + (this.offset + filtered.length) : '';
+    el('runs-count').textContent = filtered.length + ' run' + (filtered.length !== 1 ? 's' : '');
+
+    document.querySelectorAll('.runs-table th[data-sort]').forEach(th => {
+      const arrow = th.querySelector('.sort-arrow');
+      if (arrow) arrow.remove();
+      if (th.dataset.sort === this.sortCol) {
+        const span = document.createElement('span');
+        span.className = 'sort-arrow';
+        span.textContent = this.sortDesc ? ' \u25BC' : ' \u25B2';
+        th.appendChild(span);
+      }
+    });
+  },
+
+  toggleExpand(runId, projectId) {
+    if (this.expandedRunId === runId) {
+      this.expandedRunId = null;
+      this.expandedProjectId = null;
+      this._expandedContent = null;
+      this.render();
+    } else {
+      this.expandedRunId = runId;
+      this.expandedProjectId = projectId;
+      this._expandedContent = null;
+      this.render();
+      this._loadExpansion();
+    }
+  },
+
+  expandByRunId(projectId, runId) {
+    this.expandedRunId = runId;
+    this.expandedProjectId = projectId;
+    this._expandedContent = null;
+    this.render();
+    this._loadExpansion();
+  },
+
+  async _loadExpansion() {
+    const pid = this.expandedProjectId;
+    const rid = this.expandedRunId;
+    if (!pid || !rid) return;
+
+    try {
+      const [capsuleData, runData] = await Promise.all([
+        api('/api/capsule-preview?' + qs({ project_id: pid, run_id: rid })),
+        api('/api/run?' + qs({ project_id: pid, run_id: rid })),
+      ]);
+
+      let leftHtml = '<h4>Capsule</h4>';
+      if (capsuleData.capsule && capsuleData.capsule.text) {
+        leftHtml += '<div class="markdown">' + renderMarkdown(capsuleData.capsule.text) + '</div>';
+      } else {
+        leftHtml += '<div class="muted">No capsule available.</div>';
+      }
+
+      const threadRuns = runData.thread_runs || [];
+      if (threadRuns.length > 1) {
+        leftHtml += '<h4 style="margin-top:12px">Thread Runs</h4>';
+        leftHtml += '<div class="thread-table-wrap"><table class="thread-table"><thead><tr><th>Status</th><th>Kit.Phase</th><th>Run ID</th><th>Started</th></tr></thead><tbody>';
+        for (const tr of threadRuns) {
+          const trRid = tr.run_id || '';
+          const isCurrent = trRid === rid;
+          leftHtml += '<tr' + (isCurrent ? ' style="background:rgba(14,165,233,0.08)"' : '') + '>'
+            + '<td>' + fmtStatusBadge(tr.status, false) + '</td>'
+            + '<td>' + escapeHtml((tr.kit||'?')+'.'+(tr.phase||'?')) + '</td>'
+            + '<td class="mono" title="' + escapeHtml(trRid) + '">' + escapeHtml(trRid.length > 20 ? trRid.slice(0,20)+'\u2026' : trRid) + '</td>'
+            + '<td>' + fmtRelativeTime(tr.started_at) + '</td>'
+            + '</tr>';
+        }
+        leftHtml += '</tbody></table></div>';
+      }
+
+      const paths = capsuleData.artifact_paths || {};
+      let rightHtml = '<h4>Artifacts</h4><div class="artifact-buttons" style="margin-bottom:8px">';
+      if (paths.capsule) rightHtml += '<button class="exp-artifact-btn" data-pid="'+escapeHtml(pid)+'" data-path="'+escapeHtml(paths.capsule)+'">Capsule</button>';
+      if (paths.manifest) rightHtml += '<button class="exp-artifact-btn" data-pid="'+escapeHtml(pid)+'" data-path="'+escapeHtml(paths.manifest)+'">Manifest</button>';
+      if (paths.log) rightHtml += '<button class="exp-artifact-btn" data-pid="'+escapeHtml(pid)+'" data-path="'+escapeHtml(paths.log)+'">Log</button>';
+      if (paths.events) rightHtml += '<button class="exp-artifact-btn" data-pid="'+escapeHtml(pid)+'" data-path="'+escapeHtml(paths.events)+'">Events</button>';
+      rightHtml += '</div>';
+
+      // Result artifacts from manifest
+      const resultArts = capsuleData.result_artifacts || [];
+      if (resultArts.length) {
+        rightHtml += '<div class="result-artifacts-section"><h5>Result Artifacts</h5>';
+        const groups = {};
+        for (const art of resultArts) {
+          const parts = art.path.split('/results/');
+          const dir = parts.length > 1 ? parts[parts.length - 1].split('/')[0] : '';
+          if (!groups[dir]) groups[dir] = [];
+          groups[dir].push(art);
+        }
+        for (const [dir, arts] of Object.entries(groups)) {
+          if (dir) rightHtml += '<div class="result-group-heading">' + escapeHtml(dir) + '/</div>';
+          rightHtml += '<div class="artifact-buttons" style="margin-bottom:4px">';
+          for (const art of arts) {
+            const fname = art.path.split('/').pop() || art.path;
+            rightHtml += '<button class="exp-artifact-btn" data-pid="'+escapeHtml(pid)+'" data-path="'+escapeHtml(art.path)+'" data-scope="project">' + escapeHtml(fname) + '</button>';
+          }
+          rightHtml += '</div>';
+        }
+        rightHtml += '</div>';
+      }
+
+      rightHtml += '<div class="exp-viewer-meta muted" style="font-size:11px;margin-bottom:4px">Click an artifact to view.</div>';
+      rightHtml += '<div class="exp-viewer"><div class="muted">(no artifact loaded)</div></div>';
+
+      this._expandedContent = { left: leftHtml, right: rightHtml };
+
+      // Update the DOM if still expanded on same run
+      if (this.expandedRunId === rid) {
+        const container = document.getElementById('exp-content');
+        if (container) {
+          container.querySelector('.expansion-left').innerHTML = leftHtml;
+          container.querySelector('.expansion-right').innerHTML = rightHtml;
+        }
+      }
+    } catch (err) {
+      const errHtml = '<div class="muted">Error: ' + escapeHtml(err.message) + '</div>';
+      this._expandedContent = { left: errHtml, right: '' };
+      if (this.expandedRunId === rid) {
+        const container = document.getElementById('exp-content');
+        if (container) container.querySelector('.expansion-left').innerHTML = errHtml;
+      }
+    }
+  },
+
+  async _loadArtifactInViewer(pid, path, scope) {
+    const viewer = document.querySelector('.exp-viewer');
+    const meta = document.querySelector('.exp-viewer-meta');
+    if (!viewer || !meta) return;
+
+    viewer.innerHTML = '<div class="muted">Loading...</div>';
+    try {
+      const params = { project_id: pid, path: path, max_bytes: 220000 };
+      if (scope) params.scope = scope;
+      const payload = await api('/api/artifact?' + qs(params));
+      const trunc = payload.truncated ? ' (truncated)' : '';
+      meta.textContent = payload.path + ' \u2022 ' + payload.kind + ' \u2022 ' + payload.bytes_read + '/' + payload.bytes_total + 'b' + trunc;
+      viewer.innerHTML = renderArtifact(payload);
+
+      // Update cache so re-renders preserve viewer content
+      if (this._expandedContent) {
+        const rightEl = document.querySelector('.expansion-right');
+        if (rightEl) this._expandedContent.right = rightEl.innerHTML;
+      }
+    } catch (err) {
+      viewer.innerHTML = '<div class="muted">Error: ' + escapeHtml(err.message) + '</div>';
+    }
+  },
+
+  sort(col) {
+    if (this.sortCol === col) {
+      this.sortDesc = !this.sortDesc;
+    } else {
+      this.sortCol = col;
+      this.sortDesc = true;
+    }
+    this.offset = 0;
+    this.expandedRunId = null;
+    this._expandedContent = null;
+    this.load();
+  },
+
+  nextPage() {
+    if (this.hasMore) {
+      this.offset += this.limit;
+      this.expandedRunId = null;
+      this._expandedContent = null;
+      this.load();
+    }
+  },
+
+  prevPage() {
+    if (this.offset > 0) {
+      this.offset = Math.max(0, this.offset - this.limit);
+      this.expandedRunId = null;
+      this._expandedContent = null;
+      this.load();
+    }
+  },
+
+  init() {
+    document.querySelectorAll('.runs-table th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => this.sort(th.dataset.sort));
+    });
+
+    el('runs-tbody').addEventListener('click', (e) => {
+      const abtn = e.target.closest('.abtn');
+      if (abtn) {
+        e.stopPropagation();
+        const pid = abtn.dataset.pid;
+        const path = abtn.dataset.path;
+        const row = abtn.closest('.run-row');
+        if (row && this.expandedRunId !== row.dataset.runId) {
+          this.expandedRunId = row.dataset.runId;
+          this.expandedProjectId = row.dataset.projectId;
+          this._expandedContent = null;
+          this.render();
+          this._loadExpansion().then(() => this._loadArtifactInViewer(pid, path));
+        } else {
+          this._loadArtifactInViewer(pid, path);
+        }
+        return;
+      }
+
+      const expBtn = e.target.closest('.exp-artifact-btn');
+      if (expBtn) {
+        e.stopPropagation();
+        this._loadArtifactInViewer(expBtn.dataset.pid, expBtn.dataset.path, expBtn.dataset.scope);
+        return;
+      }
+
+      const row = e.target.closest('.run-row');
+      if (row) {
+        this.toggleExpand(row.dataset.runId, row.dataset.projectId);
+      }
+    });
+
+    el('runs-search').addEventListener('input', (e) => {
+      this.searchFilter = e.target.value;
+      this.render();
+    });
+
+    el('runs-prev').addEventListener('click', () => this.prevPage());
+    el('runs-next').addEventListener('click', () => this.nextPage());
+
+    // Capsule hover preview
+    this._capsuleCache = {};
+    this._hoverTimer = null;
+    const popover = el('capsule-popover');
+    const popBody = el('capsule-popover-body');
+
+    el('runs-tbody').addEventListener('mouseenter', (e) => {
+      const row = e.target.closest('.run-row');
+      if (!row) return;
+      const rid = row.dataset.runId;
+      const pid = row.dataset.projectId;
+      if (!rid || !pid) return;
+      if (this.expandedRunId === rid) return; // already expanded, skip
+
+      clearTimeout(this._hoverTimer);
+      this._hoverTimer = setTimeout(async () => {
+        const rect = row.getBoundingClientRect();
+        popover.style.left = Math.min(rect.left + 40, window.innerWidth - 500) + 'px';
+        popover.style.top = Math.max(rect.bottom + 4, 0) + 'px';
+
+        if (this._capsuleCache[rid]) {
+          popBody.innerHTML = this._capsuleCache[rid];
+          popover.classList.add('visible');
+          return;
+        }
+
+        try {
+          const data = await api('/api/capsule-preview?' + qs({ project_id: pid, run_id: rid }));
+          if (data.capsule && data.capsule.text) {
+            const html = renderMarkdown(data.capsule.text);
+            this._capsuleCache[rid] = html;
+            // Only show if still hovering this row
+            const still = el('runs-tbody').querySelector('.run-row:hover');
+            if (still && still.dataset.runId === rid) {
+              popBody.innerHTML = html;
+              popover.classList.add('visible');
+            }
+          }
+        } catch (_) {}
+      }, 350);
+    }, true);
+
+    el('runs-tbody').addEventListener('mouseleave', (e) => {
+      const row = e.target.closest('.run-row');
+      if (row) {
+        clearTimeout(this._hoverTimer);
+        popover.classList.remove('visible');
+      }
+    }, true);
+  }
+};
+
+/* ─── DAG View ─── */
+const DagView = {
+  async load() {
+    const pid = el('project').value;
+    const data = await api('/api/dag?' + qs({ project_id: pid }));
+    renderDag(data);
+  }
+};
+
+/* ─── Docs View ─── */
+const DocsView = {
+  projectId: '',
+  path: '',
+  scope: 'project',
+
+  async load(force) {
+    const pid = preferredProjectId();
+    this.projectId = pid;
+    const nav = el('docs-nav');
+    const meta = el('docs-meta');
+    const body = el('docs-body');
+
+    if (!pid) {
+      nav.innerHTML = '<div class="muted" style="padding:12px">Select a project.</div>';
+      meta.textContent = 'Select a project to load state files.';
+      body.className = 'docs-body markdown';
+      body.innerHTML = '(no project)';
+      return;
+    }
+
+    const payload = await api('/api/project-docs?' + qs({ project_id: pid }));
+    const docs = Array.isArray(payload.docs) ? payload.docs : [];
+    const existing = docs.filter(d => d && d.exists && d.path);
+
+    if (!existing.length) {
+      nav.innerHTML = '<div class="muted" style="padding:12px">No state files found.</div>';
+      meta.textContent = 'project ' + pid;
+      body.innerHTML = '(no files)';
+      return;
+    }
+
+    const populated = existing.filter(d => d.populated !== false);
+    const unpopulated = existing.filter(d => d.populated === false);
+
+    let navHtml = '';
+    for (const d of populated) {
+      navHtml += '<button class="docs-nav-item" data-path="'+escapeHtml(d.path)+'" data-scope="'+escapeHtml(d.scope||'project')+'" data-populated="true">'+escapeHtml(d.name || d.path)+'</button>';
+    }
+    for (const d of unpopulated) {
+      navHtml += '<button class="docs-nav-item template" data-path="'+escapeHtml(d.path)+'" data-scope="'+escapeHtml(d.scope||'project')+'" data-populated="false">'+escapeHtml(d.name || d.path)+'</button>';
+    }
+    nav.innerHTML = navHtml;
+
+    const mustReset = force || !this.path || !populated.some(d => String(d.path) === this.path);
+    if (mustReset) {
+      if (populated.length) {
+        const preferred = populated.find(d => ['LAST_TOUCH.md','DOMAIN_PRIORS.md','CONSTRUCTION_LOG.md'].includes(String(d.name||''))) || populated[0];
+        this.path = String(preferred.path || '');
+        this.scope = String(preferred.scope || 'project');
+      } else {
+        this.path = '';
+        meta.textContent = 'project ' + pid;
+        body.className = 'docs-body markdown';
+        body.innerHTML = '<p class="muted">State files exist but are not yet populated.</p>';
+        return;
+      }
+    }
+
+    this.highlight();
+    if (this.path) await this.loadContent();
+  },
+
+  highlight() {
+    el('docs-nav').querySelectorAll('.docs-nav-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.path === this.path);
+    });
+  },
+
+  async loadContent() {
+    if (!this.projectId || !this.path) return;
+    const payload = await api('/api/artifact?' + qs({
+      project_id: this.projectId,
+      path: this.path,
+      scope: this.scope,
+      max_bytes: 220000,
+    }));
+    const meta = el('docs-meta');
+    const body = el('docs-body');
+    const trunc = payload.truncated ? ' (truncated)' : '';
+    meta.textContent = payload.path + ' \u2022 ' + payload.bytes_read + '/' + payload.bytes_total + 'b' + trunc;
+    if (payload.kind === 'markdown') {
+      body.className = 'docs-body markdown';
+      body.innerHTML = renderMarkdown(payload.text || '');
+    } else if (payload.kind === 'json' || payload.kind === 'jsonl') {
+      body.className = 'docs-body';
+      body.innerHTML = renderJson(payload.text || '');
+    } else {
+      body.className = 'docs-body text-view';
+      body.textContent = payload.text || '';
+    }
+  },
+
+  _autoRefreshId: null,
+
+  startAutoRefresh() {
+    this.stopAutoRefresh();
+    this._autoRefreshId = setInterval(() => {
+      if (TabManager.active === 'docs' && this.path && this.projectId) {
+        safeRefresh(() => this.loadContent());
+      }
+    }, 15000);
+  },
+
+  stopAutoRefresh() {
+    if (this._autoRefreshId) { clearInterval(this._autoRefreshId); this._autoRefreshId = null; }
+  },
+
+  init() {
+    el('docs-nav').addEventListener('click', async (e) => {
+      const btn = e.target.closest('.docs-nav-item');
+      if (!btn) return;
+      this.path = btn.dataset.path || '';
+      this.scope = btn.dataset.scope || 'project';
+      this.highlight();
+      if (btn.dataset.populated === 'false') {
+        el('docs-meta').textContent = this.path;
+        const body = el('docs-body');
+        body.className = 'docs-body markdown';
+        body.innerHTML = '<p class="muted">Template \u2014 not yet populated</p>';
+        return;
+      }
+      await safeRefresh(() => this.loadContent());
+    });
+    this.startAutoRefresh();
+  }
+};
+
+/* ─── Questions View ─── */
+const QuestionsView = {
+  _loaded: false,
+  _autoRefreshId: null,
+
+  async load() {
+    const pid = preferredProjectId();
+    const meta = el('questions-meta');
+    const body = el('questions-body');
+
+    if (!pid) {
+      meta.textContent = 'Select a project.';
+      body.innerHTML = '<span class="muted">(no project)</span>';
+      return;
+    }
+
+    const paths = ['.kit/QUESTIONS.md', 'QUESTIONS.md'];
+    let payload = null;
+    for (const p of paths) {
+      try {
+        payload = await api('/api/artifact?' + qs({ project_id: pid, path: p, scope: 'project', max_bytes: 220000 }));
+        break;
+      } catch (_) {}
+    }
+
+    if (payload && payload.text) {
+      meta.textContent = payload.path + ' \u2022 ' + payload.bytes_read + '/' + payload.bytes_total + 'b' + (payload.truncated ? ' (truncated)' : '');
+      body.innerHTML = renderMarkdown(payload.text);
+    } else {
+      meta.textContent = 'QUESTIONS.md not found';
+      body.innerHTML = '<span class="muted">No QUESTIONS.md found in project.</span>';
+    }
+    this._loaded = true;
+  },
+
+  startAutoRefresh() {
+    this.stopAutoRefresh();
+    this._autoRefreshId = setInterval(() => {
+      if (TabManager.active === 'questions' && this._loaded) {
+        safeRefresh(() => this.load());
+      }
+    }, 15000);
+  },
+
+  stopAutoRefresh() {
+    if (this._autoRefreshId) { clearInterval(this._autoRefreshId); this._autoRefreshId = null; }
+  },
+
+  init() {
+    this.startAutoRefresh();
+  }
+};
+
+/* ─── Projects + Summary ─── */
+function preferredProjectId() {
+  const v = el('project').value;
+  if (v) return v;
+  const sel = el('project');
+  if (sel.options.length > 1) return sel.options[1].value;
+  return '';
+}
+
+async function loadProjects() {
+  const sel = el('project');
+  sel.innerHTML = '';
+  const all = document.createElement('option');
+  all.value = ''; all.textContent = 'all projects';
+  sel.appendChild(all);
+  const payload = await api('/api/projects');
+  for (const p of payload.projects) {
+    const opt = document.createElement('option');
+    opt.value = p.project_id;
+    opt.textContent = p.label + ' [' + p.project_id + ']';
+    sel.appendChild(opt);
+  }
+}
+
+function card(label, value, klass) {
+  return '<div class="card"><div class="k">'+label+'</div><div class="v '+(klass||'')+'">'+String(value??0)+'</div></div>';
+}
+
+async function loadSummary() {
+  const pid = el('project').value;
+  const s = await api('/api/summary?' + qs({ project_id: pid }));
+  const r = s.summary.runs || {};
+  const q = s.summary.requests || {};
+  el('cards').innerHTML = [
+    card('runs', r.total_runs||0),
+    card('ok', r.ok_runs||0, 'ok'),
+    card('fail', r.failed_runs||0, 'bad'),
+    card('active', r.running_runs||0, 'warn'),
+    card('reqs', q.total_requests||0),
+    card('blocked', q.blocked_requests||0, 'warn'),
+  ].join('');
+}
+
+/* ─── Safe refresh ─── */
+async function safeRefresh(fn) {
+  try { await fn(); } catch (err) {
+    el('stamp').textContent = 'error: ' + (err.message || err);
+    console.error(err);
+  }
+}
+
+/* ─── Theme ─── */
+const Theme = {
+  _key: 'orch-dashboard-theme',
+  init() {
+    const saved = localStorage.getItem(this._key) || 'dark';
+    this.apply(saved);
+    el('theme-toggle').addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      this.apply(next);
+      localStorage.setItem(this._key, next);
+    });
+  },
+  apply(theme) {
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+      el('theme-toggle').textContent = '\u263E'; // moon
+      el('theme-toggle').title = 'Switch to dark theme';
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      el('theme-toggle').textContent = '\u2600'; // sun
+      el('theme-toggle').title = 'Switch to light theme';
+    }
+  }
+};
+
+/* ─── Boot ─── */
+(async function boot() {
+  Theme.init();
+  TabManager.init();
+  RunsView.init();
+  DocsView.init();
+  QuestionsView.init();
+
+  await safeRefresh(async () => {
+    await loadProjects();
+    await Promise.all([loadSummary(), RunsView.load()]);
+    el('stamp').textContent = 'updated ' + new Date().toLocaleTimeString();
+  });
+
+  // Auto-refresh: poll summary, reload runs if active runs detected
+  let _prevRunning = 0;
+  setInterval(async () => {
+    try {
+      const pid = el('project').value;
+      const s = await api('/api/summary?' + qs({ project_id: pid }));
+      const running = s.summary?.runs?.running_runs || 0;
+      if (running > 0 || _prevRunning > 0) {
+        await loadSummary();
+        if (TabManager.active === 'runs') await RunsView.load();
+        if (TabManager.active === 'dag' && TabManager.dagLoaded) DagView.load();
+        el('stamp').textContent = 'updated ' + new Date().toLocaleTimeString();
+      }
+      _prevRunning = running;
+    } catch (_) {}
+  }, 5000);
+
+  // Live duration counter: tick elapsed time for running runs every second
+  setInterval(() => {
+    if (TabManager.active !== 'runs') return;
+    const rows = document.querySelectorAll('.run-row');
+    rows.forEach(row => {
+      const badge = row.querySelector('.badge-running');
+      if (!badge) return;
+      const cells = row.querySelectorAll('td');
+      const startedTd = cells[4]; // Started column
+      const durationTd = cells[5]; // Duration column
+      if (!startedTd || !durationTd) return;
+      const iso = startedTd.getAttribute('title');
+      if (!iso) return;
+      const elapsed = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+      if (elapsed >= 0) durationTd.textContent = fmtDuration(elapsed);
+    });
+  }, 1000);
+
+  // Auto-reindex: periodically POST /api/refresh so stale "running" entries get updated
+  let _lastReindex = Date.now();
+  setInterval(async () => {
+    try {
+      const pid = el('project').value;
+      await api('/api/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pid ? { project_id: pid } : {}),
+      });
+      await Promise.all([loadSummary(), RunsView.load()]);
+      if (TabManager.active === 'dag' && TabManager.dagLoaded) DagView.load();
+      if (TabManager.active === 'docs' && TabManager.docsLoaded) DocsView.load();
+      el('stamp').textContent = 'reindexed ' + new Date().toLocaleTimeString();
+      _lastReindex = Date.now();
+    } catch (_) {}
+  }, 30000);
+
+  // Header event listeners
+  el('refresh-index').addEventListener('click', async () => {
+    await safeRefresh(async () => {
+      const pid = el('project').value;
+      await api('/api/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pid ? { project_id: pid } : {}),
+      });
+      await Promise.all([loadSummary(), RunsView.load()]);
+      if (TabManager.dagLoaded) DagView.load();
+      if (TabManager.docsLoaded) DocsView.load();
+      el('stamp').textContent = 'updated ' + new Date().toLocaleTimeString();
+    });
+  });
+
+  el('reload').addEventListener('click', () => safeRefresh(async () => {
+    await Promise.all([loadSummary(), RunsView.load()]);
+    el('stamp').textContent = 'updated ' + new Date().toLocaleTimeString();
+  }));
+
+  el('project').addEventListener('change', async () => {
+    RunsView.expandedRunId = null;
+    RunsView._expandedContent = null;
+    RunsView.offset = 0;
+    DocsView.path = '';
+    TabManager.dagLoaded = false;
+    TabManager.docsLoaded = false;
+    TabManager.questionsLoaded = false;
+    QuestionsView._loaded = false;
+    await safeRefresh(async () => {
+      await Promise.all([loadSummary(), RunsView.load()]);
+      if (TabManager.active === 'dag') { TabManager.dagLoaded = true; DagView.load(); }
+      if (TabManager.active === 'docs') { TabManager.docsLoaded = true; DocsView.load(true); }
+      if (TabManager.active === 'questions') { TabManager.questionsLoaded = true; QuestionsView.load(); }
+      el('stamp').textContent = 'updated ' + new Date().toLocaleTimeString();
+    });
+  });
+
+  el('status').addEventListener('change', () => {
+    RunsView.offset = 0;
+    RunsView.expandedRunId = null;
+    RunsView._expandedContent = null;
+    safeRefresh(() => RunsView.load());
+  });
+
+  el('kit').addEventListener('change', () => {
+    RunsView.offset = 0;
+    RunsView.expandedRunId = null;
+    RunsView._expandedContent = null;
+    safeRefresh(() => RunsView.load());
+  });
+})();
+</script>
+</body>
+</html>

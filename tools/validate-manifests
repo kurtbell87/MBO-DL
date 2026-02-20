@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+"""Validate run manifests against v1 invariants."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+from pathlib import Path
+
+SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
+
+
+class ValidationError(Exception):
+    pass
+
+
+def expect(condition: bool, message: str) -> None:
+    if not condition:
+        raise ValidationError(message)
+
+
+def collect_manifests(paths: list[str]) -> list[Path]:
+    found: set[Path] = set()
+    for raw in paths:
+        p = Path(raw)
+        if p.is_file() and p.suffix.lower() == ".json":
+            found.add(p.resolve())
+            continue
+        if p.is_dir():
+            for manifest in p.rglob("manifests/*.json"):
+                if manifest.is_file():
+                    found.add(manifest.resolve())
+    return sorted(found)
+
+
+def validate_manifest(path: Path, check_files: bool) -> None:
+    data = json.loads(path.read_text(encoding="utf-8"))
+
+    expect(isinstance(data, dict), "top-level must be object")
+
+    metadata = data.get("metadata")
+    expect(isinstance(metadata, dict), "metadata must be object")
+    for key in ("run_id", "kit", "phase", "started_at", "finished_at", "exit_code", "command", "cwd"):
+        expect(key in metadata, f"metadata missing: {key}")
+
+    expect(metadata["kit"] in {"tdd", "research", "math"}, "metadata.kit invalid")
+    expect(isinstance(metadata["phase"], str) and metadata["phase"], "metadata.phase invalid")
+    expect(isinstance(metadata["exit_code"], int), "metadata.exit_code must be integer")
+    expect(isinstance(metadata["command"], list) and all(isinstance(x, str) for x in metadata["command"]), "metadata.command must be list[str]")
+
+    artifact_index = data.get("artifact_index")
+    expect(isinstance(artifact_index, dict), "artifact_index must be object")
+
+    tracked = artifact_index.get("tracked")
+    omitted = artifact_index.get("omitted")
+    limits = artifact_index.get("limits")
+
+    expect(isinstance(tracked, list), "artifact_index.tracked must be list")
+    expect(isinstance(omitted, dict), "artifact_index.omitted must be object")
+    expect(isinstance(limits, dict), "artifact_index.limits must be object")
+
+    expect(isinstance(omitted.get("files"), int) and omitted["files"] >= 0, "artifact_index.omitted.files invalid")
+    expect(isinstance(omitted.get("bytes"), int) and omitted["bytes"] >= 0, "artifact_index.omitted.bytes invalid")
+    expect(isinstance(limits.get("max_files"), int) and limits["max_files"] >= 1, "artifact_index.limits.max_files invalid")
+    expect(isinstance(limits.get("max_total_bytes"), int) and limits["max_total_bytes"] >= 1, "artifact_index.limits.max_total_bytes invalid")
+
+    for idx, item in enumerate(tracked):
+        expect(isinstance(item, dict), f"tracked[{idx}] must be object")
+        for key in ("path", "kind", "bytes", "sha256"):
+            expect(key in item, f"tracked[{idx}] missing {key}")
+        expect(isinstance(item["path"], str) and item["path"], f"tracked[{idx}].path invalid")
+        expect(isinstance(item["kind"], str) and item["kind"], f"tracked[{idx}].kind invalid")
+        expect(isinstance(item["bytes"], int) and item["bytes"] >= 0, f"tracked[{idx}].bytes invalid")
+        expect(isinstance(item["sha256"], str) and SHA256_RE.match(item["sha256"]) is not None, f"tracked[{idx}].sha256 invalid")
+
+    truth_pointers = data.get("truth_pointers")
+    expect(isinstance(truth_pointers, list), "truth_pointers must be list")
+    expect(all(isinstance(x, str) for x in truth_pointers), "truth_pointers entries must be strings")
+
+    log_pointers = data.get("log_pointers")
+    expect(isinstance(log_pointers, list), "log_pointers must be list")
+    for idx, item in enumerate(log_pointers):
+        expect(isinstance(item, dict), f"log_pointers[{idx}] must be object")
+        for key in ("path", "kind", "hint"):
+            expect(isinstance(item.get(key), str) and item[key], f"log_pointers[{idx}].{key} invalid")
+
+    capsule_path = data.get("capsule_path")
+    expect(isinstance(capsule_path, str) and capsule_path, "capsule_path invalid")
+
+    if check_files:
+        root = Path.cwd()
+        for item in log_pointers:
+            p = root / item["path"]
+            expect(p.exists(), f"missing log pointer file: {item['path']}")
+        cp = root / capsule_path
+        expect(cp.exists(), f"missing capsule pointer file: {capsule_path}")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(prog="tools/validate-manifests", add_help=True)
+    parser.add_argument("paths", nargs="*", default=["runs"], help="Files/directories to scan")
+    parser.add_argument("--check-files", action="store_true", help="Verify pointer files exist")
+    args = parser.parse_args()
+
+    manifests = collect_manifests(args.paths)
+    if not manifests:
+        print("No manifest files found.")
+        return 0
+
+    failures = 0
+    for manifest in manifests:
+        try:
+            validate_manifest(manifest, check_files=args.check_files)
+            print(f"OK   {manifest}")
+        except Exception as exc:
+            failures += 1
+            print(f"FAIL {manifest}")
+            print(f"  - {exc}")
+
+    if failures:
+        print(f"Manifest validation failed: {failures} file(s).")
+        return 1
+
+    print(f"Manifest validation passed: {len(manifests)} file(s).")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

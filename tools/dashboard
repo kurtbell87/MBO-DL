@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+"""Global run dashboard for orchestration-kit clones.
+
+Thin wrapper — all logic lives in the ``dashboard`` package.
+This file re-exports public symbols so that ``tests/test_dashboard.py``
+(which loads this file via SourceFileLoader) continues to work.
+
+Usage:
+  tools/dashboard register [--orchestration-kit-root PATH] [--project-root PATH] [--label LABEL]
+  tools/dashboard unregister --project-id ID
+  tools/dashboard projects
+  tools/dashboard index [--project-id ID]
+  tools/dashboard ensure-service [--host HOST] [--port PORT] [--wait-seconds N]
+  tools/dashboard service-status [--host HOST] [--port PORT]
+  tools/dashboard stop-service [--wait-seconds N]
+  tools/dashboard serve [--host HOST] [--port PORT]
+"""
+from __future__ import annotations
+
+import os
+import sys
+from pathlib import Path
+
+# Ensure the repo root is on sys.path so ``import dashboard`` resolves.
+_REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Re-export every public symbol the test suite and other consumers rely on.
+from dashboard import (  # noqa: E402, F401
+    REPO_ROOT,
+    now_iso,
+    dashboard_home,
+    ensure_dashboard_home,
+    registry_path,
+    db_path,
+    service_state_path,
+    service_log_path,
+    rel_to,
+    coerce_path,
+    current_orchestration_kit_root,
+    current_project_root,
+    project_id_for,
+    load_registry,
+    save_registry,
+    upsert_registry_project,
+    remove_registry_project,
+    ensure_schema,
+    parse_jsonl,
+    resolve_pointer,
+    parse_manifest_metadata,
+    parse_run,
+    load_service_state,
+    save_service_state,
+    pid_alive,
+    healthcheck,
+    index_projects,
+    prepare_projects,
+    maybe_seed_registry,
+    upsert_single_run,
+    load_dashboard_rows,
+    load_one_row,
+    summary_payload,
+    graph_payload,
+    parse_int,
+    list_runs_payload,
+    run_detail_payload,
+    artifact_payload,
+    project_docs_payload,
+    dag_payload,
+    DashboardHandler,
+    DashboardServer,
+    cmd_register,
+    cmd_unregister,
+    cmd_projects,
+    cmd_index,
+    cmd_ensure_service,
+    cmd_service_status,
+    cmd_stop_service,
+    cmd_serve,
+    build_parser,
+    main,
+)
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))
