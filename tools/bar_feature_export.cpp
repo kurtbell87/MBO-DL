@@ -15,6 +15,11 @@
 #include <databento/dbn_file_store.hpp>
 #include <databento/record.hpp>
 
+// Arrow/Parquet for Parquet output
+#include <arrow/api.h>
+#include <arrow/io/file.h>
+#include <parquet/arrow/writer.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -22,6 +27,7 @@
 #include <deque>
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <map>
 #include <string>
@@ -307,8 +313,161 @@ std::string format_float(float val) {
     if (std::isnan(val)) return "NaN";
     if (std::isinf(val)) return "Inf";
     char buf[64];
-    std::snprintf(buf, sizeof(buf), "%.8g", static_cast<double>(val));
+    std::snprintf(buf, sizeof(buf), "%.17g", static_cast<double>(val));
     return buf;
+}
+
+// ===========================================================================
+// Parquet Writer
+// ===========================================================================
+void write_parquet_file(
+    const std::string& path,
+    const std::vector<int64_t>& timestamps,
+    const std::vector<std::string>& bar_types,
+    const std::vector<std::string>& bar_params,
+    const std::vector<int64_t>& days,
+    const std::vector<bool>& warmups,
+    const std::vector<int64_t>& bar_indices,
+    const std::vector<std::vector<double>>& double_cols,
+    const std::vector<std::string>& tb_exit_types)
+{
+    int64_t num_rows = static_cast<int64_t>(timestamps.size());
+
+    // Build schema: 6 metadata + 141 DOUBLE + 1 STRING (tb_exit_type) + 1 DOUBLE = 149 total
+    // double_cols contains 142 columns: 62+40+33+4+1+1 before tb_exit_type, then 1 after.
+    // Layout: double_cols[0..140] = cols before tb_exit_type, double_cols[141] = tb_bars_held.
+    arrow::FieldVector fields;
+    fields.push_back(arrow::field("timestamp", arrow::int64()));
+    fields.push_back(arrow::field("bar_type", arrow::utf8()));
+    fields.push_back(arrow::field("bar_param", arrow::utf8()));
+    fields.push_back(arrow::field("day", arrow::int64()));
+    fields.push_back(arrow::field("is_warmup", arrow::boolean()));
+    fields.push_back(arrow::field("bar_index", arrow::int64()));
+
+    // Track A features (62)
+    auto feature_names = BarFeatureRow::feature_names();
+    for (const auto& name : feature_names)
+        fields.push_back(arrow::field(name, arrow::float64()));
+
+    // Book snapshot (40)
+    for (int i = 0; i < 40; ++i)
+        fields.push_back(arrow::field("book_snap_" + std::to_string(i), arrow::float64()));
+
+    // Message summary (33)
+    for (size_t i = 0; i < MessageSummary::SUMMARY_SIZE; ++i)
+        fields.push_back(arrow::field("msg_summary_" + std::to_string(i), arrow::float64()));
+
+    // Forward returns (4)
+    fields.push_back(arrow::field("return_1", arrow::float64()));
+    fields.push_back(arrow::field("return_5", arrow::float64()));
+    fields.push_back(arrow::field("return_20", arrow::float64()));
+    fields.push_back(arrow::field("return_100", arrow::float64()));
+
+    // Event count (1)
+    fields.push_back(arrow::field("mbo_event_count", arrow::float64()));
+
+    // Triple barrier labels (3): tb_label=DOUBLE, tb_exit_type=STRING, tb_bars_held=DOUBLE
+    fields.push_back(arrow::field("tb_label", arrow::float64()));
+    fields.push_back(arrow::field("tb_exit_type", arrow::utf8()));
+    fields.push_back(arrow::field("tb_bars_held", arrow::float64()));
+
+    auto schema = arrow::schema(fields);
+
+    // Build arrays
+    std::vector<std::shared_ptr<arrow::Array>> arrays;
+    std::shared_ptr<arrow::Array> arr;
+
+    // timestamp (INT64)
+    {
+        arrow::Int64Builder b;
+        (void)b.AppendValues(timestamps);
+        (void)b.Finish(&arr);
+        arrays.push_back(arr);
+    }
+    // bar_type (STRING)
+    {
+        arrow::StringBuilder b;
+        for (const auto& v : bar_types) (void)b.Append(v);
+        (void)b.Finish(&arr);
+        arrays.push_back(arr);
+    }
+    // bar_param (STRING)
+    {
+        arrow::StringBuilder b;
+        for (const auto& v : bar_params) (void)b.Append(v);
+        (void)b.Finish(&arr);
+        arrays.push_back(arr);
+    }
+    // day (INT64)
+    {
+        arrow::Int64Builder b;
+        (void)b.AppendValues(days);
+        (void)b.Finish(&arr);
+        arrays.push_back(arr);
+    }
+    // is_warmup (BOOLEAN)
+    {
+        arrow::BooleanBuilder b;
+        for (bool v : warmups) (void)b.Append(v);
+        (void)b.Finish(&arr);
+        arrays.push_back(arr);
+    }
+    // bar_index (INT64)
+    {
+        arrow::Int64Builder b;
+        (void)b.AppendValues(bar_indices);
+        (void)b.Finish(&arr);
+        arrays.push_back(arr);
+    }
+
+    // DOUBLE columns before tb_exit_type (141: 62+40+33+4+1+1 = 141)
+    constexpr size_t TB_EXIT_TYPE_SPLIT = 141;  // double_cols[0..140] before, [141] after
+    for (size_t c = 0; c < TB_EXIT_TYPE_SPLIT; ++c) {
+        arrow::DoubleBuilder b;
+        (void)b.AppendValues(double_cols[c].data(),
+                              static_cast<int64_t>(double_cols[c].size()));
+        (void)b.Finish(&arr);
+        arrays.push_back(arr);
+    }
+
+    // tb_exit_type (STRING)
+    {
+        arrow::StringBuilder b;
+        for (const auto& v : tb_exit_types) (void)b.Append(v);
+        (void)b.Finish(&arr);
+        arrays.push_back(arr);
+    }
+
+    // tb_bars_held (DOUBLE) — the last double column
+    {
+        arrow::DoubleBuilder b;
+        (void)b.AppendValues(double_cols[TB_EXIT_TYPE_SPLIT].data(),
+                              static_cast<int64_t>(double_cols[TB_EXIT_TYPE_SPLIT].size()));
+        (void)b.Finish(&arr);
+        arrays.push_back(arr);
+    }
+
+    auto table = arrow::Table::Make(schema, arrays);
+
+    // Write to Parquet with ZSTD compression
+    auto outfile_result = arrow::io::FileOutputStream::Open(path);
+    if (!outfile_result.ok()) {
+        std::cerr << "Cannot open Parquet output file: " << path << "\n";
+        return;
+    }
+    auto outfile = *outfile_result;
+
+    auto props = parquet::WriterProperties::Builder()
+        .compression(parquet::Compression::ZSTD)
+        ->build();
+
+    auto status = parquet::arrow::WriteTable(
+        *table, arrow::default_memory_pool(), outfile,
+        /*chunk_size=*/num_rows, props);
+
+    if (!status.ok()) {
+        std::cerr << "Failed to write Parquet: " << status.ToString() << "\n";
+    }
 }
 
 // ===========================================================================
@@ -316,11 +475,11 @@ std::string format_float(float val) {
 // ===========================================================================
 void print_usage(const char* prog) {
     std::cerr << "Usage: " << prog
-              << " --bar-type <type> --bar-param <threshold> --output <csv_path>\n"
+              << " --bar-type <type> --bar-param <threshold> --output <path>\n"
               << "\n"
               << "  --bar-type   Bar type: time, volume, dollar, tick\n"
               << "  --bar-param  Bar threshold (e.g., 5.0 for time_5s)\n"
-              << "  --output     Output CSV file path\n";
+              << "  --output     Output file path (.csv or .parquet)\n";
 }
 
 // ===========================================================================
@@ -370,24 +529,52 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Open output CSV
-    std::ofstream csv(output_path);
-    if (!csv.is_open()) {
-        std::cerr << "Cannot open output file: " << output_path << "\n";
-        return 1;
+    // Detect output format by file extension
+    bool use_parquet = false;
+    {
+        std::string ext = std::filesystem::path(output_path).extension().string();
+        if (ext == ".parquet") {
+            use_parquet = true;
+        } else if (ext != ".csv") {
+            std::cerr << "Unsupported output format. Use .csv or .parquet extension.\n";
+            return 1;
+        }
     }
 
-    // Write header: 6 metadata + 62 Track A + 40 book_snap + 33 msg_summary + 4 returns + 1 event count + 3 tb labels = 149
-    csv << "timestamp,bar_type,bar_param,day,is_warmup,bar_index";
+    // CSV setup (only if CSV output)
+    std::ofstream csv;
+    if (!use_parquet) {
+        csv.open(output_path);
+        if (!csv.is_open()) {
+            std::cerr << "Cannot open output file: " << output_path << "\n";
+            return 1;
+        }
+        csv << std::setprecision(17);
 
-    auto feature_names = BarFeatureRow::feature_names();
-    for (const auto& name : feature_names) csv << "," << name;
-    for (int i = 0; i < 40; ++i) csv << ",book_snap_" << i;
-    for (size_t i = 0; i < MessageSummary::SUMMARY_SIZE; ++i) csv << ",msg_summary_" << i;
-    csv << ",return_1,return_5,return_20,return_100";
-    csv << ",mbo_event_count";
-    csv << ",tb_label,tb_exit_type,tb_bars_held";
-    csv << "\n";
+        // Write header: 6 metadata + 62 Track A + 40 book_snap + 33 msg_summary + 4 returns + 1 event count + 3 tb labels = 149
+        csv << "timestamp,bar_type,bar_param,day,is_warmup,bar_index";
+        auto feature_names = BarFeatureRow::feature_names();
+        for (const auto& name : feature_names) csv << "," << name;
+        for (int i = 0; i < 40; ++i) csv << ",book_snap_" << i;
+        for (size_t i = 0; i < MessageSummary::SUMMARY_SIZE; ++i) csv << ",msg_summary_" << i;
+        csv << ",return_1,return_5,return_20,return_100";
+        csv << ",mbo_event_count";
+        csv << ",tb_label,tb_exit_type,tb_bars_held";
+        csv << "\n";
+    }
+
+    // Parquet data collectors (only if Parquet output)
+    // 142 DOUBLE columns: 62 Track A + 40 book + 33 msg + 4 returns + 1 event + 1 tb_label + 1 tb_bars_held
+    // tb_exit_type is stored separately as STRING
+    constexpr int NUM_DOUBLE_COLS = 142;
+    std::vector<int64_t> pq_timestamps;
+    std::vector<std::string> pq_bar_types;
+    std::vector<std::string> pq_bar_params;
+    std::vector<int64_t> pq_days;
+    std::vector<bool> pq_warmups;
+    std::vector<int64_t> pq_bar_indices;
+    std::vector<std::vector<double>> pq_double_cols(NUM_DOUBLE_COLS);
+    std::vector<std::string> pq_tb_exit_types;
 
     int total_bars = 0;
 
@@ -491,7 +678,7 @@ int main(int argc, char* argv[]) {
         BarFeatureComputer computer(0.25f);
         auto feature_rows = computer.compute_all(bars);
 
-        // Write to CSV
+        // Write bars to CSV or collect for Parquet
         for (size_t i = 0; i < bars.size(); ++i) {
             bool is_warmup = (static_cast<int>(i) < WARMUP_BARS);
             feature_rows[i].is_warmup = is_warmup;
@@ -507,68 +694,9 @@ int main(int argc, char* argv[]) {
             const auto& row = feature_rows[i];
             const auto& bar = bars[i];
 
-            // Metadata
-            csv << row.timestamp;
-            csv << "," << bar_type << "," << bar_param_str << "," << date << ",false," << i;
-
-            // Track A features (62)
-            csv << "," << row.book_imbalance_1;
-            csv << "," << row.book_imbalance_3;
-            csv << "," << row.book_imbalance_5;
-            csv << "," << row.book_imbalance_10;
-            csv << "," << row.weighted_imbalance;
-            csv << "," << row.spread;
-            for (int j = 0; j < 10; ++j) csv << "," << row.bid_depth_profile[j];
-            for (int j = 0; j < 10; ++j) csv << "," << row.ask_depth_profile[j];
-            csv << "," << row.depth_concentration_bid;
-            csv << "," << row.depth_concentration_ask;
-            csv << "," << row.book_slope_bid;
-            csv << "," << row.book_slope_ask;
-            csv << "," << row.level_count_bid;
-            csv << "," << row.level_count_ask;
-
-            csv << "," << row.net_volume;
-            csv << "," << row.volume_imbalance;
-            csv << "," << row.trade_count;
-            csv << "," << row.avg_trade_size;
-            csv << "," << row.large_trade_count;
-            csv << "," << row.vwap_distance;
-            csv << "," << format_float(row.kyle_lambda);
-
-            csv << "," << format_float(row.return_1);
-            csv << "," << format_float(row.return_5);
-            csv << "," << format_float(row.return_20);
-            csv << "," << format_float(row.volatility_20);
-            csv << "," << format_float(row.volatility_50);
-            csv << "," << row.momentum;
-            csv << "," << format_float(row.high_low_range_20);
-            csv << "," << format_float(row.high_low_range_50);
-            csv << "," << row.close_position;
-
-            csv << "," << row.volume_surprise;
-            csv << "," << row.duration_surprise;
-            csv << "," << row.acceleration;
-            csv << "," << format_float(row.vol_price_corr);
-
-            csv << "," << row.time_sin;
-            csv << "," << row.time_cos;
-            csv << "," << row.minutes_since_open;
-            csv << "," << row.minutes_to_close;
-            csv << "," << row.session_volume_frac;
-
-            csv << "," << row.cancel_add_ratio;
-            csv << "," << row.message_rate;
-            csv << "," << row.modify_fraction;
-            csv << "," << row.order_flow_toxicity;
-            csv << "," << row.cancel_concentration;
-
-            // Book snapshot (40)
+            // Compute derived data needed for both paths
             auto book_flat = BookSnapshotExport::flatten(bar);
-            for (int j = 0; j < 40; ++j) {
-                csv << "," << format_float(book_flat[j]);
-            }
 
-            // Message summary (33) — compute from actual MBO events
             std::vector<float> msg_summary(MessageSummary::SUMMARY_SIZE, 0.0f);
             uint32_t n_events = bar.mbo_event_end - bar.mbo_event_begin;
             if (n_events > 0) {
@@ -614,38 +742,152 @@ int main(int argc, char* argv[]) {
 
                 float decile_duration = duration / 10.0f;
                 float max_rate = 0.0f;
-                for (int d = 0; d < 10; ++d) {
-                    float decile_total = msg_summary[d*3] + msg_summary[d*3+1] + msg_summary[d*3+2];
+                for (int dc = 0; dc < 10; ++dc) {
+                    float decile_total = msg_summary[dc*3] + msg_summary[dc*3+1] + msg_summary[dc*3+2];
                     float rate = decile_total / (decile_duration + EPS);
                     max_rate = std::max(max_rate, rate);
                 }
                 msg_summary[32] = max_rate;
             }
-            for (size_t j = 0; j < MessageSummary::SUMMARY_SIZE; ++j) {
-                csv << "," << format_float(msg_summary[j]);
-            }
 
-            // Forward returns
-            csv << "," << format_float(row.fwd_return_1);
-            csv << "," << format_float(row.fwd_return_5);
-            csv << "," << format_float(row.fwd_return_20);
-            csv << "," << format_float(row.fwd_return_100);
-
-            // Event count
-            csv << "," << n_events;
-
-            // Triple barrier label
             auto tb = compute_tb_label(bars, static_cast<int>(i), tb_cfg);
-            csv << "," << tb.label << "," << tb.exit_type << "," << tb.bars_held;
 
-            csv << "\n";
+            if (use_parquet) {
+                // Collect metadata
+                pq_timestamps.push_back(static_cast<int64_t>(row.timestamp));
+                pq_bar_types.push_back(bar_type);
+                pq_bar_params.push_back(bar_param_str);
+                pq_days.push_back(static_cast<int64_t>(date));
+                pq_warmups.push_back(false);
+                pq_bar_indices.push_back(static_cast<int64_t>(i));
+
+                // Collect 143 DOUBLE columns
+                int d = 0;
+
+                // Track A features (62) — use get_feature_value for consistency
+                auto fnames = BarFeatureRow::feature_names();
+                for (const auto& name : fnames) {
+                    pq_double_cols[d++].push_back(
+                        static_cast<double>(row.get_feature_value(name)));
+                }
+
+                // Book snapshot (40)
+                for (int j = 0; j < 40; ++j) {
+                    pq_double_cols[d++].push_back(static_cast<double>(book_flat[j]));
+                }
+
+                // Message summary (33)
+                for (size_t j = 0; j < MessageSummary::SUMMARY_SIZE; ++j) {
+                    pq_double_cols[d++].push_back(static_cast<double>(msg_summary[j]));
+                }
+
+                // Forward returns (4)
+                pq_double_cols[d++].push_back(static_cast<double>(row.fwd_return_1));
+                pq_double_cols[d++].push_back(static_cast<double>(row.fwd_return_5));
+                pq_double_cols[d++].push_back(static_cast<double>(row.fwd_return_20));
+                pq_double_cols[d++].push_back(static_cast<double>(row.fwd_return_100));
+
+                // Event count (1)
+                pq_double_cols[d++].push_back(static_cast<double>(n_events));
+
+                // Triple barrier labels: tb_label (DOUBLE), tb_exit_type (STRING), tb_bars_held (DOUBLE)
+                pq_double_cols[d++].push_back(static_cast<double>(tb.label));
+                pq_tb_exit_types.push_back(tb.exit_type);
+                pq_double_cols[d++].push_back(static_cast<double>(tb.bars_held));
+            } else {
+                // Write CSV row
+                csv << row.timestamp;
+                csv << "," << bar_type << "," << bar_param_str << "," << date << ",false," << i;
+
+                // Track A features (62)
+                csv << "," << row.book_imbalance_1;
+                csv << "," << row.book_imbalance_3;
+                csv << "," << row.book_imbalance_5;
+                csv << "," << row.book_imbalance_10;
+                csv << "," << row.weighted_imbalance;
+                csv << "," << row.spread;
+                for (int j = 0; j < 10; ++j) csv << "," << row.bid_depth_profile[j];
+                for (int j = 0; j < 10; ++j) csv << "," << row.ask_depth_profile[j];
+                csv << "," << row.depth_concentration_bid;
+                csv << "," << row.depth_concentration_ask;
+                csv << "," << row.book_slope_bid;
+                csv << "," << row.book_slope_ask;
+                csv << "," << row.level_count_bid;
+                csv << "," << row.level_count_ask;
+
+                csv << "," << row.net_volume;
+                csv << "," << row.volume_imbalance;
+                csv << "," << row.trade_count;
+                csv << "," << row.avg_trade_size;
+                csv << "," << row.large_trade_count;
+                csv << "," << row.vwap_distance;
+                csv << "," << format_float(row.kyle_lambda);
+
+                csv << "," << format_float(row.return_1);
+                csv << "," << format_float(row.return_5);
+                csv << "," << format_float(row.return_20);
+                csv << "," << format_float(row.volatility_20);
+                csv << "," << format_float(row.volatility_50);
+                csv << "," << row.momentum;
+                csv << "," << format_float(row.high_low_range_20);
+                csv << "," << format_float(row.high_low_range_50);
+                csv << "," << row.close_position;
+
+                csv << "," << row.volume_surprise;
+                csv << "," << row.duration_surprise;
+                csv << "," << row.acceleration;
+                csv << "," << format_float(row.vol_price_corr);
+
+                csv << "," << row.time_sin;
+                csv << "," << row.time_cos;
+                csv << "," << row.minutes_since_open;
+                csv << "," << row.minutes_to_close;
+                csv << "," << row.session_volume_frac;
+
+                csv << "," << row.cancel_add_ratio;
+                csv << "," << row.message_rate;
+                csv << "," << row.modify_fraction;
+                csv << "," << row.order_flow_toxicity;
+                csv << "," << row.cancel_concentration;
+
+                // Book snapshot (40)
+                for (int j = 0; j < 40; ++j) {
+                    csv << "," << format_float(book_flat[j]);
+                }
+
+                // Message summary (33)
+                for (size_t j = 0; j < MessageSummary::SUMMARY_SIZE; ++j) {
+                    csv << "," << format_float(msg_summary[j]);
+                }
+
+                // Forward returns
+                csv << "," << format_float(row.fwd_return_1);
+                csv << "," << format_float(row.fwd_return_5);
+                csv << "," << format_float(row.fwd_return_20);
+                csv << "," << format_float(row.fwd_return_100);
+
+                // Event count
+                csv << "," << n_events;
+
+                // Triple barrier label
+                csv << "," << tb.label << "," << tb.exit_type << "," << tb.bars_held;
+
+                csv << "\n";
+            }
             total_bars++;
         }
 
         std::cout << "exported\n";
     }
 
-    csv.close();
+    // Finalize output
+    if (use_parquet) {
+        write_parquet_file(output_path, pq_timestamps, pq_bar_types, pq_bar_params,
+                           pq_days, pq_warmups, pq_bar_indices, pq_double_cols,
+                           pq_tb_exit_types);
+    } else {
+        csv.close();
+    }
 
     std::cout << "\nTotal bars exported: " << total_bars << "\n";
     std::cout << "Output: " << output_path << "\n";

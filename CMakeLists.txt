@@ -107,6 +107,11 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(USE_OPENMP OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(xgboost)
 
+# ---------- Apache Arrow C++ (for Parquet output) ----------
+# System-installed via: brew install apache-arrow
+find_package(Arrow REQUIRED)
+find_package(Parquet REQUIRED)
+
 # ---------- Tests requiring XGBoost ----------
 set(XGBOOST_TEST_TARGETS
     gbt_model_test
@@ -171,7 +176,13 @@ add_executable(oracle_expectancy tools/oracle_expectancy.cpp)
 target_include_directories(oracle_expectancy PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(oracle_expectancy PRIVATE databento::databento)
 
-# ---------- Bar Feature Export ----------
+# ---------- Bar Feature Export (with Arrow/Parquet) ----------
 add_executable(bar_feature_export tools/bar_feature_export.cpp)
 target_include_directories(bar_feature_export PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(bar_feature_export PRIVATE databento::databento)
+target_link_libraries(bar_feature_export PRIVATE databento::databento Arrow::arrow_shared Parquet::parquet_shared)
+
+# ---------- Parquet Export Test ----------
+add_executable(parquet_export_test tests/parquet_export_test.cpp)
+target_include_directories(parquet_export_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(parquet_export_test PRIVATE GTest::gtest_main Arrow::arrow_shared Parquet::parquet_shared)
+gtest_discover_tests(parquet_export_test WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
