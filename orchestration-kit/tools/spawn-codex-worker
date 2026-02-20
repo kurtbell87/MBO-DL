@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<USAGE
+Usage:
+  tools/spawn-codex-worker <request_id> [--project-root /path/to/orchestration-kit] [--prefer-cli]
+USAGE
+}
+
+if [[ $# -lt 1 ]]; then
+  usage
+  exit 2
+fi
+
+REQUEST_ID="$1"
+shift
+PROJECT_ROOT=""
+PREFER_CLI=0
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --project-root)
+      PROJECT_ROOT="${2:-}"
+      shift 2
+      ;;
+    --prefer-cli)
+      PREFER_CLI=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      usage
+      exit 2
+      ;;
+  esac
+done
+
+if [[ -z "$PROJECT_ROOT" ]]; then
+  PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+else
+  PROJECT_ROOT="$(cd "$PROJECT_ROOT" && pwd)"
+fi
+
+export ORCHESTRATION_KIT_ROOT="$PROJECT_ROOT"
+export ORCHESTRATION_KIT_AGENT_RUNTIME="codex"
+export ORCHESTRATION_KIT_MCP_HOST="${ORCHESTRATION_KIT_MCP_HOST:-127.0.0.1}"
+export ORCHESTRATION_KIT_MCP_PORT="${ORCHESTRATION_KIT_MCP_PORT:-7337}"
+
+if [[ -z "${ORCHESTRATION_KIT_MCP_TOKEN:-}" && -f "$PROJECT_ROOT/.mcp-token" ]]; then
+  export ORCHESTRATION_KIT_MCP_TOKEN="$(cat "$PROJECT_ROOT/.mcp-token")"
+fi
+
+if [[ -z "${ORCHESTRATION_KIT_MCP_TOKEN:-}" ]]; then
+  echo "Error: ORCHESTRATION_KIT_MCP_TOKEN is required" >&2
+  exit 2
+fi
+
+export ORCHESTRATION_KIT_MCP_URL="http://${ORCHESTRATION_KIT_MCP_HOST}:${ORCHESTRATION_KIT_MCP_PORT}/mcp"
+CODEX_SANDBOX_NETWORK_DISABLED="${CODEX_SANDBOX_NETWORK_DISABLED:-0}"
+
+run_fallback() {
+  cd "$PROJECT_ROOT"
+  exec "$PROJECT_ROOT/tools/pump" --once --request "$REQUEST_ID" --json
+}
+
+attempt_codex() {
+  command -v codex >/dev/null 2>&1 || return 1
+
+  case "$CODEX_SANDBOX_NETWORK_DISABLED" in
+    1|true|TRUE|yes|YES|on|ON)
+      echo "Codex worker skipped: shell network isolation is enabled (CODEX_SANDBOX_NETWORK_DISABLED=${CODEX_SANDBOX_NETWORK_DISABLED}). Falling back to pump." >&2
+      return 1
+      ;;
+  esac
+
+  local help_out
+  help_out="$(codex --help 2>&1 || true)"
+
+  local prompt_file
+  prompt_file="$(mktemp)"
+  cat > "$prompt_file" <<PROMPT
+Call MCP tool master.pump with JSON arguments:
+{"mode":"once","request_id":"$REQUEST_ID"}
+Return only the tool result.
+PROMPT
+
+  local rc=1
+  if echo "$help_out" | grep -Eq -- '(^|[[:space:]])exec([[:space:]]|$)'; then
+    codex exec "$(cat "$prompt_file")" || rc=$?
+    [[ $rc -eq 0 ]] || { rm -f "$prompt_file"; return 1; }
+  elif echo "$help_out" | grep -Eq -- '(^|[[:space:]])-p([[:space:]]|,|$)'; then
+    codex -p "$(cat "$prompt_file")" || rc=$?
+    [[ $rc -eq 0 ]] || { rm -f "$prompt_file"; return 1; }
+  else
+    rm -f "$prompt_file"
+    return 1
+  fi
+
+  rm -f "$prompt_file"
+  return 0
+}
+
+response_file="$PROJECT_ROOT/interop/responses/${REQUEST_ID}.json"
+
+if [[ "$PREFER_CLI" -eq 1 || "${ORCHESTRATION_KIT_SPAWN_TRY_CODEX:-0}" == "1" ]]; then
+  if attempt_codex && [[ -f "$response_file" ]]; then
+    status="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["status"])' "$response_file" 2>/dev/null || true)"
+    if [[ "$status" == "ok" ]]; then
+      exit 0
+    fi
+    exit 1
+  fi
+fi
+
+run_fallback

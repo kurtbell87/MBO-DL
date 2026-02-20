@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# Query-by-pointer helpers for large logs.
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+LEAN_SUMMARY="$ROOT_DIR/mathematics-kit/scripts/lean-error-summarize.sh"
+LEAN_CLASSIFY="$ROOT_DIR/mathematics-kit/scripts/lean-error-classify.sh"
+
+usage() {
+  cat <<USAGE
+Usage:
+  tools/query-log tail <path> [lines]
+  tools/query-log grep <pattern> <path>
+  tools/query-log lean-summary <path>
+  tools/query-log lean-classify <path>
+
+Examples:
+  tools/query-log tail runs/<run_id>/logs/math_prove.log 120
+  tools/query-log grep "BLOCKED:" runs/<run_id>/logs/research_run.log
+  tools/query-log lean-summary runs/<run_id>/logs/math_prove.log
+USAGE
+}
+
+require_file() {
+  local path="$1"
+  if [[ ! -f "$path" ]]; then
+    echo "Error: file not found: $path" >&2
+    exit 1
+  fi
+}
+
+cmd="${1:-help}"
+case "$cmd" in
+  tail)
+    file="${2:-}"
+    lines="${3:-120}"
+    [[ -n "$file" ]] || { usage; exit 2; }
+    require_file "$file"
+    tail -n "$lines" "$file"
+    ;;
+  grep)
+    pattern="${2:-}"
+    file="${3:-}"
+    [[ -n "$pattern" && -n "$file" ]] || { usage; exit 2; }
+    require_file "$file"
+    grep -nE -- "$pattern" "$file" || true
+    ;;
+  lean-summary)
+    file="${2:-}"
+    [[ -n "$file" ]] || { usage; exit 2; }
+    require_file "$file"
+    if [[ -x "$LEAN_SUMMARY" ]]; then
+      "$LEAN_SUMMARY" < "$file"
+    else
+      grep -nE 'error|warning|unsolved|sorry' "$file" || true
+    fi
+    ;;
+  lean-classify)
+    file="${2:-}"
+    [[ -n "$file" ]] || { usage; exit 2; }
+    require_file "$file"
+    if [[ -x "$LEAN_CLASSIFY" ]]; then
+      "$LEAN_CLASSIFY" < "$file"
+    else
+      grep -nE 'error|warning|unsolved|sorry' "$file" || true
+    fi
+    ;;
+  help|--help|-h)
+    usage
+    ;;
+  *)
+    usage
+    exit 2
+    ;;
+esac

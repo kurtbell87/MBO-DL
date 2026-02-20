@@ -1,0 +1,1216 @@
+#!/usr/bin/env python3
+"""Orchestration-kit orchestrator entrypoint.
+
+Usage:
+  tools/kit <kit> <phase> [args...]
+  tools/kit plan <spec-file> [--approve] [--kits tdd,research] [--json]
+  tools/kit seed --plan <plan-file> [--kit <name>] [--json]
+  tools/kit execute --plan <plan-file> [--json]
+  tools/kit request [options]
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import glob
+import fcntl
+import hashlib
+import json
+import os
+import re
+import socket
+import subprocess
+import sys
+import uuid
+from pathlib import Path
+from typing import Any
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(os.environ["PROJECT_ROOT"]) if os.environ.get("PROJECT_ROOT") else None
+# When ORCHESTRATION_KIT_ROOT is set (greenfield), store runs in the project's
+# orchestration-kit clone rather than this source repo.
+_OK_ROOT = Path(os.environ["ORCHESTRATION_KIT_ROOT"]) if os.environ.get("ORCHESTRATION_KIT_ROOT") else REPO_ROOT
+RUNS_DIR = _OK_ROOT / "runs"
+INTEROP_REQUESTS_DIR = _OK_ROOT / "interop" / "requests"
+DASHBOARD_TOOL = REPO_ROOT / "tools" / "dashboard"
+PROMPTS_DIR = REPO_ROOT / ".claude" / "prompts"
+
+# KIT_STATE_DIR: greenfield sets to ".kit", monorepo leaves unset (defaults to "." = root).
+_KIT_SD = os.environ.get("KIT_STATE_DIR", ".")
+_SP = f"{_KIT_SD}/" if _KIT_SD != "." else ""
+
+KIT_CONFIG: dict[str, dict[str, Any]] = {
+    "tdd": {
+        "cwd": REPO_ROOT / "tdd-kit",
+        "script": f"./{_SP}tdd.sh",
+        "truth_patterns": [
+            f"{_SP}PRD.md",
+            f"{_SP}LAST_TOUCH.md",
+            f"{_SP}docs/**",
+            "tests/**",
+        ],
+        "tracked_globs": [
+            f"{_SP}docs/**",
+            "src/**",
+            "tests/**",
+            f"{_SP}PRD.md",
+            f"{_SP}LAST_TOUCH.md",
+        ],
+    },
+    "research": {
+        "cwd": REPO_ROOT / "research-kit",
+        "script": f"./{_SP}experiment.sh",
+        "truth_patterns": [
+            f"{_SP}QUESTIONS.md",
+            f"{_SP}experiments/**",
+            f"{_SP}results/**/metrics.*",
+            "analysis.md",
+            "SYNTHESIS.md",
+            f"{_SP}RESEARCH_LOG.md",
+        ],
+        "tracked_globs": [
+            f"{_SP}experiments/**",
+            f"{_SP}results/**",
+            "analysis.md",
+            "SYNTHESIS.md",
+            f"{_SP}RESEARCH_LOG.md",
+            f"{_SP}handoffs/**",
+        ],
+    },
+    "math": {
+        "cwd": REPO_ROOT / "mathematics-kit",
+        "script": f"./{_SP}math.sh",
+        "truth_patterns": [
+            f"{_SP}specs/**",
+            f"{_SP}CONSTRUCTIONS.md",
+            f"{_SP}CONSTRUCTION_LOG.md",
+            "REVISION.md",
+            f"{_SP}results/**",
+        ],
+        "tracked_globs": [
+            f"{_SP}specs/**",
+            "**/*.lean",
+            f"{_SP}CONSTRUCTION_LOG.md",
+            "REVISION.md",
+            f"{_SP}CONSTRUCTIONS.md",
+            f"{_SP}results/**",
+        ],
+    },
+}
+
+CAPSULE_START = "===CAPSULE==="
+CAPSULE_END = "===/CAPSULE==="
+
+
+def now_iso() -> str:
+    return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def make_run_id() -> str:
+    ts = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    return f"{ts}-{uuid.uuid4().hex[:8]}"
+
+
+def int_env(name: str, default: int) -> int:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        return default
+
+
+def env_enabled(name: str, default: bool = True) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() not in {"0", "false", "no", "off"}
+
+
+def parse_project_id(stdout: str) -> str | None:
+    lines = [ln.strip() for ln in stdout.splitlines() if ln.strip()]
+    for line in reversed(lines):
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(payload, dict):
+            continue
+        project_id = payload.get("project_id")
+        if isinstance(project_id, str) and project_id:
+            return project_id
+    return None
+
+
+def dashboard_manage_project(project_root: Path) -> str | None:
+    if not env_enabled("ORCHESTRATION_KIT_DASHBOARD_AUTOSTART", default=True):
+        return None
+    if not DASHBOARD_TOOL.is_file():
+        return None
+
+    label = os.getenv("ORCHESTRATION_KIT_DASHBOARD_LABEL", project_root.name)
+    register = subprocess.run(
+        [
+            str(DASHBOARD_TOOL),
+            "register",
+            "--orchestration-kit-root",
+            str(REPO_ROOT),
+            "--project-root",
+            str(project_root),
+            "--label",
+            label,
+        ],
+        cwd=str(REPO_ROOT),
+        env=os.environ.copy(),
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    project_id = parse_project_id(register.stdout)
+    if register.returncode != 0:
+        print(
+            f"[tools/kit] dashboard register failed (continuing): {register.stderr.strip() or register.stdout.strip()}",
+            file=sys.stderr,
+        )
+        return project_id
+
+    ensure = subprocess.run(
+        [
+            str(DASHBOARD_TOOL),
+            "ensure-service",
+            "--wait-seconds",
+            os.getenv("ORCHESTRATION_KIT_DASHBOARD_ENSURE_WAIT_SECONDS", "1"),
+        ],
+        cwd=str(REPO_ROOT),
+        env=os.environ.copy(),
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if ensure.returncode != 0:
+        print(
+            f"[tools/kit] dashboard ensure-service failed (continuing): {ensure.stderr.strip() or ensure.stdout.strip()}",
+            file=sys.stderr,
+        )
+
+    return project_id
+
+
+def dashboard_index_project(project_id: str | None) -> None:
+    if not env_enabled("ORCHESTRATION_KIT_DASHBOARD_AUTO_INDEX", default=True):
+        return
+    if not DASHBOARD_TOOL.is_file():
+        return
+    if not isinstance(project_id, str) or not project_id:
+        return
+
+    proc = subprocess.run(
+        [str(DASHBOARD_TOOL), "index", "--project-id", project_id],
+        cwd=str(REPO_ROOT),
+        env=os.environ.copy(),
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        print(
+            f"[tools/kit] dashboard index failed (continuing): {proc.stderr.strip() or proc.stdout.strip()}",
+            file=sys.stderr,
+        )
+
+
+def dashboard_upsert_run(
+    project_id: str | None,
+    run_id: str,
+    run_root: Path,
+) -> None:
+    """Upsert a single run into the dashboard DB (~1ms, replaces full re-index)."""
+    if not env_enabled("ORCHESTRATION_KIT_DASHBOARD_AUTO_INDEX", default=True):
+        return
+    if not isinstance(project_id, str) or not project_id:
+        return
+
+    try:
+        # Import inline to avoid hard dependency on dashboard package at module level.
+        sys.path.insert(0, str(REPO_ROOT))
+        from dashboard.indexing import upsert_single_run
+        upsert_single_run(
+            project_id=project_id,
+            orchestration_kit_root=str(REPO_ROOT.resolve()),
+            project_root=str(run_project_root()),
+            run_id=run_id,
+            run_root=run_root,
+        )
+    except Exception as exc:
+        print(
+            f"[tools/kit] dashboard upsert failed (continuing): {exc}",
+            file=sys.stderr,
+        )
+
+
+def run_project_root() -> Path:
+    if PROJECT_ROOT is not None:
+        return PROJECT_ROOT.resolve()
+    return REPO_ROOT.resolve()
+
+
+def runtime_identity() -> str:
+    raw = os.getenv("ORCHESTRATION_KIT_AGENT_RUNTIME", "").strip()
+    if raw:
+        return raw
+
+    if os.getenv("CLAUDE_CODE"):
+        return "claude"
+    if os.getenv("CODEX_ENV"):
+        return "codex"
+    return "direct"
+
+
+def rel_repo(path: Path) -> str:
+    if PROJECT_ROOT is not None:
+        try:
+            return str(path.relative_to(PROJECT_ROOT))
+        except ValueError:
+            pass
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
+def ensure_run_dirs(run_root: Path) -> None:
+    for part in ("capsules", "manifests", "logs", "artifacts"):
+        (run_root / part).mkdir(parents=True, exist_ok=True)
+
+
+def append_event(events_path: Path, event: str, **payload: Any) -> None:
+    record = {"ts": now_iso(), "event": event}
+    record.update(payload)
+    with events_path.open("a", encoding="utf-8") as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        try:
+            json.dump(record, fh, sort_keys=True)
+            fh.write("\n")
+            fh.flush()
+        finally:
+            fcntl.flock(fh, fcntl.LOCK_UN)
+
+
+def expand_file_patterns(base_dir: Path, patterns: list[str], limit: int = 400) -> list[Path]:
+    found: set[Path] = set()
+    for pattern in patterns:
+        query = str(base_dir / pattern)
+        for matched in glob.glob(query, recursive=True):
+            candidate = Path(matched)
+            if candidate.is_file():
+                found.add(candidate.resolve())
+    ordered = sorted(found)
+    if len(ordered) > limit:
+        return ordered[:limit]
+    return ordered
+
+
+def sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as fh:
+        for block in iter(lambda: fh.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def classify_kind(path: Path) -> str:
+    suffix = path.suffix.lower()
+    if suffix in {".md", ".markdown"}:
+        return "markdown"
+    if suffix == ".json":
+        return "json"
+    if suffix in {".yaml", ".yml"}:
+        return "yaml"
+    if suffix in {".py", ".sh", ".ts", ".js", ".rs", ".c", ".cpp", ".hpp", ".h"}:
+        return "source"
+    if suffix == ".lean":
+        return "lean"
+    if suffix in {".txt", ".log"}:
+        return "text"
+    return "file"
+
+
+def build_artifact_index(
+    files: list[Path],
+    *,
+    max_files: int,
+    max_total_bytes: int,
+) -> tuple[list[dict[str, Any]], dict[str, int]]:
+    tracked: list[dict[str, Any]] = []
+    total_bytes = 0
+    omitted_files = 0
+    omitted_bytes = 0
+
+    for path in files:
+        size = path.stat().st_size
+        if len(tracked) >= max_files or (total_bytes + size) > max_total_bytes:
+            omitted_files += 1
+            omitted_bytes += size
+            continue
+
+        tracked.append(
+            {
+                "path": rel_repo(path),
+                "kind": classify_kind(path),
+                "bytes": size,
+                "sha256": sha256_file(path),
+            }
+        )
+        total_bytes += size
+
+    return tracked, {
+        "files": omitted_files,
+        "bytes": omitted_bytes,
+    }
+
+
+def extract_capsule_text(log_path: Path) -> list[str]:
+    text = log_path.read_text(encoding="utf-8", errors="replace")
+    pattern = re.compile(
+        re.escape(CAPSULE_START) + r"\s*(.*?)\s*" + re.escape(CAPSULE_END),
+        flags=re.DOTALL,
+    )
+    matches = pattern.findall(text)
+    if not matches:
+        return []
+
+    raw = matches[-1]
+    lines = [ln.rstrip() for ln in raw.splitlines()]
+    lines = [ln for ln in lines if ln.strip() and "```" not in ln]
+    return lines[:30]
+
+
+def fallback_capsule(
+    *,
+    kit: str,
+    phase: str,
+    run_id: str,
+    exit_code: int,
+    log_path: Path,
+    manifest_path: Path,
+) -> list[str]:
+    status = "ok" if exit_code == 0 else "failed"
+    lines = [
+        f"Goal: Execute {kit}.{phase} in orchestration-kit orchestration.",
+        f"What happened: Command finished with exit code {exit_code}.",
+        f"Current status: {status}.",
+    ]
+    # On failure, include the last lines of the log so the capsule is
+    # actionable without requiring a separate log read.
+    if exit_code != 0 and log_path.exists():
+        try:
+            raw = log_path.read_text(encoding="utf-8", errors="replace")
+            # Strip ANSI escape codes for readability.
+            raw = re.sub(r"\x1b\[[0-9;]*m", "", raw)
+            tail = [ln.rstrip() for ln in raw.splitlines() if ln.strip()]
+            tail = tail[-15:]  # last 15 non-blank lines
+            if tail:
+                lines.append("Error output (last lines of log):")
+                lines.extend(f"  {ln}" for ln in tail)
+        except OSError:
+            pass
+    if exit_code == 0:
+        next_action = "Next action requested (exactly one): proceed to next phase."
+        blocked = "If blocked: n/a"
+    else:
+        next_action = "Next action requested (exactly one): read this capsule and decide whether to retry or stop."
+        blocked = "If blocked: check error output above; fix the root cause before retrying."
+    lines.extend([
+        next_action,
+        "Evidence pointers:",
+        f"- log: {rel_repo(log_path)}",
+        f"- manifest: {rel_repo(manifest_path)}",
+        blocked,
+        f"Run: {run_id}",
+    ])
+    return lines
+
+
+def write_capsule(
+    *,
+    capsule_path: Path,
+    kit: str,
+    phase: str,
+    run_id: str,
+    exit_code: int,
+    log_path: Path,
+    manifest_path: Path,
+) -> None:
+    lines = extract_capsule_text(log_path)
+    if not lines:
+        lines = fallback_capsule(
+            kit=kit,
+            phase=phase,
+            run_id=run_id,
+            exit_code=exit_code,
+            log_path=log_path,
+            manifest_path=manifest_path,
+        )
+    if len(lines) > 30:
+        lines = lines[:30]
+
+    capsule_path.parent.mkdir(parents=True, exist_ok=True)
+    capsule_path.write_text("\n".join(lines).strip() + "\n", encoding="utf-8")
+
+
+def extract_json_block(text: str) -> dict | None:
+    """Extract a JSON object from LLM output, handling code blocks and preamble."""
+    text = text.strip()
+    try:
+        obj = json.loads(text)
+        if isinstance(obj, dict):
+            return obj
+    except json.JSONDecodeError:
+        pass
+    m = re.search(r'```(?:json)?\s*\n(.*?)\n```', text, re.DOTALL)
+    if m:
+        try:
+            obj = json.loads(m.group(1))
+            if isinstance(obj, dict):
+                return obj
+        except json.JSONDecodeError:
+            pass
+    start = text.find('{')
+    end = text.rfind('}')
+    if start >= 0 and end > start:
+        try:
+            obj = json.loads(text[start:end + 1])
+            if isinstance(obj, dict):
+                return obj
+        except json.JSONDecodeError:
+            pass
+    return None
+
+
+def validate_plan(plan: dict) -> list[str]:
+    """Validate a bootstrap plan. Returns list of error strings (empty = valid)."""
+    errors: list[str] = []
+    if plan.get("version") != 1:
+        errors.append("version must be 1")
+    if not isinstance(plan.get("spec_file"), str):
+        errors.append("spec_file must be a string")
+    kits = plan.get("kits")
+    if not isinstance(kits, list) or not kits:
+        errors.append("kits must be a non-empty array")
+        return errors
+    valid_kits = {"tdd", "research", "math"}
+    for k in kits:
+        if k not in valid_kits:
+            errors.append(f"unknown kit: {k}")
+    if "tdd" in kits:
+        tdd = plan.get("tdd")
+        if not isinstance(tdd, dict):
+            errors.append("tdd section required when tdd in kits")
+        else:
+            bo = tdd.get("build_order")
+            if not isinstance(bo, list) or not bo:
+                errors.append("tdd.build_order must be a non-empty array")
+            else:
+                for i, step in enumerate(bo):
+                    if not isinstance(step.get("step"), int):
+                        errors.append(f"tdd.build_order[{i}].step must be an integer")
+                    if not isinstance(step.get("description"), str):
+                        errors.append(f"tdd.build_order[{i}].description must be a string")
+                    if not isinstance(step.get("spec_file"), str):
+                        errors.append(f"tdd.build_order[{i}].spec_file must be a string")
+    if "research" in kits:
+        if not isinstance(plan.get("research"), dict):
+            errors.append("research section required when research in kits")
+    if "math" in kits:
+        if not isinstance(plan.get("math"), dict):
+            errors.append("math section required when math in kits")
+    return errors
+
+
+def write_seed_files(files: dict[str, str], root: Path) -> list[str]:
+    """Write seed files to root directory. Returns list of relative paths written.
+
+    When KIT_STATE_DIR is set (greenfield), state files are redirected into the
+    kit subdirectory. Files that must stay at root (CLAUDE.md, .claude/) are
+    written directly.
+    """
+    # Paths that must remain at project root regardless of KIT_STATE_DIR.
+    _ROOT_ANCHORED = {"CLAUDE.md"}
+    _ROOT_PREFIXES = (".claude/",)
+
+    written: list[str] = []
+    for rel_path, content in sorted(files.items()):
+        if rel_path.startswith("/") or ".." in Path(rel_path).parts:
+            raise ValueError(f"unsafe path in seed output: {rel_path}")
+
+        # Redirect non-root files into KIT_STATE_DIR when set.
+        if _KIT_SD != "." and rel_path not in _ROOT_ANCHORED and not any(rel_path.startswith(p) for p in _ROOT_PREFIXES):
+            rel_path = f"{_KIT_SD}/{rel_path}"
+
+        target = root / rel_path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding="utf-8")
+        written.append(rel_path)
+    return written
+
+
+def run_phase(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="tools/kit", add_help=True)
+    parser.add_argument("kit", choices=sorted(KIT_CONFIG.keys()))
+    parser.add_argument("phase")
+    parser.add_argument("phase_args", nargs=argparse.REMAINDER)
+    parser.add_argument("--json", action="store_true", dest="json_out")
+    parser.add_argument("--reasoning", default=None, help="1-3 sentence justification for this dispatch")
+    parser.add_argument("--run-id", default=None)
+    parser.add_argument("--parent-run-id", default=os.getenv("RUN_ID"))
+    parser.add_argument(
+        "--tracked-max-files",
+        type=int,
+        default=int(os.getenv("MAX_TRACKED_FILES", "400")),
+    )
+    parser.add_argument(
+        "--tracked-max-bytes",
+        type=int,
+        default=int(os.getenv("MAX_TRACKED_BYTES", "20000000")),
+    )
+
+    args = parser.parse_args(argv)
+
+    config = KIT_CONFIG[args.kit]
+    cwd: Path = PROJECT_ROOT if PROJECT_ROOT is not None else config["cwd"]
+    script: str = config["script"]
+    project_root = run_project_root()
+    dashboard_project_id = dashboard_manage_project(project_root)
+    orchestration_kit_root = REPO_ROOT.resolve()
+    run_context = {
+        "project_root": str(project_root),
+        "orchestration_kit_root": str(orchestration_kit_root),
+        "agent_runtime": runtime_identity(),
+        "host": socket.gethostname(),
+        "pid": os.getpid(),
+    }
+
+    run_id = args.run_id or make_run_id()
+    run_root = RUNS_DIR / run_id
+    ensure_run_dirs(run_root)
+
+    events_path = run_root / "events.jsonl"
+    capsule_path = run_root / "capsules" / f"{args.kit}_{args.phase}.md"
+    manifest_path = run_root / "manifests" / f"{args.kit}_{args.phase}.json"
+    log_path = run_root / "logs" / f"{args.kit}_{args.phase}.log"
+
+    started_at = now_iso()
+
+    append_event(
+        events_path,
+        "run_started",
+        run_id=run_id,
+        parent_run_id=args.parent_run_id,
+        kit=args.kit,
+        phase=args.phase,
+        reasoning=args.reasoning,
+        **run_context,
+    )
+    append_event(
+        events_path,
+        "phase_started",
+        run_id=run_id,
+        kit=args.kit,
+        phase=args.phase,
+        command=[script, args.phase] + args.phase_args,
+        cwd=str(cwd.resolve()),
+    )
+
+    # Upsert run into dashboard DB immediately so it's visible as "running".
+    dashboard_upsert_run(dashboard_project_id, run_id, run_root)
+
+    cmd = [script, args.phase] + args.phase_args
+    env = os.environ.copy()
+    # Allow nested Claude Code sessions (sub-agents spawned by kit scripts).
+    env.pop("CLAUDECODE", None)
+    env.update(
+        {
+            "RUN_ID": run_id,
+            "RUN_ROOT": str(run_root),
+            "ORCHESTRATION_KIT_ROOT": str(REPO_ROOT),
+            "READ_BUDGET_STATE_DIR": str(run_root / "artifacts"),
+        }
+    )
+    if PROJECT_ROOT is not None:
+        env["PROJECT_ROOT"] = str(PROJECT_ROOT)
+    if args.parent_run_id:
+        env["PARENT_RUN_ID"] = args.parent_run_id
+
+    with log_path.open("wb") as log_fh:
+        proc = subprocess.run(
+            cmd,
+            cwd=str(cwd),
+            env=env,
+            stdout=log_fh,
+            stderr=subprocess.STDOUT,
+            check=False,
+        )
+
+    finished_at = now_iso()
+    exit_code = proc.returncode
+
+    append_event(
+        events_path,
+        "phase_finished",
+        run_id=run_id,
+        kit=args.kit,
+        phase=args.phase,
+        exit_code=exit_code,
+        log_path=rel_repo(log_path),
+        **run_context,
+    )
+
+    tracked_files = expand_file_patterns(cwd, config["tracked_globs"])
+    tracked, omitted = build_artifact_index(
+        tracked_files,
+        max_files=max(args.tracked_max_files, 1),
+        max_total_bytes=max(args.tracked_max_bytes, 1),
+    )
+    append_event(
+        events_path,
+        "artifact_indexed",
+        run_id=run_id,
+        kit=args.kit,
+        phase=args.phase,
+        tracked_count=len(tracked),
+        omitted_files=omitted["files"],
+        omitted_bytes=omitted["bytes"],
+    )
+
+    truth_paths = [rel_repo(path) for path in expand_file_patterns(cwd, config["truth_patterns"], limit=120)]
+
+    write_capsule(
+        capsule_path=capsule_path,
+        kit=args.kit,
+        phase=args.phase,
+        run_id=run_id,
+        exit_code=exit_code,
+        log_path=log_path,
+        manifest_path=manifest_path,
+    )
+
+    append_event(
+        events_path,
+        "capsule_written",
+        run_id=run_id,
+        kit=args.kit,
+        phase=args.phase,
+        capsule_path=rel_repo(capsule_path),
+    )
+
+    manifest = {
+        "metadata": {
+            "run_id": run_id,
+            "parent_run_id": args.parent_run_id,
+            "kit": args.kit,
+            "phase": args.phase,
+            "started_at": started_at,
+            "finished_at": finished_at,
+            "exit_code": exit_code,
+            "command": cmd,
+            "cwd": rel_repo(cwd),
+            "project_root": str(project_root),
+            "orchestration_kit_root": str(orchestration_kit_root),
+            "agent_runtime": run_context["agent_runtime"],
+            "host": run_context["host"],
+            "pid": run_context["pid"],
+            "reasoning": args.reasoning,
+            "read_budget": {
+                "max_files": int_env("READ_BUDGET_MAX_FILES", 0),
+                "max_total_bytes": int_env("READ_BUDGET_MAX_TOTAL_BYTES", 0),
+                "max_read_bytes": int_env("MAX_READ_BYTES", 200000),
+            },
+        },
+        "artifact_index": {
+            "tracked": tracked,
+            "omitted": omitted,
+            "limits": {
+                "max_files": args.tracked_max_files,
+                "max_total_bytes": args.tracked_max_bytes,
+            },
+        },
+        "truth_pointers": truth_paths,
+        "log_pointers": [
+            {
+                "path": rel_repo(log_path),
+                "kind": "phase_log",
+                "hint": f"tail -n 200 {rel_repo(log_path)}",
+            }
+        ],
+        "capsule_path": rel_repo(capsule_path),
+    }
+
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    append_event(
+        events_path,
+        "manifest_written",
+        run_id=run_id,
+        kit=args.kit,
+        phase=args.phase,
+        manifest_path=rel_repo(manifest_path),
+        **run_context,
+    )
+    append_event(
+        events_path,
+        "run_finished",
+        run_id=run_id,
+        kit=args.kit,
+        phase=args.phase,
+        exit_code=exit_code,
+        capsule_path=rel_repo(capsule_path),
+        manifest_path=rel_repo(manifest_path),
+        **run_context,
+    )
+
+    output = {
+        "run_id": run_id,
+        "status": "ok" if exit_code == 0 else "failed",
+        "exit_code": exit_code,
+        "kit": args.kit,
+        "phase": args.phase,
+        "reasoning": args.reasoning,
+        "paths": {
+            "run_root": rel_repo(run_root),
+            "events": rel_repo(events_path),
+            "log": rel_repo(log_path),
+            "capsule": rel_repo(capsule_path),
+            "manifest": rel_repo(manifest_path),
+        },
+    }
+
+    if args.json_out:
+        print(json.dumps(output, sort_keys=True))
+    else:
+        print(f"run_id={run_id}")
+        print(f"status={output['status']}")
+        print(f"exit_code={exit_code}")
+        print(f"events={output['paths']['events']}")
+        print(f"capsule={output['paths']['capsule']}")
+        print(f"manifest={output['paths']['manifest']}")
+        print(f"log={output['paths']['log']}")
+
+    # Upsert completed run into dashboard DB (replaces full re-index).
+    dashboard_upsert_run(dashboard_project_id, run_id, run_root)
+
+    return 0 if exit_code == 0 else exit_code
+
+
+def make_request(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="tools/kit request", add_help=True)
+    parser.add_argument("--request-id", default=None)
+    parser.add_argument("--from", dest="from_kit", required=True, choices=sorted(KIT_CONFIG.keys()))
+    parser.add_argument("--from-phase", dest="from_phase", default=None)
+    parser.add_argument("--to", dest="to_kit", required=True, choices=sorted(KIT_CONFIG.keys()))
+    parser.add_argument("--action", required=True)
+    parser.add_argument("--run-id", required=True)
+    parser.add_argument("--arg", dest="args", action="append", default=[])
+    parser.add_argument("--input", dest="inputs", action="append", default=[])
+    parser.add_argument("--must-read", dest="must_read", action="append", default=[])
+    parser.add_argument("--allowed-path", dest="allowed_paths", action="append", default=[])
+    parser.add_argument("--deliverable", dest="deliverables", action="append", default=[])
+    parser.add_argument("--max-files", type=int, default=8)
+    parser.add_argument("--max-total-bytes", type=int, default=300_000)
+    parser.add_argument("--priority", default="normal")
+    parser.add_argument("--reasoning", default=None, help="1-3 sentence justification for this request")
+    parser.add_argument("--json", action="store_true", dest="json_out")
+
+    args = parser.parse_args(argv)
+
+    dashboard_project_id = dashboard_manage_project(run_project_root())
+
+    request_id = args.request_id or f"rq-{dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%SZ')}-{uuid.uuid4().hex[:6]}"
+    payload = {
+        "request_id": request_id,
+        "from_kit": args.from_kit,
+        "from_phase": args.from_phase,
+        "to_kit": args.to_kit,
+        "action": args.action,
+        "args": args.args,
+        "run_id": args.run_id,
+        "inputs": args.inputs,
+        "must_read": args.must_read,
+        "read_budget": {
+            "max_files": args.max_files,
+            "max_total_bytes": args.max_total_bytes,
+            "allowed_paths": args.allowed_paths,
+        },
+        "deliverables_expected": args.deliverables,
+        "priority": args.priority,
+        "reasoning": args.reasoning,
+    }
+
+    INTEROP_REQUESTS_DIR.mkdir(parents=True, exist_ok=True)
+    request_path = INTEROP_REQUESTS_DIR / f"{request_id}.json"
+    request_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    output = {
+        "request_id": request_id,
+        "path": rel_repo(request_path),
+        "reasoning": args.reasoning,
+    }
+    if args.json_out:
+        print(json.dumps(output, sort_keys=True))
+    else:
+        print(f"request_id={request_id}")
+        print(f"path={rel_repo(request_path)}")
+
+    dashboard_index_project(dashboard_project_id)
+
+    return 0
+
+
+def run_plan(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="tools/kit plan", add_help=True)
+    parser.add_argument("spec_file")
+    parser.add_argument("--json", action="store_true", dest="json_out")
+    parser.add_argument("--kits", default=None, help="Comma-separated kit list override")
+    parser.add_argument("--approve", action="store_true", help="Auto-chain seed and execute")
+    parser.add_argument("--run-id", default=None)
+    args = parser.parse_args(argv)
+
+    spec_path = Path(args.spec_file).resolve()
+    if not spec_path.is_file():
+        print(f"Error: spec file not found: {args.spec_file}", file=sys.stderr)
+        return 1
+
+    prompt_path = PROMPTS_DIR / "bootstrap-plan.md"
+    if not prompt_path.is_file():
+        print(f"Error: prompt not found: {prompt_path}", file=sys.stderr)
+        return 1
+
+    project_root = run_project_root()
+    run_id = args.run_id or make_run_id()
+    run_root = RUNS_DIR / run_id
+    ensure_run_dirs(run_root)
+    events_path = run_root / "events.jsonl"
+    plan_path = run_root / "bootstrap-plan.json"
+    log_path = run_root / "logs" / "bootstrap_plan.log"
+
+    spec_content = spec_path.read_text(encoding="utf-8")
+    spec_hash = hashlib.sha256(spec_content.encode()).hexdigest()[:16]
+    system_prompt = prompt_path.read_text(encoding="utf-8")
+
+    user_msg = (
+        f"Spec file path: {rel_repo(spec_path)}\n"
+        f"Spec hash (first 16 of sha256): {spec_hash}\n\n"
+        f"{spec_content}"
+    )
+    if args.kits:
+        user_msg += f"\n\nKit override: only include these kits: {args.kits}"
+
+    append_event(events_path, "plan_started", run_id=run_id, spec_file=rel_repo(spec_path), spec_hash=spec_hash)
+
+    full_prompt = f"{system_prompt}\n\n---\n\n{user_msg}"
+    proc = subprocess.run(
+        ["claude", "--print", "--output-format", "text"],
+        input=full_prompt,
+        capture_output=True,
+        text=True,
+        cwd=str(project_root),
+        env=os.environ.copy(),
+    )
+    log_content = proc.stdout
+    if proc.stderr:
+        log_content += f"\n--- stderr ---\n{proc.stderr}"
+    log_path.write_text(log_content, encoding="utf-8")
+
+    if proc.returncode != 0:
+        append_event(events_path, "plan_failed", run_id=run_id, exit_code=proc.returncode)
+        print(f"Error: claude exited {proc.returncode}", file=sys.stderr)
+        return 1
+
+    plan = extract_json_block(proc.stdout)
+    if plan is None:
+        append_event(events_path, "plan_failed", run_id=run_id, reason="json_parse_error")
+        print("Error: could not extract JSON from plan agent output", file=sys.stderr)
+        print(f"Log: {rel_repo(log_path)}", file=sys.stderr)
+        return 1
+
+    # Inject spec metadata the agent may have omitted
+    plan.setdefault("version", 1)
+    plan["spec_file"] = rel_repo(spec_path)
+    plan["spec_hash"] = spec_hash
+
+    errors = validate_plan(plan)
+    if errors:
+        append_event(events_path, "plan_failed", run_id=run_id, reason="validation_errors", errors=errors)
+        print("Error: plan validation failed:", file=sys.stderr)
+        for e in errors:
+            print(f"  - {e}", file=sys.stderr)
+        return 1
+
+    plan_path.write_text(json.dumps(plan, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    append_event(events_path, "plan_finished", run_id=run_id, plan_path=rel_repo(plan_path), kits=plan["kits"])
+
+    output = {
+        "run_id": run_id,
+        "status": "ok",
+        "plan_path": rel_repo(plan_path),
+        "kits": plan["kits"],
+        "tdd_steps": len(plan.get("tdd", {}).get("build_order", [])),
+    }
+
+    if args.json_out:
+        print(json.dumps(output, sort_keys=True))
+    else:
+        print(f"run_id={run_id}")
+        print(f"status=ok")
+        print(f"plan={rel_repo(plan_path)}")
+        print(f"kits={','.join(plan['kits'])}")
+
+    if args.approve:
+        seed_argv = ["--plan", str(plan_path)]
+        if args.json_out:
+            seed_argv.append("--json")
+        rc = run_seed(seed_argv)
+        if rc != 0:
+            return rc
+        exec_argv = ["--plan", str(plan_path)]
+        if args.json_out:
+            exec_argv.append("--json")
+        return run_execute(exec_argv)
+
+    return 0
+
+
+def run_seed(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="tools/kit seed", add_help=True)
+    parser.add_argument("--plan", required=True, dest="plan_file")
+    parser.add_argument("--json", action="store_true", dest="json_out")
+    parser.add_argument("--kit", default=None, help="Seed only this kit (default: all in plan)")
+    args = parser.parse_args(argv)
+
+    plan_path = Path(args.plan_file).resolve()
+    if not plan_path.is_file():
+        print(f"Error: plan file not found: {args.plan_file}", file=sys.stderr)
+        return 1
+
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    spec_file = plan.get("spec_file", "")
+    project_root = run_project_root()
+
+    # Resolve spec content from project root, repo root, or absolute path
+    spec_content = ""
+    for base in [project_root, REPO_ROOT]:
+        candidate = base / spec_file
+        if candidate.is_file():
+            spec_content = candidate.read_text(encoding="utf-8")
+            break
+    else:
+        candidate = Path(spec_file)
+        if candidate.is_file():
+            spec_content = candidate.read_text(encoding="utf-8")
+
+    # Determine run context from plan path (plan is in runs/<id>/bootstrap-plan.json)
+    run_root = plan_path.parent
+    events_path = run_root / "events.jsonl"
+    run_id = run_root.name
+
+    # If plan is not inside a run dir, create one
+    if not (run_root / "capsules").is_dir():
+        run_id = make_run_id()
+        run_root = RUNS_DIR / run_id
+        ensure_run_dirs(run_root)
+        events_path = run_root / "events.jsonl"
+
+    kits_to_seed = [args.kit] if args.kit else plan.get("kits", [])
+    all_written: dict[str, list[str]] = {}
+
+    for kit in kits_to_seed:
+        prompt_file = PROMPTS_DIR / f"bootstrap-seed-{kit}.md"
+        if not prompt_file.is_file():
+            print(f"Error: seed prompt not found: {prompt_file}", file=sys.stderr)
+            return 1
+
+        seed_prompt = prompt_file.read_text(encoding="utf-8")
+        log_path = run_root / "logs" / f"bootstrap_seed_{kit}.log"
+
+        plan_json = json.dumps(plan, indent=2, sort_keys=True)
+        full_prompt = (
+            f"{seed_prompt}\n\n---\n\n"
+            f"Bootstrap plan:\n\n{plan_json}\n\n---\n\n"
+            f"User spec ({spec_file}):\n\n{spec_content}"
+        )
+
+        append_event(events_path, "seed_started", run_id=run_id, kit=kit)
+
+        proc = subprocess.run(
+            ["claude", "--print", "--output-format", "text"],
+            input=full_prompt,
+            capture_output=True,
+            text=True,
+            cwd=str(project_root),
+            env=os.environ.copy(),
+        )
+        log_content = proc.stdout
+        if proc.stderr:
+            log_content += f"\n--- stderr ---\n{proc.stderr}"
+        log_path.write_text(log_content, encoding="utf-8")
+
+        if proc.returncode != 0:
+            append_event(events_path, "seed_failed", run_id=run_id, kit=kit, exit_code=proc.returncode)
+            print(f"Error: claude exited {proc.returncode} for seed-{kit}", file=sys.stderr)
+            return 1
+
+        result = extract_json_block(proc.stdout)
+        if result is None or "files" not in result:
+            append_event(events_path, "seed_failed", run_id=run_id, kit=kit, reason="json_parse_error")
+            print(f"Error: could not extract files JSON from seed-{kit} agent output", file=sys.stderr)
+            print(f"Log: {rel_repo(log_path)}", file=sys.stderr)
+            return 1
+
+        try:
+            written = write_seed_files(result["files"], project_root)
+        except ValueError as e:
+            append_event(events_path, "seed_failed", run_id=run_id, kit=kit, reason=str(e))
+            print(f"Error: {e}", file=sys.stderr)
+            return 1
+
+        all_written[kit] = written
+        append_event(events_path, "seed_finished", run_id=run_id, kit=kit, files=written)
+
+    output = {
+        "run_id": run_id,
+        "status": "ok",
+        "seeded_kits": list(all_written.keys()),
+        "files_written": all_written,
+    }
+
+    if args.json_out:
+        print(json.dumps(output, sort_keys=True))
+    else:
+        print(f"run_id={run_id}")
+        print(f"status=ok")
+        for kit, files in all_written.items():
+            print(f"seed-{kit}={','.join(files)}")
+
+    return 0
+
+
+def run_execute(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(prog="tools/kit execute", add_help=True)
+    parser.add_argument("--plan", required=True, dest="plan_file")
+    parser.add_argument("--json", action="store_true", dest="json_out")
+    parser.add_argument("--run-id", default=None)
+    args = parser.parse_args(argv)
+
+    plan_path = Path(args.plan_file).resolve()
+    if not plan_path.is_file():
+        print(f"Error: plan file not found: {args.plan_file}", file=sys.stderr)
+        return 1
+
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    run_id = args.run_id or make_run_id()
+    run_root = RUNS_DIR / run_id
+    ensure_run_dirs(run_root)
+    events_path = run_root / "events.jsonl"
+
+    append_event(events_path, "execute_started", run_id=run_id, plan_path=str(plan_path), kits=plan.get("kits", []))
+
+    kit_tool = str(REPO_ROOT / "tools" / "kit")
+    project_root = run_project_root()
+    results: list[dict[str, Any]] = []
+
+    def _dispatch(label: str, cmd: list[str], extra_env: dict[str, str] | None = None) -> int:
+        """Run a kit phase, track result. Returns exit code."""
+        append_event(events_path, "execute_phase_started", run_id=run_id, label=label)
+        env = os.environ.copy()
+        if extra_env:
+            env.update(extra_env)
+        proc = subprocess.run(cmd, capture_output=True, text=True, cwd=str(project_root), env=env)
+        # Write phase output to log file for diagnostics (don't hold in context or print)
+        phase_log = run_root / "logs" / f"execute_{label.replace('.', '_')}.log"
+        phase_log.write_text(
+            proc.stdout + (f"\n--- stderr ---\n{proc.stderr}" if proc.stderr else ""),
+            encoding="utf-8",
+        )
+        phase_result = {"label": label, "exit_code": proc.returncode}
+        results.append(phase_result)
+        append_event(events_path, "execute_phase_finished", run_id=run_id, **phase_result)
+        return proc.returncode
+
+    def _emit_failure(label: str, rc: int) -> int:
+        append_event(events_path, "execute_failed", run_id=run_id, failed_at=label)
+        output = {"run_id": run_id, "status": "failed", "failed_at": label, "exit_code": rc, "results": results}
+        if args.json_out:
+            print(json.dumps(output, sort_keys=True))
+        else:
+            print(f"run_id={run_id}")
+            print(f"status=failed")
+            print(f"failed_at={label}")
+            print(f"exit_code={rc}")
+        return rc
+
+    for kit in plan.get("kits", []):
+        if kit == "tdd" and "tdd" in plan:
+            tdd_env: dict[str, str] = {}
+            tdd_conf = plan["tdd"]
+            for key in ("build_cmd", "test_cmd"):
+                if tdd_conf.get(key):
+                    tdd_env[key.upper()] = tdd_conf[key]
+            for step in plan["tdd"].get("build_order", []):
+                label = f"tdd.full.step-{step['step']}"
+                rc = _dispatch(label, [kit_tool, "tdd", "full", step["spec_file"], "--json", "--parent-run-id", run_id], extra_env=tdd_env or None)
+                if rc != 0:
+                    return _emit_failure(label, rc)
+
+        elif kit == "research" and "research" in plan:
+            label = "research.program"
+            rc = _dispatch(label, [kit_tool, "research", "program", "--json", "--parent-run-id", run_id])
+            if rc != 0:
+                return _emit_failure(label, rc)
+
+        elif kit == "math" and "math" in plan:
+            label = "math.program"
+            rc = _dispatch(label, [kit_tool, "math", "program", "--json", "--parent-run-id", run_id])
+            if rc != 0:
+                return _emit_failure(label, rc)
+
+    append_event(events_path, "execute_finished", run_id=run_id, results=results)
+
+    output = {"run_id": run_id, "status": "ok", "results": results}
+    if args.json_out:
+        print(json.dumps(output, sort_keys=True))
+    else:
+        print(f"run_id={run_id}")
+        print(f"status=ok")
+        for r in results:
+            print(f"{r['label']}=exit:{r['exit_code']}")
+
+    return 0
+
+
+def main(argv: list[str]) -> int:
+    if not argv:
+        print(
+            "Usage: tools/kit <kit> <phase> [args...]\n"
+            "       tools/kit plan <spec-file> [--approve] [--json]\n"
+            "       tools/kit seed --plan <plan-file> [--json]\n"
+            "       tools/kit execute --plan <plan-file> [--json]\n"
+            "       tools/kit request [options]",
+            file=sys.stderr,
+        )
+        return 2
+
+    if argv[0] == "plan":
+        return run_plan(argv[1:])
+    if argv[0] == "seed":
+        return run_seed(argv[1:])
+    if argv[0] == "execute":
+        return run_execute(argv[1:])
+    if argv[0] == "request":
+        return make_request(argv[1:])
+
+    return run_phase(argv)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

@@ -69,6 +69,8 @@ git worktree remove ../MBO-DL-cnn-fix
 - **Clean up worktrees** after merging: `git worktree remove <path>`.
 - **Worktree naming**: `../<project>-<slug>` keeps worktrees adjacent to the main checkout.
 - **Each worktree gets its own `.kit/` state** via symlinks — kit scripts resolve relative to `PROJECT_ROOT`.
+- **Auto-bootstrap**: The `post-checkout` hook automatically fixes `PROJECT_ROOT` in `.orchestration-kit.env`, restores kit symlinks, and warns about broken artifact symlinks. Install it with: `orchestration-kit/tools/install-hooks`.
+- **Subtree, not submodule**: `orchestration-kit/` is a git subtree, so worktrees get the full directory contents (no empty gitlink).
 
 ## Path Convention
 
@@ -242,6 +244,86 @@ orchestration-kit/tools/cloud-run volume {create,list,delete}
 
 **Backend selection:** Configured via environment variables in `.orchestration-kit.env`. Supports AWS EC2 and RunPod. EC2 runs in a `python:3.12-slim` Docker container; RunPod uses `pytorch:2.4.0-py3.11`. Dependencies install via `uv` from `requirements.txt`. Results sync back via S3. **Important:** `--data-dirs` preserves the directory name — if you upload `.../dollar_25k/`, the remote path is `data/dollar_25k/`, not `data/`. Use `--spot` for spot instances (default); `--force` overrides preflight "local" recommendation.
 
+## S3 Artifact Store
+
+Large experiment result files (CSVs, binary data, model checkpoints) are stored in S3 with content-addressed deduplication. Local files become symlinks to a cache directory. Git tracks the symlinks (tiny) and per-directory `.s3-manifest.json` files.
+
+**S3 bucket:** `s3://kenoma-labs-research/artifact-store/<sha256-prefix-2>/<sha256>.<ext>`
+**Local cache:** `.kit/.s3-cache/` (gitignored)
+
+### Commands
+
+```bash
+# Push a single file to S3, replace with symlink
+orchestration-kit/tools/artifact-store push <file>
+
+# Push all files >10MB in a directory tree
+orchestration-kit/tools/artifact-store push-dir .kit/results/ --threshold 10MB
+
+# After clone/checkout: download from S3 and create symlinks
+orchestration-kit/tools/artifact-store hydrate
+
+# Check which files are cached/missing
+orchestration-kit/tools/artifact-store status
+
+# Verify SHA-256 integrity of cached files
+orchestration-kit/tools/artifact-store verify
+```
+
+### New Clone / Worktree Workflow
+
+After `git clone` or `git worktree add`, large result files are symlinks pointing to `.kit/.s3-cache/` which is empty. Run:
+
+```bash
+orchestration-kit/tools/artifact-store hydrate
+```
+
+This downloads all files referenced by `.s3-manifest.json` in `.kit/results/` and creates the symlinks.
+
+### After Running Experiments
+
+If a research phase produces large result files (>10 MB), push them before committing:
+
+```bash
+orchestration-kit/tools/artifact-store push-dir .kit/results/<experiment-name>/ --threshold 10MB
+git add .kit/results/<experiment-name>/
+git commit -m "results: <experiment-name>"
+```
+
+## Orchestration-Kit Sync (Subtree)
+
+`orchestration-kit/` is a **git subtree** (not a submodule). This means:
+- Worktrees get the full directory contents (no empty gitlink)
+- Changes made inside `orchestration-kit/` are normal git commits
+- Two-way sync with the upstream repo via `sync-upstream`
+
+```bash
+# Check sync status (divergence between local and upstream)
+orchestration-kit/tools/sync-upstream status
+
+# Pull latest upstream changes into orchestration-kit/
+orchestration-kit/tools/sync-upstream pull
+
+# Push local orchestration-kit/ changes back to upstream
+orchestration-kit/tools/sync-upstream push
+```
+
+**Upstream remote:** `orchestration-kit-upstream` → `https://github.com/kurtbell87/orchestration-kit.git`
+Configured in `.orchestration-kit.env` via `ORCHESTRATION_KIT_UPSTREAM_REMOTE` and `ORCHESTRATION_KIT_UPSTREAM_BRANCH`.
+
+## Project Health Check
+
+```bash
+# Full diagnostic — checks repo structure, secrets, symlinks, artifacts, git health
+orchestration-kit/tools/project-doctor
+
+# Auto-fix what's possible (missing symlinks, loose objects, remote config)
+orchestration-kit/tools/project-doctor --fix
+
+# Machine-readable output
+orchestration-kit/tools/project-doctor --json
+```
+
 ## Global Dashboard (Optional)
 
 ```bash
@@ -274,6 +356,7 @@ Open `http://127.0.0.1:7340` to explore runs across projects and filter by proje
 - **Early stopping must use a held-out validation split from training data, never test data.** Using test data for model selection (checkpoint selection via early stopping) is validation leakage that inflates reported R². R3's R²=0.132 was inflated ~36% by this bug (proper-validation R²≈0.084). All experiment specs must specify an 80/20 train/val split for early stopping.
 - **Always specify normalization in the experiment spec as concrete operations** (e.g., "divide by TICK_SIZE=0.25" not "normalize to ticks"). Ambiguous normalization language caused three failed reproduction attempts (9B, 9C, 9C diagnostic).
 - **Verify bar construction semantics before running experiments.** The C++ `bar_feature_export` tick bar mode previously counted fixed-rate book snapshots (10/s), not trade events — **FIXED in tick-bar-fix TDD cycle (2026-02-19).** `book_builder.hpp` now emits `trade_count` per snapshot; `tick_bar_builder.hpp` accumulates trade counts. Diagnostic: (1) check bars_per_day_std — genuine event bars must have non-zero daily variance across trading days; (2) check within-day p10 vs p90 — time bars have p10=p90 (zero variance), genuine event bars don't. R3b wasted a cycle on the old defect. **Blast radius of old defect**: every "tick bar" experiment (R1, R4c, R4d, R3b) was actually time bars — those results are void for tick bars. Dollar and volume bars were always genuine.
+- **Always prefer system-installed dependencies (`brew install`) over FetchContent for large C++ libraries.** Arrow C++ via FetchContent added 15-30 min per build iteration and burned 3.5 hours in a single GREEN phase on repeated rebuilds + a source-patching hack. Use `find_package()` for Arrow, Boost, and any library available via homebrew. FetchContent is fine for small libraries (GTest, nlohmann_json). Apache Arrow is installed system-wide: `brew install apache-arrow` → `find_package(Arrow REQUIRED)` / `find_package(Parquet REQUIRED)`.
 - **Dollar and volume bars are genuine event bars; tick bars NOW FIXED.** R1 metrics contain `bar_count_cv` for all 12 configs — the diagnostic was available from day 1 but nobody checked. Tick bars: CV=0 (was broken, fixed 2026-02-19). Dollar bars: CV=2-6% (genuine). Volume bars: CV=9-10% (genuine). Time bars: CV=0 (correct by design). Additional dollar bar evidence: within-day p10≠p90, daily counts differ from day1 count. Additional volume bar evidence: vol_100 produces 6,087 bars/day vs 2,315 predicted by snapshot-counting model.
 
 ## Don't

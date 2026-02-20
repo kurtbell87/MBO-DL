@@ -55,7 +55,12 @@ build/
 *.so
 *.dylib
 
-# Large experiment artifacts (kept locally, not pushed)
-.kit/results/**/events/*.bin
-.kit/results/**/features.csv
-.kit/results/**/calibration/*.csv
+# Large experiment artifacts now managed by artifact-store (S3 + symlinks).
+# The actual data lives in .kit/.s3-cache/ (ignored below).
+# Symlinks and .s3-manifest.json files are tracked in git.
+
+# S3 artifact store local cache
+.kit/.s3-cache/
+
+# Clangd index cache
+.cache/clangd/

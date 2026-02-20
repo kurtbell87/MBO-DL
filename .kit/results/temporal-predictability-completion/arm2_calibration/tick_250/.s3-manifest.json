@@ -1,0 +1,11 @@
+{
+  "files": {
+    "features.csv": {
+      "original_path": ".kit/results/temporal-predictability-completion/arm2_calibration/tick_250/features.csv",
+      "s3_key": "artifact-store/75/75b20de2bcf94e46caac6b1d478188f67d62b5e150b25c0437e47ff85473ac3e.csv",
+      "sha256": "75b20de2bcf94e46caac6b1d478188f67d62b5e150b25c0437e47ff85473ac3e",
+      "size": 12711940
+    }
+  },
+  "version": 1
+}

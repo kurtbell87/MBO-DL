@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "orchestration-kit MCP tool contracts",
+  "type": "object",
+  "properties": {
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "orchestrator.run",
+              "orchestrator.request_create",
+              "orchestrator.pump",
+              "orchestrator.run_info",
+              "orchestrator.query_log",
+              "kit.tdd",
+              "kit.research_cycle",
+              "kit.research_full",
+              "kit.research_program",
+              "kit.math",
+              "kit.status",
+              "kit.runs",
+              "kit.capsule",
+              "kit.research_status"
+            ]
+          },
+          "inputSchema": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "name",
+          "inputSchema"
+        ]
+      }
+    }
+  },
+  "required": [
+    "tools"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "files": {
+    "features.csv": {
+      "original_path": ".kit/results/R3b-event-bar-cnn/tick_100/features.csv",
+      "s3_key": "artifact-store/39/39729bea61d14d63f088130c8fc28537a0e671e415b8efbf2be033f92f5cde99.csv",
+      "sha256": "39729bea61d14d63f088130c8fc28537a0e671e415b8efbf2be033f92f5cde99",
+      "size": 32708964
+    }
+  },
+  "version": 1
+}

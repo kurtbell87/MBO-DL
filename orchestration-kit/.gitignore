@@ -1,0 +1,25 @@
+# Master run artifacts
+runs/*
+!runs/.gitkeep
+
+# Generated interop traffic
+interop/requests/*.json
+!interop/requests/.gitkeep
+interop/responses/*.json
+!interop/responses/.gitkeep
+
+# Local logs
+*.log
+
+# Local MCP config/secrets
+.mcp.json
+.mcp-token
+.orchestration-kit.env
+
+# MCP service logs
+!runs/mcp-logs/
+runs/mcp-logs/*
+!runs/mcp-logs/.gitkeep
+
+# python artifacts
+**__pycache__**
