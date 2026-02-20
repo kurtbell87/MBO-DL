@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Orchestration-kit smoke run: file-ops only (no training, no long-running jobs).
+
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
+echo "[smoke] running parent phase: research.status"
+parent_json="$(tools/kit --json research status)"
+parent_run_id="$(printf '%s' "$parent_json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["run_id"])')"
+
+request_id="rq-smoke-${parent_run_id}"
+request_path="interop/requests/${request_id}.json"
+response_path="interop/responses/${request_id}.json"
+
+rm -f "$request_path" "$response_path"
+
+echo "[smoke] enqueueing interop request: ${request_id}"
+tools/kit request \
+  --request-id "$request_id" \
+  --from research \
+  --to math \
+  --action math.status \
+  --run-id "$parent_run_id" \
+  --must-read "runs/${parent_run_id}/capsules/research_status.md" \
+  --must-read "runs/${parent_run_id}/manifests/research_status.json" \
+  --allowed-path 'runs/*/capsules/*.md' \
+  --allowed-path 'runs/*/manifests/*.json' \
+  --deliverable 'runs/*/capsules/math_status.md' \
+  --deliverable 'runs/*/manifests/math_status.json' >/dev/null
+
+echo "[smoke] executing pump"
+pump_json="$(tools/pump --once --request "$request_id" --json)"
+child_run_id="$(printf '%s' "$pump_json" | python3 -c 'import json,sys; print(json.load(sys.stdin)["child_run_id"])')"
+
+echo "[smoke] validating capsules and manifests"
+tools/validate-capsules "runs/${parent_run_id}" "runs/${child_run_id}"
+tools/validate-manifests --check-files "runs/${parent_run_id}" "runs/${child_run_id}"
+
+echo "[smoke] parent_run_id=${parent_run_id}"
+echo "[smoke] child_run_id=${child_run_id}"
+echo "[smoke] response_path=interop/responses/${request_id}.json"

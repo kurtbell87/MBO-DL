@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "orchestration-kit/interop/response.schema.json",
+  "title": "Interop Response",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "request_id",
+    "status",
+    "child_run_id",
+    "capsule_path",
+    "manifest_path",
+    "deliverables",
+    "notes"
+  ],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "blocked", "failed"]
+    },
+    "child_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capsule_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "manifest_path": {
+      "type": "string",
+      "minLength": 1
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}
