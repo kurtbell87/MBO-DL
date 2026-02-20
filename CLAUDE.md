@@ -69,6 +69,8 @@ git worktree remove ../MBO-DL-cnn-fix
 - **Clean up worktrees** after merging: `git worktree remove <path>`.
 - **Worktree naming**: `../<project>-<slug>` keeps worktrees adjacent to the main checkout.
 - **Each worktree gets its own `.kit/` state** via symlinks — kit scripts resolve relative to `PROJECT_ROOT`.
+- **Auto-bootstrap**: The `post-checkout` hook automatically fixes `PROJECT_ROOT` in `.orchestration-kit.env`, restores kit symlinks, and warns about broken artifact symlinks. Install it with: `orchestration-kit/tools/install-hooks`.
+- **Subtree, not submodule**: `orchestration-kit/` is a git subtree, so worktrees get the full directory contents (no empty gitlink).
 
 ## Path Convention
 
@@ -286,6 +288,40 @@ If a research phase produces large result files (>10 MB), push them before commi
 orchestration-kit/tools/artifact-store push-dir .kit/results/<experiment-name>/ --threshold 10MB
 git add .kit/results/<experiment-name>/
 git commit -m "results: <experiment-name>"
+```
+
+## Orchestration-Kit Sync (Subtree)
+
+`orchestration-kit/` is a **git subtree** (not a submodule). This means:
+- Worktrees get the full directory contents (no empty gitlink)
+- Changes made inside `orchestration-kit/` are normal git commits
+- Two-way sync with the upstream repo via `sync-upstream`
+
+```bash
+# Check sync status (divergence between local and upstream)
+orchestration-kit/tools/sync-upstream status
+
+# Pull latest upstream changes into orchestration-kit/
+orchestration-kit/tools/sync-upstream pull
+
+# Push local orchestration-kit/ changes back to upstream
+orchestration-kit/tools/sync-upstream push
+```
+
+**Upstream remote:** `orchestration-kit-upstream` → `https://github.com/kurtbell87/orchestration-kit.git`
+Configured in `.orchestration-kit.env` via `ORCHESTRATION_KIT_UPSTREAM_REMOTE` and `ORCHESTRATION_KIT_UPSTREAM_BRANCH`.
+
+## Project Health Check
+
+```bash
+# Full diagnostic — checks repo structure, secrets, symlinks, artifacts, git health
+orchestration-kit/tools/project-doctor
+
+# Auto-fix what's possible (missing symlinks, loose objects, remote config)
+orchestration-kit/tools/project-doctor --fix
+
+# Machine-readable output
+orchestration-kit/tools/project-doctor --json
 ```
 
 ## Global Dashboard (Optional)
