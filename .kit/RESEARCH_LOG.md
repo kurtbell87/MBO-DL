@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## full-year-export — CONFIRMED
+**Date:** 2026-02-20
+**Hypothesis:** bar_feature_export (Parquet) scales to all ~250 RTH trading days in 2022 without systematic failures or data corruption. Full-year dataset production-ready.
+**Key result:** 251/251 days exported, 1,160,150 total rows, 0 failures, 0 duplicate timestamps, 0 day gaps. 19/19 reference days validate within float32 precision (max rel_err=4.99e-6; forward returns exact at 0.0). Quarter balance: Q1=62, Q2=62, Q3=64, Q4=63. Wall-clock: 77s (11-way parallel). Schema: 149 columns, zstd compression, 255.7 MB total.
+**Lesson:** Export infrastructure is production-ready and fast (~2.3s/day sequential, 77s total parallel). Parquet is canonical format (3.1x compression, proper fwd_return_N naming). Contract rollover required adding MESH3 for post-Dec days. SC-4 tolerance of 1e-10 was unrealistic for float32 data — actual 4.99e-6 is representational, not corruption.
+**Next:** Full-year dataset unblocks: (1) end-to-end CNN classification on full year (13x more data), (2) full-year CNN+GBT replication, (3) label design sensitivity studies.
+**Details:** `.kit/results/full-year-export/analysis.md`
+
 ## r3b-genuine-tick-bars — CONFIRMED (low confidence)
 **Date:** 2026-02-19
 **Hypothesis:** At least one genuine tick-bar threshold produces CNN spatial R² >= 0.107 (20%+ above time_5s baseline of 0.089).

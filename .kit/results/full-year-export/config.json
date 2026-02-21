@@ -1,0 +1,53 @@
+{
+  "binary": "build/bar_feature_export",
+  "bar_type": "time",
+  "bar_param": 5,
+  "output_format": "parquet",
+  "compression": "zstd",
+  "data_source": "DATA/GLBX-20260207-L953CAPU5B/*.dbn.zst",
+  "session": "RTH (09:30-16:00 ET)",
+  "snapshot_interval_ms": 100,
+  "warmup_bars": 50,
+  "triple_barrier_config": {
+    "target_ticks": 10,
+    "stop_ticks": 5,
+    "volume_horizon": 500,
+    "min_return_ticks": 2,
+    "max_time_horizon_s": 300,
+    "tick_size": 0.25
+  },
+  "contract_mapping": [
+    {
+      "contract": "MESH2",
+      "instrument_id": 11355,
+      "start": "2022-01-03",
+      "end": "2022-03-17"
+    },
+    {
+      "contract": "MESM2",
+      "instrument_id": 13615,
+      "start": "2022-03-18",
+      "end": "2022-06-16"
+    },
+    {
+      "contract": "MESU2",
+      "instrument_id": 10039,
+      "start": "2022-06-17",
+      "end": "2022-09-15"
+    },
+    {
+      "contract": "MESZ2",
+      "instrument_id": 10299,
+      "start": "2022-09-16",
+      "end": "2022-12-16"
+    },
+    {
+      "contract": "MESH3",
+      "instrument_id": 2080,
+      "start": "2022-12-17",
+      "end": "2022-12-30"
+    }
+  ],
+  "parallelism": 11,
+  "total_days_processed": 251
+}

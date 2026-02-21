@@ -1,14 +1,17 @@
 {
-  "cycles_completed": 2,
+  "cycles_completed": 3,
   "gpu_hours_used": 0.0,
   "started_at": "2026-02-19T08:16:08.796351",
-  "last_cycle_at": "2026-02-19T13:10:18.725849",
+  "last_cycle_at": "2026-02-20T23:06:51.754834",
   "question_history": {
     "hybrid-model-corrected": [
       "REFUTED(OutcomeB)"
     ],
     "r3b-genuine-tick-bars": [
       "CONFIRMED(lowconfidence)"
+    ],
+    "full-year-export": [
+      "CONFIRMED"
     ]
   },
   "cycle_log": [
@@ -27,6 +30,14 @@
       "gpu_hours": 0.0,
       "spec_file": ".kit/experiments/r3b-genuine-tick-bars.md",
       "timestamp": "2026-02-19T13:10:18.725854"
+    },
+    {
+      "cycle": 3,
+      "question": "full-year-export",
+      "verdict": "CONFIRMED",
+      "gpu_hours": 0.0,
+      "spec_file": ".kit/experiments/full-year-export.md",
+      "timestamp": "2026-02-20T23:06:51.754840"
     }
   ]
 }

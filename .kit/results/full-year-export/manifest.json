@@ -1,0 +1,1475 @@
+{
+  "bar_type": "time_5s",
+  "bar_param": "5",
+  "compression": "zstd",
+  "format": "parquet",
+  "total_days": 251,
+  "total_bars": 1160150,
+  "schema_columns": [
+    "timestamp",
+    "bar_type",
+    "bar_param",
+    "day",
+    "is_warmup",
+    "bar_index",
+    "book_imbalance_1",
+    "book_imbalance_3",
+    "book_imbalance_5",
+    "book_imbalance_10",
+    "weighted_imbalance",
+    "spread",
+    "bid_depth_profile_0",
+    "bid_depth_profile_1",
+    "bid_depth_profile_2",
+    "bid_depth_profile_3",
+    "bid_depth_profile_4",
+    "bid_depth_profile_5",
+    "bid_depth_profile_6",
+    "bid_depth_profile_7",
+    "bid_depth_profile_8",
+    "bid_depth_profile_9",
+    "ask_depth_profile_0",
+    "ask_depth_profile_1",
+    "ask_depth_profile_2",
+    "ask_depth_profile_3",
+    "ask_depth_profile_4",
+    "ask_depth_profile_5",
+    "ask_depth_profile_6",
+    "ask_depth_profile_7",
+    "ask_depth_profile_8",
+    "ask_depth_profile_9",
+    "depth_concentration_bid",
+    "depth_concentration_ask",
+    "book_slope_bid",
+    "book_slope_ask",
+    "level_count_bid",
+    "level_count_ask",
+    "net_volume",
+    "volume_imbalance",
+    "trade_count",
+    "avg_trade_size",
+    "large_trade_count",
+    "vwap_distance",
+    "kyle_lambda",
+    "return_1",
+    "return_5",
+    "return_20",
+    "volatility_20",
+    "volatility_50",
+    "momentum",
+    "high_low_range_20",
+    "high_low_range_50",
+    "close_position",
+    "volume_surprise",
+    "duration_surprise",
+    "acceleration",
+    "vol_price_corr",
+    "time_sin",
+    "time_cos",
+    "minutes_since_open",
+    "minutes_to_close",
+    "session_volume_frac",
+    "cancel_add_ratio",
+    "message_rate",
+    "modify_fraction",
+    "order_flow_toxicity",
+    "cancel_concentration",
+    "book_snap_0",
+    "book_snap_1",
+    "book_snap_2",
+    "book_snap_3",
+    "book_snap_4",
+    "book_snap_5",
+    "book_snap_6",
+    "book_snap_7",
+    "book_snap_8",
+    "book_snap_9",
+    "book_snap_10",
+    "book_snap_11",
+    "book_snap_12",
+    "book_snap_13",
+    "book_snap_14",
+    "book_snap_15",
+    "book_snap_16",
+    "book_snap_17",
+    "book_snap_18",
+    "book_snap_19",
+    "book_snap_20",
+    "book_snap_21",
+    "book_snap_22",
+    "book_snap_23",
+    "book_snap_24",
+    "book_snap_25",
+    "book_snap_26",
+    "book_snap_27",
+    "book_snap_28",
+    "book_snap_29",
+    "book_snap_30",
+    "book_snap_31",
+    "book_snap_32",
+    "book_snap_33",
+    "book_snap_34",
+    "book_snap_35",
+    "book_snap_36",
+    "book_snap_37",
+    "book_snap_38",
+    "book_snap_39",
+    "msg_summary_0",
+    "msg_summary_1",
+    "msg_summary_2",
+    "msg_summary_3",
+    "msg_summary_4",
+    "msg_summary_5",
+    "msg_summary_6",
+    "msg_summary_7",
+    "msg_summary_8",
+    "msg_summary_9",
+    "msg_summary_10",
+    "msg_summary_11",
+    "msg_summary_12",
+    "msg_summary_13",
+    "msg_summary_14",
+    "msg_summary_15",
+    "msg_summary_16",
+    "msg_summary_17",
+    "msg_summary_18",
+    "msg_summary_19",
+    "msg_summary_20",
+    "msg_summary_21",
+    "msg_summary_22",
+    "msg_summary_23",
+    "msg_summary_24",
+    "msg_summary_25",
+    "msg_summary_26",
+    "msg_summary_27",
+    "msg_summary_28",
+    "msg_summary_29",
+    "msg_summary_30",
+    "msg_summary_31",
+    "msg_summary_32",
+    "fwd_return_1",
+    "fwd_return_5",
+    "fwd_return_20",
+    "fwd_return_100",
+    "mbo_event_count",
+    "tb_label",
+    "tb_exit_type",
+    "tb_bars_held"
+  ],
+  "dates": [
+    {
+      "date": "2022-01-03",
+      "bars": 4630,
+      "file": "2022-01-03.parquet"
+    },
+    {
+      "date": "2022-01-04",
+      "bars": 4630,
+      "file": "2022-01-04.parquet"
+    },
+    {
+      "date": "2022-01-05",
+      "bars": 4630,
+      "file": "2022-01-05.parquet"
+    },
+    {
+      "date": "2022-01-06",
+      "bars": 4630,
+      "file": "2022-01-06.parquet"
+    },
+    {
+      "date": "2022-01-07",
+      "bars": 4630,
+      "file": "2022-01-07.parquet"
+    },
+    {
+      "date": "2022-01-10",
+      "bars": 4630,
+      "file": "2022-01-10.parquet"
+    },
+    {
+      "date": "2022-01-11",
+      "bars": 4630,
+      "file": "2022-01-11.parquet"
+    },
+    {
+      "date": "2022-01-12",
+      "bars": 4630,
+      "file": "2022-01-12.parquet"
+    },
+    {
+      "date": "2022-01-13",
+      "bars": 4630,
+      "file": "2022-01-13.parquet"
+    },
+    {
+      "date": "2022-01-14",
+      "bars": 4630,
+      "file": "2022-01-14.parquet"
+    },
+    {
+      "date": "2022-01-18",
+      "bars": 4630,
+      "file": "2022-01-18.parquet"
+    },
+    {
+      "date": "2022-01-19",
+      "bars": 4630,
+      "file": "2022-01-19.parquet"
+    },
+    {
+      "date": "2022-01-20",
+      "bars": 4630,
+      "file": "2022-01-20.parquet"
+    },
+    {
+      "date": "2022-01-21",
+      "bars": 4630,
+      "file": "2022-01-21.parquet"
+    },
+    {
+      "date": "2022-01-24",
+      "bars": 4630,
+      "file": "2022-01-24.parquet"
+    },
+    {
+      "date": "2022-01-25",
+      "bars": 4630,
+      "file": "2022-01-25.parquet"
+    },
+    {
+      "date": "2022-01-26",
+      "bars": 4630,
+      "file": "2022-01-26.parquet"
+    },
+    {
+      "date": "2022-01-27",
+      "bars": 4630,
+      "file": "2022-01-27.parquet"
+    },
+    {
+      "date": "2022-01-28",
+      "bars": 4630,
+      "file": "2022-01-28.parquet"
+    },
+    {
+      "date": "2022-01-31",
+      "bars": 4630,
+      "file": "2022-01-31.parquet"
+    },
+    {
+      "date": "2022-02-01",
+      "bars": 4630,
+      "file": "2022-02-01.parquet"
+    },
+    {
+      "date": "2022-02-02",
+      "bars": 4630,
+      "file": "2022-02-02.parquet"
+    },
+    {
+      "date": "2022-02-03",
+      "bars": 4630,
+      "file": "2022-02-03.parquet"
+    },
+    {
+      "date": "2022-02-04",
+      "bars": 4630,
+      "file": "2022-02-04.parquet"
+    },
+    {
+      "date": "2022-02-07",
+      "bars": 4630,
+      "file": "2022-02-07.parquet"
+    },
+    {
+      "date": "2022-02-08",
+      "bars": 4630,
+      "file": "2022-02-08.parquet"
+    },
+    {
+      "date": "2022-02-09",
+      "bars": 4630,
+      "file": "2022-02-09.parquet"
+    },
+    {
+      "date": "2022-02-10",
+      "bars": 4630,
+      "file": "2022-02-10.parquet"
+    },
+    {
+      "date": "2022-02-11",
+      "bars": 4630,
+      "file": "2022-02-11.parquet"
+    },
+    {
+      "date": "2022-02-14",
+      "bars": 4630,
+      "file": "2022-02-14.parquet"
+    },
+    {
+      "date": "2022-02-15",
+      "bars": 4630,
+      "file": "2022-02-15.parquet"
+    },
+    {
+      "date": "2022-02-16",
+      "bars": 4630,
+      "file": "2022-02-16.parquet"
+    },
+    {
+      "date": "2022-02-17",
+      "bars": 4630,
+      "file": "2022-02-17.parquet"
+    },
+    {
+      "date": "2022-02-18",
+      "bars": 4630,
+      "file": "2022-02-18.parquet"
+    },
+    {
+      "date": "2022-02-22",
+      "bars": 4630,
+      "file": "2022-02-22.parquet"
+    },
+    {
+      "date": "2022-02-23",
+      "bars": 4630,
+      "file": "2022-02-23.parquet"
+    },
+    {
+      "date": "2022-02-24",
+      "bars": 4630,
+      "file": "2022-02-24.parquet"
+    },
+    {
+      "date": "2022-02-25",
+      "bars": 4630,
+      "file": "2022-02-25.parquet"
+    },
+    {
+      "date": "2022-02-28",
+      "bars": 4630,
+      "file": "2022-02-28.parquet"
+    },
+    {
+      "date": "2022-03-01",
+      "bars": 4630,
+      "file": "2022-03-01.parquet"
+    },
+    {
+      "date": "2022-03-02",
+      "bars": 4630,
+      "file": "2022-03-02.parquet"
+    },
+    {
+      "date": "2022-03-03",
+      "bars": 4630,
+      "file": "2022-03-03.parquet"
+    },
+    {
+      "date": "2022-03-04",
+      "bars": 4630,
+      "file": "2022-03-04.parquet"
+    },
+    {
+      "date": "2022-03-07",
+      "bars": 4630,
+      "file": "2022-03-07.parquet"
+    },
+    {
+      "date": "2022-03-08",
+      "bars": 4630,
+      "file": "2022-03-08.parquet"
+    },
+    {
+      "date": "2022-03-09",
+      "bars": 4630,
+      "file": "2022-03-09.parquet"
+    },
+    {
+      "date": "2022-03-10",
+      "bars": 4630,
+      "file": "2022-03-10.parquet"
+    },
+    {
+      "date": "2022-03-11",
+      "bars": 4630,
+      "file": "2022-03-11.parquet"
+    },
+    {
+      "date": "2022-03-14",
+      "bars": 4630,
+      "file": "2022-03-14.parquet"
+    },
+    {
+      "date": "2022-03-15",
+      "bars": 4630,
+      "file": "2022-03-15.parquet"
+    },
+    {
+      "date": "2022-03-16",
+      "bars": 4630,
+      "file": "2022-03-16.parquet"
+    },
+    {
+      "date": "2022-03-17",
+      "bars": 4630,
+      "file": "2022-03-17.parquet"
+    },
+    {
+      "date": "2022-03-18",
+      "bars": 4630,
+      "file": "2022-03-18.parquet"
+    },
+    {
+      "date": "2022-03-21",
+      "bars": 4630,
+      "file": "2022-03-21.parquet"
+    },
+    {
+      "date": "2022-03-22",
+      "bars": 4630,
+      "file": "2022-03-22.parquet"
+    },
+    {
+      "date": "2022-03-23",
+      "bars": 4630,
+      "file": "2022-03-23.parquet"
+    },
+    {
+      "date": "2022-03-24",
+      "bars": 4630,
+      "file": "2022-03-24.parquet"
+    },
+    {
+      "date": "2022-03-25",
+      "bars": 4630,
+      "file": "2022-03-25.parquet"
+    },
+    {
+      "date": "2022-03-28",
+      "bars": 4630,
+      "file": "2022-03-28.parquet"
+    },
+    {
+      "date": "2022-03-29",
+      "bars": 4630,
+      "file": "2022-03-29.parquet"
+    },
+    {
+      "date": "2022-03-30",
+      "bars": 4630,
+      "file": "2022-03-30.parquet"
+    },
+    {
+      "date": "2022-03-31",
+      "bars": 4630,
+      "file": "2022-03-31.parquet"
+    },
+    {
+      "date": "2022-04-01",
+      "bars": 4630,
+      "file": "2022-04-01.parquet"
+    },
+    {
+      "date": "2022-04-04",
+      "bars": 4630,
+      "file": "2022-04-04.parquet"
+    },
+    {
+      "date": "2022-04-05",
+      "bars": 4630,
+      "file": "2022-04-05.parquet"
+    },
+    {
+      "date": "2022-04-06",
+      "bars": 4630,
+      "file": "2022-04-06.parquet"
+    },
+    {
+      "date": "2022-04-07",
+      "bars": 4630,
+      "file": "2022-04-07.parquet"
+    },
+    {
+      "date": "2022-04-08",
+      "bars": 4630,
+      "file": "2022-04-08.parquet"
+    },
+    {
+      "date": "2022-04-11",
+      "bars": 4630,
+      "file": "2022-04-11.parquet"
+    },
+    {
+      "date": "2022-04-12",
+      "bars": 4630,
+      "file": "2022-04-12.parquet"
+    },
+    {
+      "date": "2022-04-13",
+      "bars": 4630,
+      "file": "2022-04-13.parquet"
+    },
+    {
+      "date": "2022-04-14",
+      "bars": 4630,
+      "file": "2022-04-14.parquet"
+    },
+    {
+      "date": "2022-04-18",
+      "bars": 4630,
+      "file": "2022-04-18.parquet"
+    },
+    {
+      "date": "2022-04-19",
+      "bars": 4630,
+      "file": "2022-04-19.parquet"
+    },
+    {
+      "date": "2022-04-20",
+      "bars": 4630,
+      "file": "2022-04-20.parquet"
+    },
+    {
+      "date": "2022-04-21",
+      "bars": 4630,
+      "file": "2022-04-21.parquet"
+    },
+    {
+      "date": "2022-04-22",
+      "bars": 4630,
+      "file": "2022-04-22.parquet"
+    },
+    {
+      "date": "2022-04-25",
+      "bars": 4630,
+      "file": "2022-04-25.parquet"
+    },
+    {
+      "date": "2022-04-26",
+      "bars": 4630,
+      "file": "2022-04-26.parquet"
+    },
+    {
+      "date": "2022-04-27",
+      "bars": 4630,
+      "file": "2022-04-27.parquet"
+    },
+    {
+      "date": "2022-04-28",
+      "bars": 4630,
+      "file": "2022-04-28.parquet"
+    },
+    {
+      "date": "2022-04-29",
+      "bars": 4630,
+      "file": "2022-04-29.parquet"
+    },
+    {
+      "date": "2022-05-02",
+      "bars": 4630,
+      "file": "2022-05-02.parquet"
+    },
+    {
+      "date": "2022-05-03",
+      "bars": 4630,
+      "file": "2022-05-03.parquet"
+    },
+    {
+      "date": "2022-05-04",
+      "bars": 4630,
+      "file": "2022-05-04.parquet"
+    },
+    {
+      "date": "2022-05-05",
+      "bars": 4630,
+      "file": "2022-05-05.parquet"
+    },
+    {
+      "date": "2022-05-06",
+      "bars": 4630,
+      "file": "2022-05-06.parquet"
+    },
+    {
+      "date": "2022-05-09",
+      "bars": 4630,
+      "file": "2022-05-09.parquet"
+    },
+    {
+      "date": "2022-05-10",
+      "bars": 4630,
+      "file": "2022-05-10.parquet"
+    },
+    {
+      "date": "2022-05-11",
+      "bars": 4630,
+      "file": "2022-05-11.parquet"
+    },
+    {
+      "date": "2022-05-12",
+      "bars": 4630,
+      "file": "2022-05-12.parquet"
+    },
+    {
+      "date": "2022-05-13",
+      "bars": 4630,
+      "file": "2022-05-13.parquet"
+    },
+    {
+      "date": "2022-05-16",
+      "bars": 4630,
+      "file": "2022-05-16.parquet"
+    },
+    {
+      "date": "2022-05-17",
+      "bars": 4630,
+      "file": "2022-05-17.parquet"
+    },
+    {
+      "date": "2022-05-18",
+      "bars": 4630,
+      "file": "2022-05-18.parquet"
+    },
+    {
+      "date": "2022-05-19",
+      "bars": 4630,
+      "file": "2022-05-19.parquet"
+    },
+    {
+      "date": "2022-05-20",
+      "bars": 4630,
+      "file": "2022-05-20.parquet"
+    },
+    {
+      "date": "2022-05-23",
+      "bars": 4630,
+      "file": "2022-05-23.parquet"
+    },
+    {
+      "date": "2022-05-24",
+      "bars": 4630,
+      "file": "2022-05-24.parquet"
+    },
+    {
+      "date": "2022-05-25",
+      "bars": 4630,
+      "file": "2022-05-25.parquet"
+    },
+    {
+      "date": "2022-05-26",
+      "bars": 4630,
+      "file": "2022-05-26.parquet"
+    },
+    {
+      "date": "2022-05-27",
+      "bars": 4630,
+      "file": "2022-05-27.parquet"
+    },
+    {
+      "date": "2022-05-31",
+      "bars": 4630,
+      "file": "2022-05-31.parquet"
+    },
+    {
+      "date": "2022-06-01",
+      "bars": 4630,
+      "file": "2022-06-01.parquet"
+    },
+    {
+      "date": "2022-06-02",
+      "bars": 4630,
+      "file": "2022-06-02.parquet"
+    },
+    {
+      "date": "2022-06-03",
+      "bars": 4630,
+      "file": "2022-06-03.parquet"
+    },
+    {
+      "date": "2022-06-06",
+      "bars": 4630,
+      "file": "2022-06-06.parquet"
+    },
+    {
+      "date": "2022-06-07",
+      "bars": 4630,
+      "file": "2022-06-07.parquet"
+    },
+    {
+      "date": "2022-06-08",
+      "bars": 4630,
+      "file": "2022-06-08.parquet"
+    },
+    {
+      "date": "2022-06-09",
+      "bars": 4630,
+      "file": "2022-06-09.parquet"
+    },
+    {
+      "date": "2022-06-10",
+      "bars": 4630,
+      "file": "2022-06-10.parquet"
+    },
+    {
+      "date": "2022-06-13",
+      "bars": 4630,
+      "file": "2022-06-13.parquet"
+    },
+    {
+      "date": "2022-06-14",
+      "bars": 4630,
+      "file": "2022-06-14.parquet"
+    },
+    {
+      "date": "2022-06-15",
+      "bars": 4630,
+      "file": "2022-06-15.parquet"
+    },
+    {
+      "date": "2022-06-16",
+      "bars": 4630,
+      "file": "2022-06-16.parquet"
+    },
+    {
+      "date": "2022-06-17",
+      "bars": 4630,
+      "file": "2022-06-17.parquet"
+    },
+    {
+      "date": "2022-06-21",
+      "bars": 4630,
+      "file": "2022-06-21.parquet"
+    },
+    {
+      "date": "2022-06-22",
+      "bars": 4630,
+      "file": "2022-06-22.parquet"
+    },
+    {
+      "date": "2022-06-23",
+      "bars": 4630,
+      "file": "2022-06-23.parquet"
+    },
+    {
+      "date": "2022-06-24",
+      "bars": 4630,
+      "file": "2022-06-24.parquet"
+    },
+    {
+      "date": "2022-06-27",
+      "bars": 4630,
+      "file": "2022-06-27.parquet"
+    },
+    {
+      "date": "2022-06-28",
+      "bars": 4630,
+      "file": "2022-06-28.parquet"
+    },
+    {
+      "date": "2022-06-29",
+      "bars": 4630,
+      "file": "2022-06-29.parquet"
+    },
+    {
+      "date": "2022-06-30",
+      "bars": 4630,
+      "file": "2022-06-30.parquet"
+    },
+    {
+      "date": "2022-07-01",
+      "bars": 4630,
+      "file": "2022-07-01.parquet"
+    },
+    {
+      "date": "2022-07-05",
+      "bars": 4630,
+      "file": "2022-07-05.parquet"
+    },
+    {
+      "date": "2022-07-06",
+      "bars": 4630,
+      "file": "2022-07-06.parquet"
+    },
+    {
+      "date": "2022-07-07",
+      "bars": 4630,
+      "file": "2022-07-07.parquet"
+    },
+    {
+      "date": "2022-07-08",
+      "bars": 4630,
+      "file": "2022-07-08.parquet"
+    },
+    {
+      "date": "2022-07-11",
+      "bars": 4630,
+      "file": "2022-07-11.parquet"
+    },
+    {
+      "date": "2022-07-12",
+      "bars": 4630,
+      "file": "2022-07-12.parquet"
+    },
+    {
+      "date": "2022-07-13",
+      "bars": 4630,
+      "file": "2022-07-13.parquet"
+    },
+    {
+      "date": "2022-07-14",
+      "bars": 4630,
+      "file": "2022-07-14.parquet"
+    },
+    {
+      "date": "2022-07-15",
+      "bars": 4630,
+      "file": "2022-07-15.parquet"
+    },
+    {
+      "date": "2022-07-18",
+      "bars": 4630,
+      "file": "2022-07-18.parquet"
+    },
+    {
+      "date": "2022-07-19",
+      "bars": 4630,
+      "file": "2022-07-19.parquet"
+    },
+    {
+      "date": "2022-07-20",
+      "bars": 4630,
+      "file": "2022-07-20.parquet"
+    },
+    {
+      "date": "2022-07-21",
+      "bars": 4630,
+      "file": "2022-07-21.parquet"
+    },
+    {
+      "date": "2022-07-22",
+      "bars": 4630,
+      "file": "2022-07-22.parquet"
+    },
+    {
+      "date": "2022-07-25",
+      "bars": 4630,
+      "file": "2022-07-25.parquet"
+    },
+    {
+      "date": "2022-07-26",
+      "bars": 4630,
+      "file": "2022-07-26.parquet"
+    },
+    {
+      "date": "2022-07-27",
+      "bars": 4630,
+      "file": "2022-07-27.parquet"
+    },
+    {
+      "date": "2022-07-28",
+      "bars": 4630,
+      "file": "2022-07-28.parquet"
+    },
+    {
+      "date": "2022-07-29",
+      "bars": 4630,
+      "file": "2022-07-29.parquet"
+    },
+    {
+      "date": "2022-08-01",
+      "bars": 4630,
+      "file": "2022-08-01.parquet"
+    },
+    {
+      "date": "2022-08-02",
+      "bars": 4630,
+      "file": "2022-08-02.parquet"
+    },
+    {
+      "date": "2022-08-03",
+      "bars": 4630,
+      "file": "2022-08-03.parquet"
+    },
+    {
+      "date": "2022-08-04",
+      "bars": 4630,
+      "file": "2022-08-04.parquet"
+    },
+    {
+      "date": "2022-08-05",
+      "bars": 4630,
+      "file": "2022-08-05.parquet"
+    },
+    {
+      "date": "2022-08-08",
+      "bars": 4630,
+      "file": "2022-08-08.parquet"
+    },
+    {
+      "date": "2022-08-09",
+      "bars": 4630,
+      "file": "2022-08-09.parquet"
+    },
+    {
+      "date": "2022-08-10",
+      "bars": 4630,
+      "file": "2022-08-10.parquet"
+    },
+    {
+      "date": "2022-08-11",
+      "bars": 4630,
+      "file": "2022-08-11.parquet"
+    },
+    {
+      "date": "2022-08-12",
+      "bars": 4630,
+      "file": "2022-08-12.parquet"
+    },
+    {
+      "date": "2022-08-15",
+      "bars": 4630,
+      "file": "2022-08-15.parquet"
+    },
+    {
+      "date": "2022-08-16",
+      "bars": 4630,
+      "file": "2022-08-16.parquet"
+    },
+    {
+      "date": "2022-08-17",
+      "bars": 4630,
+      "file": "2022-08-17.parquet"
+    },
+    {
+      "date": "2022-08-18",
+      "bars": 4630,
+      "file": "2022-08-18.parquet"
+    },
+    {
+      "date": "2022-08-19",
+      "bars": 4630,
+      "file": "2022-08-19.parquet"
+    },
+    {
+      "date": "2022-08-22",
+      "bars": 4630,
+      "file": "2022-08-22.parquet"
+    },
+    {
+      "date": "2022-08-23",
+      "bars": 4630,
+      "file": "2022-08-23.parquet"
+    },
+    {
+      "date": "2022-08-24",
+      "bars": 4630,
+      "file": "2022-08-24.parquet"
+    },
+    {
+      "date": "2022-08-25",
+      "bars": 4630,
+      "file": "2022-08-25.parquet"
+    },
+    {
+      "date": "2022-08-26",
+      "bars": 4630,
+      "file": "2022-08-26.parquet"
+    },
+    {
+      "date": "2022-08-29",
+      "bars": 4630,
+      "file": "2022-08-29.parquet"
+    },
+    {
+      "date": "2022-08-30",
+      "bars": 4630,
+      "file": "2022-08-30.parquet"
+    },
+    {
+      "date": "2022-08-31",
+      "bars": 4630,
+      "file": "2022-08-31.parquet"
+    },
+    {
+      "date": "2022-09-01",
+      "bars": 4630,
+      "file": "2022-09-01.parquet"
+    },
+    {
+      "date": "2022-09-02",
+      "bars": 4630,
+      "file": "2022-09-02.parquet"
+    },
+    {
+      "date": "2022-09-06",
+      "bars": 4630,
+      "file": "2022-09-06.parquet"
+    },
+    {
+      "date": "2022-09-07",
+      "bars": 4630,
+      "file": "2022-09-07.parquet"
+    },
+    {
+      "date": "2022-09-08",
+      "bars": 4630,
+      "file": "2022-09-08.parquet"
+    },
+    {
+      "date": "2022-09-09",
+      "bars": 4630,
+      "file": "2022-09-09.parquet"
+    },
+    {
+      "date": "2022-09-12",
+      "bars": 4630,
+      "file": "2022-09-12.parquet"
+    },
+    {
+      "date": "2022-09-13",
+      "bars": 4630,
+      "file": "2022-09-13.parquet"
+    },
+    {
+      "date": "2022-09-14",
+      "bars": 4630,
+      "file": "2022-09-14.parquet"
+    },
+    {
+      "date": "2022-09-15",
+      "bars": 4630,
+      "file": "2022-09-15.parquet"
+    },
+    {
+      "date": "2022-09-16",
+      "bars": 4630,
+      "file": "2022-09-16.parquet"
+    },
+    {
+      "date": "2022-09-19",
+      "bars": 4630,
+      "file": "2022-09-19.parquet"
+    },
+    {
+      "date": "2022-09-20",
+      "bars": 4630,
+      "file": "2022-09-20.parquet"
+    },
+    {
+      "date": "2022-09-21",
+      "bars": 4630,
+      "file": "2022-09-21.parquet"
+    },
+    {
+      "date": "2022-09-22",
+      "bars": 4630,
+      "file": "2022-09-22.parquet"
+    },
+    {
+      "date": "2022-09-23",
+      "bars": 4630,
+      "file": "2022-09-23.parquet"
+    },
+    {
+      "date": "2022-09-26",
+      "bars": 4630,
+      "file": "2022-09-26.parquet"
+    },
+    {
+      "date": "2022-09-27",
+      "bars": 4630,
+      "file": "2022-09-27.parquet"
+    },
+    {
+      "date": "2022-09-28",
+      "bars": 4630,
+      "file": "2022-09-28.parquet"
+    },
+    {
+      "date": "2022-09-29",
+      "bars": 4630,
+      "file": "2022-09-29.parquet"
+    },
+    {
+      "date": "2022-09-30",
+      "bars": 4630,
+      "file": "2022-09-30.parquet"
+    },
+    {
+      "date": "2022-10-03",
+      "bars": 4630,
+      "file": "2022-10-03.parquet"
+    },
+    {
+      "date": "2022-10-04",
+      "bars": 4630,
+      "file": "2022-10-04.parquet"
+    },
+    {
+      "date": "2022-10-05",
+      "bars": 4630,
+      "file": "2022-10-05.parquet"
+    },
+    {
+      "date": "2022-10-06",
+      "bars": 4630,
+      "file": "2022-10-06.parquet"
+    },
+    {
+      "date": "2022-10-07",
+      "bars": 4630,
+      "file": "2022-10-07.parquet"
+    },
+    {
+      "date": "2022-10-10",
+      "bars": 4630,
+      "file": "2022-10-10.parquet"
+    },
+    {
+      "date": "2022-10-11",
+      "bars": 4630,
+      "file": "2022-10-11.parquet"
+    },
+    {
+      "date": "2022-10-12",
+      "bars": 4630,
+      "file": "2022-10-12.parquet"
+    },
+    {
+      "date": "2022-10-13",
+      "bars": 4630,
+      "file": "2022-10-13.parquet"
+    },
+    {
+      "date": "2022-10-14",
+      "bars": 4630,
+      "file": "2022-10-14.parquet"
+    },
+    {
+      "date": "2022-10-17",
+      "bars": 4630,
+      "file": "2022-10-17.parquet"
+    },
+    {
+      "date": "2022-10-18",
+      "bars": 4630,
+      "file": "2022-10-18.parquet"
+    },
+    {
+      "date": "2022-10-19",
+      "bars": 4630,
+      "file": "2022-10-19.parquet"
+    },
+    {
+      "date": "2022-10-20",
+      "bars": 4630,
+      "file": "2022-10-20.parquet"
+    },
+    {
+      "date": "2022-10-21",
+      "bars": 4630,
+      "file": "2022-10-21.parquet"
+    },
+    {
+      "date": "2022-10-24",
+      "bars": 4630,
+      "file": "2022-10-24.parquet"
+    },
+    {
+      "date": "2022-10-25",
+      "bars": 4630,
+      "file": "2022-10-25.parquet"
+    },
+    {
+      "date": "2022-10-26",
+      "bars": 4630,
+      "file": "2022-10-26.parquet"
+    },
+    {
+      "date": "2022-10-27",
+      "bars": 4630,
+      "file": "2022-10-27.parquet"
+    },
+    {
+      "date": "2022-10-28",
+      "bars": 4630,
+      "file": "2022-10-28.parquet"
+    },
+    {
+      "date": "2022-10-31",
+      "bars": 4630,
+      "file": "2022-10-31.parquet"
+    },
+    {
+      "date": "2022-11-01",
+      "bars": 4630,
+      "file": "2022-11-01.parquet"
+    },
+    {
+      "date": "2022-11-02",
+      "bars": 4630,
+      "file": "2022-11-02.parquet"
+    },
+    {
+      "date": "2022-11-03",
+      "bars": 4630,
+      "file": "2022-11-03.parquet"
+    },
+    {
+      "date": "2022-11-04",
+      "bars": 4630,
+      "file": "2022-11-04.parquet"
+    },
+    {
+      "date": "2022-11-07",
+      "bars": 4630,
+      "file": "2022-11-07.parquet"
+    },
+    {
+      "date": "2022-11-08",
+      "bars": 4630,
+      "file": "2022-11-08.parquet"
+    },
+    {
+      "date": "2022-11-09",
+      "bars": 4630,
+      "file": "2022-11-09.parquet"
+    },
+    {
+      "date": "2022-11-10",
+      "bars": 4630,
+      "file": "2022-11-10.parquet"
+    },
+    {
+      "date": "2022-11-11",
+      "bars": 4630,
+      "file": "2022-11-11.parquet"
+    },
+    {
+      "date": "2022-11-14",
+      "bars": 4630,
+      "file": "2022-11-14.parquet"
+    },
+    {
+      "date": "2022-11-15",
+      "bars": 4630,
+      "file": "2022-11-15.parquet"
+    },
+    {
+      "date": "2022-11-16",
+      "bars": 4630,
+      "file": "2022-11-16.parquet"
+    },
+    {
+      "date": "2022-11-17",
+      "bars": 4630,
+      "file": "2022-11-17.parquet"
+    },
+    {
+      "date": "2022-11-18",
+      "bars": 4630,
+      "file": "2022-11-18.parquet"
+    },
+    {
+      "date": "2022-11-21",
+      "bars": 4630,
+      "file": "2022-11-21.parquet"
+    },
+    {
+      "date": "2022-11-22",
+      "bars": 4630,
+      "file": "2022-11-22.parquet"
+    },
+    {
+      "date": "2022-11-23",
+      "bars": 4630,
+      "file": "2022-11-23.parquet"
+    },
+    {
+      "date": "2022-11-25",
+      "bars": 2650,
+      "file": "2022-11-25.parquet"
+    },
+    {
+      "date": "2022-11-28",
+      "bars": 4630,
+      "file": "2022-11-28.parquet"
+    },
+    {
+      "date": "2022-11-29",
+      "bars": 4630,
+      "file": "2022-11-29.parquet"
+    },
+    {
+      "date": "2022-11-30",
+      "bars": 4630,
+      "file": "2022-11-30.parquet"
+    },
+    {
+      "date": "2022-12-01",
+      "bars": 4630,
+      "file": "2022-12-01.parquet"
+    },
+    {
+      "date": "2022-12-02",
+      "bars": 4630,
+      "file": "2022-12-02.parquet"
+    },
+    {
+      "date": "2022-12-05",
+      "bars": 4630,
+      "file": "2022-12-05.parquet"
+    },
+    {
+      "date": "2022-12-06",
+      "bars": 4630,
+      "file": "2022-12-06.parquet"
+    },
+    {
+      "date": "2022-12-07",
+      "bars": 4630,
+      "file": "2022-12-07.parquet"
+    },
+    {
+      "date": "2022-12-08",
+      "bars": 4630,
+      "file": "2022-12-08.parquet"
+    },
+    {
+      "date": "2022-12-09",
+      "bars": 4630,
+      "file": "2022-12-09.parquet"
+    },
+    {
+      "date": "2022-12-12",
+      "bars": 4630,
+      "file": "2022-12-12.parquet"
+    },
+    {
+      "date": "2022-12-13",
+      "bars": 4630,
+      "file": "2022-12-13.parquet"
+    },
+    {
+      "date": "2022-12-14",
+      "bars": 4630,
+      "file": "2022-12-14.parquet"
+    },
+    {
+      "date": "2022-12-15",
+      "bars": 4630,
+      "file": "2022-12-15.parquet"
+    },
+    {
+      "date": "2022-12-16",
+      "bars": 4630,
+      "file": "2022-12-16.parquet"
+    },
+    {
+      "date": "2022-12-19",
+      "bars": 4630,
+      "file": "2022-12-19.parquet"
+    },
+    {
+      "date": "2022-12-20",
+      "bars": 4630,
+      "file": "2022-12-20.parquet"
+    },
+    {
+      "date": "2022-12-21",
+      "bars": 4630,
+      "file": "2022-12-21.parquet"
+    },
+    {
+      "date": "2022-12-22",
+      "bars": 4630,
+      "file": "2022-12-22.parquet"
+    },
+    {
+      "date": "2022-12-23",
+      "bars": 4630,
+      "file": "2022-12-23.parquet"
+    },
+    {
+      "date": "2022-12-27",
+      "bars": 4630,
+      "file": "2022-12-27.parquet"
+    },
+    {
+      "date": "2022-12-28",
+      "bars": 4630,
+      "file": "2022-12-28.parquet"
+    },
+    {
+      "date": "2022-12-29",
+      "bars": 4630,
+      "file": "2022-12-29.parquet"
+    },
+    {
+      "date": "2022-12-30",
+      "bars": 4630,
+      "file": "2022-12-30.parquet"
+    }
+  ],
+  "excluded_dates": [
+    {
+      "date": "2022-01-17",
+      "reason": "Martin Luther King Jr. Day"
+    },
+    {
+      "date": "2022-02-21",
+      "reason": "Presidents Day"
+    },
+    {
+      "date": "2022-04-15",
+      "reason": "Good Friday"
+    },
+    {
+      "date": "2022-05-30",
+      "reason": "Memorial Day"
+    },
+    {
+      "date": "2022-06-20",
+      "reason": "Juneteenth (observed)"
+    },
+    {
+      "date": "2022-07-04",
+      "reason": "Independence Day"
+    },
+    {
+      "date": "2022-09-05",
+      "reason": "Labor Day"
+    },
+    {
+      "date": "2022-11-24",
+      "reason": "Thanksgiving Day"
+    },
+    {
+      "date": "2022-12-26",
+      "reason": "Christmas (observed)"
+    }
+  ],
+  "failed_dates": [],
+  "per_day_bar_counts": {
+    "min": 2650,
+    "max": 4630,
+    "mean": 4622.1,
+    "std": 125.0
+  },
+  "quarter_counts": {
+    "1": 62,
+    "2": 62,
+    "3": 64,
+    "4": 63
+  },
+  "notes": {
+    "half_day": "2022-11-25 (day after Thanksgiving) has 2650 bars \u2014 legitimate early close",
+    "contract_mapping": "MESH2(11355) \u2192 MESM2(13615) \u2192 MESU2(10039) \u2192 MESZ2(10299) \u2192 MESH3(2080)",
+    "rollover_fix": "Contract boundaries adjusted to transition on expiration day, MESH3 added for post-Dec rollover"
+  },
+  "generated_at": "2026-02-20T23:01:33.029332",
+  "binary": "bar_feature_export (with --date support)",
+  "data_source": "DATA/GLBX-20260207-L953CAPU5B/*.dbn.zst"
+}

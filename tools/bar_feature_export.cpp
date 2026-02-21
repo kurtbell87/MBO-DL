@@ -266,10 +266,11 @@ struct QuarterlyContract {
 };
 
 const std::vector<QuarterlyContract> MES_CONTRACTS = {
-    {"MESH2", 11355, 20220103, 20220318, 20220318},
-    {"MESM2", 13615, 20220319, 20220617, 20220617},
-    {"MESU2", 10039, 20220618, 20220916, 20220916},
-    {"MESZ2", 10299, 20220917, 20221230, 20221216},
+    {"MESH2", 11355, 20220103, 20220317, 20220318},
+    {"MESM2", 13615, 20220318, 20220616, 20220617},
+    {"MESU2", 10039, 20220617, 20220915, 20220916},
+    {"MESZ2", 10299, 20220916, 20221216, 20221216},
+    {"MESH3", 2080,  20221217, 20221230, 20230317},
 };
 
 uint32_t get_instrument_id(int date) {
@@ -357,11 +358,11 @@ void write_parquet_file(
     for (size_t i = 0; i < MessageSummary::SUMMARY_SIZE; ++i)
         fields.push_back(arrow::field("msg_summary_" + std::to_string(i), arrow::float64()));
 
-    // Forward returns (4)
-    fields.push_back(arrow::field("return_1", arrow::float64()));
-    fields.push_back(arrow::field("return_5", arrow::float64()));
-    fields.push_back(arrow::field("return_20", arrow::float64()));
-    fields.push_back(arrow::field("return_100", arrow::float64()));
+    // Forward returns (4) — prefixed with fwd_ to avoid collision with Track A return features
+    fields.push_back(arrow::field("fwd_return_1", arrow::float64()));
+    fields.push_back(arrow::field("fwd_return_5", arrow::float64()));
+    fields.push_back(arrow::field("fwd_return_20", arrow::float64()));
+    fields.push_back(arrow::field("fwd_return_100", arrow::float64()));
 
     // Event count (1)
     fields.push_back(arrow::field("mbo_event_count", arrow::float64()));
@@ -489,6 +490,7 @@ int main(int argc, char* argv[]) {
     std::string bar_type;
     std::string bar_param_str;
     std::string output_path;
+    std::string date_str_cli;
 
     // Parse CLI args
     for (int i = 1; i < argc; ++i) {
@@ -499,6 +501,8 @@ int main(int argc, char* argv[]) {
             bar_param_str = argv[++i];
         } else if (arg == "--output" && i + 1 < argc) {
             output_path = argv[++i];
+        } else if (arg == "--date" && i + 1 < argc) {
+            date_str_cli = argv[++i];
         }
     }
 
@@ -587,7 +591,16 @@ int main(int argc, char* argv[]) {
     tb_cfg.max_time_horizon_s = 300;
     tb_cfg.tick_size = 0.25f;
 
-    for (int date : SELECTED_DAYS) {
+    // Determine which days to process: --date overrides SELECTED_DAYS
+    std::vector<int> days_to_process;
+    if (!date_str_cli.empty()) {
+        int d = std::stoi(date_str_cli);
+        days_to_process.push_back(d);
+    } else {
+        days_to_process = SELECTED_DAYS;
+    }
+
+    for (int date : days_to_process) {
         std::string date_str = date_to_string(date);
         std::string filepath = DATA_DIR + "/glbx-mdp3-" + date_str + ".mbo.dbn.zst";
 

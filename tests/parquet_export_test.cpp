@@ -105,13 +105,13 @@ std::shared_ptr<arrow::Table> read_parquet_table(const std::string& path) {
     auto open_result = arrow::io::ReadableFile::Open(path);
     if (!open_result.ok()) return nullptr;
 
-    std::unique_ptr<parquet::arrow::FileReader> reader;
-    auto status = parquet::arrow::OpenFile(
-        open_result.ValueOrDie(), arrow::default_memory_pool(), &reader);
-    if (!status.ok()) return nullptr;
+    auto file_reader_result = parquet::arrow::OpenFile(
+        open_result.ValueOrDie(), arrow::default_memory_pool());
+    if (!file_reader_result.ok()) return nullptr;
+    auto reader = file_reader_result.MoveValueUnsafe();
 
     std::shared_ptr<arrow::Table> table;
-    status = reader->ReadTable(&table);
+    auto status = reader->ReadTable(&table);
     if (!status.ok()) return nullptr;
 
     return table;
@@ -373,7 +373,7 @@ TEST_F(ParquetVsCsvTest, T3_AllValuesMatchWithinFloat64Tolerance) {
             auto chunked = table->column(col);
 
             if (field->type()->id() == arrow::Type::STRING ||
-                field->type()->id() == arrow::Type::UTF8) {
+                field->type()->id() == arrow::Type::STRING) {
                 auto arr = std::static_pointer_cast<arrow::StringArray>(
                     chunked->chunk(0));
                 EXPECT_EQ(arr->GetString(row), csv_cols[col])
@@ -382,7 +382,7 @@ TEST_F(ParquetVsCsvTest, T3_AllValuesMatchWithinFloat64Tolerance) {
                 continue;
             }
 
-            if (field->type()->id() == arrow::Type::BOOLEAN) {
+            if (field->type()->id() == arrow::Type::BOOL) {
                 auto arr = std::static_pointer_cast<arrow::BooleanArray>(
                     chunked->chunk(0));
                 std::string expected_str = arr->Value(row) ? "true" : "false";
