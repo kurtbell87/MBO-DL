@@ -1,0 +1,52 @@
+# MBO dataset (49GB)
+/DATA/
+*.dbn.zst
+
+# Build artifacts
+build/
+dist/
+*.o
+*.a
+*.so
+*.dylib
+
+# Git
+.git/
+.gitignore
+
+# Kit state & results (large artifacts)
+.kit/results/
+.kit/.s3-cache/
+.kit/.dashboard/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+
+# Cloud run state
+cloud-results/
+
+# Orchestration-kit run artifacts
+orchestration-kit/runs/
