@@ -12,39 +12,36 @@
 
 ## Project Status
 
-**21 phases complete (9 engineering + 12 research). CNN signal confirmed (3rd reproduction, R²=0.089) but NOT economically viable under base costs. Branch: `main`.**
+**22 phases complete (10 engineering + 12 research). Full-year Parquet dataset (251 days, 1.16M bars) exported and in S3. Docker/ECR/EBS cloud pipeline verified end-to-end. CNN signal confirmed (R²=0.089) but NOT economically viable under base costs. Branch: `main`.**
 
 ## What was completed this cycle
 
-- **Corrected Hybrid Model (9E)** — `.kit/experiments/hybrid-model-corrected.md`
-- **Research kit phases** — frame→run→read all exit 0
-- **CNN normalization fix VERIFIED (3rd independent reproduction):**
-  - Mean R²=0.089 (proper validation) — matches 9D's 0.084 within +0.005
-  - All 5 folds within ±0.015 of 9D reference
-  - TICK_SIZE division applied (range [-22.5, 22.5], 100% half-tick quantized)
-  - Per-day z-scoring verified (all days mean≈0, std=1.0)
-  - Architecture: 12,128 params exactly
-- **End-to-end pipeline NOT viable under base costs:**
-  - XGBoost accuracy = 0.419 (above random 0.333)
-  - Expectancy = -$0.37/trade (base $3.74 RT) — FAIL (needed +$0.50)
-  - Profit factor = 0.924 — FAIL (needed 1.50)
-  - Gross edge $3.37/trade, breakeven RT = $3.37 ($0.37 short of base costs)
-  - Profitable ONLY under optimistic costs: +$0.88/trade at $2.49 RT, PF=1.21
-- **Hybrid outperforms GBT-only** (small delta: +0.4pp acc, +$0.075 exp vs GBT-nobook)
-- **Key insights:**
-  - Regression→frozen-embedding→classification loses information at handoff
-  - volatility_50 dominates feature importance (19.9 gain, 2.2× next)
-  - CNN embeddings outperform raw book features for XGBoost (CNN = denoiser)
-  - Win rate 51.3% vs needed 53.3% — only 2pp gap to breakeven
-- **Outcome B: REFUTED** — SC 7/9 PASS, 2 FAIL (SC-4 expectancy, SC-5 profit factor)
-- All state files updated (CLAUDE.md, RESEARCH_LOG.md, spec exit criteria)
+### Full-Year Parquet Export (2026-02-20)
+- **251/251 trading days exported** — 1,160,150 total rows, 0 failures, 0 duplicates
+- All 10 success criteria PASS (see `.kit/experiments/full-year-export.md`)
+- Schema: 149 columns, zstd compression, 255.7 MB total (3.1× compression)
+- Quarter balance: Q1=62, Q2=62, Q3=64, Q4=63
+- Wall-clock: 77s (11-way parallel)
+- 19/19 reference days validated (max rel_err=4.99e-6, float32 precision)
+- Results in S3 artifact store (symlinks in `.kit/results/full-year-export/`)
+
+### Docker + ECR + EBS Cloud Pipeline (2026-02-21)
+- **Dockerfile rewritten**: multi-stage build (Ubuntu 22.04 builder → python:3.11-slim runtime), library isolation in `/opt/app-libs/`
+- **cmake/Findonnxruntime.cmake** created for pre-built ORT tarball
+- **ec2-bootstrap.sh** fixed: awk (not bc), docker pull retry, NVMe fallback, log upload on failure
+- **ECR repo**: `651323680805.dkr.ecr.us-east-1.amazonaws.com/mbo-dl`
+- **EBS snapshot**: `snap-0efa355754c9a329d` (49GB MBO dataset, 316 files)
+- **IAM profile**: `cloud-run-ec2`
+- **E2E verified**: EC2 → EBS mount (316 files) → ECR pull → docker run → S3 upload → self-terminate
 
 ## What exists
 
 A C++20 MES microstructure model suite with:
-- **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report, bar feature export, tick bar fix (9 TDD phases)
+- **Infrastructure**: Bar construction, oracle replay, multi-day backtest, feature computation/export, feature analysis, oracle expectancy report, bar feature export, tick bar fix, Parquet export (10 TDD phases)
+- **Full-year dataset**: 251 Parquet files in S3 artifact store, ready for model training (13× more data than 19-day baseline)
+- **Cloud pipeline**: Docker image in ECR, EBS snapshot with data, IAM role — ready for GPU experiments
 - **Research results**: 12 complete research phases. CNN spatial signal confirmed (proper-validation R²≈0.089). End-to-end Hybrid pipeline not viable under base costs.
-- **Architecture decision**: CNN + GBT Hybrid — signal is REAL but pipeline design is the bottleneck. The regression-to-classification gap prevents viable trading.
+- **Architecture decision**: CNN + GBT Hybrid — signal is REAL but pipeline design is the bottleneck
 - **Labeling decision**: Triple barrier (preferred over first-to-hit)
 - **Temporal verdict**: NO TEMPORAL SIGNAL — confirmed across 7 bar types, 0.14s–300s
 
@@ -74,20 +71,24 @@ A C++20 MES microstructure model suite with:
 | 9D | `.kit/experiments/r3-reproduction-pipeline-comparison.md` | Research | **Done (CONFIRMED/REFUTED)** — root cause resolved |
 | R3b | `.kit/experiments/r3b-event-bar-cnn.md` | Research | **Done (INCONCLUSIVE)** — bar defect |
 | TB-Fix | `.kit/docs/tick-bar-fix.md` | TDD | **Done** — tick bars fixed |
-| **9E** | **`.kit/experiments/hybrid-model-corrected.md`** | **Research** | **Done (REFUTED — Outcome B)** — CNN R²=0.089, exp=-$0.37 |
+| 9E | `.kit/experiments/hybrid-model-corrected.md` | Research | **Done (REFUTED — Outcome B)** — CNN R²=0.089, exp=-$0.37 |
+| R3b-gen | `.kit/experiments/r3b-genuine-tick-bars.md` | Research | **Done (CONFIRMED low confidence)** — tick_100 R²=0.124, p=0.21 |
+| FYE | `.kit/experiments/full-year-export.md` | Research | **Done (CONFIRMED)** — 251 days, 1.16M bars, 10/10 SC pass |
+| Infra | Dockerfile + ec2-bootstrap | Chore | **Done** — Docker/ECR/EBS pipeline verified E2E |
 
 ## Test summary
 
 - **1003 unit tests** pass, 1 disabled, 1 skipped, 1004 total + tick_bar_fix tests
 - **22 integration tests** (14 N=32 + 8 N=128) — labeled `integration`, excluded from default ctest
+- **28 Parquet export tests** — all pass
 - Unit test time: ~14 min. Integration: ~20 min.
 
 ## What to do next
 
-The CNN spatial signal is real but the pipeline doesn't convert it to viable trading. Five options (in priority order):
+**The full-year dataset (13× more data) and cloud pipeline are now ready.** The CNN spatial signal is real but the pipeline doesn't convert it to viable trading. Five options (in priority order):
 
 ### 1. End-to-End CNN Classification (HIGHEST PRIORITY)
-Train CNN directly on tb_label (3-class cross-entropy) instead of regression→frozen embedding→XGBoost. Eliminates the regression-to-classification bottleneck identified as the key loss point. The CNN's 16-dim penultimate layer would learn class-discriminative features rather than return-prediction features.
+Train CNN directly on tb_label (3-class cross-entropy) instead of regression→frozen embedding→XGBoost. Eliminates the regression-to-classification bottleneck identified as the key loss point. **Now unblocked by full-year dataset (1.16M bars vs 87K)** — more data should improve generalization. Cloud pipeline ready for GPU training.
 
 ### 2. XGBoost Hyperparameter Tuning (LOW-HANGING FRUIT)
 Grid search on max_depth, learning_rate, n_estimators, min_child_weight with 5-fold CV. Current hyperparameters inherited from 9B (broken pipeline era). The 2pp win rate gap is small enough that tuning could close it.
@@ -99,12 +100,12 @@ Test alternative triple barrier parameters: wider target (15 ticks), narrower st
 R2 showed signal strongest at h=1. Test with corrected normalization to see if shorter horizon improves classification.
 
 ### 5. R3b Rerun with Genuine Tick Bars (INDEPENDENT)
-Now that tick bar construction is fixed, rerun event-bar CNN experiment.
+Now that tick bar construction is fixed, rerun event-bar CNN experiment. R3b-genuine showed tick_100 R²=0.124 but p=0.21 — needs multi-seed replication.
 
 ### Mental Model Update
 
-- **Before:** "CNN signal is real (R²≈0.084). Corrected normalization should yield viable hybrid trading signals."
-- **After:** "CNN signal is real and fully verified (R²=0.089, 3rd reproduction). But the regression→frozen-embedding→classification pipeline loses too much information. Gross edge is $3.37/trade — only $0.37 short of breakeven. The model needs either a better architecture (end-to-end classification), better hyperparameters, or different label design to close the gap."
+- **Before:** "CNN signal is real (R²≈0.089). Pipeline not viable. Limited to 19-day dataset."
+- **After:** "Full-year dataset (251 days, 1.16M bars) and cloud GPU pipeline ready. End-to-end CNN classification on full year is the highest-priority next experiment — 13× more training data + eliminating the regression-to-classification bottleneck."
 
 ## Key research results
 
@@ -123,7 +124,9 @@ Now that tick bar construction is fixed, rerun event-bar CNN experiment.
 | 9C | Deviations not root cause | R²=0.002 |
 | 9D | R3 reproduced, root cause resolved | R²=0.1317 (leaked) / 0.084 (proper) |
 | R3b | Tick bars are time bars | Peak R²=0.057, all < baseline |
-| **9E** | **CNN viable, pipeline not** | **R²=0.089, exp=-$0.37/trade** |
+| 9E | CNN viable, pipeline not | R²=0.089, exp=-$0.37/trade |
+| R3b-gen | Genuine tick bars promising | tick_100 R²=0.124, p=0.21 |
+| **FYE** | **Full-year export production-ready** | **251 days, 1.16M bars, 10/10 SC** |
 
 ## Build commands
 
@@ -137,4 +140,4 @@ cd build && ctest --output-on-failure --label-regex integration           # inte
 
 ---
 
-Updated: 2026-02-19 (Corrected Hybrid Model — REFUTED Outcome B. CNN R²=0.089 confirmed, expectancy -$0.37/trade. Pipeline bottleneck: regression→classification gap.)
+Updated: 2026-02-21 (Full-year Parquet export CONFIRMED — 251 days, 1.16M bars. Docker/ECR/EBS cloud pipeline verified E2E.)

@@ -37,10 +37,9 @@ Status: `Not started` | `In progress` | `Answered` | `Blocked` | `Deferred`
 
 | Priority | Question | Status | Parent | Blocker | Decision Gate | Experiment(s) |
 |----------|----------|--------|--------|---------|---------------|---------------|
+| P1 | Can end-to-end CNN classification on tb_label close the 2pp win rate gap (51.3% to 53.3%) needed for breakeven? | Not started | — | Full-year export ✅ | Determines whether the regression-to-classification bottleneck is the limiting factor | hybrid-model-corrected (Outcome B) |
 | P2 | How sensitive is oracle expectancy to transaction cost assumptions? | Not started | — | — | Determines edge robustness under realistic execution | — |
-| P1 | Can end-to-end CNN classification on tb_label close the 2pp win rate gap (51.3% to 53.3%) needed for breakeven? | Not started | — | — | Determines whether the regression-to-classification bottleneck is the limiting factor | hybrid-model-corrected (Outcome B) |
-| P2 | How sensitive is oracle expectancy to transaction cost assumptions? | Not started | — | — | Determines edge robustness under realistic execution | — |
-| P2 | Can XGBoost hyperparameter tuning improve classification accuracy by 2+pp on the corrected CNN+GBT pipeline? | Not started | — | — | Determines if the 2pp gap to breakeven is a tuning issue vs architectural limit | hybrid-model-corrected (Outcome B) |
+| P2 | Can XGBoost hyperparameter tuning improve classification accuracy by 2+pp on the corrected CNN+GBT pipeline? | Not started | — | Full-year export ✅ | Determines if the 2pp gap to breakeven is a tuning issue vs architectural limit | hybrid-model-corrected (Outcome B) |
 | P3 | Does CNN spatial R² improve on genuine trade-triggered tick bars vs time_5s? | Answered | — | — | Determines whether event bars should replace time_5s before full-year export | R3b-genuine-tick-bars (CONFIRMED low confidence) |
 
 ---
