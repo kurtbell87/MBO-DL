@@ -44,7 +44,7 @@ dist/
 .kit/.dashboard/
 
 # MBO-DL project data (49GB raw MBO data)
-DATA/
+/DATA/
 *.dbn.zst
 *.zip
 
