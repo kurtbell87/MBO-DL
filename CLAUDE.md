@@ -15,6 +15,46 @@ WHEN WORKING FROM A PROVIDED SPEC ALWAYS REFER TO THE  ## Exit Criteria SECTION 
 7. **Exit-Criteria in Specs are 1st Class Citizens**, you must always cross off ALL exit-criteria as they are completed and include them in your final report 
 **If you catch yourself about to grep a source file, write a line of code, or run a test — STOP. That is a protocol violation. Delegate to a kit phase instead.**
 
+## Compute Execution — EC2 MANDATORY
+
+**ALL compute-heavy work runs on EC2. No exceptions.**
+
+- **Research RUN phases** (model training, data processing, experiment scripts): launch on EC2 via `orchestration-kit/tools/cloud-run`
+- **Claude sub-agent phases** (survey, frame, read, log): run locally (LLM conversations, no heavy compute)
+- **TDD phases**: if build/test is lightweight, local is fine. If heavy (large builds, long test suites), use EC2.
+- **Preflight check**: use `orchestration-kit/tools/preflight` if unsure. Default to EC2 for anything with model training.
+- **Never run model training, large data processing, or GPU workloads locally.**
+
+### Research Hybrid Workflow (Local + EC2)
+
+`experiment.sh full` cannot be used as a single shot because the RUN phase runs on EC2 and results must be pulled from S3 before READ can analyze them. Orchestrate phases individually:
+
+```bash
+# 1. SURVEY (local — Claude conversation)
+.kit/experiment.sh survey "<question>" <spec>
+
+# 2. FRAME (local — Claude produces training script)
+.kit/experiment.sh frame "<question>" <spec>
+
+# 3. RUN (EC2 — execute the training script on cloud)
+orchestration-kit/tools/cloud-run run "python <script>" \
+    --spec <spec> \
+    --data-dirs .kit/results/full-year-export/ \
+    --output-dir .kit/results/<experiment-name>/ \
+    --detach
+
+# 4. PULL RESULTS (after EC2 finishes)
+orchestration-kit/tools/cloud-run pull <run-id> --output-dir .kit/results/<experiment-name>/
+# or: orchestration-kit/tools/artifact-store hydrate
+
+# 5. READ (local — Claude analyzes results)
+.kit/experiment.sh read "<question>" <spec>
+
+# 6. LOG (local — Claude updates RESEARCH_LOG.md)
+.kit/experiment.sh log "<question>" <spec>
+```
+
+**Do NOT use `experiment.sh full` or `experiment.sh cycle`.** Always run phases individually with EC2 for the RUN phase.
 
 ## Git Workflow — Worktrees & Branches (MANDATORY)
 
