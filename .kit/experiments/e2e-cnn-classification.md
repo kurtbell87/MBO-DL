@@ -449,10 +449,10 @@ Report label=0 trade fraction. If >20% of directional predictions hit label=0, f
 compute_type: cpu
 estimated_rows: 1160150
 model_type: pytorch+xgboost
-sequential_fits: 135  # 45 splits × 3 configs
-parallelizable: true  # splits are independent
+sequential_fits: 135
+parallelizable: true
 memory_gb: 8
-gpu_type: none (cloud GPU available if needed)
+gpu_type: none
 estimated_wall_hours: 2.0
 ```
 
