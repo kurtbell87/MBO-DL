@@ -48,7 +48,7 @@ These thresholds are deliberately conservative. 9E showed the gross edge is $3.3
 | CNN early stopping | Patience=15 on **validation loss** (internal 80/20 train/val split, purged) | Proper validation per 9D protocol |
 | CNN loss | CrossEntropyLoss on tb_label (3-class) | **Primary change from 9E** — end-to-end classification |
 | XGBoost hyperparameters | max_depth=6, lr=0.05, n_estimators=500, subsample=0.8, colsample_bytree=0.8, min_child_weight=10, reg_alpha=0.1, reg_lambda=1.0, seed=42 | Same as 9E for comparability |
-| Hardware | CPU (cloud GPU available if needed) | 12k params; dataset fits in RAM; 45 CPCV splits × ~30s each ≈ manageable |
+| Hardware | **GPU MANDATORY** — EC2 g5.xlarge (A10G, CUDA). Install `torch` with CUDA support (`pip install torch --index-url https://download.pytorch.org/whl/cu121`). Prior CPU runs took 180-320s/split; GPU should reduce to ~20-40s/split, fitting all 3 configs + 2 weight variants within budget. | GPU required for wall-clock feasibility |
 
 ### Normalization Protocol (verified in 9D/9E)
 
@@ -442,37 +442,46 @@ Report label=0 trade fraction. If >20% of directional predictions hit label=0, f
 
 ## Resource Budget
 
-**Tier:** Standard (may escalate to cloud if wall-clock exceeds local budget)
+**Tier:** Cloud GPU MANDATORY
 
 ### Compute Profile
 ```yaml
-compute_type: cpu
+compute_type: gpu
 estimated_rows: 1160150
 model_type: pytorch+xgboost
 sequential_fits: 135
 parallelizable: true
-memory_gb: 8
-gpu_type: none
-estimated_wall_hours: 2.0
+memory_gb: 16
+gpu_type: a10g
+estimated_wall_hours: 1.5
 ```
 
-### Wall-Time Estimation
+### GPU Requirements — NON-NEGOTIABLE
+
+**The prior CPU run (2026-02-22) took 180-320s/split and timed out before completing all configs.** GPU is mandatory for this experiment.
+
+1. **Instance:** g5.xlarge (A10G GPU, 24GB VRAM, CUDA 12.x)
+2. **PyTorch install:** `pip install torch --index-url https://download.pytorch.org/whl/cu121` — do NOT use default pip torch (installs CPU-only)
+3. **Device:** All CNN training MUST use `device = torch.device('cuda')`. Verify `torch.cuda.is_available() == True` before proceeding. **ABORT if CUDA not available.**
+4. **Expected speedup:** 5-10× per split (180-320s CPU → 20-40s GPU)
+
+### Wall-Time Estimation (GPU)
 
 | Component | Per-unit estimate | Count | Subtotal |
 |-----------|------------------|-------|----------|
 | Data loading (251 Parquet files) | 30s | 1 | 30s |
-| CNN training per split (~900K train bars, 12K params) | 30–60s | 90 (45 splits × 2 weight configs) | 45–90 min |
+| CNN training per split (GPU) | 20–40s | 135 (45 splits × 3 configs incl. weight variants) | 45–90 min |
 | XGBoost per split | 10s | 45 | 7.5 min |
-| Walk-forward (4 folds × best config) | 60s | 4 | 4 min |
+| Walk-forward (4 folds × best config) | 40s | 4 | 2.5 min |
 | Holdout evaluation | 30s | 1 | 30s |
 | Aggregation + PBO/DSR computation | 5 min | 1 | 5 min |
 | **Total estimated** | | | **~65–110 min** |
 
-**Max budget:** 4 hours. If CNN training exceeds 2 minutes per split, escalate to cloud GPU.
+**Max budget:** 4 hours. With GPU, all 3 configs + 2 weight variants should complete well within budget.
 
 ### Other Limits
 - Max wall-clock: 4 hours (abort)
-- Max per-split CNN training: 3 minutes (investigate if exceeded)
+- Max per-split CNN training (GPU): 60 seconds (investigate if exceeded — likely not using GPU)
 - Max trials for DSR correction: 6 (3 configs × 2 class weightings)
 
 ---

@@ -1,0 +1,906 @@
+{
+  "e2e_cnn": [
+    {
+      "path_idx": 0,
+      "splits": [
+        0
+      ],
+      "accuracy": 0.38173102249381025,
+      "expectancy_base": -0.05291436932893916,
+      "profit_factor": 0.9887308837819143,
+      "trade_count": 132581
+    },
+    {
+      "path_idx": 1,
+      "splits": [
+        1
+      ],
+      "accuracy": 0.3797186956750777,
+      "expectancy_base": -0.20823739753018414,
+      "profit_factor": 0.9564199809838828,
+      "trade_count": 123329
+    },
+    {
+      "path_idx": 2,
+      "splits": [
+        2
+      ],
+      "accuracy": 0.3827845967444556,
+      "expectancy_base": -0.09261996614026873,
+      "profit_factor": 0.9803632965776595,
+      "trade_count": 108093
+    },
+    {
+      "path_idx": 3,
+      "splits": [
+        3
+      ],
+      "accuracy": 0.3994047305483854,
+      "expectancy_base": -0.01039479328336734,
+      "profit_factor": 0.9977754995512398,
+      "trade_count": 128219
+    },
+    {
+      "path_idx": 4,
+      "splits": [
+        4
+      ],
+      "accuracy": 0.3947848074593057,
+      "expectancy_base": -0.04921031076454363,
+      "profit_factor": 0.989515326445887,
+      "trade_count": 122086
+    },
+    {
+      "path_idx": 5,
+      "splits": [
+        5
+      ],
+      "accuracy": 0.37835958489174526,
+      "expectancy_base": -0.299985573579041,
+      "profit_factor": 0.9378546486774675,
+      "trade_count": 116453
+    },
+    {
+      "path_idx": 6,
+      "splits": [
+        6
+      ],
+      "accuracy": 0.38371174208502346,
+      "expectancy_base": -0.08073683829714169,
+      "profit_factor": 0.9828596747438942,
+      "trade_count": 110567
+    },
+    {
+      "path_idx": 7,
+      "splits": [
+        7
+      ],
+      "accuracy": 0.3827793288732023,
+      "expectancy_base": -0.08623754959915846,
+      "profit_factor": 0.9817032651617507,
+      "trade_count": 98792
+    },
+    {
+      "path_idx": 8,
+      "splits": [
+        8
+      ],
+      "accuracy": 0.38642469578043515,
+      "expectancy_base": -0.10895890259722396,
+      "profit_factor": 0.9769417755724723,
+      "trade_count": 108693
+    },
+    {
+      "path_idx": 9,
+      "splits": [
+        9
+      ],
+      "accuracy": 0.39526997840172784,
+      "expectancy_base": -0.060808616664054654,
+      "profit_factor": 0.9870612444401052,
+      "trade_count": 121207
+    },
+    {
+      "path_idx": 10,
+      "splits": [
+        10
+      ],
+      "accuracy": 0.3950647948164147,
+      "expectancy_base": 0.006775160560667262,
+      "profit_factor": 1.001452737982481,
+      "trade_count": 110083
+    },
+    {
+      "path_idx": 11,
+      "splits": [
+        11
+      ],
+      "accuracy": 0.40024298056155505,
+      "expectancy_base": -0.06394092026182019,
+      "profit_factor": 0.9863995876887541,
+      "trade_count": 123291
+    },
+    {
+      "path_idx": 12,
+      "splits": [
+        12
+      ],
+      "accuracy": 0.3984989200863931,
+      "expectancy_base": -0.04845093224683687,
+      "profit_factor": 0.9896762285336342,
+      "trade_count": 111183
+    },
+    {
+      "path_idx": 13,
+      "splits": [
+        13
+      ],
+      "accuracy": 0.3903455723542117,
+      "expectancy_base": -0.24753408275532232,
+      "profit_factor": 0.948421955232805,
+      "trade_count": 104525
+    },
+    {
+      "path_idx": 14,
+      "splits": [
+        14
+      ],
+      "accuracy": 0.39178725701943845,
+      "expectancy_base": -0.14401341948310198,
+      "profit_factor": 0.9696434131156676,
+      "trade_count": 100600
+    },
+    {
+      "path_idx": 15,
+      "splits": [
+        15
+      ],
+      "accuracy": 0.37946544276457883,
+      "expectancy_base": -0.05191829051486796,
+      "profit_factor": 0.9889417677579674,
+      "trade_count": 86061
+    },
+    {
+      "path_idx": 16,
+      "splits": [
+        16
+      ],
+      "accuracy": 0.3646382289416847,
+      "expectancy_base": -0.02908563306881499,
+      "profit_factor": 0.9937888701469938,
+      "trade_count": 75987
+    },
+    {
+      "path_idx": 17,
+      "splits": [
+        17
+      ],
+      "accuracy": 0.3906479481641469,
+      "expectancy_base": -0.1008495981630316,
+      "profit_factor": 0.9786383600423874,
+      "trade_count": 108875
+    },
+    {
+      "path_idx": 18,
+      "splits": [
+        18
+      ],
+      "accuracy": 0.40707883369330455,
+      "expectancy_base": -0.10485712000853073,
+      "profit_factor": 0.9777995402231907,
+      "trade_count": 112542
+    },
+    {
+      "path_idx": 19,
+      "splits": [
+        19
+      ],
+      "accuracy": 0.39604211663066957,
+      "expectancy_base": -0.16288729449158512,
+      "profit_factor": 0.9657376153616757,
+      "trade_count": 107599
+    },
+    {
+      "path_idx": 20,
+      "splits": [
+        20
+      ],
+      "accuracy": 0.39379589632829376,
+      "expectancy_base": -0.20062828595489055,
+      "profit_factor": 0.9579767647156623,
+      "trade_count": 87874
+    },
+    {
+      "path_idx": 21,
+      "splits": [
+        21
+      ],
+      "accuracy": 0.38765658747300213,
+      "expectancy_base": -0.2912185324049283,
+      "profit_factor": 0.9396124038291673,
+      "trade_count": 93350
+    },
+    {
+      "path_idx": 22,
+      "splits": [
+        22
+      ],
+      "accuracy": 0.3933153347732181,
+      "expectancy_base": -0.10009751494180619,
+      "profit_factor": 0.9787958641639911,
+      "trade_count": 79475
+    },
+    {
+      "path_idx": 23,
+      "splits": [
+        23
+      ],
+      "accuracy": 0.3987634989200864,
+      "expectancy_base": -0.08356555058650299,
+      "profit_factor": 0.9822648174311449,
+      "trade_count": 93691
+    },
+    {
+      "path_idx": 24,
+      "splits": [
+        24
+      ],
+      "accuracy": 0.39542116630669544,
+      "expectancy_base": -0.13159368973475447,
+      "profit_factor": 0.9722226226226228,
+      "trade_count": 94893
+    },
+    {
+      "path_idx": 25,
+      "splits": [
+        25
+      ],
+      "accuracy": 0.39342872570194387,
+      "expectancy_base": -0.025005591377382886,
+      "profit_factor": 0.9946576680275647,
+      "trade_count": 84058
+    },
+    {
+      "path_idx": 26,
+      "splits": [
+        26
+      ],
+      "accuracy": 0.3885259179265659,
+      "expectancy_base": -0.2638481339940811,
+      "profit_factor": 0.945122030607422,
+      "trade_count": 88183
+    },
+    {
+      "path_idx": 27,
+      "splits": [
+        27
+      ],
+      "accuracy": 0.38626889848812096,
+      "expectancy_base": -0.2220108069406072,
+      "profit_factor": 0.9536087231556639,
+      "trade_count": 89387
+    },
+    {
+      "path_idx": 28,
+      "splits": [
+        28
+      ],
+      "accuracy": 0.38966522678185744,
+      "expectancy_base": -0.14877199360186188,
+      "profit_factor": 0.9686571039287185,
+      "trade_count": 68770
+    },
+    {
+      "path_idx": 29,
+      "splits": [
+        29
+      ],
+      "accuracy": 0.3751025917926566,
+      "expectancy_base": -0.2816946872898459,
+      "profit_factor": 0.9415257578143411,
+      "trade_count": 44610
+    },
+    {
+      "path_idx": 30,
+      "splits": [
+        30
+      ],
+      "accuracy": 0.397877969762419,
+      "expectancy_base": -0.1903465375246497,
+      "profit_factor": 0.9600845605948578,
+      "trade_count": 103452
+    },
+    {
+      "path_idx": 31,
+      "splits": [
+        31
+      ],
+      "accuracy": 0.38648488120950325,
+      "expectancy_base": -0.17030622098637657,
+      "profit_factor": 0.9642068479794745,
+      "trade_count": 85951
+    },
+    {
+      "path_idx": 32,
+      "splits": [
+        32
+      ],
+      "accuracy": 0.3976241900647948,
+      "expectancy_base": -0.07020770550326919,
+      "profit_factor": 0.9850772231602729,
+      "trade_count": 107845
+    },
+    {
+      "path_idx": 33,
+      "splits": [
+        33
+      ],
+      "accuracy": 0.38219222462203023,
+      "expectancy_base": -0.09694437110571397,
+      "profit_factor": 0.979456498669533,
+      "trade_count": 75752
+    },
+    {
+      "path_idx": 34,
+      "splits": [
+        34
+      ],
+      "accuracy": 0.3726403887688985,
+      "expectancy_base": -0.1075453565654757,
+      "profit_factor": 0.9772372866631273,
+      "trade_count": 66804
+    },
+    {
+      "path_idx": 35,
+      "splits": [
+        35
+      ],
+      "accuracy": 0.39983261339092874,
+      "expectancy_base": -0.1342490778721975,
+      "profit_factor": 0.9716705718724208,
+      "trade_count": 91907
+    },
+    {
+      "path_idx": 36,
+      "splits": [
+        36
+      ],
+      "accuracy": 0.40204103671706265,
+      "expectancy_base": -0.10474026724980874,
+      "profit_factor": 0.977823988097504,
+      "trade_count": 95117
+    },
+    {
+      "path_idx": 37,
+      "splits": [
+        37
+      ],
+      "accuracy": 0.3965280777537797,
+      "expectancy_base": -0.11439948321061731,
+      "profit_factor": 0.9758052648890908,
+      "trade_count": 79723
+    },
+    {
+      "path_idx": 38,
+      "splits": [
+        38
+      ],
+      "accuracy": 0.3924244060475162,
+      "expectancy_base": -0.08837010207441615,
+      "profit_factor": 0.9812553273340325,
+      "trade_count": 75925
+    },
+    {
+      "path_idx": 39,
+      "splits": [
+        39
+      ],
+      "accuracy": 0.36827213822894167,
+      "expectancy_base": -0.5939343294709707,
+      "profit_factor": 0.8808264447767957,
+      "trade_count": 96573
+    },
+    {
+      "path_idx": 40,
+      "splits": [
+        40
+      ],
+      "accuracy": 0.3960691144708423,
+      "expectancy_base": -0.27103835126937365,
+      "profit_factor": 0.9436714146859077,
+      "trade_count": 72201
+    },
+    {
+      "path_idx": 41,
+      "splits": [
+        41
+      ],
+      "accuracy": 0.39471382289416845,
+      "expectancy_base": -0.18186549030480015,
+      "profit_factor": 0.961826854382338,
+      "trade_count": 61319
+    },
+    {
+      "path_idx": 42,
+      "splits": [
+        42
+      ],
+      "accuracy": 0.39677645788336935,
+      "expectancy_base": -0.26154567331795914,
+      "profit_factor": 0.9455870374907577,
+      "trade_count": 79784
+    },
+    {
+      "path_idx": 43,
+      "splits": [
+        43
+      ],
+      "accuracy": 0.40028617710583153,
+      "expectancy_base": -0.11477470869310144,
+      "profit_factor": 0.9757269334865085,
+      "trade_count": 95432
+    },
+    {
+      "path_idx": 44,
+      "splits": [
+        44
+      ],
+      "accuracy": 0.39645788336933047,
+      "expectancy_base": -0.31057863793637014,
+      "profit_factor": 0.9357353166470862,
+      "trade_count": 106647
+    }
+  ],
+  "gbt_only": [
+    {
+      "path_idx": 0,
+      "splits": [
+        0
+      ],
+      "accuracy": 0.43051677816994155,
+      "expectancy_base": 0.0430436997622546,
+      "profit_factor": 1.0092678822740921,
+      "trade_count": 123662
+    },
+    {
+      "path_idx": 1,
+      "splits": [
+        1
+      ],
+      "accuracy": 0.43605857872833587,
+      "expectancy_base": -0.08610311641530433,
+      "profit_factor": 0.9817315097845699,
+      "trade_count": 109934
+    },
+    {
+      "path_idx": 2,
+      "splits": [
+        2
+      ],
+      "accuracy": 0.4377495654006216,
+      "expectancy_base": -0.031111111111111703,
+      "profit_factor": 0.9933578674731357,
+      "trade_count": 101250
+    },
+    {
+      "path_idx": 3,
+      "splits": [
+        3
+      ],
+      "accuracy": 0.4491070958225781,
+      "expectancy_base": 0.0314408746202238,
+      "profit_factor": 1.0067606405267855,
+      "trade_count": 125403
+    },
+    {
+      "path_idx": 4,
+      "splits": [
+        4
+      ],
+      "accuracy": 0.4378496549544329,
+      "expectancy_base": -0.04432436321772976,
+      "profit_factor": 0.9905510782004808,
+      "trade_count": 111184
+    },
+    {
+      "path_idx": 5,
+      "splits": [
+        5
+      ],
+      "accuracy": 0.4424537744297529,
+      "expectancy_base": -0.10043742430564803,
+      "profit_factor": 0.978724675743973,
+      "trade_count": 98257
+    },
+    {
+      "path_idx": 6,
+      "splits": [
+        6
+      ],
+      "accuracy": 0.45940578412263605,
+      "expectancy_base": -0.0475799655238466,
+      "profit_factor": 0.9898608088210538,
+      "trade_count": 83536
+    },
+    {
+      "path_idx": 7,
+      "splits": [
+        7
+      ],
+      "accuracy": 0.4433756518990676,
+      "expectancy_base": -0.03106998498671959,
+      "profit_factor": 0.9933666167501713,
+      "trade_count": 103908
+    },
+    {
+      "path_idx": 8,
+      "splits": [
+        8
+      ],
+      "accuracy": 0.4324237475636096,
+      "expectancy_base": -0.08828304812928531,
+      "profit_factor": 0.9812736085913195,
+      "trade_count": 113486
+    },
+    {
+      "path_idx": 9,
+      "splits": [
+        9
+      ],
+      "accuracy": 0.43549676025917927,
+      "expectancy_base": -0.013903262092239039,
+      "profit_factor": 0.9970258720258723,
+      "trade_count": 110236
+    },
+    {
+      "path_idx": 10,
+      "splits": [
+        10
+      ],
+      "accuracy": 0.43861231101511877,
+      "expectancy_base": 0.05443774763113894,
+      "profit_factor": 1.0117365135985725,
+      "trade_count": 101209
+    },
+    {
+      "path_idx": 11,
+      "splits": [
+        11
+      ],
+      "accuracy": 0.4499352051835853,
+      "expectancy_base": 0.11618450301683014,
+      "profit_factor": 1.0252277489309936,
+      "trade_count": 125960
+    },
+    {
+      "path_idx": 12,
+      "splits": [
+        12
+      ],
+      "accuracy": 0.43630129589632827,
+      "expectancy_base": -0.014604001293057604,
+      "profit_factor": 0.996876222296439,
+      "trade_count": 111364
+    },
+    {
+      "path_idx": 13,
+      "splits": [
+        13
+      ],
+      "accuracy": 0.442402807775378,
+      "expectancy_base": -0.0349280743875647,
+      "profit_factor": 0.9925461931448009,
+      "trade_count": 98296
+    },
+    {
+      "path_idx": 14,
+      "splits": [
+        14
+      ],
+      "accuracy": 0.4594438444924406,
+      "expectancy_base": 0.0023310132032140834,
+      "profit_factor": 1.0004995649855466,
+      "trade_count": 83616
+    },
+    {
+      "path_idx": 15,
+      "splits": [
+        15
+      ],
+      "accuracy": 0.44113930885529157,
+      "expectancy_base": -0.0034635894578058644,
+      "profit_factor": 0.9992582007218963,
+      "trade_count": 104077
+    },
+    {
+      "path_idx": 16,
+      "splits": [
+        16
+      ],
+      "accuracy": 0.43138228941684664,
+      "expectancy_base": -0.03878869448183101,
+      "profit_factor": 0.9917259515729882,
+      "trade_count": 113679
+    },
+    {
+      "path_idx": 17,
+      "splits": [
+        17
+      ],
+      "accuracy": 0.4455939524838013,
+      "expectancy_base": -0.03375645587053887,
+      "profit_factor": 0.9927952619808534,
+      "trade_count": 87130
+    },
+    {
+      "path_idx": 18,
+      "splits": [
+        18
+      ],
+      "accuracy": 0.45765658747300214,
+      "expectancy_base": 0.06714292103074097,
+      "profit_factor": 1.0144968443382614,
+      "trade_count": 111803
+    },
+    {
+      "path_idx": 19,
+      "splits": [
+        19
+      ],
+      "accuracy": 0.4391522678185745,
+      "expectancy_base": -0.12813734016169095,
+      "profit_factor": 0.9729416860237663,
+      "trade_count": 93141
+    },
+    {
+      "path_idx": 20,
+      "splits": [
+        20
+      ],
+      "accuracy": 0.4477051835853132,
+      "expectancy_base": -0.20687753427589628,
+      "profit_factor": 0.9566980078691255,
+      "trade_count": 84097
+    },
+    {
+      "path_idx": 21,
+      "splits": [
+        21
+      ],
+      "accuracy": 0.46538336933045354,
+      "expectancy_base": -0.2074146676983928,
+      "profit_factor": 0.9565881797425425,
+      "trade_count": 69786
+    },
+    {
+      "path_idx": 22,
+      "splits": [
+        22
+      ],
+      "accuracy": 0.4482883369330454,
+      "expectancy_base": -0.10765837394203698,
+      "profit_factor": 0.9772136561724417,
+      "trade_count": 89677
+    },
+    {
+      "path_idx": 23,
+      "splits": [
+        23
+      ],
+      "accuracy": 0.43681425485961123,
+      "expectancy_base": -0.2002185141438616,
+      "profit_factor": 0.9580606768767891,
+      "trade_count": 99902
+    },
+    {
+      "path_idx": 24,
+      "splits": [
+        24
+      ],
+      "accuracy": 0.4600755939524838,
+      "expectancy_base": 0.13202571411949446,
+      "profit_factor": 1.0287200682076152,
+      "trade_count": 103134
+    },
+    {
+      "path_idx": 25,
+      "splits": [
+        25
+      ],
+      "accuracy": 0.44437904967602593,
+      "expectancy_base": -0.07528739404501945,
+      "profit_factor": 0.984006726357464,
+      "trade_count": 88363
+    },
+    {
+      "path_idx": 26,
+      "splits": [
+        26
+      ],
+      "accuracy": 0.45007019438444923,
+      "expectancy_base": -0.17209051952174434,
+      "profit_factor": 0.9638390681202611,
+      "trade_count": 75608
+    },
+    {
+      "path_idx": 27,
+      "splits": [
+        27
+      ],
+      "accuracy": 0.46732181425485964,
+      "expectancy_base": -0.09137413242985484,
+      "profit_factor": 0.9806247037198509,
+      "trade_count": 60802
+    },
+    {
+      "path_idx": 28,
+      "splits": [
+        28
+      ],
+      "accuracy": 0.44909287257019437,
+      "expectancy_base": -0.08949473762138078,
+      "profit_factor": 0.9810191871260576,
+      "trade_count": 81047
+    },
+    {
+      "path_idx": 29,
+      "splits": [
+        29
+      ],
+      "accuracy": 0.43923326133909285,
+      "expectancy_base": -0.13737180756285947,
+      "profit_factor": 0.9710217832045246,
+      "trade_count": 90918
+    },
+    {
+      "path_idx": 30,
+      "splits": [
+        30
+      ],
+      "accuracy": 0.4577159827213823,
+      "expectancy_base": 0.056319230054755386,
+      "profit_factor": 1.012144776837208,
+      "trade_count": 113047
+    },
+    {
+      "path_idx": 31,
+      "splits": [
+        31
+      ],
+      "accuracy": 0.46273218142548594,
+      "expectancy_base": -0.004421776883094127,
+      "profit_factor": 0.999053088612363,
+      "trade_count": 99849
+    },
+    {
+      "path_idx": 32,
+      "splits": [
+        32
+      ],
+      "accuracy": 0.4792548596112311,
+      "expectancy_base": 0.03377062667481489,
+      "profit_factor": 1.007263539108582,
+      "trade_count": 85084
+    },
+    {
+      "path_idx": 33,
+      "splits": [
+        33
+      ],
+      "accuracy": 0.46234341252699784,
+      "expectancy_base": 0.0495500108647381,
+      "profit_factor": 1.0106767468680755,
+      "trade_count": 105847
+    },
+    {
+      "path_idx": 34,
+      "splits": [
+        34
+      ],
+      "accuracy": 0.451366090712743,
+      "expectancy_base": -0.027605789970634967,
+      "profit_factor": 0.9941038924478229,
+      "trade_count": 115441
+    },
+    {
+      "path_idx": 35,
+      "splits": [
+        35
+      ],
+      "accuracy": 0.44879589632829375,
+      "expectancy_base": -0.18351923346904456,
+      "profit_factor": 0.9614868602874785,
+      "trade_count": 85476
+    },
+    {
+      "path_idx": 36,
+      "splits": [
+        36
+      ],
+      "accuracy": 0.4656209503239741,
+      "expectancy_base": -0.1560189432551824,
+      "profit_factor": 0.9671570519517644,
+      "trade_count": 70632
+    },
+    {
+      "path_idx": 37,
+      "splits": [
+        37
+      ],
+      "accuracy": 0.448585313174946,
+      "expectancy_base": -0.09960076358490003,
+      "profit_factor": 0.9788999103819511,
+      "trade_count": 91149
+    },
+    {
+      "path_idx": 38,
+      "splits": [
+        38
+      ],
+      "accuracy": 0.43823974082073436,
+      "expectancy_base": -0.15707222980592378,
+      "profit_factor": 0.9669392342548466,
+      "trade_count": 101094
+    },
+    {
+      "path_idx": 39,
+      "splits": [
+        39
+      ],
+      "accuracy": 0.4687904967602592,
+      "expectancy_base": -0.35490893116615485,
+      "profit_factor": 0.9269196904397795,
+      "trade_count": 59186
+    },
+    {
+      "path_idx": 40,
+      "splits": [
+        40
+      ],
+      "accuracy": 0.452597192224622,
+      "expectancy_base": -0.2269307196906655,
+      "profit_factor": 0.9526066202438582,
+      "trade_count": 78103
+    },
+    {
+      "path_idx": 41,
+      "splits": [
+        41
+      ],
+      "accuracy": 0.4428077753779698,
+      "expectancy_base": -0.23878925615103738,
+      "profit_factor": 0.9501957407203241,
+      "trade_count": 87343
+    },
+    {
+      "path_idx": 42,
+      "splits": [
+        42
+      ],
+      "accuracy": 0.47043196544276455,
+      "expectancy_base": -0.16313487317292966,
+      "profit_factor": 0.965686490720762,
+      "trade_count": 64379
+    },
+    {
+      "path_idx": 43,
+      "splits": [
+        43
+      ],
+      "accuracy": 0.45876889848812097,
+      "expectancy_base": -0.2736305525019346,
+      "profit_factor": 0.9431490081630929,
+      "trade_count": 73683
+    },
+    {
+      "path_idx": 44,
+      "splits": [
+        44
+      ],
+      "accuracy": 0.4424136069114471,
+      "expectancy_base": -0.1831395165941389,
+      "profit_factor": 0.961564915396864,
+      "trade_count": 95365
+    }
+  ]
+}

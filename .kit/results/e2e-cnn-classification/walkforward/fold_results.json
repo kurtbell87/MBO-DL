@@ -1,0 +1,42 @@
+[
+  {
+    "fold": 0,
+    "train_days": 120,
+    "test_start": 121,
+    "test_end": 140,
+    "accuracy": 0.4515010799136069,
+    "expectancy_base": -0.32862381703470095,
+    "profit_factor": 0.9321364316754525,
+    "trade_count": 38040
+  },
+  {
+    "fold": 1,
+    "train_days": 140,
+    "test_start": 141,
+    "test_end": 160,
+    "accuracy": 0.4838984881209503,
+    "expectancy_base": -0.36048776849642067,
+    "profit_factor": 0.9258163407197447,
+    "trade_count": 20112
+  },
+  {
+    "fold": 2,
+    "train_days": 160,
+    "test_start": 161,
+    "test_end": 180,
+    "accuracy": 0.4504535637149028,
+    "expectancy_base": -0.21010998107852474,
+    "profit_factor": 0.956037265326829,
+    "trade_count": 42280
+  },
+  {
+    "fold": 3,
+    "train_days": 180,
+    "test_start": 181,
+    "test_end": 200,
+    "accuracy": 0.43712742980561553,
+    "expectancy_base": -0.16753201396973283,
+    "profit_factor": 0.9647789598889845,
+    "trade_count": 50681
+  }
+]

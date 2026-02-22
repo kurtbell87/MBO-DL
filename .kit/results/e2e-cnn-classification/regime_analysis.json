@@ -1,0 +1,54 @@
+{
+  "e2e_cnn": {
+    "Q1": {
+      "accuracy": 0.38499268445621126,
+      "expectancy_base": -0.07604823558942832,
+      "trade_count": 1661263,
+      "n_observations": 2583540
+    },
+    "Q2": {
+      "accuracy": 0.3967076182292513,
+      "expectancy_base": -0.0948024288299711,
+      "trade_count": 1344351,
+      "n_observations": 2583540
+    },
+    "Q3": {
+      "accuracy": 0.38785847132229423,
+      "expectancy_base": -0.27972937461100617,
+      "trade_count": 1084525,
+      "n_observations": 2666880
+    },
+    "Q4": {
+      "accuracy": 0.3958317180779384,
+      "expectancy_base": -0.22159076665970387,
+      "trade_count": 239350,
+      "n_observations": 541710
+    }
+  },
+  "gbt_only": {
+    "Q1": {
+      "accuracy": 0.43392128629709625,
+      "expectancy_base": 0.002530775198830567,
+      "trade_count": 1555717,
+      "n_observations": 2583540
+    },
+    "Q2": {
+      "accuracy": 0.4540850925474349,
+      "expectancy_base": 0.028898971890372424,
+      "trade_count": 1439827,
+      "n_observations": 2583540
+    },
+    "Q3": {
+      "accuracy": 0.4615715742740581,
+      "expectancy_base": -0.24379660809219864,
+      "trade_count": 995428,
+      "n_observations": 2666880
+    },
+    "Q4": {
+      "accuracy": 0.4341160399475734,
+      "expectancy_base": -0.2698214551251686,
+      "trade_count": 289171,
+      "n_observations": 541710
+    }
+  }
+}

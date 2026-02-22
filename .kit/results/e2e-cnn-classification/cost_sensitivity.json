@@ -1,0 +1,48 @@
+{
+  "e2e_cnn": {
+    "optimistic": {
+      "expectancy": 1.109060709012073,
+      "profit_factor": 1.2673063773447444,
+      "trade_count": 4329489,
+      "gross_profit": 22764822.080000114,
+      "gross_loss": 17963155.93999999
+    },
+    "base": {
+      "expectancy": -0.14093929098792107,
+      "profit_factor": 0.9702811481293414,
+      "trade_count": 4329489,
+      "gross_profit": 19922062.08000006,
+      "gross_loss": 20532257.189999934
+    },
+    "pessimistic": {
+      "expectancy": -2.65093929098792,
+      "profit_factor": 0.5532596272723779,
+      "trade_count": 4329489,
+      "gross_profit": 14213800.0,
+      "gross_loss": 25691012.5
+    }
+  },
+  "gbt_only": {
+    "optimistic": {
+      "expectancy": 1.1857124703543716,
+      "profit_factor": 1.2882634474430783,
+      "trade_count": 4280143,
+      "gross_profit": 22680507.850000113,
+      "gross_loss": 17605488.919999998
+    },
+    "base": {
+      "expectancy": -0.06428752964562236,
+      "profit_factor": 0.9863264000115601,
+      "trade_count": 4280143,
+      "gross_profit": 19848276.60000006,
+      "gross_loss": 20123436.419999942
+    },
+    "pessimistic": {
+      "expectancy": -2.5742875296456216,
+      "profit_factor": 0.5624087178148075,
+      "trade_count": 4280143,
+      "gross_profit": 14161156.25,
+      "gross_loss": 25179475.0
+    }
+  }
+}

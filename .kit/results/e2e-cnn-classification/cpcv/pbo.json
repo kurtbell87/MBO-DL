@@ -1,0 +1,12 @@
+{
+  "pbo": 0.2222222222222222,
+  "pbo_underperform_paths": 10,
+  "total_paths": 45,
+  "best_config": "gbt_only",
+  "dsr": 5.893868931245349e-45,
+  "observed_sharpe": -2.5023864516560086,
+  "n_trials": 2,
+  "n_obs": 201,
+  "skewness": 0.9629935445967004,
+  "kurtosis": 5.4342386731724535
+}

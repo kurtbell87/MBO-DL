@@ -1,0 +1,72 @@
+{
+  "accuracy": 0.4209001394214012,
+  "f1_macro": 0.4020108872566519,
+  "confusion_matrix": [
+    [
+      34044,
+      27470,
+      14714
+    ],
+    [
+      20443,
+      47225,
+      12459
+    ],
+    [
+      30522,
+      27307,
+      15336
+    ]
+  ],
+  "classification_report": {
+    "short (-1)": {
+      "precision": 0.40047524379771554,
+      "recall": 0.44660754578370154,
+      "f1-score": 0.4222852074895961,
+      "support": 76228.0
+    },
+    "neutral (0)": {
+      "precision": 0.4629811180172938,
+      "recall": 0.589376864228038,
+      "f1-score": 0.5185884730053972,
+      "support": 80127.0
+    },
+    "long (+1)": {
+      "precision": 0.3607706603307535,
+      "recall": 0.20960841932618055,
+      "f1-score": 0.2651589812749624,
+      "support": 73165.0
+    },
+    "accuracy": 0.4209001394214012,
+    "macro avg": {
+      "precision": 0.4080756740485876,
+      "recall": 0.4151976097793067,
+      "f1-score": 0.4020108872566519,
+      "support": 229520.0
+    },
+    "weighted avg": {
+      "precision": 0.4096396840827969,
+      "recall": 0.4209001394214012,
+      "f1-score": 0.40581758556118425,
+      "support": 229520.0
+    }
+  },
+  "cost_sensitivity": {
+    "optimistic": {
+      "expectancy": 1.0456070854823705,
+      "profit_factor": 1.250228903773002,
+      "trade_count": 94616
+    },
+    "base": {
+      "expectancy": -0.20439291451762978,
+      "profit_factor": 0.9572062114285126,
+      "trade_count": 94616
+    },
+    "pessimistic": {
+      "expectancy": -2.7143929145176293,
+      "profit_factor": 0.5458042267220797,
+      "trade_count": 94616
+    }
+  },
+  "model_config": "gbt_only"
+}

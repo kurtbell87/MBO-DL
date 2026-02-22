@@ -1,0 +1,13 @@
+{
+  "9e_xgb_accuracy": 0.419,
+  "9e_expectancy_base": -0.37,
+  "9e_profit_factor": 0.924,
+  "9e_pipeline": "regression \u2192 frozen embedding \u2192 XGBoost",
+  "this_best_config": "gbt_only",
+  "this_cpcv_mean_acc": 0.39024325566149826,
+  "this_cpcv_mean_exp": -0.14569216773619842,
+  "this_holdout_acc": 0.4209001394214012,
+  "this_holdout_exp": -0.20439291451762978,
+  "delta_acc": -0.028756744338501727,
+  "delta_exp": 0.22430783226380158
+}

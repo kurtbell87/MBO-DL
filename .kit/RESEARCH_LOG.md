@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## e2e-cnn-classification — REFUTED (Outcome D)
+**Date:** 2026-02-22
+**Hypothesis:** End-to-end Conv1d CNN trained on 3-class triple barrier labels (cross-entropy, no intermediate regression) on full-year data (251 days, 1.16M bars) achieves accuracy >= 0.42 and breakeven expectancy.
+**Key result:** E2E-CNN CPCV mean accuracy = 0.390 (BELOW 9E's 0.419). GBT-only accuracy = 0.449. CNN underperforms GBT by -5.9pp accuracy and -$0.069 expectancy. Outcome D: hand-crafted features beat CNN for classification. CPCV 45 splits, 10-group, PBO=0.222 (not overfit). Holdout accuracy 0.421, expectancy -$0.204 (GBT). GBT marginally positive in Q1 (+$0.003) and Q2 (+$0.029) under base costs, negative in Q3-Q4. Deflated Sharpe ~0. CNN+Features augmented config skipped (wall-clock). CNN trained on CPU (~180-320s/split), not GPU.
+**Lesson:** The CNN spatial signal (R²=0.089 for regression) does not encode class-discriminative book patterns. End-to-end cross-entropy training is 5.9pp WORSE than XGBoost on 20 hand-crafted features. The 16-dim penultimate layer learns return-variance features, not class boundaries. The regression-to-classification bottleneck was not the problem — CNN simply doesn't add value for classification. GBT's Q1-Q2 positive expectancy (with default hyperparams) is the most actionable signal: the edge exists in those regimes but is consumed by Q3-Q4. Long (+1) recall is only 0.21 vs short (-1) 0.45 — model is asymmetrically confident on shorts.
+**Next:** (1) XGBoost hyperparameter tuning on full-year data (default params, never optimized — most promising given Q1-Q2 profitability). (2) Label design sensitivity (wider target / narrower stop to lower breakeven). (3) Regime-conditional trading (Q1-Q2 only if robust). CNN line closed for classification.
+**Details:** `.kit/results/e2e-cnn-classification/metrics.json`
+
 ## full-year-export — CONFIRMED
 **Date:** 2026-02-20
 **Hypothesis:** bar_feature_export (Parquet) scales to all ~250 RTH trading days in 2022 without systematic failures or data corruption. Full-year dataset production-ready.
