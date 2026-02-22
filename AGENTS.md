@@ -1,12 +1,12 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-19, Tick Bar Fix TDD — COMPLETE)
+## Current State (updated 2026-02-21, Cloud Execution Integration — COMPLETE)
 
 - **Build:** Green.
-- **Unit tests:** 1003/1004 pass (1 disabled, 1 skipped) + new tick_bar_fix tests. TDD phases exited 0.
+- **Unit tests:** 1003/1004 pass (1 disabled, 1 skipped). TDD phases exited 0.
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **Tick bar fix (TB-Fix):** Complete. `book_builder.hpp` emits `trade_count` per snapshot. `tick_bar_builder.hpp` accumulates trade counts, closes bars at threshold. Regression: time/dollar/volume bars unchanged.
-- **19 phases complete** (9 engineering + 10 research). Tick bars now genuine event bars. R3b rerun unblocked.
+- **Cloud execution (research-cloud-execution):** Complete. `experiment.sh` now mandates EC2 via `cloud-run` when `COMPUTE_TARGET=ec2`. `sync_results()` auto-pulls results between RUN and READ. Block commands (`cycle`, `full`, `program`) work with EC2 automatically.
+- **25+ phases complete** (10 engineering + 12 research + 1 data export + 1 infra + 1 kit modification). Full-year dataset + cloud GPU pipeline ready.
 
 ## Completed TDD Phases (Orchestrator Spec — predecessor)
 
@@ -39,8 +39,9 @@
 
 ## Next Action
 
-1. **CNN Pipeline Fix (HIGHEST PRIORITY):** Apply TICK_SIZE normalization (÷0.25) + per-day z-scoring in Python training pipeline. Re-attempt CNN+GBT with proper validation. Expected R²≈0.084.
-2. **R3b Rerun (event-bar research):** Rerun R3b with genuine tick bars now that construction is fixed.
+1. **End-to-end CNN classification (HIGHEST PRIORITY):** Train CNN directly on tb_label (3-class CrossEntropyLoss) on full-year dataset (251 days, 1.16M bars). Spec ready: `.kit/experiments/e2e-cnn-classification.md`. Survey done. Cloud pipeline verified. Launch via `kit.research_cycle`.
+2. **XGBoost hyperparameter tuning:** Grid search to close the 2pp win rate gap.
+3. **Label design sensitivity:** Test wider target (15 ticks) / narrower stop (3 ticks).
 
 ## Agent Roles
 

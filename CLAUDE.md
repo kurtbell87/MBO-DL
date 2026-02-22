@@ -27,34 +27,34 @@ WHEN WORKING FROM A PROVIDED SPEC ALWAYS REFER TO THE  ## Exit Criteria SECTION 
 
 ### Research Hybrid Workflow (Local + EC2)
 
-`experiment.sh full` cannot be used as a single shot because the RUN phase runs on EC2 and results must be pulled from S3 before READ can analyze them. Orchestrate phases individually:
+`experiment.sh full` and `experiment.sh cycle` now handle EC2 execution automatically. When `COMPUTE_TARGET=ec2` (set in `.orchestration-kit.env`):
 
+1. The RUN phase injects a **mandatory** cloud-run directive into the sub-agent prompt
+2. `sync_results()` runs automatically between RUN and READ, pulling results from cloud-run/S3
+3. All composite commands (`cycle`, `full`, `program`) include the sync step
+
+**Use block commands normally:**
 ```bash
-# 1. SURVEY (local — Claude conversation)
-.kit/experiment.sh survey "<question>" <spec>
+# Preferred: block commands work with EC2 automatically
+.kit/experiment.sh cycle <spec>
+.kit/experiment.sh full "<question>" <spec>
+.kit/experiment.sh program
+```
 
-# 2. FRAME (local — Claude produces training script)
-.kit/experiment.sh frame "<question>" <spec>
-
-# 3. RUN (EC2 — execute the training script on cloud)
+**Manual phase orchestration is only needed if retrying a single failed phase:**
+```bash
+# Manual RUN + sync (retry scenario only)
 orchestration-kit/tools/cloud-run run "python <script>" \
     --spec <spec> \
     --data-dirs .kit/results/full-year-export/ \
-    --output-dir .kit/results/<experiment-name>/ \
-    --detach
+    --output-dir .kit/results/<experiment-name>/
 
-# 4. PULL RESULTS (after EC2 finishes)
+# Pull results
 orchestration-kit/tools/cloud-run pull <run-id> --output-dir .kit/results/<experiment-name>/
-# or: orchestration-kit/tools/artifact-store hydrate
 
-# 5. READ (local — Claude analyzes results)
+# Then resume
 .kit/experiment.sh read "<question>" <spec>
-
-# 6. LOG (local — Claude updates RESEARCH_LOG.md)
-.kit/experiment.sh log "<question>" <spec>
 ```
-
-**Do NOT use `experiment.sh full` or `experiment.sh cycle`.** Always run phases individually with EC2 for the RUN phase.
 
 ## Git Workflow — Worktrees & Branches (MANDATORY)
 
