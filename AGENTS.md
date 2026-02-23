@@ -1,12 +1,13 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-21, Cloud Execution Integration — COMPLETE)
+## Current State (updated 2026-02-23, Cloud-Run Reliability Overhaul — COMPLETE)
 
 - **Build:** Green.
-- **Unit tests:** 1003/1004 pass (1 disabled, 1 skipped). TDD phases exited 0.
+- **Tests:** All pass. 1003/1004 unit tests (1 disabled, 1 skipped) + cloud-run reliability tests. TDD phases exited 0.
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **Cloud execution (research-cloud-execution):** Complete. `experiment.sh` now mandates EC2 via `cloud-run` when `COMPUTE_TARGET=ec2`. `sync_results()` auto-pulls results between RUN and READ. Block commands (`cycle`, `full`, `program`) work with EC2 automatically.
-- **25+ phases complete** (10 engineering + 12 research + 1 data export + 1 infra + 1 kit modification). Full-year dataset + cloud GPU pipeline ready.
+- **Cloud-run reliability (cloud-run-reliability):** Complete. Bootstrap scripts have sync daemon (heartbeat 60s, log 60s, results 5min). `poll_status()` checks EC2 instance state + heartbeat. `cloud-run logs` subcommand with `--follow`. Pre-flight `--validate` flag (syntax + imports + smoke test). `gc_stale()` cleans orphaned local state. Enhanced `status`/`ls` with elapsed time + cost estimates.
+- **Cloud execution (research-cloud-execution):** Complete. `experiment.sh` mandates EC2 via `cloud-run` when `COMPUTE_TARGET=ec2`. Compute directive template now includes `--validate`.
+- **26+ phases complete** (10 engineering + 12 research + 1 data export + 2 infra + 1 kit modification). Full-year dataset + cloud GPU pipeline ready.
 
 ## Completed TDD Phases (Orchestrator Spec — predecessor)
 
@@ -36,12 +37,13 @@
 | 8 | bar-feature-export | done | done | done | done |
 | 9A | hybrid-model | done | done | done | done |
 | TB-Fix | tick-bar-fix | done | done | done | done |
+| CRR | cloud-run-reliability | done | done | done | done |
 
 ## Next Action
 
-1. **End-to-end CNN classification (HIGHEST PRIORITY):** Train CNN directly on tb_label (3-class CrossEntropyLoss) on full-year dataset (251 days, 1.16M bars). Spec ready: `.kit/experiments/e2e-cnn-classification.md`. Survey done. Cloud pipeline verified. Launch via `kit.research_cycle`.
-2. **XGBoost hyperparameter tuning:** Grid search to close the 2pp win rate gap.
-3. **Label design sensitivity:** Test wider target (15 ticks) / narrower stop (3 ticks).
+1. **XGBoost hyperparameter tuning on full-year data (HIGHEST PRIORITY):** Default params from 9B never optimized. GBT shows Q1-Q2 positive expectancy with defaults. Grid/random search over max_depth, learning_rate, n_estimators, subsample, colsample, min_child_weight.
+2. **Label design sensitivity:** Test wider target (15 ticks) / narrower stop (3 ticks).
+3. **Regime-conditional trading:** Q1-Q2 only strategy. GBT profitable in H1 2022, negative in H2.
 
 ## Agent Roles
 

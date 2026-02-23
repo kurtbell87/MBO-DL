@@ -462,7 +462,9 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-22, E2E CNN Classification Complete)
+## Current State (updated 2026-02-23, Cloud-Run Reliability Overhaul Complete)
+
+**Cloud-Run Reliability Overhaul (2026-02-23) — COMPLETE.** Bootstrap scripts (GPU + CPU) now run a sync daemon: heartbeat every 60s, log upload every 60s, incremental results sync every 5 min. EXIT trap syncs results before writing exit_code. `s3.py` has `check_heartbeat()` and `tail_log()` (with `--follow` mode). `remote.py` `poll_status()` checks EC2 instance state + heartbeat when no exit_code found. `cloud-run` CLI has new `logs` subcommand (`--lines`, `--follow`), enhanced `status`/`ls` with elapsed time + cost estimates, and `--validate`/`--skip-smoke` pre-flight code validation on `run`. `validate.py` provides syntax check, import check, and smoke test. `state.py` has `gc_stale()` for cleaning local state. `experiment.sh` compute directive template includes `--validate`. All tests pass. See `.kit/docs/cloud-run-reliability.md`.
 
 **VERDICT: CNN LINE CLOSED FOR CLASSIFICATION. GBT-only is the path forward.** End-to-end CNN classification (Outcome D) — GBT-only beats CNN by 5.9pp accuracy and $0.069 expectancy. CNN spatial signal (R²=0.089 regression) does not encode class-discriminative boundaries. Full-year CPCV (45 splits, 1.16M bars, PBO=0.222): GBT accuracy 0.449, expectancy -$0.064 (base). GBT is **marginally profitable in Q1 (+$0.003) and Q2 (+$0.029)** under base costs — edge exists but consumed by Q3-Q4 losses. Holdout accuracy 0.421, expectancy -$0.204. Next: XGBoost hyperparameter tuning (never optimized, default params from 9B), label design sensitivity, or regime-conditional trading.
 
@@ -535,9 +537,10 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | **FYE** | **`.kit/experiments/full-year-export.md`** | **Research** | **Done (CONFIRMED)** — 251 days, 1.16M bars, 10/10 SC pass |
 | **Infra** | **Dockerfile + ec2-bootstrap** | **Chore** | **Done** — Docker/ECR/EBS pipeline verified E2E |
 | **10** | **`.kit/experiments/e2e-cnn-classification.md`** | **Research** | **Done (REFUTED — Outcome D)** — GBT beats CNN by 5.9pp; CNN line closed |
+| **CRR** | **`.kit/docs/cloud-run-reliability.md`** | **TDD** | **Done** — sync daemon, heartbeat, log tailing, pre-flight validation, stale GC |
 
 - **Build:** Green.
-- **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped) + new tick_bar_fix tests. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
+- **Tests:** All pass. 1003/1004 unit tests (1 disabled, 1 skipped) + tick_bar_fix + cloud-run reliability tests. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
 - **Corrected Hybrid Model COMPLETE (2026-02-19):** CNN normalization fix verified (3rd independent reproduction). R²=0.089 with proper validation. But end-to-end pipeline not economically viable: expectancy=-$0.37/trade (base), PF=0.924. Breakeven RT=$3.37. Hybrid outperforms GBT-only but delta too small to flip sign.
 - **Next task options (in priority order):**

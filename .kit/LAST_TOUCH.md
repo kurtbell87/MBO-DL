@@ -18,46 +18,46 @@
 
 ## TL;DR — Where We Are and What To Do
 
-We've built a complete MES microstructure research platform over 24 phases. The CNN spatial signal on order book snapshots is **real and reproducible** (R²=0.089, 3 independent reproductions). But the prior pipeline (CNN regression → frozen embeddings → XGBoost classification) loses too much information at the handoff — expectancy is -$0.37/trade, just $0.37 short of breakeven.
+We've built a complete MES microstructure research platform over 26 phases. The CNN line is **closed for classification** (Outcome D — GBT beats CNN by 5.9pp). GBT-only is the path forward. Cloud-run infrastructure is now **production-grade** with heartbeat monitoring, log streaming, pre-flight validation, and stale run cleanup.
 
-**Your job: launch the end-to-end CNN classification experiment.**
+**Your job: launch the next research priority — XGBoost hyperparameter tuning.**
 
-The spec is ready: `.kit/experiments/e2e-cnn-classification.md`
-A survey has already been completed: `.kit/experiments/survey-e2e-cnn-classification.md`
+### Last Completed: Cloud-Run Reliability Overhaul (2026-02-23)
 
-This experiment trains the CNN directly on 3-class triple barrier labels (CrossEntropyLoss) instead of going through a regression intermediary. It runs on the full-year dataset (251 days, 1.16M bars — 13× more data than prior experiments) with a rigorous CPCV validation protocol that generates 9 independent backtest paths and computes Probability of Backtest Overfitting.
+Spec: `.kit/docs/cloud-run-reliability.md`. Branch: `chore/cloud-run-reliability`.
 
-### NEW: EC2 Mandatory Execution (2026-02-21)
+**What changed (8 files modified, 2 new):**
+- `ec2-bootstrap-gpu.sh` / `ec2-bootstrap.sh` — sync daemon (heartbeat 60s, log 60s, results every 5min), EXIT trap syncs results before exit_code
+- `s3.py` — `check_heartbeat()`, `tail_log()` with follow mode
+- `remote.py` — `poll_status()` checks EC2 instance state + heartbeat, `gc_stale_runs()` for dead instances
+- `cloud-run` CLI — `logs` subcommand (`--lines`, `--follow`), `--validate`/`--skip-smoke` on `run`, enhanced `status`/`ls` (elapsed, cost, heartbeat, log lines)
+- `validate.py` (new) — syntax check, import check, smoke test, `validate_all()`
+- `state.py` — `gc_stale()` cleans orphaned local state entries
+- `experiment.sh` — compute directive template includes `--validate`
+- `tests/test_cloud_run_reliability.py` (new) — all tests pass
 
-**All compute-heavy work runs on EC2. The research kit has been modified to enforce this.**
+### Next Actions (Priority Order)
 
-`experiment.sh` now has:
-- `COMPUTE_TARGET=ec2` set in `.orchestration-kit.env`
-- A mandatory compute directive injected into the RUN sub-agent prompt when EC2 is active
-- A `sync_results()` function that pulls results from cloud-run/S3 between RUN and READ phases
-- This works automatically with `experiment.sh full` and `experiment.sh cycle`
+1. **XGBoost hyperparameter tuning on full-year data** — default params from 9B never optimized. GBT already shows Q1-Q2 positive expectancy (+$0.003, +$0.029) with default hyperparams. Most promising path given Outcome D.
+2. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks).
+3. **Regime-conditional trading** — Q1-Q2 only strategy.
+4. **2-class formulation** — directional only (merge tb_label=0 into abstain).
 
-The survey phase is already done. You can skip it and run:
+### Cloud-Run Usage (Updated)
+
+Cloud-run now supports:
 ```bash
-source .orchestration-kit.env
-# Use MCP tool:
-kit.research_cycle spec_path=".kit/experiments/e2e-cnn-classification.md"
-# Or bash fallback:
-.kit/experiment.sh cycle .kit/experiments/e2e-cnn-classification.md
-```
+# Tail logs in real-time
+orchestration-kit/tools/cloud-run logs <run-id> --follow
 
-This will run: FRAME → RUN (on EC2) → sync results → READ → LOG
+# Validate before launch (auto in experiment.sh)
+orchestration-kit/tools/cloud-run run --validate <script> "python <script>" ...
 
-If you want the full cycle including survey (survey is already done, so it'll be fast):
-```bash
-kit.research_full question="Can end-to-end CNN classification on tb_label close the viability gap?" spec_path=".kit/experiments/e2e-cnn-classification.md"
-```
+# Check status with heartbeat + cost
+orchestration-kit/tools/cloud-run status <run-id>
 
-### IMPORTANT: Hydrate Artifacts First
-
-If Parquet files show as broken symlinks, run before launching:
-```bash
-orchestration-kit/tools/artifact-store hydrate
+# Clean up stale runs
+orchestration-kit/tools/cloud-run gc
 ```
 
 ---
@@ -70,19 +70,17 @@ Three prior experiments (9B, 9C, R3b) failed because of normalization errors. Th
 2. **Book sizes (channel 1)**: log1p() → z-score PER DAY (not per-fold, not globally).
 3. **Non-spatial features**: z-score using train-fold stats only.
 
-If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on sizes, that's the bug that cost us 3 experiment cycles.
-
 ---
 
 ## Project Status
 
-**25 phases complete (10 engineering + 12 research + 1 data export + 1 infra + 1 kit modification). Branch: `main`. Working tree: clean.**
+**26 phases complete (10 engineering + 12 research + 1 data export + 2 infra + 1 kit modification). Branch: `chore/cloud-run-reliability`. Tests: all pass.**
 
 ### What's Built
-- **C++20 data pipeline**: Bar construction, order book replay, multi-day backtest, feature computation/export, oracle expectancy, Parquet export. 1003+ unit tests, 22 integration tests, 28 Parquet tests.
-- **Full-year dataset**: 251 Parquet files (time_5s bars, 1,160,150 bars, 149 columns, zstd compression). Stored in S3 artifact store — run `orchestration-kit/tools/artifact-store hydrate` after clone/worktree to restore.
-- **Cloud pipeline**: Docker image in ECR (`651323680805.dkr.ecr.us-east-1.amazonaws.com/mbo-dl`), EBS snapshot with 49GB MBO data (`snap-0efa355754c9a329d`), IAM profile (`cloud-run-ec2`). Verified end-to-end on 2026-02-21.
-- **EC2 mandatory execution**: `experiment.sh` modified to mandate cloud-run for RUN phases when `COMPUTE_TARGET=ec2` (2026-02-21).
+- **C++20 data pipeline**: Bar construction, order book replay, multi-day backtest, feature computation/export, oracle expectancy, Parquet export. 1003+ unit tests, 22 integration tests.
+- **Full-year dataset**: 251 Parquet files (time_5s bars, 1,160,150 bars, 149 columns, zstd compression). Stored in S3 artifact store.
+- **Cloud pipeline**: Docker image in ECR, EBS snapshot with 49GB MBO data, IAM profile. Verified E2E. Now with heartbeat, log streaming, pre-flight validation, and stale GC.
+- **EC2 mandatory execution**: `experiment.sh` mandates cloud-run for RUN phases when `COMPUTE_TARGET=ec2`. Compute directive includes `--validate`.
 
 ### Key Research Results
 
@@ -92,11 +90,8 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 | R2 | Features sufficient | R²=0.0067 | Book snapshot is sufficient statistic |
 | R3 | CNN best encoder | R²=0.132 (leaked) / 0.084 (proper) | Spatial structure matters |
 | R4/R4b/R4c/R4d | No temporal signal | 0/168+ passes | Drop SSM/temporal encoder permanently |
-| R6 | Synthesis | CONDITIONAL GO → GO | CNN + GBT Hybrid architecture |
-| R7 | Oracle expectancy | $4.00/trade, PF=3.30 | Edge exists at oracle level |
-| 9B→9D | Normalization root cause | R²: -0.002 → 0.089 | TICK_SIZE + per-day z-score required |
-| **9E** | **Pipeline bottleneck** | **exp=-$0.37/trade** | **Regression→classification gap is the limit** |
-| FYE | Full-year export | 251 days, 1.16M bars | 13× more data, unblocks next experiment |
+| 9E | Pipeline bottleneck | exp=-$0.37/trade | Regression→classification gap is the limit |
+| **10** | **CNN classification refuted** | **GBT +5.9pp** | **CNN line closed; GBT-only path forward** |
 
 ---
 
@@ -106,9 +101,7 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 2. **`CLAUDE.md`** — full protocol, absolute rules, current state, institutional memory
 3. **`.kit/RESEARCH_LOG.md`** — cumulative findings from all 12+ experiments
 4. **`.kit/QUESTIONS.md`** — open and answered research questions
-5. **`.kit/experiments/e2e-cnn-classification.md`** — the next experiment spec (576 lines, fully specified)
-6. **`.kit/experiments/survey-e2e-cnn-classification.md`** — survey already completed
 
 ---
 
-Updated: 2026-02-21. Next action: launch E2E CNN classification experiment.
+Updated: 2026-02-23. Next action: XGBoost hyperparameter tuning or merge cloud-run-reliability branch to main.
