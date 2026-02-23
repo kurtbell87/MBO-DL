@@ -62,15 +62,6 @@
       "launched_at": "2026-02-22T18:34:18.741726+00:00",
       "max_hours": 6.0,
       "registered_at": "2026-02-22T18:34:20.157490+00:00"
-    },
-    "cloud-20260222T184150Z-c653b504": {
-      "instance_id": "i-0241d281381b23965",
-      "backend": "aws",
-      "instance_type": "g5.16xlarge",
-      "spec_file": ".kit/experiments/e2e-cnn-classification.md",
-      "launched_at": "2026-02-22T18:41:51.502998+00:00",
-      "max_hours": 48.0,
-      "registered_at": "2026-02-22T18:41:52.981286+00:00"
     }
   }
 }

@@ -16,10 +16,10 @@ Determine the optimal architecture for MES microstructure prediction: bar type, 
 
 | Constraint | Decision |
 |------------|----------|
-| Framework  | C++20 (pipeline + models), Python (research analysis) |
-| Compute    | CPU only (no GPU required for current experiments) |
-| Timeline   | Sequential R1–R4c research chain |
-| Baselines  | R4 time_5s GBT, dual threshold (Δ>20% + corrected p<0.05) |
+| Framework  | C++20 (pipeline + models), Python (research analysis + CNN/XGBoost training) |
+| Compute    | EC2 GPU mandatory for model training (g5.xlarge A10G); local MPS for validation |
+| Timeline   | R1–R4d complete → 9A–9E complete → E2E CNN classification in progress |
+| Baselines  | GBT-only on full-year data (accuracy ~0.449, expectancy -$0.064 base) |
 
 ---
 
@@ -27,7 +27,7 @@ Determine the optimal architecture for MES microstructure prediction: bar type, 
 
 - Live/paper trading integration (R|API+ installed but not integrated)
 - Multi-instrument generalization (MES only)
-- Deep learning training infrastructure (CNN training deferred to build phase)
+- Multi-year validation (2022 data only; regime-conditional conclusions limited to 1 year)
 
 ---
 
@@ -37,10 +37,12 @@ Status: `Not started` | `In progress` | `Answered` | `Blocked` | `Deferred`
 
 | Priority | Question | Status | Parent | Blocker | Decision Gate | Experiment(s) |
 |----------|----------|--------|--------|---------|---------------|---------------|
-| P1 | Can end-to-end CNN classification on tb_label close the 2pp win rate gap (51.3% to 53.3%) needed for breakeven? | Not started | — | Full-year export ✅ | Determines whether the regression-to-classification bottleneck is the limiting factor | hybrid-model-corrected (Outcome B) |
+| P1 | Can end-to-end CNN classification on tb_label close the 2pp win rate gap (51.3% to 53.3%) needed for breakeven? | In progress | — | — | Determines whether the regression-to-classification bottleneck is the limiting factor | e2e-cnn-classification (partial: CNN acc=0.388, GBT acc=0.449 — CNN WORSE, re-running with bug fix) |
+| P1 | Can XGBoost hyperparameter tuning improve classification accuracy by 2+pp? Default params never optimized. GBT shows Q1-Q2 positive expectancy (+$0.003, +$0.029 base). | Not started | E2E CNN result | E2E CNN completion | Determines if the 2pp gap to breakeven is a tuning issue vs architectural limit | — |
 | P2 | How sensitive is oracle expectancy to transaction cost assumptions? | Not started | — | — | Determines edge robustness under realistic execution | — |
-| P2 | Can XGBoost hyperparameter tuning improve classification accuracy by 2+pp on the corrected CNN+GBT pipeline? | Not started | — | Full-year export ✅ | Determines if the 2pp gap to breakeven is a tuning issue vs architectural limit | hybrid-model-corrected (Outcome B) |
-| P3 | Does CNN spatial R² improve on genuine trade-triggered tick bars vs time_5s? | Answered | — | — | Determines whether event bars should replace time_5s before full-year export | R3b-genuine-tick-bars (CONFIRMED low confidence) |
+| P2 | Can label design (wider target 15t / narrower stop 3t) lower breakeven win rate below current ~45%? | Not started | E2E CNN result | E2E CNN completion | Breakeven drops from 53.3% to ~42.5% at 15:3 ratio | — |
+| P3 | Does regime-conditional trading (Q1-Q2 only) produce positive expectancy? | Not started | E2E CNN result | E2E CNN completion | GBT profitable in H1 2022, negative in H2. Limited by single year of data. | — |
+| P3 | Does CNN spatial R² improve on genuine trade-triggered tick bars vs time_5s? | Answered | — | — | Determines whether event bars should replace time_5s | R3b-genuine-tick-bars (CONFIRMED low confidence) |
 
 ---
 
@@ -69,7 +71,8 @@ Answer types: `CONFIRMED` | `REFUTED` | `Deferred` | `Superseded`
 ## 6. Working Hypotheses
 
 - MES 5-second returns are a martingale difference sequence. No temporal encoder is justified.
-- CNN on structured (20,2) book input captures spatial structure that flattened features destroy (proper-validation R²≈0.084 vs. 0.007; R3's reported R²=0.132 was inflated ~36% by test-as-validation leakage).
+- CNN on structured (20,2) book input captures spatial structure that flattened features destroy (proper-validation R²≈0.084 vs. 0.007), but this regression signal does NOT transfer to classification — CNN accuracy 0.388 vs GBT 0.449 on full-year CPCV.
 - Static book features are a sufficient statistic for prediction — message sequence and temporal history add nothing.
-- Triple barrier labeling is strictly superior to first-to-hit for MES at oracle parameters.
-- The CNN+GBT Hybrid architecture is the correct next step for the model build phase.
+- **GBT-only is the most promising path.** CNN line closed for classification (Outcome D from E2E experiment). GBT shows marginal profitability in Q1 (+$0.003) and Q2 (+$0.029) under base costs with default hyperparameters — never tuned.
+- XGBoost hyperparameter tuning is the highest-priority next step — default params from 9B, never optimized on full-year data.
+- Label design sensitivity (wider target / narrower stop) may lower breakeven win rate enough to flip aggregate expectancy positive.
