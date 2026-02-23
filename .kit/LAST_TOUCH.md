@@ -18,47 +18,41 @@
 
 ## TL;DR — Where We Are and What To Do
 
-We've built a complete MES microstructure research platform over 24 phases. The CNN spatial signal on order book snapshots is **real and reproducible** (R²=0.089, 3 independent reproductions). But the prior pipeline (CNN regression → frozen embeddings → XGBoost classification) loses too much information at the handoff — expectancy is -$0.37/trade, just $0.37 short of breakeven.
+### Active Work: Parallel Batch Dispatch (feat/parallel-batch-dispatch)
 
-**Your job: launch the end-to-end CNN classification experiment.**
+TDD cycle in progress for `.kit/docs/parallel-batch-dispatch.md`. This adds N-way parallel experiment dispatch to cloud-run so multiple experiments can run simultaneously on separate EC2 instances.
 
-The spec is ready: `.kit/experiments/e2e-cnn-classification.md`
-A survey has already been completed: `.kit/experiments/survey-e2e-cnn-classification.md`
+**What was done this cycle (2026-02-23):**
+- New `orchestration-kit/tools/cloud/batch.py` — `launch_batch()`, `poll_batch()`, `pull_batch()`, `list_batches()`, batch state persistence
+- Modified `orchestration-kit/tools/cloud/state.py` — `batch_id` param on `register_run()`, new `list_batch_runs()`
+- Modified `orchestration-kit/tools/cloud/remote.py` — `batch_id` passthrough to state registration
+- Modified `orchestration-kit/tools/cloud-run` — `batch {run,status,pull,ls}` CLI subcommands
+- Modified `orchestration-kit/mcp/server.py` — `kit.research_batch` MCP tool definition + handler
+- Modified `orchestration-kit/tools/cloud/preflight.py` — surfaces `parallelizable` field in output
+- Modified `.orchestration-kit.env` — environment config updates
+- New `orchestration-kit/tests/test_batch.py` + `orchestration-kit/tests/conftest.py` — 12 test cases, all mocked (no AWS creds needed)
 
-This experiment trains the CNN directly on 3-class triple barrier labels (CrossEntropyLoss) instead of going through a regression intermediary. It runs on the full-year dataset (251 days, 1.16M bars — 13× more data than prior experiments) with a rigorous CPCV validation protocol that generates 9 independent backtest paths and computes Probability of Backtest Overfitting.
+**Key files:**
+- Spec: `.kit/docs/parallel-batch-dispatch.md`
+- Core module: `orchestration-kit/tools/cloud/batch.py`
+- Tests: `orchestration-kit/tests/test_batch.py`
+- CLI: `orchestration-kit/tools/cloud-run`
+- MCP: `orchestration-kit/mcp/server.py`
 
-### NEW: EC2 Mandatory Execution (2026-02-21)
+**Next steps:**
+1. Verify all exit criteria in spec are met (TDD sub-agent already verified — trust exit 0)
+2. Commit changes on `feat/parallel-batch-dispatch`
+3. Merge to main
+4. Use batch dispatch for parallel XGBoost hyperparameter sweeps
 
-**All compute-heavy work runs on EC2. The research kit has been modified to enforce this.**
+### Background: CNN Line Closed
 
-`experiment.sh` now has:
-- `COMPUTE_TARGET=ec2` set in `.orchestration-kit.env`
-- A mandatory compute directive injected into the RUN sub-agent prompt when EC2 is active
-- A `sync_results()` function that pulls results from cloud-run/S3 between RUN and READ phases
-- This works automatically with `experiment.sh full` and `experiment.sh cycle`
+The CNN spatial signal on order book snapshots is **real and reproducible** (R²=0.089, 3 independent reproductions). But end-to-end CNN classification (Outcome D) showed GBT-only beats CNN by 5.9pp accuracy. CNN line is permanently closed for classification.
 
-The survey phase is already done. You can skip it and run:
-```bash
-source .orchestration-kit.env
-# Use MCP tool:
-kit.research_cycle spec_path=".kit/experiments/e2e-cnn-classification.md"
-# Or bash fallback:
-.kit/experiment.sh cycle .kit/experiments/e2e-cnn-classification.md
-```
-
-This will run: FRAME → RUN (on EC2) → sync results → READ → LOG
-
-If you want the full cycle including survey (survey is already done, so it'll be fast):
-```bash
-kit.research_full question="Can end-to-end CNN classification on tb_label close the viability gap?" spec_path=".kit/experiments/e2e-cnn-classification.md"
-```
-
-### IMPORTANT: Hydrate Artifacts First
-
-If Parquet files show as broken symlinks, run before launching:
-```bash
-orchestration-kit/tools/artifact-store hydrate
-```
+**Priority research tasks (post-merge):**
+1. **XGBoost hyperparameter tuning** — default params never optimized. GBT shows Q1-Q2 positive expectancy. Batch dispatch enables parallel sweeps.
+2. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks).
+3. **Regime-conditional trading** — Q1-Q2 only strategy.
 
 ---
 
@@ -76,13 +70,14 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 
 ## Project Status
 
-**25 phases complete (10 engineering + 12 research + 1 data export + 1 infra + 1 kit modification). Branch: `main`. Working tree: clean.**
+**26+ phases complete (10 engineering + 12 research + 1 data export + 1 infra + 2 kit modifications). Branch: `feat/parallel-batch-dispatch`. Working tree: modified.**
 
 ### What's Built
 - **C++20 data pipeline**: Bar construction, order book replay, multi-day backtest, feature computation/export, oracle expectancy, Parquet export. 1003+ unit tests, 22 integration tests, 28 Parquet tests.
-- **Full-year dataset**: 251 Parquet files (time_5s bars, 1,160,150 bars, 149 columns, zstd compression). Stored in S3 artifact store — run `orchestration-kit/tools/artifact-store hydrate` after clone/worktree to restore.
-- **Cloud pipeline**: Docker image in ECR (`651323680805.dkr.ecr.us-east-1.amazonaws.com/mbo-dl`), EBS snapshot with 49GB MBO data (`snap-0efa355754c9a329d`), IAM profile (`cloud-run-ec2`). Verified end-to-end on 2026-02-21.
-- **EC2 mandatory execution**: `experiment.sh` modified to mandate cloud-run for RUN phases when `COMPUTE_TARGET=ec2` (2026-02-21).
+- **Full-year dataset**: 251 Parquet files (time_5s bars, 1,160,150 bars, 149 columns, zstd compression). Stored in S3 artifact store.
+- **Cloud pipeline**: Docker image in ECR, EBS snapshot with 49GB MBO data, IAM profile. Verified E2E.
+- **EC2 mandatory execution**: `experiment.sh` mandates cloud-run for RUN phases when `COMPUTE_TARGET=ec2`.
+- **Parallel batch dispatch (NEW)**: `cloud-run batch run` launches N experiments in parallel on separate EC2 instances. MCP tool `kit.research_batch` for orchestrator use.
 
 ### Key Research Results
 
@@ -96,7 +91,8 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 | R7 | Oracle expectancy | $4.00/trade, PF=3.30 | Edge exists at oracle level |
 | 9B→9D | Normalization root cause | R²: -0.002 → 0.089 | TICK_SIZE + per-day z-score required |
 | **9E** | **Pipeline bottleneck** | **exp=-$0.37/trade** | **Regression→classification gap is the limit** |
-| FYE | Full-year export | 251 days, 1.16M bars | 13× more data, unblocks next experiment |
+| **10** | **E2E CNN classification** | **GBT wins by 5.9pp** | **CNN line closed for classification** |
+| FYE | Full-year export | 251 days, 1.16M bars | 13× more data available |
 
 ---
 
@@ -106,9 +102,8 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 2. **`CLAUDE.md`** — full protocol, absolute rules, current state, institutional memory
 3. **`.kit/RESEARCH_LOG.md`** — cumulative findings from all 12+ experiments
 4. **`.kit/QUESTIONS.md`** — open and answered research questions
-5. **`.kit/experiments/e2e-cnn-classification.md`** — the next experiment spec (576 lines, fully specified)
-6. **`.kit/experiments/survey-e2e-cnn-classification.md`** — survey already completed
+5. **`.kit/docs/parallel-batch-dispatch.md`** — current TDD spec (batch dispatch)
 
 ---
 
-Updated: 2026-02-21. Next action: launch E2E CNN classification experiment.
+Updated: 2026-02-23. Next action: commit parallel batch dispatch, merge to main, then XGBoost hyperparameter tuning with batch dispatch.

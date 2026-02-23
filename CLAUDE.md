@@ -143,6 +143,7 @@ The orchestration-kit exposes MCP tools via `.mcp.json` (stdio transport). **Use
 | `kit.research_cycle` | `spec_path` | `experiment.sh cycle <spec>` |
 | `kit.research_full` | `question`, `spec_path` | `experiment.sh full <q> <spec>` |
 | `kit.research_program` | _(none)_ | `experiment.sh program` |
+| `kit.research_batch` | `spec_paths` (list) | `experiment.sh batch <spec1> <spec2> ...` |
 | `kit.math` | `spec_path` | `math.sh full <spec>` |
 
 #### Dashboard Queries (synchronous — returns data inline)
@@ -462,7 +463,9 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-22, E2E CNN Classification Complete)
+## Current State (updated 2026-02-23, Parallel Batch Dispatch — In Progress)
+
+**Parallel batch dispatch for cloud-run (TDD cycle on `feat/parallel-batch-dispatch` branch).** Adds batch execution capability: N independent experiments launch simultaneously on separate EC2 instances with unified poll loop and result collection. New `batch.py` module, CLI `batch {run,status,pull,ls}` subcommands, MCP `kit.research_batch` tool, `batch_id` tracking in state/remote, `parallelizable` surfacing in preflight, and `experiment.sh batch` command.
 
 **VERDICT: CNN LINE CLOSED FOR CLASSIFICATION. GBT-only is the path forward.** End-to-end CNN classification (Outcome D) — GBT-only beats CNN by 5.9pp accuracy and $0.069 expectancy. CNN spatial signal (R²=0.089 regression) does not encode class-discriminative boundaries. Full-year CPCV (45 splits, 1.16M bars, PBO=0.222): GBT accuracy 0.449, expectancy -$0.064 (base). GBT is **marginally profitable in Q1 (+$0.003) and Q2 (+$0.029)** under base costs — edge exists but consumed by Q3-Q4 losses. Holdout accuracy 0.421, expectancy -$0.204. Next: XGBoost hyperparameter tuning (never optimized, default params from 9B), label design sensitivity, or regime-conditional trading.
 
@@ -535,6 +538,7 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | **FYE** | **`.kit/experiments/full-year-export.md`** | **Research** | **Done (CONFIRMED)** — 251 days, 1.16M bars, 10/10 SC pass |
 | **Infra** | **Dockerfile + ec2-bootstrap** | **Chore** | **Done** — Docker/ECR/EBS pipeline verified E2E |
 | **10** | **`.kit/experiments/e2e-cnn-classification.md`** | **Research** | **Done (REFUTED — Outcome D)** — GBT beats CNN by 5.9pp; CNN line closed |
+| **Batch** | **`.kit/docs/parallel-batch-dispatch.md`** | **TDD** | **In Progress** — parallel batch dispatch for cloud-run |
 
 - **Build:** Green.
 - **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped) + new tick_bar_fix tests. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
