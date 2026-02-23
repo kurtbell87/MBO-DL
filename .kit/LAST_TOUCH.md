@@ -18,32 +18,34 @@
 
 ## TL;DR — Where We Are and What To Do
 
-### Active Work: Parallel Batch Dispatch (feat/parallel-batch-dispatch)
+### Just Completed: experiment.sh batch command (tdd/parallel-batch-dispatch)
 
-TDD cycle in progress for `.kit/docs/parallel-batch-dispatch.md`. This adds N-way parallel experiment dispatch to cloud-run so multiple experiments can run simultaneously on separate EC2 instances.
+Added `run_batch()` function, `batch)` case dispatch, and help text to `orchestration-kit/research-kit/experiment.sh`. This was the final piece of the parallel batch dispatch feature. Tests pass. Spec: `.kit/docs/experiment-batch-command.md`.
 
 **What was done this cycle (2026-02-23):**
+- Modified `orchestration-kit/research-kit/experiment.sh` — added `run_batch()` function for parallel RUN+sync dispatch, `batch)` case in main dispatch, help text entry
+
+**Previously completed (parallel-batch-dispatch TDD cycle):**
 - New `orchestration-kit/tools/cloud/batch.py` — `launch_batch()`, `poll_batch()`, `pull_batch()`, `list_batches()`, batch state persistence
 - Modified `orchestration-kit/tools/cloud/state.py` — `batch_id` param on `register_run()`, new `list_batch_runs()`
 - Modified `orchestration-kit/tools/cloud/remote.py` — `batch_id` passthrough to state registration
 - Modified `orchestration-kit/tools/cloud-run` — `batch {run,status,pull,ls}` CLI subcommands
 - Modified `orchestration-kit/mcp/server.py` — `kit.research_batch` MCP tool definition + handler
 - Modified `orchestration-kit/tools/cloud/preflight.py` — surfaces `parallelizable` field in output
-- Modified `.orchestration-kit.env` — environment config updates
-- New `orchestration-kit/tests/test_batch.py` + `orchestration-kit/tests/conftest.py` — 12 test cases, all mocked (no AWS creds needed)
+- New `orchestration-kit/tests/test_batch.py` + `orchestration-kit/tests/conftest.py` — 12 test cases
 
 **Key files:**
-- Spec: `.kit/docs/parallel-batch-dispatch.md`
+- Specs: `.kit/docs/parallel-batch-dispatch.md`, `.kit/docs/experiment-batch-command.md`
 - Core module: `orchestration-kit/tools/cloud/batch.py`
+- Shell integration: `orchestration-kit/research-kit/experiment.sh`
 - Tests: `orchestration-kit/tests/test_batch.py`
 - CLI: `orchestration-kit/tools/cloud-run`
 - MCP: `orchestration-kit/mcp/server.py`
 
 **Next steps:**
-1. Verify all exit criteria in spec are met (TDD sub-agent already verified — trust exit 0)
-2. Commit changes on `feat/parallel-batch-dispatch`
-3. Merge to main
-4. Use batch dispatch for parallel XGBoost hyperparameter sweeps
+1. Commit changes on `tdd/parallel-batch-dispatch`
+2. Merge to main
+3. Use batch dispatch for parallel XGBoost hyperparameter sweeps
 
 ### Background: CNN Line Closed
 
@@ -70,14 +72,14 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 
 ## Project Status
 
-**26+ phases complete (10 engineering + 12 research + 1 data export + 1 infra + 2 kit modifications). Branch: `feat/parallel-batch-dispatch`. Working tree: modified.**
+**27+ phases complete (10 engineering + 12 research + 1 data export + 1 infra + 3 kit modifications). Branch: `tdd/parallel-batch-dispatch`. Tests pass.**
 
 ### What's Built
 - **C++20 data pipeline**: Bar construction, order book replay, multi-day backtest, feature computation/export, oracle expectancy, Parquet export. 1003+ unit tests, 22 integration tests, 28 Parquet tests.
 - **Full-year dataset**: 251 Parquet files (time_5s bars, 1,160,150 bars, 149 columns, zstd compression). Stored in S3 artifact store.
 - **Cloud pipeline**: Docker image in ECR, EBS snapshot with 49GB MBO data, IAM profile. Verified E2E.
 - **EC2 mandatory execution**: `experiment.sh` mandates cloud-run for RUN phases when `COMPUTE_TARGET=ec2`.
-- **Parallel batch dispatch (NEW)**: `cloud-run batch run` launches N experiments in parallel on separate EC2 instances. MCP tool `kit.research_batch` for orchestrator use.
+- **Parallel batch dispatch (COMPLETE)**: `cloud-run batch run` launches N experiments in parallel on separate EC2 instances. MCP tool `kit.research_batch` for orchestrator use. `experiment.sh batch` for shell-level dispatch.
 
 ### Key Research Results
 
@@ -102,7 +104,7 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 2. **`CLAUDE.md`** — full protocol, absolute rules, current state, institutional memory
 3. **`.kit/RESEARCH_LOG.md`** — cumulative findings from all 12+ experiments
 4. **`.kit/QUESTIONS.md`** — open and answered research questions
-5. **`.kit/docs/parallel-batch-dispatch.md`** — current TDD spec (batch dispatch)
+5. **`.kit/docs/experiment-batch-command.md`** — latest completed TDD spec
 
 ---
 

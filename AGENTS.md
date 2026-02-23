@@ -1,13 +1,13 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-23, Parallel Batch Dispatch — In Progress)
+## Current State (updated 2026-02-23, Parallel Batch Dispatch — Complete)
 
 - **Build:** Green.
 - **Unit tests:** 1003/1004 pass (1 disabled, 1 skipped). TDD phases exited 0.
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **Parallel batch dispatch (feat/parallel-batch-dispatch):** In progress. Adds N-way parallel experiment dispatch to cloud-run. New `batch.py` module, CLI `batch {run,status,pull,ls}` subcommands, MCP `kit.research_batch` tool, `batch_id` tracking in state/remote, `parallelizable` surfacing in preflight, `experiment.sh batch` shell command. Spec: `.kit/docs/parallel-batch-dispatch.md`.
-- **Cloud execution (research-cloud-execution):** Complete. `experiment.sh` now mandates EC2 via `cloud-run` when `COMPUTE_TARGET=ec2`. `sync_results()` auto-pulls results between RUN and READ. Block commands (`cycle`, `full`, `program`) work with EC2 automatically.
-- **25+ phases complete** (10 engineering + 12 research + 1 data export + 1 infra + 1 kit modification). Full-year dataset + cloud GPU pipeline ready.
+- **Parallel batch dispatch (`tdd/parallel-batch-dispatch`):** Complete. All components delivered: `batch.py` module, CLI `batch {run,status,pull,ls}` subcommands, MCP `kit.research_batch` tool, `batch_id` tracking, `parallelizable` in preflight, `experiment.sh batch` command. Specs: `.kit/docs/parallel-batch-dispatch.md`, `.kit/docs/experiment-batch-command.md`.
+- **Cloud execution (research-cloud-execution):** Complete. `experiment.sh` now mandates EC2 via `cloud-run` when `COMPUTE_TARGET=ec2`. `sync_results()` auto-pulls results between RUN and READ. Block commands (`cycle`, `full`, `program`, `batch`) work with EC2 automatically.
+- **26+ phases complete** (10 engineering + 12 research + 1 data export + 1 infra + 2 kit modifications). Full-year dataset + cloud GPU pipeline ready.
 
 ## Completed TDD Phases (Orchestrator Spec — predecessor)
 
@@ -40,7 +40,7 @@
 
 ## Next Action
 
-1. **Complete parallel batch dispatch TDD cycle** on `feat/parallel-batch-dispatch`. Verify all exit criteria in `.kit/docs/parallel-batch-dispatch.md`, commit, and merge to main.
+1. **Commit and merge parallel batch dispatch** from `tdd/parallel-batch-dispatch` to main. All exit criteria met for both specs.
 2. **XGBoost hyperparameter tuning:** Grid search to close the 2pp win rate gap (use batch dispatch for parallel hyperparameter sweeps).
 3. **Label design sensitivity:** Test wider target (15 ticks) / narrower stop (3 ticks).
 
