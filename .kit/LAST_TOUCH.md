@@ -18,42 +18,39 @@
 
 ## TL;DR — Where We Are and What To Do
 
-### Just Completed: experiment.sh batch command (tdd/parallel-batch-dispatch)
+### Just Completed: Oracle Expectancy Parameterization (experiment/xgb-hyperparam-tuning)
 
-Added `run_batch()` function, `batch)` case dispatch, and help text to `orchestration-kit/research-kit/experiment.sh`. This was the final piece of the parallel batch dispatch feature. Tests pass. Spec: `.kit/docs/experiment-batch-command.md`.
+Parameterized the `oracle_expectancy` CLI tool with `--target`, `--stop`, `--take-profit`, `--output`, and `--help` flags. This enables scripted label design sensitivity sweeps without recompiling. 49 new tests all pass. Spec: `.kit/docs/oracle-expectancy-params.md`.
 
-**What was done this cycle (2026-02-23):**
-- Modified `orchestration-kit/research-kit/experiment.sh` — added `run_batch()` function for parallel RUN+sync dispatch, `batch)` case in main dispatch, help text entry
+**What was done this cycle (2026-02-25):**
+- Modified `tools/oracle_expectancy.cpp` — CLI arg parsing (--target, --stop, --take-profit, --output, --help)
+- Modified `src/backtest/oracle_expectancy_report.hpp` — JSON output support
+- Modified `CMakeLists.txt` — added oracle_expectancy_params_test target
+- Created `tests/oracle_expectancy_params_test.cpp` — 49 tests (binary, help, invalid args, backward compat, modified geometry, JSON output, flag order)
+- Modified `.kit/experiments/label-design-sensitivity.md` — updated with CLI usage
 
-**Previously completed (parallel-batch-dispatch TDD cycle):**
-- New `orchestration-kit/tools/cloud/batch.py` — `launch_batch()`, `poll_batch()`, `pull_batch()`, `list_batches()`, batch state persistence
-- Modified `orchestration-kit/tools/cloud/state.py` — `batch_id` param on `register_run()`, new `list_batch_runs()`
-- Modified `orchestration-kit/tools/cloud/remote.py` — `batch_id` passthrough to state registration
-- Modified `orchestration-kit/tools/cloud-run` — `batch {run,status,pull,ls}` CLI subcommands
-- Modified `orchestration-kit/mcp/server.py` — `kit.research_batch` MCP tool definition + handler
-- Modified `orchestration-kit/tools/cloud/preflight.py` — surfaces `parallelizable` field in output
-- New `orchestration-kit/tests/test_batch.py` + `orchestration-kit/tests/conftest.py` — 12 test cases
+**Also created (not part of TDD cycle):**
+- `.kit/docs/bidirectional-label-export.md` — new spec (untracked)
 
 **Key files:**
-- Specs: `.kit/docs/parallel-batch-dispatch.md`, `.kit/docs/experiment-batch-command.md`
-- Core module: `orchestration-kit/tools/cloud/batch.py`
-- Shell integration: `orchestration-kit/research-kit/experiment.sh`
-- Tests: `orchestration-kit/tests/test_batch.py`
-- CLI: `orchestration-kit/tools/cloud-run`
-- MCP: `orchestration-kit/mcp/server.py`
+- Spec: `.kit/docs/oracle-expectancy-params.md`
+- Tool: `tools/oracle_expectancy.cpp`
+- Header: `src/backtest/oracle_expectancy_report.hpp`
+- Tests: `tests/oracle_expectancy_params_test.cpp`
+- Label sensitivity spec: `.kit/experiments/label-design-sensitivity.md`
 
 **Next steps:**
-1. Commit changes on `tdd/parallel-batch-dispatch`
-2. Merge to main
-3. Use batch dispatch for parallel XGBoost hyperparameter sweeps
+1. Commit oracle-expectancy-params changes
+2. Run label design sensitivity experiment: `oracle_expectancy --target 15 --stop 3 --output results.json`
+3. XGBoost hyperparameter tuning (P1)
 
 ### Background: CNN Line Closed
 
 The CNN spatial signal on order book snapshots is **real and reproducible** (R²=0.089, 3 independent reproductions). But end-to-end CNN classification (Outcome D) showed GBT-only beats CNN by 5.9pp accuracy. CNN line is permanently closed for classification.
 
-**Priority research tasks (post-merge):**
+**Priority research tasks:**
 1. **XGBoost hyperparameter tuning** — default params never optimized. GBT shows Q1-Q2 positive expectancy. Batch dispatch enables parallel sweeps.
-2. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks).
+2. **Label design sensitivity** — infrastructure now ready. `oracle_expectancy --target 15 --stop 3 --output results.json`. Spec: `.kit/experiments/label-design-sensitivity.md`.
 3. **Regime-conditional trading** — Q1-Q2 only strategy.
 
 ---
@@ -72,7 +69,7 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 
 ## Project Status
 
-**27+ phases complete (10 engineering + 12 research + 1 data export + 1 infra + 3 kit modifications). Branch: `tdd/parallel-batch-dispatch`. Tests pass.**
+**28+ phases complete (11 engineering + 12 research + 1 data export + 1 infra + 3 kit modifications). Branch: `experiment/xgb-hyperparam-tuning`. 1144 unit tests registered, 49 new oracle_expectancy_params tests all pass.**
 
 ### What's Built
 - **C++20 data pipeline**: Bar construction, order book replay, multi-day backtest, feature computation/export, oracle expectancy, Parquet export. 1003+ unit tests, 22 integration tests, 28 Parquet tests.
@@ -104,8 +101,8 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 2. **`CLAUDE.md`** — full protocol, absolute rules, current state, institutional memory
 3. **`.kit/RESEARCH_LOG.md`** — cumulative findings from all 12+ experiments
 4. **`.kit/QUESTIONS.md`** — open and answered research questions
-5. **`.kit/docs/experiment-batch-command.md`** — latest completed TDD spec
+5. **`.kit/docs/oracle-expectancy-params.md`** — latest completed TDD spec
 
 ---
 
-Updated: 2026-02-23. Next action: commit parallel batch dispatch, merge to main, then XGBoost hyperparameter tuning with batch dispatch.
+Updated: 2026-02-25. Next action: commit oracle-expectancy-params, then label design sensitivity experiment or XGBoost hyperparameter tuning.
