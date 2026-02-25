@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## xgb-hyperparam-tuning — REFUTED (Outcome C — MARGINAL)
+**Date:** 2026-02-25
+**Hypothesis:** Systematic XGBoost hyperparameter tuning on full-year 1.16M-bar dataset improves 3-class accuracy by ≥2.0pp (0.449→0.469) and pushes CPCV expectancy to breakeven ($0.00) under base costs.
+**Key result:** CPCV accuracy 0.4504 (delta +0.15pp — landscape is a plateau, 64 configs span only 0.33pp, std=0.0006). CPCV expectancy -$0.001 (delta +$0.065 from -$0.066 — 98.4% reduction via class rebalancing, not accuracy). Breakeven RT cost = $3.74 exactly. Walk-forward expectancy -$0.140 (much more pessimistic than CPCV). SC-1/2/3 FAIL, SC-4/5 PASS. 50/64 configs beat default. Holdout +2.0pp (0.403→0.423). Long recall worsened (0.201→0.149). volatility_50 gain share = 49.7%.
+**Lesson:** The 20-feature set, not hyperparameters, is the binding constraint on XGBoost accuracy — the entire search landscape is a 0.33pp plateau. Expectancy is more sensitive to class prediction distribution than raw accuracy (0.15pp acc → $0.065 exp via suppressed longs). Label design and class weighting are higher-leverage interventions than tuning.
+**Next:** (1) Label design sensitivity — wider target (15:3 ratio → breakeven ~42.5% vs current 45%) is highest priority. (2) 2-class short/no-short formulation — long recall 0.149 means the model can't predict longs. (3) Class-weighted XGBoost with PnL-aligned loss.
+**Details:** `.kit/results/xgb-hyperparam-tuning/analysis.md`
+
 ## e2e-cnn-classification — REFUTED (Outcome D)
 **Date:** 2026-02-22
 **Hypothesis:** End-to-end Conv1d CNN trained on 3-class triple barrier labels (cross-entropy, no intermediate regression) on full-year data (251 days, 1.16M bars) achieves accuracy >= 0.42 and breakeven expectancy.

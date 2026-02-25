@@ -1,0 +1,37 @@
+{
+  "best_tuned_config": {
+    "max_depth": 6,
+    "learning_rate": 0.0134137354910996,
+    "min_child_weight": 20,
+    "subsample": 0.5610191174223894,
+    "colsample_bytree": 0.7475884550556351,
+    "reg_alpha": 0.0013726318898045872,
+    "reg_lambda": 6.586289317583112,
+    "n_estimators": 2000,
+    "early_stopping_rounds": 50,
+    "tree_method": "hist",
+    "objective": "multi:softmax",
+    "num_class": 3,
+    "eval_metric": "mlogloss"
+  },
+  "default_config": {
+    "max_depth": 6,
+    "learning_rate": 0.05,
+    "n_estimators": 500,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "min_child_weight": 10,
+    "reg_alpha": 0.1,
+    "reg_lambda": 1.0,
+    "objective": "multi:softmax",
+    "num_class": 3
+  },
+  "env_fingerprint": {
+    "python_version": "3.11.14 (main, Jan 27 2026, 23:58:06) [Clang 21.1.4 ]",
+    "xgboost_version": "3.2.0",
+    "polars_version": "1.38.1",
+    "numpy_version": "2.4.2",
+    "seed": 42,
+    "script_sha256": "5b73aaabfa9601e104a0ebe533e58256eb414ec254fd22c3d0dd94cd91c4845b"
+  }
+}
