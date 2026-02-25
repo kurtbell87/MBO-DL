@@ -1,0 +1,106 @@
+{
+  "tuned": {
+    "accuracy": 0.42263855001742767,
+    "train_accuracy": 0.45891492859675703,
+    "n_estimators_used": 346,
+    "expectancy_base": -0.13227861771058366,
+    "profit_factor": 0.9720801956889035,
+    "cost_sensitivity": {
+      "optimistic": {
+        "expectancy": 1.1177213822894163,
+        "profit_factor": 1.2696561544683915,
+        "n_trades": 92600,
+        "gross_profit": 487326.8400000001,
+        "gross_loss": 383825.83999999997
+      },
+      "base": {
+        "expectancy": -0.13227861771058366,
+        "profit_factor": 0.9720801956889035,
+        "n_trades": 92600,
+        "gross_profit": 426471.8400000001,
+        "gross_loss": 438720.83999999997
+      },
+      "pessimistic": {
+        "expectancy": -2.6422786177105833,
+        "profit_factor": 0.5542854540486383,
+        "n_trades": 92600,
+        "gross_profit": 304275.0,
+        "gross_loss": 548950.0
+      }
+    },
+    "per_class_recall": {
+      "-1": 0.4870651204281891,
+      "0": 0.6030426697617532,
+      "1": 0.15794437230916422
+    },
+    "confusion_matrix": [
+      [
+        37128,
+        28438,
+        10662
+      ],
+      [
+        21883,
+        48320,
+        9924
+      ],
+      [
+        33254,
+        28355,
+        11556
+      ]
+    ]
+  },
+  "default": {
+    "accuracy": 0.40297141861275704,
+    "train_accuracy": 0.4760377378764923,
+    "n_estimators_used": 500,
+    "expectancy_base": -0.20456656154037733,
+    "profit_factor": 0.9571706845499325,
+    "cost_sensitivity": {
+      "optimistic": {
+        "expectancy": 1.0454334384596227,
+        "profit_factor": 1.2501825013051417,
+        "n_trades": 96392,
+        "gross_profit": 503563.0600000002,
+        "gross_loss": 402791.63999999996
+      },
+      "base": {
+        "expectancy": -0.20456656154037733,
+        "profit_factor": 0.9571706845499325,
+        "n_trades": 96392,
+        "gross_profit": 440680.5600000002,
+        "gross_loss": 460399.13999999996
+      },
+      "pessimistic": {
+        "expectancy": -2.714566561540377,
+        "profit_factor": 0.5457839691012455,
+        "n_trades": 96392,
+        "gross_profit": 314412.5,
+        "gross_loss": 576075.0
+      }
+    },
+    "per_class_recall": {
+      "-1": 0.4619693550926169,
+      "0": 0.5264642380221398,
+      "1": 0.20625982368618875
+    },
+    "confusion_matrix": [
+      [
+        35215,
+        26542,
+        14471
+      ],
+      [
+        25518,
+        42184,
+        12425
+      ],
+      [
+        31615,
+        26459,
+        15091
+      ]
+    ]
+  }
+}
