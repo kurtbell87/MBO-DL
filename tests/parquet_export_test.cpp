@@ -100,6 +100,19 @@ std::vector<std::string> expected_column_names() {
     return cols;
 }
 
+// Build the expected 149-column Parquet schema. Parquet uses fwd_ prefix on
+// forward return columns to avoid collision with Track A return features.
+std::vector<std::string> expected_parquet_column_names() {
+    auto cols = expected_column_names();
+    // Forward return columns are at indices 141-144 (6+62+40+33 = 141)
+    constexpr size_t FWD_RETURN_START = 6 + 62 + 40 + 33;
+    cols[FWD_RETURN_START + 0] = "fwd_return_1";
+    cols[FWD_RETURN_START + 1] = "fwd_return_5";
+    cols[FWD_RETURN_START + 2] = "fwd_return_20";
+    cols[FWD_RETURN_START + 3] = "fwd_return_100";
+    return cols;
+}
+
 // Read a Parquet file into an Arrow Table using the Arrow C++ reader.
 std::shared_ptr<arrow::Table> read_parquet_table(const std::string& path) {
     auto open_result = arrow::io::ReadableFile::Open(path);
@@ -242,14 +255,14 @@ TEST_F(ParquetSchemaTest, T2_ColumnCountIs149) {
     track_temp(pq_path);
 
     auto result = run_command(
-        BINARY_PATH + " --bar-type time --bar-param 5 --output " + pq_path);
+        BINARY_PATH + " --bar-type time --bar-param 5 --legacy-labels --output " + pq_path);
     ASSERT_EQ(result.exit_code, 0) << "Export failed: " << result.output;
 
     auto table = read_parquet_table(pq_path);
     ASSERT_NE(table, nullptr) << "Cannot read Parquet file";
 
     EXPECT_EQ(table->num_columns(), 149)
-        << "Parquet file must have exactly 149 columns "
+        << "Parquet file must have exactly 149 columns in legacy mode "
         << "(6 meta + 62 Track A + 40 book_snap + 33 msg_summary "
         << "+ 4 returns + 1 event_count + 3 tb_labels)";
 }
@@ -259,13 +272,13 @@ TEST_F(ParquetSchemaTest, T2_ColumnNamesMatchCsvInOrder) {
     track_temp(pq_path);
 
     auto result = run_command(
-        BINARY_PATH + " --bar-type time --bar-param 5 --output " + pq_path);
+        BINARY_PATH + " --bar-type time --bar-param 5 --legacy-labels --output " + pq_path);
     ASSERT_EQ(result.exit_code, 0) << "Export failed: " << result.output;
 
     auto table = read_parquet_table(pq_path);
     ASSERT_NE(table, nullptr);
 
-    auto expected = expected_column_names();
+    auto expected = expected_parquet_column_names();
     ASSERT_EQ(static_cast<size_t>(table->num_columns()), expected.size())
         << "Column count mismatch before name comparison";
 
@@ -281,13 +294,13 @@ TEST_F(ParquetSchemaTest, T2_FloatColumnsAreDouble) {
     track_temp(pq_path);
 
     auto result = run_command(
-        BINARY_PATH + " --bar-type time --bar-param 5 --output " + pq_path);
+        BINARY_PATH + " --bar-type time --bar-param 5 --legacy-labels --output " + pq_path);
     ASSERT_EQ(result.exit_code, 0) << "Export failed: " << result.output;
 
     auto table = read_parquet_table(pq_path);
     ASSERT_NE(table, nullptr);
 
-    auto expected = expected_column_names();
+    auto expected = expected_parquet_column_names();
 
     // All numeric feature columns (indices 6+) should be DOUBLE,
     // except bar_type (string), is_warmup (bool/string) which are metadata,
@@ -308,7 +321,7 @@ TEST_F(ParquetSchemaTest, T2_TimestampColumnIsInt64OrUInt64) {
     track_temp(pq_path);
 
     auto result = run_command(
-        BINARY_PATH + " --bar-type time --bar-param 5 --output " + pq_path);
+        BINARY_PATH + " --bar-type time --bar-param 5 --legacy-labels --output " + pq_path);
     ASSERT_EQ(result.exit_code, 0) << "Export failed: " << result.output;
 
     auto table = read_parquet_table(pq_path);
@@ -339,11 +352,11 @@ TEST_F(ParquetVsCsvTest, T3_AllValuesMatchWithinFloat64Tolerance) {
     track_temp(pq_path);
 
     auto csv_result = run_command(
-        BINARY_PATH + " --bar-type time --bar-param 5 --output " + csv_path);
+        BINARY_PATH + " --bar-type time --bar-param 5 --legacy-labels --output " + csv_path);
     ASSERT_EQ(csv_result.exit_code, 0) << "CSV export failed: " << csv_result.output;
 
     auto pq_result = run_command(
-        BINARY_PATH + " --bar-type time --bar-param 5 --output " + pq_path);
+        BINARY_PATH + " --bar-type time --bar-param 5 --legacy-labels --output " + pq_path);
     ASSERT_EQ(pq_result.exit_code, 0) << "Parquet export failed: " << pq_result.output;
 
     auto csv_lines = read_all_lines(csv_path);
@@ -1095,7 +1108,7 @@ TEST_F(FormatDetectionTest, ParquetFileReadableByArrow) {
     track_temp(pq_path);
 
     auto result = run_command(
-        BINARY_PATH + " --bar-type time --bar-param 5 --output " + pq_path);
+        BINARY_PATH + " --bar-type time --bar-param 5 --legacy-labels --output " + pq_path);
     ASSERT_EQ(result.exit_code, 0) << "Export failed: " << result.output;
 
     auto table = read_parquet_table(pq_path);
@@ -1103,7 +1116,7 @@ TEST_F(FormatDetectionTest, ParquetFileReadableByArrow) {
         << "Arrow must be able to read the exported Parquet file";
     EXPECT_GT(table->num_rows(), 0) << "Parquet table should have rows";
     EXPECT_EQ(table->num_columns(), 149)
-        << "Parquet table should have 149 columns";
+        << "Parquet table should have 149 columns in legacy mode";
 }
 
 

@@ -318,6 +318,67 @@ std::string format_float(float val) {
     return buf;
 }
 
+// Compute the 33-element message summary for a bar's MBO events.
+// Layout: 10 deciles * 3 actions (add/cancel/modify) + cancel_add_ratio_first_half
+//         + cancel_add_ratio_second_half + max_decile_message_rate.
+std::vector<float> compute_message_summary(const Bar& bar,
+                                            const std::vector<MBOEvent>& mbo_events) {
+    std::vector<float> summary(MessageSummary::SUMMARY_SIZE, 0.0f);
+    uint32_t n_events = bar.mbo_event_end - bar.mbo_event_begin;
+    if (n_events == 0) return summary;
+
+    float duration = bar.bar_duration_s;
+    if (duration <= 0.0f) duration = 1.0f;
+    uint64_t bar_start = bar.open_ts;
+    uint64_t bar_range = (bar.close_ts > bar.open_ts) ? (bar.close_ts - bar.open_ts) : 1;
+
+    uint32_t first_half_adds = 0, first_half_cancels = 0;
+    uint32_t second_half_adds = 0, second_half_cancels = 0;
+
+    for (uint32_t ei = bar.mbo_event_begin; ei < bar.mbo_event_end; ++ei) {
+        const auto& ev = mbo_events[ei];
+        float frac = static_cast<float>(ev.ts_event - bar_start) /
+                     static_cast<float>(bar_range);
+        frac = std::max(0.0f, std::min(frac, 0.999f));
+        int decile = static_cast<int>(frac * 10.0f);
+
+        int action_offset = -1;
+        if (ev.action == 0) action_offset = 0;
+        else if (ev.action == 1) action_offset = 1;
+        else if (ev.action == 2) action_offset = 2;
+
+        if (action_offset >= 0) {
+            summary[decile * 3 + action_offset] += 1.0f;
+        }
+
+        bool first_half = (frac < 0.5f);
+        if (ev.action == 0) {
+            if (first_half) first_half_adds++;
+            else second_half_adds++;
+        } else if (ev.action == 1) {
+            if (first_half) first_half_cancels++;
+            else second_half_cancels++;
+        }
+    }
+
+    constexpr float EPS = 1e-8f;
+    summary[30] = static_cast<float>(first_half_cancels) /
+                   (static_cast<float>(first_half_adds) + EPS);
+    summary[31] = static_cast<float>(second_half_cancels) /
+                   (static_cast<float>(second_half_adds) + EPS);
+
+    float decile_duration = duration / 10.0f;
+    float max_rate = 0.0f;
+    for (int dc = 0; dc < 10; ++dc) {
+        float decile_total = summary[dc*3] + summary[dc*3+1] + summary[dc*3+2];
+        float rate = decile_total / (decile_duration + EPS);
+        max_rate = std::max(max_rate, rate);
+    }
+    summary[32] = max_rate;
+
+    return summary;
+}
+
 // ===========================================================================
 // Parquet Writer
 // ===========================================================================
@@ -330,13 +391,16 @@ void write_parquet_file(
     const std::vector<bool>& warmups,
     const std::vector<int64_t>& bar_indices,
     const std::vector<std::vector<double>>& double_cols,
-    const std::vector<std::string>& tb_exit_types)
+    const std::vector<std::string>& tb_exit_types,
+    bool bidirectional = false)
 {
     int64_t num_rows = static_cast<int64_t>(timestamps.size());
 
     // Build schema: 6 metadata + 141 DOUBLE + 1 STRING (tb_exit_type) + 1 DOUBLE = 149 total
-    // double_cols contains 142 columns: 62+40+33+4+1+1 before tb_exit_type, then 1 after.
-    // Layout: double_cols[0..140] = cols before tb_exit_type, double_cols[141] = tb_bars_held.
+    // Bidirectional adds 3 more DOUBLE columns = 152 total
+    // double_cols contains 142 columns (legacy) or 145 (bidirectional).
+    // Layout: double_cols[0..140] = cols before tb_exit_type, double_cols[141] = tb_bars_held,
+    //         double_cols[142..144] = tb_both_triggered, tb_long_triggered, tb_short_triggered (bidirectional only)
     arrow::FieldVector fields;
     fields.push_back(arrow::field("timestamp", arrow::int64()));
     fields.push_back(arrow::field("bar_type", arrow::utf8()));
@@ -371,6 +435,13 @@ void write_parquet_file(
     fields.push_back(arrow::field("tb_label", arrow::float64()));
     fields.push_back(arrow::field("tb_exit_type", arrow::utf8()));
     fields.push_back(arrow::field("tb_bars_held", arrow::float64()));
+
+    // Bidirectional diagnostic columns (3 new)
+    if (bidirectional) {
+        fields.push_back(arrow::field("tb_both_triggered", arrow::float64()));
+        fields.push_back(arrow::field("tb_long_triggered", arrow::float64()));
+        fields.push_back(arrow::field("tb_short_triggered", arrow::float64()));
+    }
 
     auto schema = arrow::schema(fields);
 
@@ -422,7 +493,7 @@ void write_parquet_file(
     }
 
     // DOUBLE columns before tb_exit_type (141: 62+40+33+4+1+1 = 141)
-    constexpr size_t TB_EXIT_TYPE_SPLIT = 141;  // double_cols[0..140] before, [141] after
+    constexpr size_t TB_EXIT_TYPE_SPLIT = 141;  // double_cols[0..140] before, [141+] after
     for (size_t c = 0; c < TB_EXIT_TYPE_SPLIT; ++c) {
         arrow::DoubleBuilder b;
         (void)b.AppendValues(double_cols[c].data(),
@@ -439,11 +510,11 @@ void write_parquet_file(
         arrays.push_back(arr);
     }
 
-    // tb_bars_held (DOUBLE) — the last double column
-    {
+    // Remaining DOUBLE columns: tb_bars_held, and optionally bidirectional diagnostics
+    for (size_t c = TB_EXIT_TYPE_SPLIT; c < double_cols.size(); ++c) {
         arrow::DoubleBuilder b;
-        (void)b.AppendValues(double_cols[TB_EXIT_TYPE_SPLIT].data(),
-                              static_cast<int64_t>(double_cols[TB_EXIT_TYPE_SPLIT].size()));
+        (void)b.AppendValues(double_cols[c].data(),
+                              static_cast<int64_t>(double_cols[c].size()));
         (void)b.Finish(&arr);
         arrays.push_back(arr);
     }
@@ -478,9 +549,10 @@ void print_usage(const char* prog) {
     std::cerr << "Usage: " << prog
               << " --bar-type <type> --bar-param <threshold> --output <path>\n"
               << "\n"
-              << "  --bar-type   Bar type: time, volume, dollar, tick\n"
-              << "  --bar-param  Bar threshold (e.g., 5.0 for time_5s)\n"
-              << "  --output     Output file path (.csv or .parquet)\n";
+              << "  --bar-type       Bar type: time, volume, dollar, tick\n"
+              << "  --bar-param      Bar threshold (e.g., 5.0 for time_5s)\n"
+              << "  --output         Output file path (.csv or .parquet)\n"
+              << "  --legacy-labels  Use old-style unidirectional labels (149 columns)\n";
 }
 
 // ===========================================================================
@@ -491,6 +563,7 @@ int main(int argc, char* argv[]) {
     std::string bar_param_str;
     std::string output_path;
     std::string date_str_cli;
+    bool legacy_labels = false;
 
     // Parse CLI args
     for (int i = 1; i < argc; ++i) {
@@ -503,6 +576,8 @@ int main(int argc, char* argv[]) {
             output_path = argv[++i];
         } else if (arg == "--date" && i + 1 < argc) {
             date_str_cli = argv[++i];
+        } else if (arg == "--legacy-labels") {
+            legacy_labels = true;
         }
     }
 
@@ -568,9 +643,10 @@ int main(int argc, char* argv[]) {
     }
 
     // Parquet data collectors (only if Parquet output)
-    // 142 DOUBLE columns: 62 Track A + 40 book + 33 msg + 4 returns + 1 event + 1 tb_label + 1 tb_bars_held
+    // Legacy: 142 DOUBLE columns: 62 Track A + 40 book + 33 msg + 4 returns + 1 event + 1 tb_label + 1 tb_bars_held
+    // Bidirectional: 145 DOUBLE columns: 142 + 3 (tb_both_triggered, tb_long_triggered, tb_short_triggered)
     // tb_exit_type is stored separately as STRING
-    constexpr int NUM_DOUBLE_COLS = 142;
+    const int NUM_DOUBLE_COLS = legacy_labels ? 142 : 145;
     std::vector<int64_t> pq_timestamps;
     std::vector<std::string> pq_bar_types;
     std::vector<std::string> pq_bar_params;
@@ -710,60 +786,16 @@ int main(int argc, char* argv[]) {
             // Compute derived data needed for both paths
             auto book_flat = BookSnapshotExport::flatten(bar);
 
-            std::vector<float> msg_summary(MessageSummary::SUMMARY_SIZE, 0.0f);
+            auto msg_summary = compute_message_summary(bar, mbo_events);
             uint32_t n_events = bar.mbo_event_end - bar.mbo_event_begin;
-            if (n_events > 0) {
-                float duration = bar.bar_duration_s;
-                if (duration <= 0.0f) duration = 1.0f;
-                uint64_t bar_start = bar.open_ts;
-                uint64_t bar_range = (bar.close_ts > bar.open_ts) ? (bar.close_ts - bar.open_ts) : 1;
-
-                uint32_t first_half_adds = 0, first_half_cancels = 0;
-                uint32_t second_half_adds = 0, second_half_cancels = 0;
-
-                for (uint32_t ei = bar.mbo_event_begin; ei < bar.mbo_event_end; ++ei) {
-                    const auto& ev = mbo_events[ei];
-                    float frac = static_cast<float>(ev.ts_event - bar_start) /
-                                 static_cast<float>(bar_range);
-                    frac = std::max(0.0f, std::min(frac, 0.999f));
-                    int decile = static_cast<int>(frac * 10.0f);
-
-                    int action_offset = -1;
-                    if (ev.action == 0) action_offset = 0;
-                    else if (ev.action == 1) action_offset = 1;
-                    else if (ev.action == 2) action_offset = 2;
-
-                    if (action_offset >= 0) {
-                        msg_summary[decile * 3 + action_offset] += 1.0f;
-                    }
-
-                    bool first_half = (frac < 0.5f);
-                    if (ev.action == 0) {
-                        if (first_half) first_half_adds++;
-                        else second_half_adds++;
-                    } else if (ev.action == 1) {
-                        if (first_half) first_half_cancels++;
-                        else second_half_cancels++;
-                    }
-                }
-
-                constexpr float EPS = 1e-8f;
-                msg_summary[30] = static_cast<float>(first_half_cancels) /
-                                   (static_cast<float>(first_half_adds) + EPS);
-                msg_summary[31] = static_cast<float>(second_half_cancels) /
-                                   (static_cast<float>(second_half_adds) + EPS);
-
-                float decile_duration = duration / 10.0f;
-                float max_rate = 0.0f;
-                for (int dc = 0; dc < 10; ++dc) {
-                    float decile_total = msg_summary[dc*3] + msg_summary[dc*3+1] + msg_summary[dc*3+2];
-                    float rate = decile_total / (decile_duration + EPS);
-                    max_rate = std::max(max_rate, rate);
-                }
-                msg_summary[32] = max_rate;
-            }
 
             auto tb = compute_tb_label(bars, static_cast<int>(i), tb_cfg);
+
+            // Bidirectional label (default mode): overrides tb_label and adds diagnostic columns
+            BidirectionalTBResult tb_bidir{};
+            if (!legacy_labels) {
+                tb_bidir = compute_bidirectional_tb_label(bars, static_cast<int>(i), tb_cfg);
+            }
 
             if (use_parquet) {
                 // Collect metadata
@@ -804,9 +836,20 @@ int main(int argc, char* argv[]) {
                 pq_double_cols[d++].push_back(static_cast<double>(n_events));
 
                 // Triple barrier labels: tb_label (DOUBLE), tb_exit_type (STRING), tb_bars_held (DOUBLE)
-                pq_double_cols[d++].push_back(static_cast<double>(tb.label));
-                pq_tb_exit_types.push_back(tb.exit_type);
-                pq_double_cols[d++].push_back(static_cast<double>(tb.bars_held));
+                if (legacy_labels) {
+                    pq_double_cols[d++].push_back(static_cast<double>(tb.label));
+                    pq_tb_exit_types.push_back(tb.exit_type);
+                    pq_double_cols[d++].push_back(static_cast<double>(tb.bars_held));
+                } else {
+                    // Bidirectional mode: use bidirectional label, old exit_type/bars_held
+                    pq_double_cols[d++].push_back(static_cast<double>(tb_bidir.label));
+                    pq_tb_exit_types.push_back(tb.exit_type);
+                    pq_double_cols[d++].push_back(static_cast<double>(tb.bars_held));
+                    // 3 new diagnostic columns
+                    pq_double_cols[d++].push_back(tb_bidir.both_triggered ? 1.0 : 0.0);
+                    pq_double_cols[d++].push_back(tb_bidir.long_triggered ? 1.0 : 0.0);
+                    pq_double_cols[d++].push_back(tb_bidir.short_triggered ? 1.0 : 0.0);
+                }
             } else {
                 // Write CSV row
                 csv << row.timestamp;
@@ -897,7 +940,7 @@ int main(int argc, char* argv[]) {
     if (use_parquet) {
         write_parquet_file(output_path, pq_timestamps, pq_bar_types, pq_bar_params,
                            pq_days, pq_warmups, pq_bar_indices, pq_double_cols,
-                           pq_tb_exit_types);
+                           pq_tb_exit_types, !legacy_labels);
     } else {
         csv.close();
     }

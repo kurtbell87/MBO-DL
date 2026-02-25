@@ -3,13 +3,13 @@
 ## Current State (updated 2026-02-25)
 
 - **Build:** Green.
-- **Unit tests:** 1144+ registered (label-exclude integration). New bidirectional TB tests added. TDD phases exited 0.
+- **Unit tests:** 1144+ registered (label-exclude integration). Bidirectional TB + export wiring tests added. TDD phases exited 0.
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **29+ phases complete** (12 engineering + 17 research). CNN line closed (Outcome D). GBT-only path forward.
-- **Active TDD:** Bidirectional triple barrier labels — independent long/short race evaluation. Spec: `.kit/docs/bidirectional-label-export.md`. Changed: `triple_barrier.hpp`, `CMakeLists.txt`, new `bidirectional_tb_test.cpp`.
-- **Prior TDD:** Oracle expectancy CLI parameterized (`--target/--stop/--take-profit/--output/--help`). Spec: `.kit/docs/oracle-expectancy-params.md`.
+- **30+ phases complete** (13 engineering + 17 research). CNN line closed (Outcome D). GBT-only path forward.
+- **Last TDD (COMPLETE):** Bidirectional export wiring — `bar_feature_export` defaults to bidirectional labels, 152-column Parquet schema, `--legacy-labels` flag. Spec: `.kit/docs/bidirectional-export-wiring.md`. Changed: `CMakeLists.txt`, `tests/parquet_export_test.cpp`, `tools/bar_feature_export.cpp`. New: `tests/bidirectional_export_test.cpp`.
+- **Prior TDD (COMPLETE):** Bidirectional TB labels (`compute_bidirectional_tb_label()`) + Oracle expectancy CLI params.
 - **Compute:** Local preferred for CPU-only experiments (<1GB). RunPod for GPU. EC2 spot for large data only.
-- **Full-year dataset:** 1.16M bars, 251 days, 255MB Parquet, S3-backed.
+- **Full-year dataset:** 1.16M bars, 251 days, 255MB Parquet, S3-backed. Needs re-export with 152-column schema.
 
 ## Completed TDD Phases (Orchestrator Spec — predecessor)
 
@@ -40,12 +40,13 @@
 | 9A | hybrid-model | done | done | done | done |
 | TB-Fix | tick-bar-fix | done | done | done | done |
 | 7-params | oracle-expectancy-params | done | done | done | done |
-| Bidir-TB | bidirectional-label-export | in progress | in progress | — | — |
+| Bidir-TB | bidirectional-label-export | done | done | done | done |
+| Bidir-Wire | bidirectional-export-wiring | done | done | done | done |
 
 ## Next Action
 
-1. **Complete bidirectional-label-export TDD cycle** (P0): Finish exit criteria, integrate into `bar_feature_export`, verify T1-T10. Blocks label-design-sensitivity. Spec: `.kit/docs/bidirectional-label-export.md`.
-2. **Label design sensitivity** (P1): Test wider target / narrower stop. Requires bidirectional labels. Spec: `.kit/experiments/label-design-sensitivity.md`. Local compute.
+1. **Re-export full-year data with bidirectional labels** (P0): Run `bar_feature_export` on 251 days with 152-column schema (EC2). Produces updated Parquet for label-design-sensitivity.
+2. **Label design sensitivity** (P1): Test wider target / narrower stop. Requires bidirectional full-year export. Spec: `.kit/experiments/label-design-sensitivity.md`. Local compute.
 3. **XGBoost hyperparameter tuning** (P1): Grid search to close the 2pp win rate gap. Spec: `.kit/experiments/xgb-hyperparam-tuning.md`. Local compute.
 4. **Regime-conditional trading** (P3): Q1-Q2 only strategy. Spec not yet created.
 
