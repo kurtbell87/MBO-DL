@@ -39,6 +39,7 @@ Status: `Not started` | `In progress` | `Answered` | `Blocked` | `Deferred`
 |----------|----------|--------|--------|---------|---------------|---------------|
 | P1 | Can XGBoost hyperparameter tuning improve classification accuracy by 2+pp? Default params never optimized. GBT shows Q1-Q2 positive expectancy (+$0.003, +$0.029 base). | Not started | — | — | Determines if the 2pp gap to breakeven is a tuning issue vs architectural limit | xgb-hyperparam-tuning |
 | P1 | Can label design (wider target 15t / narrower stop 3t) lower breakeven win rate below current ~45%? | Not started | — | — | Breakeven drops from 53.3% to ~42.5% at 15:3 ratio | label-design-sensitivity |
+| P2 | Does message sequence information help specifically in high-volatility regimes, even though aggregate R2 was null? | Not started | — | — | If Δ_msg > 0 in high-vol tercile, reopens message encoder line for regime-conditional use | regime-stratified-info-decomposition |
 | P2 | How sensitive is oracle expectancy to transaction cost assumptions? | Not started | — | — | Determines edge robustness under realistic execution | — |
 | P3 | Does regime-conditional trading (Q1-Q2 only) produce positive expectancy? | Not started | — | — | GBT profitable in H1 2022, negative in H2. Limited by single year of data. | — |
 | P3 | Does CNN spatial R² improve on genuine trade-triggered tick bars vs time_5s? | Answered | — | — | Determines whether event bars should replace time_5s | R3b-genuine-tick-bars (CONFIRMED low confidence) |
