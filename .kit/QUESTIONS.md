@@ -17,9 +17,9 @@ Determine the optimal architecture for MES microstructure prediction: bar type, 
 | Constraint | Decision |
 |------------|----------|
 | Framework  | C++20 (pipeline + models), Python (research analysis + CNN/XGBoost training) |
-| Compute    | EC2 GPU mandatory for model training (g5.xlarge A10G); local MPS for validation |
-| Timeline   | R1–R4d complete → 9A–9E complete → E2E CNN classification in progress |
-| Baselines  | GBT-only on full-year data (accuracy ~0.449, expectancy -$0.064 base) |
+| Compute    | Local for CPU-only experiments (<1GB data). RunPod for GPU. EC2 spot only for large data (>10GB). |
+| Timeline   | R1–R4d complete → 9A–9E complete → E2E CNN REFUTED → XGBoost tuning + label design next |
+| Baselines  | GBT-only on full-year data (accuracy 0.449, expectancy -$0.064 base, Q1-Q2 marginally positive) |
 
 ---
 
@@ -37,11 +37,10 @@ Status: `Not started` | `In progress` | `Answered` | `Blocked` | `Deferred`
 
 | Priority | Question | Status | Parent | Blocker | Decision Gate | Experiment(s) |
 |----------|----------|--------|--------|---------|---------------|---------------|
-| P1 | Can end-to-end CNN classification on tb_label close the 2pp win rate gap (51.3% to 53.3%) needed for breakeven? | In progress | — | — | Determines whether the regression-to-classification bottleneck is the limiting factor | e2e-cnn-classification (partial: CNN acc=0.388, GBT acc=0.449 — CNN WORSE, re-running with bug fix) |
-| P1 | Can XGBoost hyperparameter tuning improve classification accuracy by 2+pp? Default params never optimized. GBT shows Q1-Q2 positive expectancy (+$0.003, +$0.029 base). | Not started | E2E CNN result | E2E CNN completion | Determines if the 2pp gap to breakeven is a tuning issue vs architectural limit | — |
+| P1 | Can XGBoost hyperparameter tuning improve classification accuracy by 2+pp? Default params never optimized. GBT shows Q1-Q2 positive expectancy (+$0.003, +$0.029 base). | Not started | — | — | Determines if the 2pp gap to breakeven is a tuning issue vs architectural limit | xgb-hyperparam-tuning |
+| P1 | Can label design (wider target 15t / narrower stop 3t) lower breakeven win rate below current ~45%? | Not started | — | — | Breakeven drops from 53.3% to ~42.5% at 15:3 ratio | label-design-sensitivity |
 | P2 | How sensitive is oracle expectancy to transaction cost assumptions? | Not started | — | — | Determines edge robustness under realistic execution | — |
-| P2 | Can label design (wider target 15t / narrower stop 3t) lower breakeven win rate below current ~45%? | Not started | E2E CNN result | E2E CNN completion | Breakeven drops from 53.3% to ~42.5% at 15:3 ratio | — |
-| P3 | Does regime-conditional trading (Q1-Q2 only) produce positive expectancy? | Not started | E2E CNN result | E2E CNN completion | GBT profitable in H1 2022, negative in H2. Limited by single year of data. | — |
+| P3 | Does regime-conditional trading (Q1-Q2 only) produce positive expectancy? | Not started | — | — | GBT profitable in H1 2022, negative in H2. Limited by single year of data. | — |
 | P3 | Does CNN spatial R² improve on genuine trade-triggered tick bars vs time_5s? | Answered | — | — | Determines whether event bars should replace time_5s | R3b-genuine-tick-bars (CONFIRMED low confidence) |
 
 ---
@@ -63,6 +62,7 @@ Status: `Not started` | `In progress` | `Answered` | `Blocked` | `Deferred`
 | Does CNN spatial encoding work at h=1 (5s horizon)? | INCONCLUSIVE | CNN R²(h=1)=0.0017, but pipeline broken (train R² at h=5 = 0.001 vs R3's 0.132). No valid horizon comparison possible. **Root cause now known (normalization)** — retest with TICK_SIZE + per-day z-score normalization required. | `.kit/results/hybrid-model-training/analysis.md` |
 | Does corrected CNN+GBT pipeline produce economically viable trading signals? | REFUTED (Outcome B) | CNN R²=0.089 CONFIRMED (matches 9D's 0.084). But expectancy=-$0.37/trade under base costs, PF=0.924. Gross edge $3.37 consumed by $3.74 RT cost. Profitable only under optimistic costs (+$0.88 at $2.49 RT). Win rate 51.3% vs 53.3% breakeven. Regression-to-classification gap is bottleneck. | `.kit/results/hybrid-model-corrected/analysis.md` |
 | Does CNN spatial R² improve on genuine trade-triggered tick bars vs time_5s? | CONFIRMED (low confidence) | tick_100 R²=0.124 vs time_5s 0.089 (+39% relative), but paired t-test p=0.21 (not significant). Verdict depends on fold 5 (R²=0.259); excluding fold 5, mean=0.091 (COMPARABLE). Single-threshold peak among 3 tested. Data volume confound ruled out (r=-0.149). tick_25 WORSE, tick_500 WORSE. Needs replication. | `.kit/results/r3b-genuine-tick-bars/analysis.md` |
+| Can end-to-end CNN classification on tb_label close the 2pp win rate gap? | REFUTED (Outcome D) | CNN acc=0.390, GBT acc=0.449 — CNN 5.9pp WORSE. CNN expectancy -$0.146, GBT -$0.064. Long recall only 0.21. CNN spatial signal (R²=0.089 regression) does NOT encode class-discriminative boundaries. CNN line permanently closed for classification. | `.kit/results/e2e-cnn-classification/metrics.json` |
 
 Answer types: `CONFIRMED` | `REFUTED` | `Deferred` | `Superseded`
 

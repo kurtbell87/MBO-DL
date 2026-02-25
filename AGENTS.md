@@ -1,13 +1,13 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-23, Parallel Batch Dispatch — Complete)
+## Current State (updated 2026-02-24)
 
 - **Build:** Green.
 - **Unit tests:** 1003/1004 pass (1 disabled, 1 skipped). TDD phases exited 0.
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **Parallel batch dispatch (`tdd/parallel-batch-dispatch`):** Complete. All components delivered: `batch.py` module, CLI `batch {run,status,pull,ls}` subcommands, MCP `kit.research_batch` tool, `batch_id` tracking, `parallelizable` in preflight, `experiment.sh batch` command. Specs: `.kit/docs/parallel-batch-dispatch.md`, `.kit/docs/experiment-batch-command.md`.
-- **Cloud execution (research-cloud-execution):** Complete. `experiment.sh` now mandates EC2 via `cloud-run` when `COMPUTE_TARGET=ec2`. `sync_results()` auto-pulls results between RUN and READ. Block commands (`cycle`, `full`, `program`, `batch`) work with EC2 automatically.
-- **26+ phases complete** (10 engineering + 12 research + 1 data export + 1 infra + 2 kit modifications). Full-year dataset + cloud GPU pipeline ready.
+- **27+ phases complete** (10 engineering + 17 research). CNN line closed (Outcome D). GBT-only path forward.
+- **Compute:** Local preferred for CPU-only experiments (<1GB). RunPod for GPU. EC2 spot for large data only.
+- **Full-year dataset:** 1.16M bars, 251 days, 255MB Parquet, S3-backed.
 
 ## Completed TDD Phases (Orchestrator Spec — predecessor)
 
@@ -40,16 +40,18 @@
 
 ## Next Action
 
-1. **Commit and merge parallel batch dispatch** from `tdd/parallel-batch-dispatch` to main. All exit criteria met for both specs.
-2. **XGBoost hyperparameter tuning:** Grid search to close the 2pp win rate gap (use batch dispatch for parallel hyperparameter sweeps).
-3. **Label design sensitivity:** Test wider target (15 ticks) / narrower stop (3 ticks).
+1. **XGBoost hyperparameter tuning** (P1): Grid search to close the 2pp win rate gap. Spec: `.kit/experiments/xgb-hyperparam-tuning.md`. Local compute.
+2. **Label design sensitivity** (P1): Test wider target / narrower stop. Spec: `.kit/experiments/label-design-sensitivity.md`. Local compute.
+3. **Regime-conditional trading** (P3): Q1-Q2 only strategy. Spec not yet created.
 
 ## Agent Roles
 
 | Agent | Scope | Entry point |
 |-------|-------|-------------|
-| Orchestrator | Sequences TDD phases, reads state files only | `CLAUDE.md` → `.kit/LAST_TOUCH.md` |
-| TDD sub-agent | Executes red/green/refactor phases | `.kit/tdd.sh <phase> <spec>` |
+| Orchestrator | Sequences phases, reads state files only, never writes code | `CLAUDE.md` → `.kit/LAST_TOUCH.md` |
+| TDD sub-agent | Executes red/green/refactor phases (C++ engineering) | `.kit/tdd.sh <phase> <spec>` |
+| Research sub-agent | Executes survey/frame/run/read/log phases (experiments) | `.kit/experiment.sh <phase> <spec>` |
+| Research Synthesist | Reads all results, produces `.kit/SYNTHESIS.md` with cross-experiment findings | `/synthesize` command or `.claude/prompts/synthesize.md` |
 | Breadcrumb steward | Updates navigation docs before ship | This file, `CLAUDE.md`, `.kit/LAST_TOUCH.md` |
 
 ## Constraints

@@ -15,19 +15,27 @@ WHEN WORKING FROM A PROVIDED SPEC ALWAYS REFER TO THE  ## Exit Criteria SECTION 
 7. **Exit-Criteria in Specs are 1st Class Citizens**, you must always cross off ALL exit-criteria as they are completed and include them in your final report 
 **If you catch yourself about to grep a source file, write a line of code, or run a test — STOP. That is a protocol violation. Delegate to a kit phase instead.**
 
-## Compute Execution — EC2 MANDATORY
+## Compute Execution — Cost-Aware Tiered Strategy
 
-**ALL compute-heavy work runs on EC2. No exceptions.**
+**Choose the cheapest backend that fits the workload. Do NOT default to EC2 on-demand.**
 
-- **Research RUN phases** (model training, data processing, experiment scripts): launch on EC2 via `orchestration-kit/tools/cloud-run`
-- **Claude sub-agent phases** (survey, frame, read, log): run locally (LLM conversations, no heavy compute)
-- **TDD phases**: if build/test is lightweight, local is fine. If heavy (large builds, long test suites), use EC2.
-- **Preflight check**: use `orchestration-kit/tools/preflight` if unsure. Default to EC2 for anything with model training.
-- **Never run model training, large data processing, or GPU workloads locally.**
+| Workload | Data Size | Backend | Rationale |
+|----------|-----------|---------|-----------|
+| XGBoost / sklearn / CPU-only | < 1 GB | **Local** | Apple Silicon handles it; free; no cloud overhead |
+| PyTorch CNN / GPU training | < 1 GB | **RunPod** (GPU) | Cheaper than EC2 on-demand; no EBS needed for small data |
+| Large data processing | > 10 GB | **EC2** (spot preferred) | EBS snapshot pre-loading; spot saves ~70% vs on-demand |
+| Full pipeline (build + train) | > 10 GB | **EC2** (Docker/ECR) | Full pipeline needs EBS + ECR image |
 
-### Research Hybrid Workflow (Local + EC2)
+- **Claude sub-agent phases** (survey, frame, read, log): always local (LLM conversations, no heavy compute)
+- **TDD phases**: local unless build/test is heavy
+- **Preflight check**: use `orchestration-kit/tools/preflight` if unsure
+- **NEVER use EC2 on-demand for CPU-only experiments on small datasets.** This wastes money.
+- **RunPod** requires `RUNPOD_API_KEY` in `.orchestration-kit.env`. Use `--backend runpod` flag with `cloud-run`.
+- **EC2 spot** is acceptable for long-running GPU jobs (>4h). Use `--spot` flag.
 
-`experiment.sh full` and `experiment.sh cycle` now handle EC2 execution automatically. When `COMPUTE_TARGET=ec2` (set in `.orchestration-kit.env`):
+### Research Hybrid Workflow (Local + Cloud)
+
+`experiment.sh full` and `experiment.sh cycle` handle cloud execution automatically. When `COMPUTE_TARGET=ec2` (set in `.orchestration-kit.env`), RUN phases launch on EC2. Set `COMPUTE_TARGET=local` to run locally instead.
 
 1. The RUN phase injects a **mandatory** cloud-run directive into the sub-agent prompt
 2. `sync_results()` runs automatically between RUN and READ, pulling results from cloud-run/S3
@@ -116,7 +124,8 @@ git worktree remove ../MBO-DL-cnn-fix
 
 Kit state files, working directories, and utility scripts live in `.kit/`. Project source code (`src/`, `tests/`, etc.) stays at the project root. The kit prompts reference bare filenames (e.g., `LAST_TOUCH.md`) — the `KIT_STATE_DIR` environment variable tells the scripts to resolve these inside `.kit/`.
 
-Files at project root: `CLAUDE.md`, `.claude/`, `.orchestration-kit.env`, `.gitignore`
+Files at project root: `CLAUDE.md`, `.claude/`, `.orchestration-kit.env` (tracked — contains local MCP token, no external secrets), `.gitignore`
+Not tracked (gitignored): `.env.local`, `.master-kit.env` — machine-specific overrides with per-machine tokens
 Everything else kit-related: `.kit/`
 
 ## Available Kits

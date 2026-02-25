@@ -1,4 +1,4 @@
-# Next Steps — Updated 2026-02-19
+# Next Steps — Updated 2026-02-24
 
 ## FIRST: Create a New Branch
 
@@ -16,55 +16,58 @@ source .orchestration-kit.env
 
 ## Current State
 
-- **22 phases complete** (9 engineering + 13 research). All on `main`, clean.
-- CNN spatial signal confirmed: R²=0.089 on time_5s (3 independent reproductions).
-- Genuine tick bars (tick_100): R²=0.124 (+39% vs baseline), but p=0.21 — not actionable without replication.
-- End-to-end pipeline NOT viable: expectancy=-$0.37/trade at base $3.74 RT costs.
-- Breakeven requires +2.0pp win rate (51.3% → 53.3%) or alternative architecture.
+- **27+ phases complete** (10 engineering + 17 research). All on `main`, clean.
+- **CNN line CLOSED** for classification (Outcome D, 2026-02-22). GBT beats CNN by 5.9pp accuracy.
+- GBT-only on full-year CPCV: accuracy 0.449, expectancy -$0.064 base.
+- **Q1-Q2 marginally profitable** (+$0.003, +$0.029) with default hyperparameters — never tuned.
+- Breakeven requires +2.0pp win rate (51.3% → 53.3%) OR alternative label geometry.
+- Full-year dataset production-ready: 1.16M bars, 251 days, 255MB Parquet.
+- Parallel batch dispatch shipped. Cloud pipeline verified E2E.
 
-## Priority Options (owner to choose)
+## Priority Experiments
 
-### 1. End-to-End CNN Classification (HIGHEST PRIORITY)
+### 1. XGBoost Hyperparameter Tuning (HIGHEST PRIORITY)
 
-Train CNN directly on tb_label (3-class cross-entropy) instead of regression→frozen embedding→XGBoost. Eliminates the regression-to-classification bottleneck identified as the key loss point in 9E.
+Default XGBoost params inherited from 9B (broken pipeline era) — never optimized. The 2pp win rate gap is small enough that tuning could close it. Q1-Q2 already positive at default params.
 
-**Why:** The 16-dim penultimate layer currently learns return-prediction features. Direct classification would learn class-discriminative features — fundamentally different optimization target.
-
-**Branch:** `experiment/e2e-cnn-classification`
-
-### 2. XGBoost Hyperparameter Tuning (LOW-HANGING FRUIT)
-
-Grid search on max_depth, learning_rate, n_estimators, min_child_weight with 5-fold CV. Current hyperparameters inherited from 9B (broken pipeline era). The 2pp win rate gap is small enough that tuning could close it.
-
+**Spec:** `.kit/experiments/xgb-hyperparam-tuning.md`
 **Branch:** `experiment/xgb-hyperparam-tuning`
+**Compute:** Local (CPU-only, 255MB data, ~2-3 hours on Apple Silicon)
 
-### 3. Label Design Sensitivity (ARCHITECTURAL)
+### 2. Label Design Sensitivity (PARALLEL WITH #1)
 
-Test alternative triple barrier parameters: wider target (15 ticks), narrower stop (3 ticks). At 15:3 ratio, breakeven win rate drops to ~42.5% — well below current 51.3%.
+Test alternative triple barrier parameters. At 15:3 ratio, breakeven win rate drops to ~42.5% — well below current 51.3%. Orthogonal to model architecture.
 
+**Spec:** `.kit/experiments/label-design-sensitivity.md`
 **Branch:** `experiment/label-design-sensitivity`
+**Compute:** Local (CPU-only, requires re-export from C++ oracle_expectancy tool)
 
-### 4. CNN at h=1 with Corrected Normalization (EXPLORATORY)
+### 3. Regime-Conditional Trading (AFTER #1 AND #2)
 
-R2 showed signal strongest at h=1. Test with corrected normalization to see if shorter horizon improves classification.
+GBT profitable in H1 2022 (+$0.003, +$0.029), negative in H2. Test Q1-Q2-only strategy. Limited by single year of data — cannot validate regime prediction without 2023+ data.
 
-**Branch:** `experiment/cnn-h1-corrected`
+**Spec:** Not yet created
+**Branch:** `experiment/regime-conditional`
+**Compute:** Local
 
-### 5. Tick_100 Multi-Seed Replication (INDEPENDENT)
+### 4. Tick_100 Multi-Seed Replication (INDEPENDENT, LOW PRIORITY)
 
-R3b-genuine showed tick_100 R²=0.124 (+39%) but p=0.21 — driven by fold 5 outlier. Needs 3 seeds/fold and adjacent thresholds (tick_50, tick_200) to confirm.
+R3b-genuine showed tick_100 R²=0.124 (+39%) but p=0.21 — driven by fold 5 outlier. Needs 3 seeds/fold and adjacent thresholds to confirm.
 
+**Spec:** Not yet created
 **Branch:** `experiment/tick100-replication`
+**Compute:** Local or RunPod (CNN training)
 
 ---
 
 ## Key Constraints
 
-- **CNN protocol MUST match 9E/9D**: R3-exact Conv1d(2→59→59), 12,128 params, TICK_SIZE ÷0.25, per-day z-scoring, 80/20 train/val, AdamW+CosineAnnealingLR, seed=42
-- **Baseline**: time_5s R²=0.089 (9E), XGBoost acc=0.419, expectancy=-$0.37
-- **All experiments use 19-day dataset** (DATA/GLBX-20260207-L953CAPU5B/)
+- **GBT baseline**: accuracy 0.449, expectancy -$0.064 (base costs $3.74 RT)
+- **Breakeven**: 53.3% win rate at current label geometry (10:5 TB)
+- **Full-year data**: `.kit/results/full-year-export/` (S3 artifact store — `artifact-store hydrate` if needed)
+- **Compute preference**: Local for CPU-only (<1GB data). RunPod for GPU. EC2 spot only for large data (>10GB).
 - **Orchestrator protocol**: YOU are the orchestrator. You NEVER write code. Delegate via kit phases.
 
 ---
 
-Written: 2026-02-19. All branches clean. No worktrees active.
+Written: 2026-02-24. All branches clean. No worktrees active.

@@ -92,7 +92,7 @@ endforeach()
 FetchContent_Declare(
     databento
     GIT_REPOSITORY https://github.com/databento/databento-cpp.git
-    GIT_TAG        HEAD
+    GIT_TAG        v0.47.0
 )
 FetchContent_MakeAvailable(databento)
 
