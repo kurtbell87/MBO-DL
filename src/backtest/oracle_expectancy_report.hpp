@@ -4,8 +4,8 @@
 #include "backtest/multi_day_runner.hpp"
 #include "backtest/trade_record.hpp"
 
-#include <cmath>
 #include <map>
+#include <set>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -69,11 +69,6 @@ inline void accumulate(BacktestResult& agg, const DayResult& day) {
     agg.daily_pnl.push_back(day.result.net_pnl);
 }
 
-// Recompute derived metrics — delegates to backtest_util::recompute_derived.
-inline void recompute_derived(BacktestResult& agg, int active_days) {
-    backtest_util::recompute_derived(agg, active_days);
-}
-
 // Aggregate day results into an OracleExpectancyReport with per-quarter splitting.
 inline OracleExpectancyReport aggregate_day_results(
     const std::vector<DayResult>& fth_results,
@@ -118,15 +113,15 @@ inline OracleExpectancyReport aggregate_day_results(
     }
 
     // Recompute derived metrics for overall aggregates
-    recompute_derived(report.first_to_hit, report.days_processed);
-    recompute_derived(report.triple_barrier, report.days_processed);
+    backtest_util::recompute_derived(report.first_to_hit, report.days_processed);
+    backtest_util::recompute_derived(report.triple_barrier, report.days_processed);
 
     // Recompute derived metrics for per-quarter aggregates
     for (auto& [q, result] : report.fth_per_quarter) {
-        recompute_derived(result, fth_quarter_days[q]);
+        backtest_util::recompute_derived(result, fth_quarter_days[q]);
     }
     for (auto& [q, result] : report.tb_per_quarter) {
-        recompute_derived(result, tb_quarter_days[q]);
+        backtest_util::recompute_derived(result, tb_quarter_days[q]);
     }
 
     // Remove empty quarters (from skipped-only days)
@@ -135,6 +130,15 @@ inline OracleExpectancyReport aggregate_day_results(
 
     return report;
 }
+
+// ---------------------------------------------------------------------------
+// Config for JSON serialization (allows parameterized output)
+// ---------------------------------------------------------------------------
+struct ReportConfig {
+    int target_ticks = 10;
+    int stop_ticks = 5;
+    int take_profit_ticks = 20;
+};
 
 // ---------------------------------------------------------------------------
 // JSON serialization helpers
@@ -159,15 +163,23 @@ inline void write_backtest_result_json(std::ostringstream& ss,
     ss << ",\"avg_duration_s\":" << r.avg_duration_s;
     ss << ",\"hold_fraction\":" << r.hold_fraction;
 
-    // Exit reasons
+    // Exit reasons — always emit all six
     ss << ",\"exit_reasons\":{";
-    // Always emit all six exit reasons
-    ss << "\"target\":" << (r.exit_reason_counts.count(exit_reason::TARGET) ? r.exit_reason_counts.at(exit_reason::TARGET) : 0);
-    ss << ",\"stop\":" << (r.exit_reason_counts.count(exit_reason::STOP) ? r.exit_reason_counts.at(exit_reason::STOP) : 0);
-    ss << ",\"take_profit\":" << (r.exit_reason_counts.count(exit_reason::TAKE_PROFIT) ? r.exit_reason_counts.at(exit_reason::TAKE_PROFIT) : 0);
-    ss << ",\"expiry\":" << (r.exit_reason_counts.count(exit_reason::EXPIRY) ? r.exit_reason_counts.at(exit_reason::EXPIRY) : 0);
-    ss << ",\"session_end\":" << (r.exit_reason_counts.count(exit_reason::SESSION_END) ? r.exit_reason_counts.at(exit_reason::SESSION_END) : 0);
-    ss << ",\"safety_cap\":" << (r.exit_reason_counts.count(exit_reason::SAFETY_CAP) ? r.exit_reason_counts.at(exit_reason::SAFETY_CAP) : 0);
+    constexpr std::pair<int, const char*> reasons[] = {
+        {exit_reason::TARGET,      "target"},
+        {exit_reason::STOP,        "stop"},
+        {exit_reason::TAKE_PROFIT, "take_profit"},
+        {exit_reason::EXPIRY,      "expiry"},
+        {exit_reason::SESSION_END, "session_end"},
+        {exit_reason::SAFETY_CAP,  "safety_cap"},
+    };
+    bool first = true;
+    for (const auto& [code, name] : reasons) {
+        if (!first) ss << ",";
+        first = false;
+        auto it = r.exit_reason_counts.find(code);
+        ss << "\"" << name << "\":" << (it != r.exit_reason_counts.end() ? it->second : 0);
+    }
     ss << "}";
 
     ss << "}";
@@ -176,17 +188,18 @@ inline void write_backtest_result_json(std::ostringstream& ss,
 }  // namespace detail
 
 // Serialize an OracleExpectancyReport to JSON.
-inline std::string to_json(const OracleExpectancyReport& report) {
+inline std::string to_json(const OracleExpectancyReport& report,
+                            const ReportConfig& cfg = {}) {
     std::ostringstream ss;
 
     ss << "{";
 
-    // Config block (spec defaults)
+    // Config block
     ss << "\"config\":{";
     ss << "\"bar_type\":\"time_5s\"";
-    ss << ",\"target_ticks\":10";
-    ss << ",\"stop_ticks\":5";
-    ss << ",\"take_profit_ticks\":20";
+    ss << ",\"target_ticks\":" << cfg.target_ticks;
+    ss << ",\"stop_ticks\":" << cfg.stop_ticks;
+    ss << ",\"take_profit_ticks\":" << cfg.take_profit_ticks;
     ss << ",\"volume_horizon\":500";
     ss << ",\"max_time_horizon_s\":300";
     ss << "}";
@@ -216,11 +229,11 @@ inline std::string to_json(const OracleExpectancyReport& report) {
     ss << ",\"per_quarter\":{";
     bool first_quarter = true;
     // Gather all quarter keys from both maps
-    std::map<std::string, bool> all_quarters;
-    for (const auto& [q, _] : report.fth_per_quarter) all_quarters[q] = true;
-    for (const auto& [q, _] : report.tb_per_quarter) all_quarters[q] = true;
+    std::set<std::string> all_quarters;
+    for (const auto& [q, _] : report.fth_per_quarter) all_quarters.insert(q);
+    for (const auto& [q, _] : report.tb_per_quarter) all_quarters.insert(q);
 
-    for (const auto& [q, _] : all_quarters) {
+    for (const auto& q : all_quarters) {
         if (!first_quarter) ss << ",";
         first_quarter = false;
 

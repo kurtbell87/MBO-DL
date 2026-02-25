@@ -1,11 +1,12 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-24)
+## Current State (updated 2026-02-25)
 
 - **Build:** Green.
-- **Unit tests:** 1003/1004 pass (1 disabled, 1 skipped). TDD phases exited 0.
+- **Unit tests:** 1144 registered (label-exclude integration). 49 new oracle_expectancy_params tests all pass. TDD phases exited 0.
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **27+ phases complete** (10 engineering + 17 research). CNN line closed (Outcome D). GBT-only path forward.
+- **28+ phases complete** (11 engineering + 17 research). CNN line closed (Outcome D). GBT-only path forward.
+- **Latest TDD:** Oracle expectancy CLI parameterized (`--target/--stop/--take-profit/--output/--help`). Spec: `.kit/docs/oracle-expectancy-params.md`.
 - **Compute:** Local preferred for CPU-only experiments (<1GB). RunPod for GPU. EC2 spot for large data only.
 - **Full-year dataset:** 1.16M bars, 251 days, 255MB Parquet, S3-backed.
 
@@ -37,11 +38,12 @@
 | 8 | bar-feature-export | done | done | done | done |
 | 9A | hybrid-model | done | done | done | done |
 | TB-Fix | tick-bar-fix | done | done | done | done |
+| 7-params | oracle-expectancy-params | done | done | done | done |
 
 ## Next Action
 
 1. **XGBoost hyperparameter tuning** (P1): Grid search to close the 2pp win rate gap. Spec: `.kit/experiments/xgb-hyperparam-tuning.md`. Local compute.
-2. **Label design sensitivity** (P1): Test wider target / narrower stop. Spec: `.kit/experiments/label-design-sensitivity.md`. Local compute.
+2. **Label design sensitivity** (P1): Test wider target / narrower stop. Infrastructure ready: `oracle_expectancy --target 15 --stop 3 --output results.json`. Spec: `.kit/experiments/label-design-sensitivity.md`. Local compute.
 3. **Regime-conditional trading** (P3): Q1-Q2 only strategy. Spec not yet created.
 
 ## Agent Roles

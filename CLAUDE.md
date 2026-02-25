@@ -472,9 +472,9 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-23, Parallel Batch Dispatch — Complete)
+## Current State (updated 2026-02-25, Oracle Expectancy Parameterization — Complete)
 
-**Parallel batch dispatch for cloud-run — COMPLETE (TDD cycle on `tdd/parallel-batch-dispatch` branch).** All components delivered: `batch.py` module, CLI `batch {run,status,pull,ls}` subcommands, MCP `kit.research_batch` tool, `batch_id` tracking in state/remote, `parallelizable` surfacing in preflight, and `experiment.sh batch` shell command. Final piece: `run_batch()` function + case dispatch + help text added to `orchestration-kit/research-kit/experiment.sh`. Tests pass.
+**Oracle expectancy CLI parameterized — COMPLETE (TDD cycle on `experiment/xgb-hyperparam-tuning` branch).** `oracle_expectancy` now accepts `--target <ticks>`, `--stop <ticks>`, `--take-profit <ticks>`, `--output <path>`, and `--help` flags. Backward compatible (no-arg invocation identical to prior behavior). JSON output support for scripted label design sensitivity sweeps. 49 new tests all pass. Spec: `.kit/docs/oracle-expectancy-params.md`.
 
 **VERDICT: CNN LINE CLOSED FOR CLASSIFICATION. GBT-only is the path forward.** End-to-end CNN classification (Outcome D) — GBT-only beats CNN by 5.9pp accuracy and $0.069 expectancy. CNN spatial signal (R²=0.089 regression) does not encode class-discriminative boundaries. Full-year CPCV (45 splits, 1.16M bars, PBO=0.222): GBT accuracy 0.449, expectancy -$0.064 (base). GBT is **marginally profitable in Q1 (+$0.003) and Q2 (+$0.029)** under base costs — edge exists but consumed by Q3-Q4 losses. Holdout accuracy 0.421, expectancy -$0.204. Next: XGBoost hyperparameter tuning (never optimized, default params from 9B), label design sensitivity, or regime-conditional trading.
 
@@ -549,14 +549,15 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | **10** | **`.kit/experiments/e2e-cnn-classification.md`** | **Research** | **Done (REFUTED — Outcome D)** — GBT beats CNN by 5.9pp; CNN line closed |
 | **Batch** | **`.kit/docs/parallel-batch-dispatch.md`** | **TDD** | **Done** — parallel batch dispatch for cloud-run |
 | **Batch-sh** | **`.kit/docs/experiment-batch-command.md`** | **TDD** | **Done** — `experiment.sh batch` command |
+| **7-params** | **`.kit/docs/oracle-expectancy-params.md`** | **TDD** | **Done** — CLI `--target/--stop/--take-profit/--output/--help` flags |
 
 - **Build:** Green.
-- **Tests:** 1003/1004 unit tests pass (1 disabled, 1 skipped) + new tick_bar_fix tests. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
+- **Tests:** 1144 unit tests registered (label-exclude integration). 49 new oracle_expectancy_params tests all pass. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
 - **Corrected Hybrid Model COMPLETE (2026-02-19):** CNN normalization fix verified (3rd independent reproduction). R²=0.089 with proper validation. But end-to-end pipeline not economically viable: expectancy=-$0.37/trade (base), PF=0.924. Breakeven RT=$3.37. Hybrid outperforms GBT-only but delta too small to flip sign.
 - **Next task options (in priority order):**
   1. **XGBoost hyperparameter tuning on full-year data** — default params from 9B never optimized. GBT already shows Q1-Q2 positive expectancy (+$0.003, +$0.029) with default hyperparams. Grid/random search over max_depth, learning_rate, n_estimators, subsample, colsample, min_child_weight. Most promising path given Outcome D.
-  2. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks). At 15:3 ratio, breakeven win rate drops to ~42.5% (well below current ~45%). Also test asymmetric cost functions.
+  2. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks). `oracle_expectancy --target 15 --stop 3 --output results.json` now available. Spec: `.kit/experiments/label-design-sensitivity.md`. At 15:3 ratio, breakeven win rate drops to ~42.5% (well below current ~45%). Also test asymmetric cost functions.
   3. **Regime-conditional trading** — Q1-Q2 only strategy. GBT profitable in H1 2022, negative in H2. Cannot validate with only 1 year of data, but could explore what regime features predict profitability.
   4. **2-class formulation** — directional only (merge tb_label=0 into abstain). Long recall is only 0.21 — model struggles with longs. Might perform better as binary short/no-short.
   5. **CNN line CLOSED** — do not revisit CNN for classification. Signal exists for regression but does not transfer.

@@ -15,6 +15,22 @@ All modules are header-only `.hpp` files.
 | `training_loop.hpp` | training_loop | Neural network overfit training loop |
 | `serialization.hpp` | serialization | Checkpoint save/load (libtorch + XGBoost) + ONNX export |
 
+### `backtest/` — Backtesting & Oracle Infrastructure
+
+| File | Description |
+|------|-------------|
+| `oracle_replay.hpp` | Oracle replay engine for multi-day backtesting |
+| `oracle_expectancy_report.hpp` | Expectancy report generation + JSON output |
+| `oracle_comparison.hpp` | Oracle parameter comparison utilities |
+| `triple_barrier.hpp` | Triple barrier labeling (target/stop/take-profit) |
+| `trade_record.hpp` | Trade record struct for backtest output |
+| `backtest_result_io.hpp` | Backtest result I/O (serialization) |
+| `multi_day_runner.hpp` | Multi-day backtest orchestration |
+| `success_criteria.hpp` | Statistical success criteria for backtest validation |
+| `regime_stratification.hpp` | Regime-based stratification for analysis |
+| `rollover.hpp` | Futures rollover calendar |
+| `execution_costs.hpp` | Transaction cost model (commission, spread, slippage) |
+
 ### `bars/` — Bar Construction
 
 | File | Description |
