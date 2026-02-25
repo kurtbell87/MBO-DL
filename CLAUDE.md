@@ -472,9 +472,11 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-25, Bidirectional Label Export — In Progress)
+## Current State (updated 2026-02-25, Bidirectional Export Wiring — COMPLETE)
 
-**Bidirectional triple barrier labels — TDD cycle on `tdd/oracle-expectancy-params` branch.** Added `compute_bidirectional_tb_label()` to `triple_barrier.hpp` with independent long/short race evaluation. New Parquet columns: `tb_both_triggered`, `tb_long_triggered`, `tb_short_triggered`. New test file `tests/bidirectional_tb_test.cpp`. Spec: `.kit/docs/bidirectional-label-export.md`.
+**Bidirectional export wiring — COMPLETE.** `bar_feature_export` now defaults to bidirectional triple barrier labels via `compute_bidirectional_tb_label()`. Parquet schema expanded 149 → 152 columns with `tb_both_triggered`, `tb_long_triggered`, `tb_short_triggered`. `--legacy-labels` flag restores old 149-column output. Tests T1-T6 pass. Spec: `.kit/docs/bidirectional-export-wiring.md`. Branch: `tdd/bidirectional-label-export`. Changed: `CMakeLists.txt`, `tests/parquet_export_test.cpp`, `tools/bar_feature_export.cpp`. New: `tests/bidirectional_export_test.cpp`.
+
+**Bidirectional triple barrier labels — COMPLETE (prior cycle).** Added `compute_bidirectional_tb_label()` to `triple_barrier.hpp` with independent long/short race evaluation. Tests T1-T10 pass. Spec: `.kit/docs/bidirectional-label-export.md`.
 
 **Oracle expectancy CLI parameterized — COMPLETE (prior cycle).** `oracle_expectancy` now accepts `--target <ticks>`, `--stop <ticks>`, `--take-profit <ticks>`, `--output <path>`, and `--help` flags. 49 new tests all pass. Spec: `.kit/docs/oracle-expectancy-params.md`.
 
@@ -552,15 +554,16 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | **Batch** | **`.kit/docs/parallel-batch-dispatch.md`** | **TDD** | **Done** — parallel batch dispatch for cloud-run |
 | **Batch-sh** | **`.kit/docs/experiment-batch-command.md`** | **TDD** | **Done** — `experiment.sh batch` command |
 | **7-params** | **`.kit/docs/oracle-expectancy-params.md`** | **TDD** | **Done** — CLI `--target/--stop/--take-profit/--output/--help` flags |
-| **Bidir-TB** | **`.kit/docs/bidirectional-label-export.md`** | **TDD** | **In Progress** — bidirectional triple barrier labels (independent long/short races) |
+| **Bidir-TB** | **`.kit/docs/bidirectional-label-export.md`** | **TDD** | **Done** — bidirectional triple barrier labels (independent long/short races) |
+| **Bidir-Wire** | **`.kit/docs/bidirectional-export-wiring.md`** | **TDD** | **Done** — wired into bar_feature_export, 3 new Parquet columns, --legacy-labels flag |
 
 - **Build:** Green.
-- **Tests:** 1144+ unit tests registered (label-exclude integration). New bidirectional TB tests in `bidirectional_tb_test.cpp`. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
+- **Tests:** 1144+ unit tests registered (label-exclude integration). Bidirectional TB tests in `bidirectional_tb_test.cpp`, export wiring tests in `bidirectional_export_test.cpp`. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
 - **Corrected Hybrid Model COMPLETE (2026-02-19):** CNN normalization fix verified (3rd independent reproduction). R²=0.089 with proper validation. But end-to-end pipeline not economically viable: expectancy=-$0.37/trade (base), PF=0.924. Breakeven RT=$3.37. Hybrid outperforms GBT-only but delta too small to flip sign.
 - **Next task options (in priority order):**
-  1. **Complete bidirectional-label-export TDD cycle** — finish exit criteria, integrate into `bar_feature_export`, re-export full-year data with bidirectional labels. Spec: `.kit/docs/bidirectional-label-export.md`. Blocks label-design-sensitivity experiment.
-  2. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks). Requires bidirectional labels. Spec: `.kit/experiments/label-design-sensitivity.md`.
+  1. **Re-export full-year data with bidirectional labels** — run `bar_feature_export` on 251 days with new 152-column schema (EC2). Produces updated Parquet for label-design-sensitivity.
+  2. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks). Requires bidirectional full-year export. Spec: `.kit/experiments/label-design-sensitivity.md`.
   3. **XGBoost hyperparameter tuning on full-year data** — default params from 9B never optimized. GBT already shows Q1-Q2 positive expectancy (+$0.003, +$0.029) with default hyperparams.
   4. **Regime-conditional trading** — Q1-Q2 only strategy.
   5. **CNN line CLOSED** — do not revisit CNN for classification.

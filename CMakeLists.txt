@@ -188,3 +188,9 @@ add_executable(parquet_export_test tests/parquet_export_test.cpp)
 target_include_directories(parquet_export_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(parquet_export_test PRIVATE GTest::gtest_main Arrow::arrow_shared Parquet::parquet_shared)
 gtest_discover_tests(parquet_export_test WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+# ---------- Bidirectional Export Test ----------
+add_executable(bidirectional_export_test tests/bidirectional_export_test.cpp)
+target_include_directories(bidirectional_export_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(bidirectional_export_test PRIVATE GTest::gtest_main Arrow::arrow_shared Parquet::parquet_shared)
+gtest_discover_tests(bidirectional_export_test WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
