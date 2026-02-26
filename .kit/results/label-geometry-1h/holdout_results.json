@@ -1,0 +1,114 @@
+{
+  "19_7": {
+    "accuracy": 0.46353258975252704,
+    "directional_accuracy": 0.5,
+    "n_directional_pairs": 52,
+    "directional_prediction_rate": 0.0070887068665040085,
+    "per_class_recall": {
+      "short": 0.00013399437223636607,
+      "hold": 0.9854084251290081,
+      "long": 0.00029089968809089
+    },
+    "pnl": {
+      "optimistic": {
+        "expectancy": 5.009999999999997,
+        "profit_factor": 1.891459074733096,
+        "n_trades": 52
+      },
+      "base": {
+        "expectancy": 3.7599999999999976,
+        "profit_factor": 1.6020816653322658,
+        "n_trades": 52
+      },
+      "pessimistic": {
+        "expectancy": 1.25,
+        "profit_factor": 1.1666666666666667,
+        "n_trades": 52
+      }
+    },
+    "per_quarter": {
+      "Q4": {
+        "expectancy": 3.7599999999999976,
+        "profit_factor": 1.6020816653322658,
+        "n_trades": 52
+      }
+    },
+    "confusion_matrix": [
+      [
+        8,
+        59674,
+        22
+      ],
+      [
+        397,
+        106364,
+        1178
+      ],
+      [
+        4,
+        61855,
+        18
+      ]
+    ],
+    "n_holdout_bars": 229520,
+    "n_estimators_used": 217,
+    "elapsed_s": 7.927701950073242,
+    "label0_hit_rate": 0.968039336201598
+  },
+  "10_5": {
+    "accuracy": 0.35061432554897176,
+    "directional_accuracy": 0.5056309791310666,
+    "n_directional_pairs": 148642,
+    "directional_prediction_rate": 0.9523963053328686,
+    "per_class_recall": {
+      "short": 0.33740229286086504,
+      "hold": 0.07061527628309884,
+      "long": 0.6356574142180584
+    },
+    "pnl": {
+      "optimistic": {
+        "expectancy": 0.7405808587074979,
+        "profit_factor": 1.1713995991842183,
+        "n_trades": 148642
+      },
+      "base": {
+        "expectancy": -0.5094191412925021,
+        "profit_factor": 0.8968525435783615,
+        "n_trades": 148642
+      },
+      "pessimistic": {
+        "expectancy": -3.0194191412925013,
+        "profit_factor": 0.5113902346088944,
+        "n_trades": 148642
+      }
+    },
+    "per_quarter": {
+      "Q4": {
+        "expectancy": -0.5094191412925021,
+        "profit_factor": 0.8968525435783615,
+        "n_trades": 148642
+      }
+    },
+    "confusion_matrix": [
+      [
+        25899,
+        2476,
+        48385
+      ],
+      [
+        22984,
+        5315,
+        46968
+      ],
+      [
+        25099,
+        3135,
+        49259
+      ]
+    ],
+    "n_holdout_bars": 229520,
+    "n_estimators_used": 212,
+    "elapsed_s": 7.873650074005127,
+    "label0_hit_rate": 0.3200087834066809
+  }
+}
