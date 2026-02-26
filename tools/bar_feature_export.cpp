@@ -564,12 +564,14 @@ void print_usage(const char* prog) {
     std::cerr << "Usage: " << prog
               << " --bar-type <type> --bar-param <threshold> --output <path>\n"
               << "\n"
-              << "  --bar-type       Bar type: time, volume, dollar, tick\n"
-              << "  --bar-param      Bar threshold (e.g., 5.0 for time_5s)\n"
-              << "  --output         Output file path (.csv or .parquet)\n"
-              << "  --target         Target (take-profit) barrier in ticks (default: 10)\n"
-              << "  --stop           Stop-loss barrier in ticks (default: 5)\n"
-              << "  --legacy-labels  Use old-style unidirectional labels (149 columns)\n";
+              << "  --bar-type            Bar type: time, volume, dollar, tick\n"
+              << "  --bar-param           Bar threshold (e.g., 5.0 for time_5s)\n"
+              << "  --output              Output file path (.csv or .parquet)\n"
+              << "  --target              Target (take-profit) barrier in ticks (default: 10)\n"
+              << "  --stop                Stop-loss barrier in ticks (default: 5)\n"
+              << "  --max-time-horizon    Max time horizon in seconds, 1-86400 (default: 3600)\n"
+              << "  --volume-horizon      Volume horizon in contracts, >0 (default: 50000)\n"
+              << "  --legacy-labels       Use old-style unidirectional labels (149 columns)\n";
 }
 
 // ===========================================================================
@@ -583,6 +585,8 @@ int main(int argc, char* argv[]) {
     bool legacy_labels = false;
     int target_ticks = 10;  // default
     int stop_ticks = 5;     // default
+    int max_time_horizon = 3600;  // default (seconds)
+    int volume_horizon = 50000;   // default (contracts)
 
     // Parse CLI args
     for (int i = 1; i < argc; ++i) {
@@ -611,6 +615,20 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
             if (!parse_int_flag("--stop", argv[++i], stop_ticks)) return 1;
+        } else if (arg == "--max-time-horizon") {
+            if (i + 1 >= argc) {
+                std::cerr << "Error: --max-time-horizon requires an integer value\n";
+                print_usage(argv[0]);
+                return 1;
+            }
+            if (!parse_int_flag("--max-time-horizon", argv[++i], max_time_horizon)) return 1;
+        } else if (arg == "--volume-horizon") {
+            if (i + 1 >= argc) {
+                std::cerr << "Error: --volume-horizon requires an integer value\n";
+                print_usage(argv[0]);
+                return 1;
+            }
+            if (!parse_int_flag("--volume-horizon", argv[++i], volume_horizon)) return 1;
         }
     }
 
@@ -625,6 +643,14 @@ int main(int argc, char* argv[]) {
     }
     if (target_ticks <= stop_ticks) {
         std::cerr << "Error: --target (" << target_ticks << ") must be greater than --stop (" << stop_ticks << ")\n";
+        return 1;
+    }
+    if (max_time_horizon <= 0 || max_time_horizon > 86400) {
+        std::cerr << "Error: --max-time-horizon must be between 1 and 86400, got: " << max_time_horizon << "\n";
+        return 1;
+    }
+    if (volume_horizon <= 0) {
+        std::cerr << "Error: --volume-horizon must be > 0, got: " << volume_horizon << "\n";
         return 1;
     }
 
@@ -709,9 +735,9 @@ int main(int argc, char* argv[]) {
     TripleBarrierConfig tb_cfg;
     tb_cfg.target_ticks = target_ticks;
     tb_cfg.stop_ticks = stop_ticks;
-    tb_cfg.volume_horizon = 500;
+    tb_cfg.volume_horizon = static_cast<uint32_t>(volume_horizon);
     tb_cfg.min_return_ticks = 2;
-    tb_cfg.max_time_horizon_s = 300;
+    tb_cfg.max_time_horizon_s = static_cast<uint32_t>(max_time_horizon);
     tb_cfg.tick_size = 0.25f;
 
     // Determine which days to process: --date overrides SELECTED_DAYS

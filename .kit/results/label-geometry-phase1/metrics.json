@@ -1,0 +1,361 @@
+{
+  "experiment": "label-geometry-phase1",
+  "timestamp": "2026-02-26T15:37:27",
+  "geometries": {
+    "10_5": {
+      "target": 10,
+      "stop": 5,
+      "label": "10:5 (control)",
+      "breakeven_wr": 0.5328,
+      "cpcv_accuracy": 0.8997902714124332,
+      "cpcv_accuracy_std": 0.03918702788657752,
+      "cpcv_expectancy_base": -0.6100648854960127,
+      "cpcv_expectancy_optimistic": 0.6399351145039874,
+      "cpcv_expectancy_pessimistic": -3.1200648854960127,
+      "cpcv_profit_factor": 0.881905279459532,
+      "breakeven_margin": 0.3669902714124331,
+      "per_class_recall": {
+        "short": 0.018674800182262457,
+        "hold": 0.998609334760277,
+        "long": 0.016203830805700363
+      },
+      "top10_features": [
+        [
+          "f11",
+          133.50246853298611
+        ],
+        [
+          "f10",
+          58.5464729309082
+        ],
+        [
+          "f12",
+          17.290141783820257
+        ],
+        [
+          "f15",
+          7.795339446597629
+        ],
+        [
+          "f5",
+          6.301139206356472
+        ],
+        [
+          "f1",
+          6.283335346645779
+        ],
+        [
+          "f16",
+          5.949512714809842
+        ],
+        [
+          "f17",
+          5.254231760236952
+        ],
+        [
+          "f19",
+          5.204347928365071
+        ],
+        [
+          "f18",
+          5.179224914974636
+        ]
+      ],
+      "label0_hit_rate": 0.28810323282014555,
+      "class_distribution": {
+        "-1": 0.04682670344352023,
+        "0": 0.9070439167349049,
+        "1": 0.0461293798215748
+      },
+      "total_bars": 1160150,
+      "walkforward_mean_accuracy": 0.9416623987400016,
+      "walkforward_mean_expectancy": -0.32475448593917866,
+      "walkforward_per_fold": [
+        {
+          "fold": 0,
+          "name": "Fold 1",
+          "train_days": "1-100",
+          "test_days": "101-150",
+          "accuracy": 0.941244060475162,
+          "per_class_recall": {
+            "short": 0.044799769518870644,
+            "hold": 0.9985352728341322,
+            "long": 0.01742983751846381
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 1.377924528301886,
+              "profit_factor": 1.3424522639456806,
+              "n_trades": 795
+            },
+            "base": {
+              "expectancy": 0.12792452830188616,
+              "profit_factor": 1.0278146999458477,
+              "n_trades": 795
+            },
+            "pessimistic": {
+              "expectancy": -2.3820754716981134,
+              "profit_factor": 0.5860655737704918,
+              "n_trades": 795
+            }
+          },
+          "n_estimators_used": 804,
+          "n_train": 462500,
+          "n_test": 231500,
+          "elapsed_s": 16.576703786849976,
+          "label0_hit_rate": 0.2863554757630162
+        },
+        {
+          "fold": 1,
+          "name": "Fold 2",
+          "train_days": "1-150",
+          "test_days": "151-201",
+          "accuracy": 0.9442171685088723,
+          "per_class_recall": {
+            "short": 0.03547400611620795,
+            "hold": 0.998627020769676,
+            "long": 0.023671281822242072
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 0.17879562043795558,
+              "profit_factor": 1.039015752839175,
+              "n_trades": 822
+            },
+            "base": {
+              "expectancy": -1.0712043795620445,
+              "profit_factor": 0.7954961922479328,
+              "n_trades": 822
+            },
+            "pessimistic": {
+              "expectancy": -3.5812043795620436,
+              "profit_factor": 0.45359628770301624,
+              "n_trades": 822
+            }
+          },
+          "n_estimators_used": 1206,
+          "n_train": 694000,
+          "n_test": 236130,
+          "elapsed_s": 31.508013010025024,
+          "label0_hit_rate": 0.2712765957446808
+        },
+        {
+          "fold": 2,
+          "name": "Fold 3 (holdout)",
+          "train_days": "1-201",
+          "test_days": "202-251",
+          "accuracy": 0.9395259672359707,
+          "per_class_recall": {
+            "short": 0.03796600877192982,
+            "hold": 0.9978973752001671,
+            "long": 0.05472783596400649
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 1.2190163934426224,
+              "profit_factor": 1.2974828375286045,
+              "n_trades": 1220
+            },
+            "base": {
+              "expectancy": -0.030983606557377596,
+              "profit_factor": 0.9933849933849936,
+              "n_trades": 1220
+            },
+            "pessimistic": {
+              "expectancy": -2.540983606557377,
+              "profit_factor": 0.5664335664335665,
+              "n_trades": 1220
+            }
+          },
+          "n_estimators_used": 1342,
+          "n_train": 930130,
+          "n_test": 229520,
+          "elapsed_s": 42.89538788795471,
+          "label0_hit_rate": 0.2707710699342499
+        }
+      ],
+      "per_direction": {
+        "long": {
+          "n_triggered": 55196,
+          "wr": 0.9696,
+          "expectancy": 8.1896
+        },
+        "short": {
+          "n_triggered": 56005,
+          "wr": 0.97,
+          "expectancy": 8.1979
+        },
+        "both_triggered_rate": 0.0014
+      },
+      "time_of_day": {
+        "A_opening_range": {
+          "n_bars": 77810,
+          "class_dist": {
+            "-1": 0.08403804138285567,
+            "0": 0.8358951291607762,
+            "+1": 0.08006682945636807
+          },
+          "directional_rate": 0.1641
+        },
+        "B_mid_session": {
+          "n_bars": 902340,
+          "class_dist": {
+            "-1": 0.04690360617948888,
+            "0": 0.906646053593989,
+            "+1": 0.046450340226522155
+          },
+          "directional_rate": 0.0934
+        },
+        "C_closing": {
+          "n_bars": 90000,
+          "class_dist": {
+            "-1": 0.029855555555555555,
+            "0": 0.9418333333333333,
+            "+1": 0.02831111111111111
+          },
+          "directional_rate": 0.0582
+        }
+      },
+      "mean_fit_time_s": 26.922406678729587
+    },
+    "15_3": {
+      "skipped": true,
+      "reason": "degenerate_labels"
+    },
+    "19_7": {
+      "skipped": true,
+      "reason": "degenerate_labels"
+    },
+    "20_3": {
+      "skipped": true,
+      "reason": "degenerate_labels"
+    }
+  },
+  "holdout": {
+    "10_5": {
+      "accuracy": 0.9395956779365633,
+      "per_class_recall": {
+        "short": 0.039473684210526314,
+        "hold": 0.9979437907586624,
+        "long": 0.053990264050744946
+      },
+      "pnl": {
+        "optimistic": {
+          "expectancy": 1.3194749794913858,
+          "profit_factor": 1.325720418784553,
+          "n_trades": 1219
+        },
+        "base": {
+          "expectancy": 0.06947497949138584,
+          "profit_factor": 1.0150043849158896,
+          "n_trades": 1219
+        },
+        "pessimistic": {
+          "expectancy": -2.4405250205086135,
+          "profit_factor": 0.5787610619469027,
+          "n_trades": 1219
+        }
+      },
+      "per_quarter": {
+        "Q4": {
+          "expectancy": 0.06947497949138584,
+          "profit_factor": 1.0150043849158896,
+          "n_trades": 1219
+        }
+      },
+      "confusion_matrix": [
+        [
+          288,
+          6665,
+          343
+        ],
+        [
+          202,
+          215002,
+          241
+        ],
+        [
+          222,
+          6191,
+          366
+        ]
+      ],
+      "n_holdout_bars": 229520,
+      "n_estimators_used": 1339,
+      "elapsed_s": 42.75336503982544
+    }
+  },
+  "success_criteria": {
+    "SC-1": {
+      "description": "Re-export >= 1000 files",
+      "value": 1004,
+      "pass": true
+    },
+    "SC-2": {
+      "description": "CPCV + WF for all 4 geometries",
+      "pass": false
+    },
+    "SC-3": {
+      "description": "At least one geometry CPCV accuracy > BEV WR + 2pp",
+      "pass": true
+    },
+    "SC-4": {
+      "description": "At least one geometry CPCV expectancy > $0.00 (base)",
+      "pass": false
+    },
+    "SC-5": {
+      "description": "Best geometry holdout expectancy > -$0.10",
+      "pass": true
+    },
+    "SC-6": {
+      "description": "Walk-forward reported for all 4 geometries",
+      "pass": true
+    },
+    "SC-7": {
+      "description": "Per-direction + time-of-day reported",
+      "pass": true
+    }
+  },
+  "sanity_checks": {
+    "SC-S1_baseline_acc_gt_040": true,
+    "SC-S2_no_feature_gt_60pct": true,
+    "SC-S3_152_columns": true,
+    "SC-S4_no_degenerate_labels": false
+  },
+  "outcome": "B",
+  "outcome_description": "PARTIAL \u2014 insufficient data",
+  "export_summary": {
+    "geom_10_5": {
+      "ok": 251,
+      "fail": 0,
+      "elapsed_s": 69.02152395248413
+    },
+    "geom_15_3": {
+      "ok": 251,
+      "fail": 0,
+      "elapsed_s": 68.5928897857666
+    },
+    "geom_19_7": {
+      "ok": 251,
+      "fail": 0,
+      "elapsed_s": 68.43261790275574
+    },
+    "geom_20_3": {
+      "ok": 251,
+      "fail": 0,
+      "elapsed_s": 68.16943192481995
+    }
+  },
+  "resource_usage": {
+    "wall_clock_seconds": 1643.514312028885,
+    "wall_clock_minutes": 27.391905200481414,
+    "total_export_runs": 1004,
+    "total_cpcv_fits": 45,
+    "total_wf_fits": 3,
+    "total_holdout_fits": 1,
+    "gpu_hours": 0
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Executed locally on Apple Silicon. 4 geometries: 10:5 (control), 15:3, 19:7, 20:3. Wall clock: 27.4 minutes. Total exports: 1004. COMPUTE_TARGET: local. Bidirectional labels at wide geometries produce >95% holds: 15:3=97.1% hold, 19:7=98.6% hold, 20:3=98.9% hold. Even 10:5 baseline is 90.7% hold. 3 treatment geometries SKIPPED per spec abort criterion (>95% single class). Model at 10:5 predicts hold 99.9% of the time (short recall=1.9%, long recall=1.6%). Feature names: f11=volatility_50, f10=volatility_20, f12=high_low_range_50, f15=message_rate, f5=avg_trade_size, f1=spread."
+}

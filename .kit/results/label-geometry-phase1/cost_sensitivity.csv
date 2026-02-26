@@ -1,0 +1,4 @@
+geometry,target,stop,scenario,cpcv_expectancy,cpcv_profit_factor,wf_expectancy
+10_5,10,5,optimistic,0.6399,1.1519,0.9252
+10_5,10,5,base,-0.6101,0.8819,-0.3248
+10_5,10,5,pessimistic,-3.1201,0.5029,-2.8348

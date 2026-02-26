@@ -1,0 +1,2 @@
+geometry,target,stop,breakeven_wr,accuracy,accuracy_std,expectancy_base,expectancy_opt,expectancy_pess,profit_factor,breakeven_margin,short_recall,hold_recall,long_recall,label0_hit_rate
+10_5,10,5,0.5328,0.8998,0.0392,-0.6101,0.6399,-3.1201,0.8819,0.3670,0.0187,0.9986,0.0162,0.2881

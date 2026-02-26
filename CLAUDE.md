@@ -474,9 +474,11 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-25, bar-feature-export-geometry TDD — COMPLETE)
+## Current State (updated 2026-02-26, time-horizon-cli TDD — COMPLETE)
 
-**bar_feature_export --target/--stop CLI flags — COMPLETE.** `bar_feature_export` now accepts `--target <ticks>` and `--stop <ticks>` CLI flags to vary triple barrier geometry per-export. Defaults (10, 5) produce identical output to prior binary. Invalid params (target<=0, stop<=0, target<=stop) rejected with clear error. Works with `--legacy-labels`. Spec: `.kit/docs/bar-feature-export-geometry.md`. **All prerequisites for label-design-sensitivity experiment are now DONE.**
+**Time horizon CLI flags — COMPLETE.** `bar_feature_export` and `oracle_expectancy` now accept `--max-time-horizon <seconds>` and `--volume-horizon <contracts>` CLI flags. Defaults changed: `max_time_horizon_s` 300→3600 (1 hour), `volume_horizon` 500→50000 (effectively unlimited for MES). Invalid values (<=0) rejected with clear errors. Works with all existing flags (`--target`, `--stop`, `--legacy-labels`). Spec: `.kit/docs/time-horizon-cli.md`. **Unblocks label geometry re-run with 1-hour time horizon (fixes 90.7-98.9% hold rate from 5-minute cap).**
+
+**bar_feature_export --target/--stop CLI flags — COMPLETE (prior cycle).** `bar_feature_export` now accepts `--target <ticks>` and `--stop <ticks>` CLI flags to vary triple barrier geometry per-export. Defaults (10, 5) produce identical output to prior binary. Invalid params (target<=0, stop<=0, target<=stop) rejected with clear error. Works with `--legacy-labels`. Spec: `.kit/docs/bar-feature-export-geometry.md`.
 
 **Bidirectional full-year re-export — COMPLETE (prior cycle).** 312/312 files exported on EC2 (c5.2xlarge, ~10 min, ~$0.10). 152-column Parquet with bidirectional labels. Results in S3: `s3://kenoma-labs-research/results/bidirectional-reexport/`. Docker image `mbo-dl:66bbf9e`. Run ID: `cloud-20260225T223324Z-9de47093`. Note: 312 = all .dbn.zst files; downstream experiments filter to ~251 RTH days. Label distribution validation pending.
 
@@ -563,13 +565,14 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | **Bidir-TB** | **`.kit/docs/bidirectional-label-export.md`** | **TDD** | **Done** — bidirectional triple barrier labels (independent long/short races) |
 | **Bidir-Wire** | **`.kit/docs/bidirectional-export-wiring.md`** | **TDD** | **Done** — wired into bar_feature_export, 3 new Parquet columns, --legacy-labels flag |
 | **Geom-CLI** | **`.kit/docs/bar-feature-export-geometry.md`** | **TDD** | **Done** — `--target`/`--stop` CLI flags for variable barrier geometry |
+| **TH-CLI** | **`.kit/docs/time-horizon-cli.md`** | **TDD** | **Done** — `--max-time-horizon`/`--volume-horizon` CLI flags, defaults 300→3600s / 500→50000 |
 
 - **Build:** Green.
-- **Tests:** 1144+ unit tests registered (label-exclude integration). Geometry CLI tests in `bar_feature_export_geometry_test.cpp`. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
+- **Tests:** 1144+ unit tests registered (label-exclude integration). Time horizon CLI tests in `time_horizon_cli_test.cpp`. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
 - **Corrected Hybrid Model COMPLETE (2026-02-19):** CNN normalization fix verified (3rd independent reproduction). R²=0.089 with proper validation. But end-to-end pipeline not economically viable: expectancy=-$0.37/trade (base), PF=0.924. Breakeven RT=$3.37. Hybrid outperforms GBT-only but delta too small to flip sign.
 - **Next task options (in priority order):**
-  1. **Label design sensitivity** — oracle heatmap sweep (144 geometries) + GBT training on top-3. All prerequisites DONE (--target/--stop CLI, bidirectional re-export, oracle CLI params). Spec: `.kit/experiments/label-design-sensitivity.md`. **FULLY UNBLOCKED.**
+  1. **Geometry sweep on long-perspective labels** — re-run with `--legacy-labels --max-time-horizon 3600` to fix degenerate hold rate. All CLI prerequisites DONE. Spec needed (adapt from label-geometry-phase1.md).
   2. **Regime-conditional trading** — Q1-Q2 only strategy.
   3. **CNN line CLOSED** — do not revisit CNN for classification.
 - **Volume bars confirmed genuine** (2026-02-19): R1 metrics show bar_count_cv=9-10% for vol_50/100/200. R4b volume_100 null result is valid.

@@ -1,0 +1,54 @@
+{
+  "10_5": {
+    "accuracy": 0.9395956779365633,
+    "per_class_recall": {
+      "short": 0.039473684210526314,
+      "hold": 0.9979437907586624,
+      "long": 0.053990264050744946
+    },
+    "pnl": {
+      "optimistic": {
+        "expectancy": 1.3194749794913858,
+        "profit_factor": 1.325720418784553,
+        "n_trades": 1219
+      },
+      "base": {
+        "expectancy": 0.06947497949138584,
+        "profit_factor": 1.0150043849158896,
+        "n_trades": 1219
+      },
+      "pessimistic": {
+        "expectancy": -2.4405250205086135,
+        "profit_factor": 0.5787610619469027,
+        "n_trades": 1219
+      }
+    },
+    "per_quarter": {
+      "Q4": {
+        "expectancy": 0.06947497949138584,
+        "profit_factor": 1.0150043849158896,
+        "n_trades": 1219
+      }
+    },
+    "confusion_matrix": [
+      [
+        288,
+        6665,
+        343
+      ],
+      [
+        202,
+        215002,
+        241
+      ],
+      [
+        222,
+        6191,
+        366
+      ]
+    ],
+    "n_holdout_bars": 229520,
+    "n_estimators_used": 1339,
+    "elapsed_s": 42.75336503982544
+  }
+}
