@@ -194,3 +194,9 @@ add_executable(bidirectional_export_test tests/bidirectional_export_test.cpp)
 target_include_directories(bidirectional_export_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(bidirectional_export_test PRIVATE GTest::gtest_main Arrow::arrow_shared Parquet::parquet_shared)
 gtest_discover_tests(bidirectional_export_test WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+# ---------- Geometry CLI Flag Test ----------
+add_executable(bar_feature_export_geometry_test tests/bar_feature_export_geometry_test.cpp)
+target_include_directories(bar_feature_export_geometry_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(bar_feature_export_geometry_test PRIVATE GTest::gtest_main Arrow::arrow_shared Parquet::parquet_shared)
+gtest_discover_tests(bar_feature_export_geometry_test WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})

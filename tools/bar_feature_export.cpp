@@ -127,39 +127,38 @@ private:
         return static_cast<float>(static_cast<double>(fixed) / 1e9);
     }
 
-    void apply_add(uint64_t order_id, char side, int64_t price, uint32_t size) {
-        orders_[order_id] = {side, price, size};
-        auto& levels = (side == 'B') ? bid_levels_ : ask_levels_;
-        levels[price] += size;
+    std::map<int64_t, uint32_t>& levels_for(char side) {
+        return (side == 'B') ? bid_levels_ : ask_levels_;
     }
 
-    void apply_cancel(uint64_t order_id) {
-        auto it = orders_.find(order_id);
-        if (it == orders_.end()) return;
-        auto& info = it->second;
-        auto& levels = (info.side == 'B') ? bid_levels_ : ask_levels_;
+    void remove_from_level(const OrderInfo& info) {
+        auto& levels = levels_for(info.side);
         auto lvl = levels.find(info.price);
         if (lvl != levels.end()) {
             if (lvl->second <= info.size) levels.erase(lvl);
             else lvl->second -= info.size;
         }
+    }
+
+    void apply_add(uint64_t order_id, char side, int64_t price, uint32_t size) {
+        orders_[order_id] = {side, price, size};
+        levels_for(side)[price] += size;
+    }
+
+    void apply_cancel(uint64_t order_id) {
+        auto it = orders_.find(order_id);
+        if (it == orders_.end()) return;
+        remove_from_level(it->second);
         orders_.erase(it);
     }
 
     void apply_modify(uint64_t order_id, char side, int64_t new_price, uint32_t new_size) {
         auto it = orders_.find(order_id);
         if (it != orders_.end()) {
-            auto& info = it->second;
-            auto& levels = (info.side == 'B') ? bid_levels_ : ask_levels_;
-            auto lvl = levels.find(info.price);
-            if (lvl != levels.end()) {
-                if (lvl->second <= info.size) levels.erase(lvl);
-                else lvl->second -= info.size;
-            }
+            remove_from_level(it->second);
         }
         orders_[order_id] = {side, new_price, new_size};
-        auto& levels = (side == 'B') ? bid_levels_ : ask_levels_;
-        levels[new_price] += new_size;
+        levels_for(side)[new_price] += new_size;
     }
 
     void apply_trade(char side, int64_t price, uint32_t size) {
@@ -172,17 +171,12 @@ private:
         auto it = orders_.find(order_id);
         if (it == orders_.end()) return;
         auto& info = it->second;
-        auto& levels = (info.side == 'B') ? bid_levels_ : ask_levels_;
-        auto lvl = levels.find(info.price);
-        if (lvl != levels.end()) {
-            if (lvl->second <= info.size) levels.erase(lvl);
-            else lvl->second -= info.size;
-        }
+        remove_from_level(info);
         if (remaining_size == 0) {
             orders_.erase(it);
         } else {
             info.size = remaining_size;
-            levels[info.price] += remaining_size;
+            levels_for(info.side)[info.price] += remaining_size;
         }
     }
 
@@ -543,6 +537,27 @@ void write_parquet_file(
 }
 
 // ===========================================================================
+// CLI helpers
+// ===========================================================================
+
+// Parse a CLI flag that requires an integer value.
+// Returns true on success (value written to out), false on error (message printed).
+bool parse_int_flag(const std::string& flag_name, const std::string& value_str, int& out) {
+    try {
+        size_t pos = 0;
+        out = std::stoi(value_str, &pos);
+        if (pos != value_str.size()) {
+            std::cerr << "Error: " << flag_name << " value must be an integer, got: " << value_str << "\n";
+            return false;
+        }
+    } catch (...) {
+        std::cerr << "Error: " << flag_name << " value must be an integer, got: " << value_str << "\n";
+        return false;
+    }
+    return true;
+}
+
+// ===========================================================================
 // Usage
 // ===========================================================================
 void print_usage(const char* prog) {
@@ -552,6 +567,8 @@ void print_usage(const char* prog) {
               << "  --bar-type       Bar type: time, volume, dollar, tick\n"
               << "  --bar-param      Bar threshold (e.g., 5.0 for time_5s)\n"
               << "  --output         Output file path (.csv or .parquet)\n"
+              << "  --target         Target (take-profit) barrier in ticks (default: 10)\n"
+              << "  --stop           Stop-loss barrier in ticks (default: 5)\n"
               << "  --legacy-labels  Use old-style unidirectional labels (149 columns)\n";
 }
 
@@ -564,6 +581,8 @@ int main(int argc, char* argv[]) {
     std::string output_path;
     std::string date_str_cli;
     bool legacy_labels = false;
+    int target_ticks = 10;  // default
+    int stop_ticks = 5;     // default
 
     // Parse CLI args
     for (int i = 1; i < argc; ++i) {
@@ -578,7 +597,35 @@ int main(int argc, char* argv[]) {
             date_str_cli = argv[++i];
         } else if (arg == "--legacy-labels") {
             legacy_labels = true;
+        } else if (arg == "--target") {
+            if (i + 1 >= argc) {
+                std::cerr << "Error: --target requires an integer value\n";
+                print_usage(argv[0]);
+                return 1;
+            }
+            if (!parse_int_flag("--target", argv[++i], target_ticks)) return 1;
+        } else if (arg == "--stop") {
+            if (i + 1 >= argc) {
+                std::cerr << "Error: --stop requires an integer value\n";
+                print_usage(argv[0]);
+                return 1;
+            }
+            if (!parse_int_flag("--stop", argv[++i], stop_ticks)) return 1;
         }
+    }
+
+    // Validate target/stop values
+    if (target_ticks <= 0) {
+        std::cerr << "Error: --target must be > 0, got: " << target_ticks << "\n";
+        return 1;
+    }
+    if (stop_ticks <= 0) {
+        std::cerr << "Error: --stop must be > 0, got: " << stop_ticks << "\n";
+        return 1;
+    }
+    if (target_ticks <= stop_ticks) {
+        std::cerr << "Error: --target (" << target_ticks << ") must be greater than --stop (" << stop_ticks << ")\n";
+        return 1;
     }
 
     // Validate required args
@@ -660,8 +707,8 @@ int main(int argc, char* argv[]) {
 
     // Triple barrier config — constant across all days/bars
     TripleBarrierConfig tb_cfg;
-    tb_cfg.target_ticks = 10;
-    tb_cfg.stop_ticks = 5;
+    tb_cfg.target_ticks = target_ticks;
+    tb_cfg.stop_ticks = stop_ticks;
     tb_cfg.volume_horizon = 500;
     tb_cfg.min_return_ticks = 2;
     tb_cfg.max_time_horizon_s = 300;

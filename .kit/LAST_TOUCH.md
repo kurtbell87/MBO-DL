@@ -18,45 +18,46 @@
 
 ## TL;DR — Where We Are and What To Do
 
-### Just Completed: Bidirectional Export Wiring (tdd/bidirectional-label-export)
+### Just Completed (2026-02-25)
 
-TDD cycle wired `compute_bidirectional_tb_label()` into `bar_feature_export.cpp`. Parquet schema expanded 149 → 152 columns. `--legacy-labels` flag for backward compatibility. Tests T1-T6 pass. TDD phase exited 0. Spec: `.kit/docs/bidirectional-export-wiring.md`.
+1. **bar_feature_export --target/--stop CLI flags (TDD)** — `bar_feature_export` now accepts `--target <ticks>` and `--stop <ticks>` to vary triple barrier geometry per-export. Defaults (10, 5) produce identical output to prior binary. Invalid params rejected. Works with `--legacy-labels`. Spec: `.kit/docs/bar-feature-export-geometry.md`. Files changed: `tools/bar_feature_export.cpp`, `CMakeLists.txt`. New test: `tests/bar_feature_export_geometry_test.cpp`.
 
-**What was done this cycle (2026-02-25):**
-- Modified `tools/bar_feature_export.cpp` — replaced `compute_tb_label()` with `compute_bidirectional_tb_label()`, added 3 new Parquet columns, added `--legacy-labels` CLI flag
-- Modified `CMakeLists.txt` — added bidirectional_export_test target
-- Modified `tests/parquet_export_test.cpp` — updated for new 152-column schema
-- Created `tests/bidirectional_export_test.cpp` — export wiring tests T1-T6
+2. **Bidirectional Full-Year Re-Export (EC2)** — 312/312 files exported with bidirectional labels (152-column schema), 0 failures. S3: `s3://kenoma-labs-research/results/bidirectional-reexport/`. Run ID: `cloud-20260225T223324Z-9de47093`. ~10 min, ~$0.10.
 
-**Key files:**
-- Spec: `.kit/docs/bidirectional-export-wiring.md`
-- Tool: `tools/bar_feature_export.cpp`
-- Tests: `tests/bidirectional_export_test.cpp`, `tests/parquet_export_test.cpp`
-- CMake: `CMakeLists.txt`
+3. **XGBoost Hyperparameter Tuning — REFUTED (Outcome C)** — Accuracy is a 0.33pp plateau (64 configs, std=0.0006). Feature set is the binding constraint, not hyperparameters.
 
-**Exit criteria (from spec):**
-- [x] `bar_feature_export` defaults to bidirectional labels
-- [x] 3 new Parquet columns present in output schema
-- [x] `--legacy-labels` flag produces old-style 149-column output
-- [x] All tests T1-T6 pass
-- [x] No regression on existing bar_feature_export_test tests
-- [x] No regression on existing triple_barrier_test tests
+4. **Bidirectional Export Wiring TDD (PR #27)** — `bar_feature_export` defaults to bidirectional labels. 152-column Parquet schema. `--legacy-labels` flag.
 
-### Prior Completed: Bidirectional TB Labels + Oracle Expectancy Params
+5. **Bidirectional TB Labels TDD (PR #26)** — `compute_bidirectional_tb_label()` with independent long/short races.
 
-- `compute_bidirectional_tb_label()` in `triple_barrier.hpp` with independent long/short race evaluation. Tests T1-T10 pass. Spec: `.kit/docs/bidirectional-label-export.md`.
-- `oracle_expectancy` CLI parameterized (`--target/--stop/--take-profit/--output/--help`). 49 tests. Spec: `.kit/docs/oracle-expectancy-params.md`.
+### Next: Label Design Sensitivity (HIGHEST PRIORITY — FULLY UNBLOCKED)
 
-### Next Steps
+**Spec:** `.kit/experiments/label-design-sensitivity.md`
+**Branch:** `experiment/label-design-sensitivity`
+**Compute:** EC2 (oracle sweep + re-export on raw MBO data) + Local (GBT training on C++-produced Parquet)
 
-1. **Re-export full-year data with bidirectional labels** — run `bar_feature_export` on 251 days with new 152-column schema on EC2. This produces updated Parquet for downstream experiments.
-2. **Label design sensitivity experiment** — test wider target (15 ticks) / narrower stop (3 ticks). Requires bidirectional full-year export. Spec: `.kit/experiments/label-design-sensitivity.md`.
-3. **XGBoost hyperparameter tuning** — default params never optimized. GBT shows Q1-Q2 positive expectancy.
-4. **Regime-conditional trading** — Q1-Q2 only strategy.
+Oracle heatmap sweep (144 geometries on 16×9 target×stop grid) using C++ `oracle_expectancy` on raw MBO data, then re-export Parquet with `bar_feature_export --target T --stop S` for top geometries, then GBT training on pre-computed Parquet.
 
-### Background: CNN Line Closed
+**Policy:** Python NEVER computes labels. All label/feature computation uses C++ binaries on raw .dbn.zst. Python only loads pre-computed Parquet for model training. (Spec rewritten 2026-02-25.)
 
-The CNN spatial signal on order book snapshots is **real and reproducible** (R²=0.089, 3 independent reproductions). But end-to-end CNN classification (Outcome D) showed GBT-only beats CNN by 5.9pp accuracy. CNN line is permanently closed for classification.
+**All prerequisites DONE:**
+- Oracle CLI params (`--target/--stop`) — DONE
+- Bidirectional TB labels — DONE (PR #26)
+- Bidirectional export wiring — DONE (PR #27)
+- Full-year re-export (312 files) — DONE (S3)
+- `bar_feature_export --target/--stop` flags — **DONE** (spec: `.kit/docs/bar-feature-export-geometry.md`)
+
+### After That
+
+1. **Regime-conditional trading** — Q1-Q2 only strategy.
+2. **Tick_100 multi-seed replication** — low priority.
+
+### Background: Key Verdicts
+
+- **CNN line CLOSED** for classification (GBT beats CNN by 5.9pp accuracy).
+- **XGBoost tuning EXHAUSTED** — 0.33pp plateau. Feature set is the constraint.
+- **Oracle edge EXISTS** — $4.00/trade at 10:5 geometry (long-perspective; will be lower bidirectional).
+- **GBT Q1-Q2 marginally profitable** (+$0.003, +$0.029) under base costs.
 
 ---
 
@@ -74,12 +75,13 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 
 ## Project Status
 
-**30+ phases complete (13 engineering + 17 research). Branch: `tdd/bidirectional-label-export`. 1144+ unit tests registered. Bidirectional export wiring COMPLETE.**
+**30+ phases complete (14 engineering + 17 research). Branch: `main`. 1144+ unit tests registered. COMPUTE_TARGET=local.**
 
 ### What's Built
 - **C++20 data pipeline**: Bar construction, order book replay, multi-day backtest, feature computation/export, oracle expectancy, Parquet export, bidirectional TB labels. 1144+ unit tests, 22 integration tests.
 - **Parquet schema**: 152 columns (149 original + `tb_both_triggered`, `tb_long_triggered`, `tb_short_triggered`). `--legacy-labels` flag for 149-column backward compat.
-- **Full-year dataset**: 251 Parquet files (time_5s bars, 1,160,150 bars, zstd compression). Stored in S3 artifact store. **Needs re-export with 152-column schema.**
+- **Bidirectional dataset**: 312 Parquet files (152-col), S3 backed. Bidirectional re-export DONE.
+- **Full-year dataset**: 251 Parquet files (149-col, time_5s bars, 1,160,150 bars, zstd compression). S3 artifact store.
 - **Cloud pipeline**: Docker image in ECR, EBS snapshot with 49GB MBO data, IAM profile. Verified E2E.
 - **Parallel batch dispatch**: `cloud-run batch run` launches N experiments in parallel on separate EC2 instances.
 
@@ -96,7 +98,9 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 | 9B→9D | Normalization root cause | R²: -0.002 → 0.089 | TICK_SIZE + per-day z-score required |
 | **9E** | **Pipeline bottleneck** | **exp=-$0.37/trade** | **Regression→classification gap is the limit** |
 | **10** | **E2E CNN classification** | **GBT wins by 5.9pp** | **CNN line closed for classification** |
+| **XGB Tune** | **Accuracy plateau** | **0.33pp span, 64 configs** | **Feature set is binding constraint** |
 | FYE | Full-year export | 251 days, 1.16M bars | 13× more data available |
+| Bidir-Export | Re-export complete | 312/312 files, 152-col | Label design sensitivity unblocked |
 
 ---
 
@@ -106,8 +110,8 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 2. **`CLAUDE.md`** — full protocol, absolute rules, current state, institutional memory
 3. **`.kit/RESEARCH_LOG.md`** — cumulative findings from all 12+ experiments
 4. **`.kit/QUESTIONS.md`** — open and answered research questions
-5. **`.kit/docs/bidirectional-export-wiring.md`** — last completed TDD spec
+5. **`.kit/experiments/label-design-sensitivity.md`** — next experiment spec
 
 ---
 
-Updated: 2026-02-25. Next action: re-export full-year data with 152-column bidirectional schema, then label design sensitivity experiment.
+Updated: 2026-02-25. Next action: label design sensitivity experiment (all prerequisites done).

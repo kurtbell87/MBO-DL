@@ -13,6 +13,8 @@ WHEN WORKING FROM A PROVIDED SPEC ALWAYS REFER TO THE  ## Exit Criteria SECTION 
 5. **ALWAYS delegate through kit phases.** C++ work → `.kit/tdd.sh` (red/green/refactor/ship). Python experiments → `.kit/experiment.sh` (survey/frame/run/read). Math → `.kit/math.sh`.
 6. **Your only tools are:** MCP tools (`kit.tdd`, `kit.research_cycle`, `kit.research_full`, `kit.research_program`, `kit.math`, `kit.status`, `kit.runs`, `kit.capsule`, `kit.research_status`), bash fallbacks (`source .orchestration-kit.env`, `.kit/tdd.sh`, `.kit/experiment.sh`, `.kit/math.sh`, `orchestration-kit/tools/*`), reading/writing state `.md` files, and checking exit codes.
 7. **Exit-Criteria in Specs are 1st Class Citizens**, you must always cross off ALL exit-criteria as they are completed and include them in your final report 
+8. **Python NEVER computes labels, features, or triple-barrier calculations.** All label/feature computation uses C++ binaries (`bar_feature_export`, `oracle_expectancy`) operating on raw `.dbn.zst` MBO data. Python is permitted ONLY for: (1) thin wrappers that call C++ binaries, (2) model training (XGBoost, PyTorch), (3) loading/analyzing pre-computed Parquet data, (4) validation comparisons against C++ output.
+
 **If you catch yourself about to grep a source file, write a line of code, or run a test — STOP. That is a protocol violation. Delegate to a kit phase instead.**
 
 ## Compute Execution — Cost-Aware Tiered Strategy
@@ -472,9 +474,13 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-25, Bidirectional Export Wiring — COMPLETE)
+## Current State (updated 2026-02-25, bar-feature-export-geometry TDD — COMPLETE)
 
-**Bidirectional export wiring — COMPLETE.** `bar_feature_export` now defaults to bidirectional triple barrier labels via `compute_bidirectional_tb_label()`. Parquet schema expanded 149 → 152 columns with `tb_both_triggered`, `tb_long_triggered`, `tb_short_triggered`. `--legacy-labels` flag restores old 149-column output. Tests T1-T6 pass. Spec: `.kit/docs/bidirectional-export-wiring.md`. Branch: `tdd/bidirectional-label-export`. Changed: `CMakeLists.txt`, `tests/parquet_export_test.cpp`, `tools/bar_feature_export.cpp`. New: `tests/bidirectional_export_test.cpp`.
+**bar_feature_export --target/--stop CLI flags — COMPLETE.** `bar_feature_export` now accepts `--target <ticks>` and `--stop <ticks>` CLI flags to vary triple barrier geometry per-export. Defaults (10, 5) produce identical output to prior binary. Invalid params (target<=0, stop<=0, target<=stop) rejected with clear error. Works with `--legacy-labels`. Spec: `.kit/docs/bar-feature-export-geometry.md`. **All prerequisites for label-design-sensitivity experiment are now DONE.**
+
+**Bidirectional full-year re-export — COMPLETE (prior cycle).** 312/312 files exported on EC2 (c5.2xlarge, ~10 min, ~$0.10). 152-column Parquet with bidirectional labels. Results in S3: `s3://kenoma-labs-research/results/bidirectional-reexport/`. Docker image `mbo-dl:66bbf9e`. Run ID: `cloud-20260225T223324Z-9de47093`. Note: 312 = all .dbn.zst files; downstream experiments filter to ~251 RTH days. Label distribution validation pending.
+
+**Bidirectional export wiring — COMPLETE (prior cycle).** `bar_feature_export` now defaults to bidirectional triple barrier labels via `compute_bidirectional_tb_label()`. Parquet schema expanded 149 → 152 columns with `tb_both_triggered`, `tb_long_triggered`, `tb_short_triggered`. `--legacy-labels` flag restores old 149-column output. Tests T1-T6 pass. PR #27.
 
 **Bidirectional triple barrier labels — COMPLETE (prior cycle).** Added `compute_bidirectional_tb_label()` to `triple_barrier.hpp` with independent long/short race evaluation. Tests T1-T10 pass. Spec: `.kit/docs/bidirectional-label-export.md`.
 
@@ -556,16 +562,15 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | **7-params** | **`.kit/docs/oracle-expectancy-params.md`** | **TDD** | **Done** — CLI `--target/--stop/--take-profit/--output/--help` flags |
 | **Bidir-TB** | **`.kit/docs/bidirectional-label-export.md`** | **TDD** | **Done** — bidirectional triple barrier labels (independent long/short races) |
 | **Bidir-Wire** | **`.kit/docs/bidirectional-export-wiring.md`** | **TDD** | **Done** — wired into bar_feature_export, 3 new Parquet columns, --legacy-labels flag |
+| **Geom-CLI** | **`.kit/docs/bar-feature-export-geometry.md`** | **TDD** | **Done** — `--target`/`--stop` CLI flags for variable barrier geometry |
 
 - **Build:** Green.
-- **Tests:** 1144+ unit tests registered (label-exclude integration). Bidirectional TB tests in `bidirectional_tb_test.cpp`, export wiring tests in `bidirectional_export_test.cpp`. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
+- **Tests:** 1144+ unit tests registered (label-exclude integration). Geometry CLI tests in `bar_feature_export_geometry_test.cpp`. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
 - **Corrected Hybrid Model COMPLETE (2026-02-19):** CNN normalization fix verified (3rd independent reproduction). R²=0.089 with proper validation. But end-to-end pipeline not economically viable: expectancy=-$0.37/trade (base), PF=0.924. Breakeven RT=$3.37. Hybrid outperforms GBT-only but delta too small to flip sign.
 - **Next task options (in priority order):**
-  1. **Re-export full-year data with bidirectional labels** — run `bar_feature_export` on 251 days with new 152-column schema (EC2). Produces updated Parquet for label-design-sensitivity.
-  2. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks). Requires bidirectional full-year export. Spec: `.kit/experiments/label-design-sensitivity.md`.
-  3. **XGBoost hyperparameter tuning on full-year data** — default params from 9B never optimized. GBT already shows Q1-Q2 positive expectancy (+$0.003, +$0.029) with default hyperparams.
-  4. **Regime-conditional trading** — Q1-Q2 only strategy.
-  5. **CNN line CLOSED** — do not revisit CNN for classification.
+  1. **Label design sensitivity** — oracle heatmap sweep (144 geometries) + GBT training on top-3. All prerequisites DONE (--target/--stop CLI, bidirectional re-export, oracle CLI params). Spec: `.kit/experiments/label-design-sensitivity.md`. **FULLY UNBLOCKED.**
+  2. **Regime-conditional trading** — Q1-Q2 only strategy.
+  3. **CNN line CLOSED** — do not revisit CNN for classification.
 - **Volume bars confirmed genuine** (2026-02-19): R1 metrics show bar_count_cv=9-10% for vol_50/100/200. R4b volume_100 null result is valid.
 - **R3b-genuine tick bars COMPLETE** (2026-02-19): tick_100 R²=0.124 (Δ+0.035 vs 0.089), inverted-U curve, but p=0.21 — statistically fragile, driven by fold 5 anomaly.

@@ -4,9 +4,11 @@
 **Priority:** P1 — orthogonal to model tuning; geometry determines the game the model plays
 **Parent:** Oracle Expectancy (R7), XGBoost Hyperparameter Tuning (Outcome C)
 **Depends on:**
-1. oracle-expectancy-params TDD (adds `--target`/`--stop` CLI flags) — IN PROGRESS
-2. bidirectional-label-export TDD (fixes long-perspective-only labeling flaw) — SPEC WRITTEN
-3. Full-year Parquet re-export with corrected bidirectional labels
+1. oracle-expectancy-params TDD (adds `--target`/`--stop` CLI flags) — DONE
+2. bidirectional-label-export TDD (fixes long-perspective-only labeling flaw) — DONE (PR #26)
+3. bidirectional-export-wiring TDD (wires into bar_feature_export) — DONE (PR #27)
+4. Full-year Parquet re-export with bidirectional labels — DONE (312/312 files, S3)
+5. **bar-feature-export-geometry TDD** (adds `--target`/`--stop` to `bar_feature_export`) — **REQUIRED for Phase 1 re-export**
 
 ---
 
@@ -61,7 +63,10 @@ Combined metrics:
 - Band C: Last 30 min (15:00–15:30 ET) — close
 - Band D: Full session (all bars)
 
-**Triple-barrier relabeling from Parquet:** Use the `close_mid` price column from the exported Parquet to recompute labels for each geometry. Same logic as `triple_barrier.hpp`: scan forward from each bar, check if price hits target (upper) or stop (lower) first, with volume (500) and time (300s) expiry barriers. At expiry, sign(return) if |return| >= 2 ticks, else HOLD.
+**Label computation uses C++ tools on raw MBO data (MANDATORY — Python NEVER computes labels):**
+- Phase 0 oracle sweep: `oracle_expectancy --target T --stop S --output /work/results/oracle_T_S.json` for each geometry (runs on EC2 with EBS-mounted .dbn.zst data, ~5s per geometry, 144 total)
+- Phase 1 GBT training: `bar_feature_export --bar-type time --bar-param 5 --target T --stop S --output <path>.parquet` for each top geometry + baseline (requires TDD: `bar-feature-export-geometry.md`)
+- Python loads pre-computed Parquet for model training ONLY — no label recomputation
 
 ### Phase 1: Model Training on Top Geometries (Data-Driven Selection)
 
@@ -82,7 +87,7 @@ Plus include **baseline (10:5)** as control = 4 total geometries for model train
 | Bar type | time_5s | Locked since R1/R6 |
 | CV scheme | CPCV (N=10, k=2, 45 splits) | Same as prior experiments |
 | Dev/holdout split | Days 1-201 / 202-251 | Same as prior experiments |
-| Data | Full-year Parquet (255MB, 1.16M bars) | Same dataset |
+| Data | Raw MBO .dbn.zst (49GB, 312 files on EBS) for C++ label computation; C++-produced Parquet for Python model training | C++ is canonical source for all labels/features |
 
 ## Metrics (ALL must be reported)
 
@@ -159,23 +164,25 @@ OUTCOME D — SC-4 passes but only for time Band A (opening range):
 
 ## Full Protocol
 
-### Phase 0: Oracle Ceiling Heatmap
+### Phase 0: Oracle Ceiling Heatmap (EC2 — C++ `oracle_expectancy`)
 
-1. Load full-year Parquet (`close_mid` prices, timestamps).
-2. For each (target, stop) in the 16×9 grid:
-   a. Compute triple-barrier labels from `close_mid` price series (same logic as `triple_barrier.hpp`).
-   b. Compute oracle stats: WR, PF, net expectancy (accounting for $3.74 RT), trade count, class distribution.
-3. Repeat with time-of-day filtering for Bands A, B, C.
-4. Produce heatmaps and identify top-3 geometries by `geometry_score`.
-5. **Gate:** If no geometry has oracle net expectancy > $5.00/trade, STOP. Report Outcome C.
+1. For each (target, stop) in the 16×9 grid (144 combinations):
+   a. Run `oracle_expectancy --target T --stop S --output /work/results/oracle_T_S.json` on raw .dbn.zst files (EBS-mounted at `/data/GLBX-*/`). Uses 20 stratified days per geometry.
+   b. Oracle output includes: WR, PF, net expectancy, trade count, class distribution, per-direction metrics.
+2. Python orchestration script on EC2 loops over geometries, calls `oracle_expectancy` for each. ~144 × 5s = ~12 min.
+3. Time-of-day filtering: if `oracle_expectancy` supports time bands, use them; otherwise apply time filters in the Python analysis phase on the oracle JSON outputs.
+4. Upload all 144 JSON result files to S3.
+5. Python (local) loads the 144 JSON files, produces heatmaps, identifies top-3 geometries by `geometry_score`.
+6. **Gate:** If no geometry has oracle net expectancy > $5.00/trade, STOP. Report Outcome C.
 
-### Phase 1: GBT Training on Top Geometries
+### Phase 1: GBT Training on Top Geometries (EC2 re-export + local training)
 
 For each of 4 geometries (top-3 from Phase 0 + baseline 10:5):
-1. Re-label bars with the selected geometry's triple-barrier parameters.
-2. Train XGBoost with tuned params (max_depth=6, lr=0.0134, min_child_weight=20, subsample=0.561, colsample=0.748, reg_alpha=0.0014, reg_lambda=6.586).
-3. CPCV (N=10, k=2, 45 splits) on dev set.
-4. Record all Phase 1 metrics.
+1. **Re-export with C++ (EC2):** Run `bar_feature_export --bar-type time --bar-param 5 --target T --stop S --output /work/results/geom_T_S/` on all 251 RTH days. Raw .dbn.zst on EBS. ~4 × 251 = 1,004 runs × ~2s = ~35 min. Upload Parquet to S3.
+2. **Download Parquet (local):** Pull C++-produced Parquet from S3.
+3. **Train XGBoost (local, Python):** Load pre-computed Parquet (Python ONLY loads data, never recomputes labels). Train with tuned params (max_depth=6, lr=0.0134, min_child_weight=20, subsample=0.561, colsample=0.748, reg_alpha=0.0014, reg_lambda=6.586).
+4. CPCV (N=10, k=2, 45 splits) on dev set.
+5. Record all Phase 1 metrics.
 
 ### Phase 2: Holdout Evaluation
 
@@ -208,14 +215,17 @@ parallelizable: true
 memory_gb: 4
 gpu_type: none
 estimated_wall_hours: 2.0
+ec2_phases: [0, 1-export]  # Oracle sweep + Parquet re-export need raw MBO data on EBS
+local_phases: [1-train, 2, 3]  # GBT training + analysis on pre-computed Parquet
 ```
 
 **Breakdown:**
-- Phase 0 (oracle heatmap): ~20-30 min — 144 triple-barrier sweeps on 1.16M bars, vectorizable in numpy
-- Phase 1 (GBT × 4 geometries): ~12 min per geometry CPCV × 4 = ~48 min
-- Phase 2 (holdout): ~5 min
-- Phase 3 (analysis): ~5 min
-- Total: ~90 min serial
+- Phase 0 (oracle sweep, EC2): ~12 min — 144 `oracle_expectancy` C++ runs on raw MBO data (~5s each)
+- Phase 1 re-export (EC2): ~35 min — 1,004 `bar_feature_export` C++ runs on raw MBO data (~2s each)
+- Phase 1 GBT training (local): ~12 min per geometry CPCV × 4 = ~48 min
+- Phase 2 (holdout, local): ~5 min
+- Phase 3 (analysis, local): ~5 min
+- Total: ~50 min EC2 (c5.2xlarge, ~$0.50) + ~60 min local
 
 ## Abort Criteria
 
@@ -234,7 +244,7 @@ estimated_wall_hours: 2.0
 - Short recall will drop (fewer genuine short signals exist)
 - "Both-triggered" frequency provides a free volatility regime indicator
 
-**The full-year Parquet must be re-exported with bidirectional labels BEFORE this experiment runs.** Running the oracle heatmap on flawed labels wastes compute and produces misleading results.
+**The full-year Parquet has been re-exported with bidirectional labels (2026-02-25).** 312/312 files, 152-column schema, S3: `s3://kenoma-labs-research/results/bidirectional-reexport/`. This experiment is UNBLOCKED.
 
 ## Confounds to Watch For
 
