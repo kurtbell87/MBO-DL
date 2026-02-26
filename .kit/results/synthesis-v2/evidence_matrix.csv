@@ -1,0 +1,24 @@
+experiment,verdict,q1_go_nogo,q2_next_experiment,q3_architecture,q4_eliminated,q5_limitations
+R1-subordination-test,REFUTED,0 (time bars adequate),Closes event-bar-first path,time_5s canonical bar type,Event-driven bars (subordination theory),In-sample AR R2 inflated
+R2-info-decomposition,FEATURES SUFFICIENT,0 (features sufficient),Skip all encoders,Book snapshot = sufficient statistic; GBT baseline,Message encoder; temporal lookback,500-event truncation cap
+R3-book-encoder-bias,CONFIRMED,+ (CNN R2=0.084 proper regression),Led to hybrid chain (9B-9E),CNN best for regression; non-viable for classification,N/A,Leakage: 0.132->0.084 (36% inflation)
+R4-temporal-predictability,REFUTED,0 (closes temporal path),Redirect resources from temporal,Drop SSM/temporal encoder permanently,All temporal features (time_5s),36 configs x 4 horizons; thorough
+R4b-temporal-event-bars,MARGINAL (redundant),0,Gap closure,Dollar_25k 140ms signal (non-actionable HFT),Temporal for volume/dollar bars,Dollar sub-second = HFT microstructure
+R4c-temporal-completion,CONFIRMED (null),0,Gap closure,No extended-horizon temporal signal,Tick_50/100/250 temporal; extended horizons h=200-1000,Super-linear R2 degradation with horizon
+R4d-temporal-actionable,CONFIRMED (null),0,Permanently closes R4 line,Calibration table (10 thresholds); no actionable temporal,Actionable-timescale temporal (7s-300s),SC6 expected failure at zero signal
+R6-synthesis-v1,CONDITIONAL GO,+ (CONDITIONAL GO),Led to 9B hybrid training,CNN+GBT hybrid (since revised to GBT-only),Initial closed lines compiled,Pre-tuning; pre-label-design
+R7-oracle-expectancy,GO,++ (oracle $4.00/trade; edge exists),Confirms oracle profitability,TB strictly superior to first-to-hit,N/A,19-day subsample; per-quarter stable
+9B-hybrid-model-training,REFUTED,- (CNN R2=-0.002),Led to CNN debug chain (9C/9D/9E),Pipeline broken (normalization),N/A (pipeline failure not architecture),Missing TICK_SIZE division
+9C-cnn-reproduction,REFUTED,0 (diagnostic),Narrowed root cause to normalization,Protocol deviations NOT root cause,"3 deviations" hypothesis,MVE gate saved compute
+9D-pipeline-comparison,Step1 CONFIRMED / Step2 REFUTED,0 (diagnostic),Identified normalization + leakage root cause,Data byte-identical between R3 and 9B,"Python vs C++ pipeline" hypothesis,R2 inflation: 0.132->0.084 from leakage
+9E-hybrid-corrected,REFUTED (Outcome B),- (exp -$0.37/trade),Closes hybrid path; redirect to GBT-only,CNN denoiser (16d embed); volatility_50 dominates,CNN+GBT hybrid for trading,19-day subsample
+R3b-original-event-bar-cnn,INCONCLUSIVE,0 (voided by bar defect),Led to TB-Fix TDD cycle,Results void (tick bars were time bars),All pre-fix tick bar results,Bar construction defect (counting snapshots)
+R3b-genuine-tick-bars,CONFIRMED (low confidence),+ weak (R2=0.124 but p=0.21),Not actionable without multi-seed (low priority),tick_100 R2=0.124; inverted-U curve,N/A,Single-fold driven (fold 5); p=0.21
+full-year-export,CONFIRMED,+ (infrastructure confirmed),Unblocks all full-year experiments,"251d; 1.16M bars; 149 cols; production-ready",N/A,10/10 SC pass; 0 duplicates
+e2e-cnn-classification,REFUTED (Outcome D),-- for CNN / + for GBT,Closes CNN; focus GBT improvements,"GBT acc 0.449; CNN 0.390 (-5.9pp); Q1-Q2 marginal positive",CNN for classification permanently,PBO=0.222; WF exp -$0.267 worse than CPCV
+xgb-hyperparam-tuning,REFUTED (Outcome C),mixed (plateau + near-breakeven),Tuning exhausted; geometry is next lever,"0.33pp range; features binding; volatility_50 49.7%",Hyperparameter tuning as accuracy lever,"WF vs CPCV: -$0.140 vs -$0.001; long recall 0.149"
+label-design-sensitivity,REFUTED (Outcome C),++ (BEV WR 33.3% at 15:3),Phase 1 training = #1 priority,"123 geometries mapped; BEV WR is correct metric",Oracle net exp as viability metric,"Abort miscalibrated ($5.00 oracle); accuracy transfer untested"
+bidir-reexport,CONFIRMED (infra),0 (infrastructure),Unblocks bidirectional label experiments,152 columns (3 new: tb_both/long/short_triggered),N/A,312/312 files exported
+TB-Fix,DONE (infra),0 (infrastructure),Unblocks genuine tick bar experiments,bar_feature_export counts trades now,All pre-fix tick bar results,N/A
+oracle-params-CLI,DONE (infra),0 (infrastructure),Unblocks geometry sweep,--target/--stop/--take-profit/--output flags,N/A,N/A
+geometry-CLI,DONE (infra),0 (infrastructure),Unblocks per-geometry bar export,--target/--stop on bar_feature_export,N/A,N/A

@@ -18,34 +18,29 @@
 
 ## TL;DR — Where We Are and What To Do
 
-### Just Completed (2026-02-25)
+### Just Completed (2026-02-26)
 
-1. **bar_feature_export --target/--stop CLI flags (TDD)** — `bar_feature_export` now accepts `--target <ticks>` and `--stop <ticks>` to vary triple barrier geometry per-export. Defaults (10, 5) produce identical output to prior binary. Invalid params rejected. Works with `--legacy-labels`. Spec: `.kit/docs/bar-feature-export-geometry.md`. Files changed: `tools/bar_feature_export.cpp`, `CMakeLists.txt`. New test: `tests/bar_feature_export_geometry_test.cpp`.
+1. **Label Design Sensitivity — REFUTED (Outcome C)** — Oracle heatmap sweep across 123 valid geometries (16×9 grid). **Peak oracle net expectancy: $4.13/trade at (16:10) — below $5.00 threshold.** Abort triggered at Phase 0 per pre-committed criteria. No model training performed. **Critical caveat:** the $5.00 abort threshold may have been miscalibrated — multiple geometries have breakeven WRs of 29-38%, well below model's ~45% accuracy. Phase 1 training would have been informative. PR #29.
 
-2. **Bidirectional Full-Year Re-Export (EC2)** — 312/312 files exported with bidirectional labels (152-column schema), 0 failures. S3: `s3://kenoma-labs-research/results/bidirectional-reexport/`. Run ID: `cloud-20260225T223324Z-9de47093`. ~10 min, ~$0.10.
+2. **bar_feature_export --target/--stop CLI flags (TDD)** — `bar_feature_export` now accepts `--target <ticks>` and `--stop <ticks>` to vary triple barrier geometry per-export. 47 tests pass. PR #28.
 
-3. **XGBoost Hyperparameter Tuning — REFUTED (Outcome C)** — Accuracy is a 0.33pp plateau (64 configs, std=0.0006). Feature set is the binding constraint, not hyperparameters.
+3. **Policy fix** — Added CLAUDE.md rule #8: Python NEVER computes labels/features. Experiment spec rewritten to use C++ tools exclusively. Reexport diagnosis: EC2 14KB files were script/Docker path issue, not code bug (local binary produces 17MB correctly).
 
-4. **Bidirectional Export Wiring TDD (PR #27)** — `bar_feature_export` defaults to bidirectional labels. 152-column Parquet schema. `--legacy-labels` flag.
+4. **Bidirectional Full-Year Re-Export (EC2)** — 312/312 files exported with bidirectional labels (152-column schema).
 
-5. **Bidirectional TB Labels TDD (PR #26)** — `compute_bidirectional_tb_label()` with independent long/short races.
+### Next: Decide Follow-Up
 
-### Next: Label Design Sensitivity (HIGHEST PRIORITY — FULLY UNBLOCKED)
+**The label-design-sensitivity experiment's Outcome C verdict has a methodological caveat.** The $5.00/trade oracle ceiling threshold was meant to ensure sufficient margin, but the payoff structure changes are what matter:
 
-**Spec:** `.kit/experiments/label-design-sensitivity.md`
-**Branch:** `experiment/label-design-sensitivity`
-**Compute:** EC2 (oracle sweep + re-export on raw MBO data) + Local (GBT training on C++-produced Parquet)
+| Geometry | Breakeven WR | Oracle Margin | Model Accuracy Needed |
+|----------|-------------|---------------|----------------------|
+| 10:5 (current) | 53.3% | +11.0pp | 55.3% (model achieves ~45%) |
+| 15:3 | 33.3% | — | 35.3% (model may achieve this) |
+| 20:5 | 32.0% | — | 34.0% (model may achieve this) |
 
-Oracle heatmap sweep (144 geometries on 16×9 target×stop grid) using C++ `oracle_expectancy` on raw MBO data, then re-export Parquet with `bar_feature_export --target T --stop S` for top geometries, then GBT training on pre-computed Parquet.
-
-**Policy:** Python NEVER computes labels. All label/feature computation uses C++ binaries on raw .dbn.zst. Python only loads pre-computed Parquet for model training. (Spec rewritten 2026-02-25.)
-
-**All prerequisites DONE:**
-- Oracle CLI params (`--target/--stop`) — DONE
-- Bidirectional TB labels — DONE (PR #26)
-- Bidirectional export wiring — DONE (PR #27)
-- Full-year re-export (312 files) — DONE (S3)
-- `bar_feature_export --target/--stop` flags — **DONE** (spec: `.kit/docs/bar-feature-export-geometry.md`)
+**Option A:** Re-run with relaxed criteria (oracle > $3/trade), proceed to Phase 1 training on top geometries.
+**Option B:** Accept Outcome C and pivot to regime-conditional trading (Q1-Q2 only).
+**Option C:** Accept no-edge verdict for MES 5-second bars.
 
 ### After That
 

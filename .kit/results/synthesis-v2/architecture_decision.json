@@ -1,0 +1,83 @@
+{
+  "timestamp": "2026-02-26T06:30:00Z",
+  "synthesis_version": "v2",
+  "architecture_recommendation": "gbt_only_20_features",
+  "components": {
+    "model": {
+      "type": "XGBoost",
+      "status": "canonical",
+      "params": {
+        "max_depth": 6,
+        "learning_rate": 0.0134,
+        "min_child_weight": 20,
+        "subsample": 0.561,
+        "colsample_bytree": 0.748,
+        "reg_alpha": 0.00137,
+        "reg_lambda": 6.586,
+        "n_estimators": "early_stop_~385"
+      },
+      "evidence": "xgb-tuning: 0.33pp plateau confirms near-optimal"
+    },
+    "features": {
+      "count": 20,
+      "type": "hand_crafted",
+      "top_feature": "volatility_50",
+      "top_feature_gain_share": 0.497,
+      "status": "binding_constraint",
+      "evidence": "xgb-tuning: feature set determines accuracy, not hyperparameters"
+    },
+    "bar_type": {
+      "type": "time_5s",
+      "status": "canonical",
+      "evidence": "R1: subordination refuted; time bars simplest and equivalent"
+    },
+    "input": {
+      "type": "book_snapshot_at_bar_close",
+      "status": "sufficient_statistic",
+      "evidence": "R2: 0/40 dual threshold passes; message/temporal add nothing"
+    },
+    "temporal_encoder": {
+      "type": "none",
+      "status": "permanently_dropped",
+      "evidence": "R4 chain: 0/168+ dual threshold passes across 7 bar types, 0.14s-300s"
+    },
+    "message_encoder": {
+      "type": "none",
+      "status": "permanently_dropped",
+      "evidence": "R2: LSTM and Transformer both worse than book MLP"
+    },
+    "cnn_spatial_encoder": {
+      "type": "none_for_classification",
+      "regression_r2": 0.084,
+      "classification_status": "permanently_closed",
+      "evidence": "e2e-cnn: 5.9pp worse than GBT; 9E: exp -$0.37/trade"
+    },
+    "evaluation": {
+      "primary": "walk_forward_expectancy",
+      "secondary": "cpcv_45_splits_10_group_k2",
+      "model_selection": "cpcv",
+      "deployment_estimate": "walk_forward",
+      "evidence": "xgb-tuning: CPCV -$0.001 vs WF -$0.140"
+    },
+    "label": {
+      "current": "3_class_triple_barrier_10_5",
+      "next_experiment": "geometry_sweep_10_5_15_3_19_7_20_3",
+      "status": "geometry_is_primary_lever"
+    }
+  },
+  "closed_lines": [
+    "temporal_encoder",
+    "message_encoder",
+    "event_driven_bars",
+    "cnn_classification",
+    "cnn_gbt_hybrid",
+    "xgb_hyperparameter_tuning",
+    "oracle_net_exp_as_viability_metric",
+    "python_vs_cpp_pipeline"
+  ],
+  "prior_architecture": {
+    "version": "R6_synthesis_v1",
+    "recommendation": "cnn_gbt_hybrid",
+    "revision_reason": "CNN classification 5.9pp worse than GBT; spatial signal non-actionable for trading"
+  }
+}

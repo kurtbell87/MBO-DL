@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## synthesis-v2 — CONFIRMED
+**Date:** 2026-02-26
+**Hypothesis:** Comprehensive synthesis of 23 experiments establishes GO status — label geometry training at breakeven-favorable ratios has >50% prior of positive expectancy.
+**Key result:** GO verdict (55-60% prior). Strategic pivot: breakeven WR, not oracle ceiling, is the correct viability metric. At 15:3 geometry, BEV WR = 33.3% — 12pp below model's 45% accuracy. 8 closed lines (CNN, temporal, message, XGB tuning, oracle metric, event bars, pipeline hypothesis, CNN+GBT hybrid). GBT-only on 20 features is canonical architecture.
+**Lesson:** The project was optimizing the wrong variable for 6+ experiments. Oracle net exp ranking inversely correlates with model viability at high ratios. The model doesn't need to improve — the payoff structure needs to change.
+**Next:** Phase 1 label geometry training at 4 geometries (10:5, 15:3, 19:7, 20:3). Resolves the central uncertainty: does accuracy transfer to high-ratio geometries?
+**Details:** `.kit/results/synthesis/analysis.md`, `.kit/results/synthesis-v2/analysis.md`
+
 ## label-design-sensitivity — REFUTED (Outcome C — abort criterion miscalibrated)
 **Date:** 2026-02-26
 **Hypothesis:** Widening target/stop ratio from 2:1 (10:5) to >=3:1 lowers breakeven WR below model's ~45% accuracy, enabling positive expectancy. SC-2 gate: oracle net exp > $5.00/trade.
