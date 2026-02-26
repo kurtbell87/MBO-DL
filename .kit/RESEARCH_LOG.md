@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## 2class-directional — CONFIRMED (with critical PnL model caveat)
+**Date:** 2026-02-26
+**Hypothesis:** Two-stage XGBoost (Stage 1: directional-vs-hold filter, Stage 2: long-vs-short) at 19:7 geometry achieves positive WF expectancy with >10% trade rate.
+**Key result:** All 4 SCs pass. Trade rate 85.2% (301x increase from 3-class's 0.28%). Dir accuracy 50.05% (above 38.4% BEV). Reported expectancy $3.78/trade BUT likely inflated ~8x by PnL model assigning full barrier payoffs to hold-bar trades (44.4% of trades). Corrected estimate ~$0.44/trade ± $0.16 — positive but marginal. 10:5 control matches 3-class baseline (-$0.51 vs -$0.50). Stage 2 at 19:7 learns NO directional features (top-10 all volatility/activity). Direction prediction is essentially a coin flip; economics driven entirely by 2.71:1 payoff ratio.
+**Lesson:** Two-stage decomposition successfully liberates trade volume at wide barriers by removing cross-entropy wrong-direction penalty from Stage 1. Reachability is learnable (58.6% Stage 1 acc). Direction at 19:7 is not (~50%). The favorable payoff ratio, not prediction skill, is the value driver. Hold-bar PnL treatment is the dominant factor in economic results.
+**Next:** (1) Corrected PnL model validation — highest priority, resolves the 8x uncertainty. (2) CPCV with corrected PnL for proper confidence intervals. (3) Stage 1 threshold optimization to reduce label0_hit_rate. (4) Intermediate geometry exploration (14:6, 15:5) for better direction/payoff trade-off.
+**Details:** `.kit/results/2class-directional/analysis.md`
+
 ## label-geometry-1h — INCONCLUSIVE
 **Date:** 2026-02-26
 **Hypothesis:** XGBoost at high-ratio geometries (15:3, 19:7, 20:3) with 1-hour time horizon achieves CPCV directional accuracy > breakeven WR + 2pp, producing positive expectancy.

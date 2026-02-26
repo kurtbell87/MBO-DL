@@ -1,0 +1,432 @@
+{
+  "experiment": "2class-directional",
+  "timestamp": "2026-02-26T20:25:54",
+  "19_7": {
+    "geometry": "19:7",
+    "target": 19,
+    "stop": 7,
+    "bev_wr": 0.384,
+    "two_stage_wf_expectancy": 3.774717324621069,
+    "two_stage_wf_expectancy_std": 0.20885165961652227,
+    "two_stage_dir_accuracy": 0.5004528407575713,
+    "two_stage_dir_accuracy_std": 0.006426204911277584,
+    "two_stage_trade_rate": 0.8518110743722463,
+    "two_stage_trade_rate_std": 0.03954752145125778,
+    "two_stage_label0_hit_rate": 0.44389057472507454,
+    "two_stage_daily_pnl": 8241.162047058819,
+    "stage1_binary_accuracy": 0.5863669550480822,
+    "stage1_precision_directional": 0.5561094252749254,
+    "stage1_recall_directional": 0.9303613020592619,
+    "stage2_binary_accuracy": 0.5038758752979214,
+    "stage2_dir_acc_on_filtered": 0.5004528407575713,
+    "selection_bias_delta": 0.00342303454034996,
+    "stage1_feature_importance": [
+      [
+        "message_rate",
+        462.73187764485675
+      ],
+      [
+        "volatility_50",
+        177.79730478922525
+      ],
+      [
+        "trade_count",
+        94.65786361694336
+      ],
+      [
+        "volatility_20",
+        85.42154312133789
+      ],
+      [
+        "time_sin",
+        51.89908981323242
+      ],
+      [
+        "time_cos",
+        51.81451288859049
+      ],
+      [
+        "minutes_since_open",
+        37.63731320699056
+      ],
+      [
+        "spread",
+        34.13621584574381
+      ],
+      [
+        "high_low_range_50",
+        32.41178194681803
+      ],
+      [
+        "modify_fraction",
+        13.299762090047201
+      ]
+    ],
+    "stage2_feature_importance": [
+      [
+        "volatility_50",
+        52.31597137451172
+      ],
+      [
+        "message_rate",
+        50.1649424235026
+      ],
+      [
+        "minutes_since_open",
+        47.174661000569664
+      ],
+      [
+        "time_sin",
+        42.885789235432945
+      ],
+      [
+        "trade_count",
+        41.61189651489258
+      ],
+      [
+        "time_cos",
+        40.004990895589195
+      ],
+      [
+        "high_low_range_50",
+        31.373327255249023
+      ],
+      [
+        "modify_fraction",
+        29.34039052327474
+      ],
+      [
+        "volatility_20",
+        27.93406359354655
+      ],
+      [
+        "avg_trade_size",
+        21.12936782836914
+      ]
+    ],
+    "cost_sensitivity": {
+      "optimistic": {
+        "mean_expectancy": 5.0247173246210695,
+        "per_fold": [
+          5.260050376449466,
+          5.06162210789688,
+          4.752479489516862
+        ]
+      },
+      "base": {
+        "mean_expectancy": 3.774717324621069,
+        "per_fold": [
+          4.010050376449466,
+          3.81162210789688,
+          3.502479489516862
+        ]
+      },
+      "pessimistic": {
+        "mean_expectancy": 1.2647173246210717,
+        "per_fold": [
+          1.500050376449468,
+          1.3016221078968824,
+          0.9924794895168642
+        ]
+      }
+    },
+    "per_fold": [
+      {
+        "fold": "Fold 1",
+        "n_trades": 109178,
+        "expectancy_base": 4.010050376449466,
+        "directional_accuracy": 0.5076938577369067,
+        "trade_rate": 0.849671706263499,
+        "label0_hit_rate": 0.44494888128561916,
+        "stage1_accuracy": 0.5952699784017279,
+        "stage1_precision": 0.5550511187143808,
+        "stage1_recall": 0.9464768707954782,
+        "stage2_acc_all_dir": 0.5118246757750191,
+        "stage2_acc_filtered": 0.5076938577369067,
+        "selection_bias_delta": 0.004130818038112438
+      },
+      {
+        "fold": "Fold 2",
+        "n_trades": 106713,
+        "expectancy_base": 3.81162210789688,
+        "directional_accuracy": 0.5015883725506733,
+        "trade_rate": 0.8044805827298522,
+        "label0_hit_rate": 0.43824027963487433,
+        "stage1_accuracy": 0.6006860627620378,
+        "stage1_precision": 0.5617597203651257,
+        "stage1_recall": 0.9062367308116922,
+        "stage2_acc_all_dir": 0.5043225707831581,
+        "stage2_acc_filtered": 0.5015883725506733,
+        "selection_bias_delta": 0.0027341982324847747
+      },
+      {
+        "fold": "Fold 3 (holdout)",
+        "n_trades": 114088,
+        "expectancy_base": 3.502479489516862,
+        "directional_accuracy": 0.4920762919851343,
+        "trade_rate": 0.901280934123388,
+        "label0_hit_rate": 0.4484825632547302,
+        "stage1_accuracy": 0.563144823980481,
+        "stage1_precision": 0.5515174367452698,
+        "stage1_recall": 0.9383703045706154,
+        "stage2_acc_all_dir": 0.495480379335587,
+        "stage2_acc_filtered": 0.4920762919851343,
+        "selection_bias_delta": 0.003404087350452667
+      }
+    ],
+    "comparison_3class_delta": {
+      "expectancy_delta": -2.6408826753789314,
+      "trade_rate_delta": 0.8489810743722463,
+      "dir_accuracy_delta": -0.08124715924242865,
+      "three_class_expectancy": 6.4156,
+      "three_class_trade_rate": 0.00283,
+      "three_class_dir_accuracy": 0.5817,
+      "three_class_label0_hit_rate": 0.5978666666666667
+    }
+  },
+  "10_5": {
+    "geometry": "10:5",
+    "target": 10,
+    "stop": 5,
+    "bev_wr": 0.533,
+    "two_stage_wf_expectancy": -0.5134142356850878,
+    "two_stage_wf_expectancy_std": 0.08928055307227128,
+    "two_stage_dir_accuracy": 0.5054179074301287,
+    "two_stage_dir_accuracy_std": 0.004761629497187799,
+    "two_stage_trade_rate": 0.9367599476539447,
+    "two_stage_trade_rate_std": 0.028665828470038627,
+    "two_stage_label0_hit_rate": 0.313005598431292,
+    "two_stage_daily_pnl": -1522.2096470588249,
+    "stage1_binary_accuracy": 0.6895261276348421,
+    "stage1_precision_directional": 0.6869944015687081,
+    "stage1_recall_directional": 0.973991855942784,
+    "stage2_binary_accuracy": 0.5075548415219985,
+    "stage2_dir_acc_on_filtered": 0.5054179074301287,
+    "selection_bias_delta": 0.0021369340918697874,
+    "stage1_feature_importance": [
+      [
+        "volatility_50",
+        184.7346420288086
+      ],
+      [
+        "message_rate",
+        87.64704004923503
+      ],
+      [
+        "volatility_20",
+        64.79377365112305
+      ],
+      [
+        "time_sin",
+        46.26159159342448
+      ],
+      [
+        "time_cos",
+        45.91200637817383
+      ],
+      [
+        "high_low_range_50",
+        40.05907185872396
+      ],
+      [
+        "minutes_since_open",
+        33.36167081197103
+      ],
+      [
+        "trade_count",
+        26.302273750305176
+      ],
+      [
+        "spread",
+        18.65900421142578
+      ],
+      [
+        "weighted_imbalance",
+        11.068417231241861
+      ]
+    ],
+    "stage2_feature_importance": [
+      [
+        "volatility_50",
+        38.940694173177086
+      ],
+      [
+        "high_low_range_50",
+        37.033607482910156
+      ],
+      [
+        "minutes_since_open",
+        31.227733612060547
+      ],
+      [
+        "time_sin",
+        31.046791712443035
+      ],
+      [
+        "time_cos",
+        29.316791534423828
+      ],
+      [
+        "weighted_imbalance",
+        29.06306330362956
+      ],
+      [
+        "message_rate",
+        25.705376307169598
+      ],
+      [
+        "volatility_20",
+        23.718711853027344
+      ],
+      [
+        "trade_count",
+        23.675256729125977
+      ],
+      [
+        "return_20",
+        16.510966300964355
+      ]
+    ],
+    "cost_sensitivity": {
+      "optimistic": {
+        "mean_expectancy": 0.7365857643149122,
+        "per_fold": [
+          0.8220541188745328,
+          0.6133662094066828,
+          0.774336964663521
+        ]
+      },
+      "base": {
+        "mean_expectancy": -0.5134142356850878,
+        "per_fold": [
+          -0.4279458811254673,
+          -0.6366337905933172,
+          -0.475663035336479
+        ]
+      },
+      "pessimistic": {
+        "mean_expectancy": -3.023414235685087,
+        "per_fold": [
+          -2.937945881125467,
+          -3.1466337905933166,
+          -2.9856630353364784
+        ]
+      }
+    },
+    "per_fold": [
+      {
+        "fold": "Fold 1",
+        "n_trades": 147601,
+        "expectancy_base": -0.4279458811254673,
+        "directional_accuracy": 0.5099762196733084,
+        "trade_rate": 0.9233390928725702,
+        "label0_hit_rate": 0.3094786973750076,
+        "stage1_accuracy": 0.6958876889848812,
+        "stage1_precision": 0.6905213026249925,
+        "stage1_recall": 0.9720120381163114,
+        "stage2_acc_all_dir": 0.5126077536532522,
+        "stage2_acc_filtered": 0.5099762196733084,
+        "selection_bias_delta": 0.0026315339799437565
+      },
+      {
+        "fold": "Fold 2",
+        "n_trades": 148639,
+        "expectancy_base": -0.6366337905933172,
+        "directional_accuracy": 0.4988461978350231,
+        "trade_rate": 0.9103417608944225,
+        "label0_hit_rate": 0.30852395107904296,
+        "stage1_accuracy": 0.6951636810231652,
+        "stage1_precision": 0.691476048920957,
+        "stage1_recall": 0.9633117303953338,
+        "stage2_acc_all_dir": 0.5045301360985094,
+        "stage2_acc_filtered": 0.4988461978350231,
+        "selection_bias_delta": 0.005683938263486288
+      },
+      {
+        "fold": "Fold 3 (holdout)",
+        "n_trades": 152194,
+        "expectancy_base": -0.475663035336479,
+        "directional_accuracy": 0.5074313047820544,
+        "trade_rate": 0.9765989891948414,
+        "label0_hit_rate": 0.3210141468398253,
+        "stage1_accuracy": 0.6775270128964797,
+        "stage1_precision": 0.6789858531601747,
+        "stage1_recall": 0.986651799316707,
+        "stage2_acc_all_dir": 0.5055266348142338,
+        "stage2_acc_filtered": 0.5074313047820544,
+        "selection_bias_delta": -0.0019046699678206824
+      }
+    ],
+    "comparison_3class_delta": {
+      "expectancy_delta": -0.014514235685087806,
+      "trade_rate_delta": 0.03285994765394462,
+      "dir_accuracy_delta": -0.0007820925698712733,
+      "three_class_expectancy": -0.4989,
+      "three_class_trade_rate": 0.9039,
+      "three_class_dir_accuracy": 0.5062,
+      "three_class_label0_hit_rate": 0.3083
+    }
+  },
+  "success_criteria": {
+    "SC-1": {
+      "description": "WF expectancy > $0.00 at 19:7 (base)",
+      "pass": true,
+      "value": 3.774717324621069
+    },
+    "SC-2": {
+      "description": "Dir accuracy > 45% at 19:7",
+      "pass": true,
+      "value": 0.5004528407575713
+    },
+    "SC-3": {
+      "description": "Trade rate > 10% at 19:7",
+      "pass": true,
+      "value": 0.8518110743722463
+    },
+    "SC-4": {
+      "description": "label0_hit_rate < 50% at 19:7",
+      "pass": true,
+      "value": 0.44389057472507454
+    }
+  },
+  "sanity_checks": {
+    "SC-S1_19_7": {
+      "description": "Stage 1 acc > 52.6% at 19:7",
+      "pass": true,
+      "value": 0.5863669550480822
+    },
+    "SC-S1_10_5": {
+      "description": "Stage 1 acc > 67.4% at 10:5",
+      "pass": true,
+      "value": 0.6895261276348421
+    },
+    "SC-S2": {
+      "description": "Stage 2 acc > 50% at 10:5",
+      "pass": true,
+      "value": 0.5075548415219985
+    },
+    "SC-S3": {
+      "description": "Per-fold trade count > 100 at 19:7",
+      "pass": true
+    }
+  },
+  "outcome": "A",
+  "outcome_description": "CONFIRMED \u2014 positive expectancy + meaningful trade volume at 19:7",
+  "mve_gates": {
+    "gate1_data": true,
+    "gate2_s1_accuracy": 0.5641084774717062,
+    "gate3_s2_accuracy": 0.4988182338848242,
+    "gate4_combined_trade_rate": 0.8978219090326713,
+    "all_passed": true
+  },
+  "resource_usage": {
+    "wall_clock_seconds": 31.561938047409058,
+    "wall_clock_minutes": 0.526032300790151,
+    "total_training_runs": 14,
+    "gpu_hours": 0,
+    "total_runs": 14
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Executed locally on Apple Silicon. 2 geometries: 19:7 (primary), 10:5 (control). Walk-forward: 3 expanding-window folds. Wall clock: 0.5 minutes. Data from label-geometry-1h Parquet (3600s horizon). Stage 1: binary:logistic (directional vs hold). Stage 2: binary:logistic (long vs short, directional-only training). COMPUTE_TARGET: local."
+}
