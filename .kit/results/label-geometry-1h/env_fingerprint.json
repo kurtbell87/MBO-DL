@@ -1,0 +1,10 @@
+{
+  "python_version": "3.11.14 (main, Jan 27 2026, 23:58:06) [Clang 21.1.4 ]",
+  "seed": 42,
+  "script_sha256": "089d891a3d213631f27f2530bb7d05ed57f003bb034e3c0f2ee980b2246cbc05",
+  "generated_by": "generate_reports.py (post-hoc from metrics.json)",
+  "metrics_sha256": "309450d0f7e8b7cfc0139fbd86bdce898192391c2870ce4a27a772dcd16f6eee",
+  "xgboost_version": "3.2.0",
+  "polars_version": "1.38.1",
+  "numpy_version": "2.4.2"
+}

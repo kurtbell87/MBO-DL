@@ -1,0 +1,1230 @@
+{
+  "experiment": "label-geometry-1h",
+  "timestamp": "2026-02-26T18:47:49",
+  "time_horizon_s": 3600,
+  "volume_horizon": 50000,
+  "geometries": {
+    "10_5": {
+      "target": 10,
+      "stop": 5,
+      "label": "10:5 (control)",
+      "breakeven_wr": 0.5328,
+      "cpcv_accuracy": 0.3839136800763256,
+      "cpcv_accuracy_std": 0.00870745788993646,
+      "cpcv_directional_accuracy": 0.5066828263189117,
+      "cpcv_directional_accuracy_std": 0.003911589941849275,
+      "directional_prediction_rate": 0.9039492557668556,
+      "cpcv_expectancy_base": -0.48969700652040565,
+      "cpcv_expectancy_optimistic": 0.7603029934795943,
+      "cpcv_expectancy_pessimistic": -2.999697006520405,
+      "cpcv_profit_factor": 0.9007466757574158,
+      "breakeven_margin_overall": -0.14888631992367446,
+      "breakeven_margin_directional": -0.026117173681088346,
+      "per_class_recall": {
+        "short": 0.3896234069817534,
+        "hold": 0.18207954049757166,
+        "long": 0.5675489664498237
+      },
+      "top10_features": [
+        [
+          "f11",
+          75.71714197794596
+        ],
+        [
+          "f15",
+          45.1340219285753
+        ],
+        [
+          "f10",
+          28.624679692586263
+        ],
+        [
+          "f17",
+          21.23515264723036
+        ],
+        [
+          "f12",
+          20.112028736538356
+        ],
+        [
+          "f18",
+          19.534156968858507
+        ],
+        [
+          "f19",
+          18.62663985358344
+        ],
+        [
+          "f4",
+          13.786410405900742
+        ],
+        [
+          "f1",
+          10.434137672848172
+        ],
+        [
+          "f0",
+          8.46225848727756
+        ]
+      ],
+      "label0_hit_rate": 0.2935027010345213,
+      "class_distribution": {
+        "-1": 0.332362194543809,
+        "0": 0.32580959358703615,
+        "1": 0.34182821186915485
+      },
+      "total_bars": 1160150,
+      "hold_rate": 0.32580959358703615,
+      "walkforward_mean_accuracy": 0.37669356819321925,
+      "walkforward_mean_directional_accuracy": 0.5061922793621813,
+      "walkforward_mean_expectancy": -0.49889476195910226,
+      "walkforward_per_fold": [
+        {
+          "fold": 0,
+          "name": "Fold 1",
+          "train_days": "1-100",
+          "test_days": "101-150",
+          "accuracy": 0.3892915766738661,
+          "directional_accuracy": 0.5053761176850409,
+          "n_directional_pairs": 142482,
+          "directional_prediction_rate": 0.8812829373650108,
+          "per_class_recall": {
+            "short": 0.4755682051422394,
+            "hold": 0.22742281761227384,
+            "long": 0.4729211628792688
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 0.7358022065945167,
+              "profit_factor": 1.1702058847165728,
+              "n_trades": 142482
+            },
+            "base": {
+              "expectancy": -0.5141977934054833,
+              "profit_factor": 0.8959386062188476,
+              "n_trades": 142482
+            },
+            "pessimistic": {
+              "expectancy": -3.0241977934054827,
+              "profit_factor": 0.5108691025186236,
+              "n_trades": 142482
+            }
+          },
+          "n_estimators_used": 272,
+          "n_train": 462500,
+          "n_test": 231500,
+          "elapsed_s": 5.911888122558594,
+          "label0_hit_rate": 0.3016170221109025
+        },
+        {
+          "fold": 1,
+          "name": "Fold 2",
+          "train_days": "1-150",
+          "test_days": "151-201",
+          "accuracy": 0.39063227882945833,
+          "directional_accuracy": 0.5075845566112984,
+          "n_directional_pairs": 142922,
+          "directional_prediction_rate": 0.8684072333036886,
+          "per_class_recall": {
+            "short": 0.4835239526828312,
+            "hold": 0.24068190150311622,
+            "long": 0.4570088051931358
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 0.7772104364618458,
+              "profit_factor": 1.1805907601456933,
+              "n_trades": 142922
+            },
+            "base": {
+              "expectancy": -0.47278956353815427,
+              "profit_factor": 0.9038895240353103,
+              "n_trades": 142922
+            },
+            "pessimistic": {
+              "expectancy": -2.982789563538154,
+              "profit_factor": 0.5154027594242437,
+              "n_trades": 142922
+            }
+          },
+          "n_estimators_used": 358,
+          "n_train": 694000,
+          "n_test": 236130,
+          "elapsed_s": 9.91311001777649,
+          "label0_hit_rate": 0.30301330849471125
+        },
+        {
+          "fold": 2,
+          "name": "Fold 3 (holdout)",
+          "train_days": "1-201",
+          "test_days": "202-251",
+          "accuracy": 0.3501568490763332,
+          "directional_accuracy": 0.5056161637902044,
+          "n_directional_pairs": 148678,
+          "directional_prediction_rate": 0.9530803415824329,
+          "per_class_recall": {
+            "short": 0.34429390307451796,
+            "hold": 0.06900766604222303,
+            "long": 0.6290374614481308
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 0.7403030710663306,
+              "profit_factor": 1.1713301737217683,
+              "n_trades": 148678
+            },
+            "base": {
+              "expectancy": -0.5096969289336694,
+              "profit_factor": 0.8967993897249449,
+              "n_trades": 148678
+            },
+            "pessimistic": {
+              "expectancy": -3.019696928933669,
+              "profit_factor": 0.5113599259904222,
+              "n_trades": 148678
+            }
+          },
+          "n_estimators_used": 223,
+          "n_train": 930130,
+          "n_test": 229520,
+          "elapsed_s": 8.184868097305298,
+          "label0_hit_rate": 0.3203322499097147
+        }
+      ],
+      "per_direction": {
+        "long": {
+          "n_triggered": 398320,
+          "wr": 0.9956,
+          "expectancy": 8.6777
+        },
+        "short": {
+          "n_triggered": 387338,
+          "wr": 0.9955,
+          "expectancy": 8.6754
+        },
+        "both_triggered_rate": 0.0015
+      },
+      "time_of_day": {
+        "A_opening_range": {
+          "n_bars": 77810,
+          "class_dist": {
+            "-1": 0.35507004241100115,
+            "0": 0.28829199331705435,
+            "+1": 0.3566379642719445
+          },
+          "directional_rate": 0.7117
+        },
+        "B_mid_session": {
+          "n_bars": 902340,
+          "class_dist": {
+            "-1": 0.34898486158210873,
+            "0": 0.29953675997960855,
+            "+1": 0.35147837843828267
+          },
+          "directional_rate": 0.7005
+        },
+        "C_closing": {
+          "n_bars": 90000,
+          "class_dist": {
+            "-1": 0.2857777777777778,
+            "0": 0.3849888888888889,
+            "+1": 0.3292333333333333
+          },
+          "directional_rate": 0.615
+        }
+      },
+      "mean_fit_time_s": 7.41891590224372
+    },
+    "15_3": {
+      "target": 15,
+      "stop": 3,
+      "label": "15:3",
+      "breakeven_wr": 0.3328888888888889,
+      "cpcv_accuracy": 0.6191774131240233,
+      "cpcv_accuracy_std": 0.02080287139475834,
+      "cpcv_directional_accuracy": 0.3423571579169302,
+      "cpcv_directional_accuracy_std": 0.4664950287783005,
+      "directional_prediction_rate": 6.473043132159183e-05,
+      "cpcv_expectancy_base": 4.8734804975753745,
+      "cpcv_expectancy_optimistic": 5.345702719797596,
+      "cpcv_expectancy_pessimistic": 3.925258275353152,
+      "cpcv_profit_factor": Infinity,
+      "breakeven_margin_overall": 0.2862885242351344,
+      "breakeven_margin_directional": 0.00946826902804132,
+      "per_class_recall": {
+        "short": 1.6123419600452462e-05,
+        "hold": 0.9999419138707617,
+        "long": 0.00012431479518855502
+      },
+      "top10_features": [
+        [
+          "f11",
+          68.55920113457574
+        ],
+        [
+          "f15",
+          50.00356118943956
+        ],
+        [
+          "f10",
+          29.59672563340929
+        ],
+        [
+          "f12",
+          18.931701448228623
+        ],
+        [
+          "f17",
+          16.834190283881295
+        ],
+        [
+          "f19",
+          16.35256462097168
+        ],
+        [
+          "f18",
+          16.243168788486056
+        ],
+        [
+          "f4",
+          10.955037551456028
+        ],
+        [
+          "f1",
+          10.411709785461426
+        ],
+        [
+          "f0",
+          8.833309661017523
+        ]
+      ],
+      "label0_hit_rate": 0.3159809525154733,
+      "class_distribution": {
+        "-1": 0.18655087704176185,
+        "0": 0.6213455156660777,
+        "1": 0.1921036072921605
+      },
+      "total_bars": 1160150,
+      "hold_rate": 0.6213455156660777,
+      "walkforward_mean_accuracy": 0.63665113216465,
+      "walkforward_mean_directional_accuracy": 0.2333333333333333,
+      "walkforward_mean_expectancy": 0.2566666666666671,
+      "walkforward_per_fold": [
+        {
+          "fold": 0,
+          "name": "Fold 1",
+          "train_days": "1-100",
+          "test_days": "101-150",
+          "accuracy": 0.6405658747300216,
+          "directional_accuracy": 0.0,
+          "n_directional_pairs": 0,
+          "directional_prediction_rate": 2.1598272138228943e-05,
+          "per_class_recall": {
+            "short": 0.0,
+            "hold": 0.9999662836489184,
+            "long": 0.0
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 0.0,
+              "profit_factor": 0.0,
+              "n_trades": 0
+            },
+            "base": {
+              "expectancy": 0.0,
+              "profit_factor": 0.0,
+              "n_trades": 0
+            },
+            "pessimistic": {
+              "expectancy": 0.0,
+              "profit_factor": 0.0,
+              "n_trades": 0
+            }
+          },
+          "n_estimators_used": 188,
+          "n_train": 462500,
+          "n_test": 231500,
+          "elapsed_s": 4.560523748397827,
+          "label0_hit_rate": 1.0
+        },
+        {
+          "fold": 1,
+          "name": "Fold 2",
+          "train_days": "1-150",
+          "test_days": "151-201",
+          "accuracy": 0.6438995468597807,
+          "directional_accuracy": 0.7,
+          "n_directional_pairs": 100,
+          "directional_prediction_rate": 0.001033329098378012,
+          "per_class_recall": {
+            "short": 0.0010299647895757982,
+            "hold": 0.999053366465507,
+            "long": 0.0006388566831507465
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 9.509999999999998,
+              "profit_factor": 6.080128205128202,
+              "n_trades": 100
+            },
+            "base": {
+              "expectancy": 8.260000000000002,
+              "profit_factor": 4.676012461059189,
+              "n_trades": 100
+            },
+            "pessimistic": {
+              "expectancy": 5.75,
+              "profit_factor": 2.9166666666666665,
+              "n_trades": 100
+            }
+          },
+          "n_estimators_used": 417,
+          "n_train": 694000,
+          "n_test": 236130,
+          "elapsed_s": 11.330375909805298,
+          "label0_hit_rate": 0.5901639344262295
+        },
+        {
+          "fold": 2,
+          "name": "Fold 3 (holdout)",
+          "train_days": "1-201",
+          "test_days": "202-251",
+          "accuracy": 0.6254879749041478,
+          "directional_accuracy": 0.0,
+          "n_directional_pairs": 2,
+          "directional_prediction_rate": 0.005062739630533287,
+          "per_class_recall": {
+            "short": 0.0,
+            "hold": 0.9919846326059618,
+            "long": 0.0
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": -6.24,
+              "profit_factor": 0.0,
+              "n_trades": 2
+            },
+            "base": {
+              "expectancy": -7.49,
+              "profit_factor": 0.0,
+              "n_trades": 2
+            },
+            "pessimistic": {
+              "expectancy": -10.0,
+              "profit_factor": 0.0,
+              "n_trades": 2
+            }
+          },
+          "n_estimators_used": 162,
+          "n_train": 930130,
+          "n_test": 229520,
+          "elapsed_s": 6.5086610317230225,
+          "label0_hit_rate": 0.9982788296041308
+        }
+      ],
+      "per_direction": {
+        "long": {
+          "n_triggered": 224028,
+          "wr": 0.9948,
+          "expectancy": 14.8936
+        },
+        "short": {
+          "n_triggered": 217586,
+          "wr": 0.9947,
+          "expectancy": 14.8902
+        },
+        "both_triggered_rate": 0.001
+      },
+      "time_of_day": {
+        "A_opening_range": {
+          "n_bars": 77810,
+          "class_dist": {
+            "-1": 0.20891916206143168,
+            "0": 0.5847962986762627,
+            "+1": 0.2062845392623056
+          },
+          "directional_rate": 0.4152
+        },
+        "B_mid_session": {
+          "n_bars": 902340,
+          "class_dist": {
+            "-1": 0.1973746038078773,
+            "0": 0.6031551299953455,
+            "+1": 0.19947026619677727
+          },
+          "directional_rate": 0.3968
+        },
+        "C_closing": {
+          "n_bars": 90000,
+          "class_dist": {
+            "-1": 0.14892222222222223,
+            "0": 0.6781333333333334,
+            "+1": 0.17294444444444446
+          },
+          "directional_rate": 0.3219
+        }
+      },
+      "mean_fit_time_s": 5.973288196987576
+    },
+    "19_7": {
+      "target": 19,
+      "stop": 7,
+      "label": "19:7",
+      "breakeven_wr": 0.3843076923076923,
+      "cpcv_accuracy": 0.47500034241163147,
+      "cpcv_accuracy_std": 0.02266930907351485,
+      "cpcv_directional_accuracy": 0.5590169319457,
+      "cpcv_directional_accuracy_std": 0.2080973377874659,
+      "directional_prediction_rate": 0.00283185540278729,
+      "cpcv_expectancy_base": 5.67805028823525,
+      "cpcv_expectancy_optimistic": 6.92805028823525,
+      "cpcv_expectancy_pessimistic": 3.168050288235252,
+      "cpcv_profit_factor": Infinity,
+      "breakeven_margin_overall": 0.09069265010393918,
+      "breakeven_margin_directional": 0.17470923963800772,
+      "per_class_recall": {
+        "short": 0.0015771088241566052,
+        "hold": 0.997145794124829,
+        "long": 0.0016644947469348725
+      },
+      "top10_features": [
+        [
+          "f15",
+          226.7521738688151
+        ],
+        [
+          "f11",
+          71.17108679877387
+        ],
+        [
+          "f4",
+          59.455262735154896
+        ],
+        [
+          "f10",
+          39.058083809746634
+        ],
+        [
+          "f17",
+          27.80731569925944
+        ],
+        [
+          "f18",
+          26.392700746324326
+        ],
+        [
+          "f19",
+          26.02426448398166
+        ],
+        [
+          "f12",
+          16.990380732218423
+        ],
+        [
+          "f1",
+          16.768229791853162
+        ],
+        [
+          "f16",
+          10.480513466729057
+        ]
+      ],
+      "label0_hit_rate": 0.478595887882041,
+      "class_distribution": {
+        "-1": 0.26067749859931905,
+        "0": 0.4743886566392277,
+        "1": 0.26493384476145326
+      },
+      "total_bars": 1160150,
+      "hold_rate": 0.4743886566392277,
+      "walkforward_mean_accuracy": 0.488759546472253,
+      "walkforward_mean_directional_accuracy": 0.5817108493325854,
+      "walkforward_mean_expectancy": 6.415602603309022,
+      "walkforward_per_fold": [
+        {
+          "fold": 0,
+          "name": "Fold 1",
+          "train_days": "1-100",
+          "test_days": "101-150",
+          "accuracy": 0.5017149028077754,
+          "directional_accuracy": 0.6146788990825688,
+          "n_directional_pairs": 218,
+          "directional_prediction_rate": 0.0015248380129589633,
+          "per_class_recall": {
+            "short": 0.001725594521237395,
+            "hold": 0.9988376898439921,
+            "long": 0.0006363134010951289
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 8.737064220183484,
+              "profit_factor": 3.017327571598034,
+              "n_trades": 218
+            },
+            "base": {
+              "expectancy": 7.487064220183483,
+              "profit_factor": 2.555701704220519,
+              "n_trades": 218
+            },
+            "pessimistic": {
+              "expectancy": 4.977064220183486,
+              "profit_factor": 1.8611111111111112,
+              "n_trades": 218
+            }
+          },
+          "n_estimators_used": 123,
+          "n_train": 462500,
+          "n_test": 231500,
+          "elapsed_s": 3.2268218994140625,
+          "label0_hit_rate": 0.38243626062322944
+        },
+        {
+          "fold": 1,
+          "name": "Fold 2",
+          "train_days": "1-150",
+          "test_days": "151-201",
+          "accuracy": 0.5005039596832254,
+          "directional_accuracy": 0.6104536489151874,
+          "n_directional_pairs": 1014,
+          "directional_prediction_rate": 0.007728793461228984,
+          "per_class_recall": {
+            "short": 0.0076283173918900715,
+            "hold": 0.9931489491113064,
+            "long": 0.0028439266746616413
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 8.599743589743586,
+              "profit_factor": 2.9640839677462942,
+              "n_trades": 1014
+            },
+            "base": {
+              "expectancy": 7.3497435897435865,
+              "profit_factor": 2.510603926178917,
+              "n_trades": 1014
+            },
+            "pessimistic": {
+              "expectancy": 4.839743589743589,
+              "profit_factor": 1.8282700421940927,
+              "n_trades": 1014
+            }
+          },
+          "n_estimators_used": 328,
+          "n_train": 694000,
+          "n_test": 236130,
+          "elapsed_s": 8.979148149490356,
+          "label0_hit_rate": 0.44438356164383563
+        },
+        {
+          "fold": 2,
+          "name": "Fold 3 (holdout)",
+          "train_days": "1-201",
+          "test_days": "202-251",
+          "accuracy": 0.4640597769257581,
+          "directional_accuracy": 0.52,
+          "n_directional_pairs": 50,
+          "directional_prediction_rate": 0.0065528058556988495,
+          "per_class_recall": {
+            "short": 0.00015074366876591182,
+            "hold": 0.9865294286587795,
+            "long": 0.0002747385943080628
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 5.6599999999999975,
+              "profit_factor": 2.0490806642941877,
+              "n_trades": 50
+            },
+            "base": {
+              "expectancy": 4.4099999999999975,
+              "profit_factor": 1.7355884707766214,
+              "n_trades": 50
+            },
+            "pessimistic": {
+              "expectancy": 1.9,
+              "profit_factor": 1.2638888888888888,
+              "n_trades": 50
+            }
+          },
+          "n_estimators_used": 217,
+          "n_train": 930130,
+          "n_test": 229520,
+          "elapsed_s": 7.959120035171509,
+          "label0_hit_rate": 0.9667553191489362
+        }
+      ],
+      "per_direction": {
+        "long": {
+          "n_triggered": 309783,
+          "wr": 0.9922,
+          "expectancy": 19.7561
+        },
+        "short": {
+          "n_triggered": 304845,
+          "wr": 0.9921,
+          "expectancy": 19.752
+        },
+        "both_triggered_rate": 0.0021
+      },
+      "time_of_day": {
+        "A_opening_range": {
+          "n_bars": 77810,
+          "class_dist": {
+            "-1": 0.2882405860429251,
+            "0": 0.42247783061303174,
+            "+1": 0.2892815833440432
+          },
+          "directional_rate": 0.5775
+        },
+        "B_mid_session": {
+          "n_bars": 902340,
+          "class_dist": {
+            "-1": 0.2810503801227919,
+            "0": 0.4372586829798081,
+            "+1": 0.2816909368974001
+          },
+          "directional_rate": 0.5627
+        },
+        "C_closing": {
+          "n_bars": 90000,
+          "class_dist": {
+            "-1": 0.17995555555555556,
+            "0": 0.6179333333333333,
+            "+1": 0.2021111111111111
+          },
+          "directional_rate": 0.3821
+        }
+      },
+      "mean_fit_time_s": 6.4504153145684135
+    },
+    "20_3": {
+      "target": 20,
+      "stop": 3,
+      "label": "20:3",
+      "breakeven_wr": 0.2605217391304348,
+      "cpcv_accuracy": 0.6987981117608152,
+      "cpcv_accuracy_std": 0.019144069823624585,
+      "cpcv_directional_accuracy": 0.08888888888888889,
+      "cpcv_directional_accuracy_std": 0.28458329944145994,
+      "directional_prediction_rate": 2.5759890428277934e-05,
+      "cpcv_expectancy_base": 1.723333333333333,
+      "cpcv_expectancy_optimistic": 1.8622222222222218,
+      "cpcv_expectancy_pessimistic": 1.4444444444444444,
+      "cpcv_profit_factor": Infinity,
+      "breakeven_margin_overall": 0.4382763726303804,
+      "breakeven_margin_directional": -0.1716328502415459,
+      "per_class_recall": {
+        "short": 8.957783605535205e-06,
+        "hold": 0.9999694161834088,
+        "long": 1.057481682906564e-05
+      },
+      "top10_features": [
+        [
+          "f15",
+          90.85463392469617
+        ],
+        [
+          "f11",
+          53.63495814005534
+        ],
+        [
+          "f10",
+          30.701838641696504
+        ],
+        [
+          "f4",
+          24.345350551605225
+        ],
+        [
+          "f17",
+          18.017988607618545
+        ],
+        [
+          "f19",
+          16.98947533501519
+        ],
+        [
+          "f18",
+          16.4878052605523
+        ],
+        [
+          "f12",
+          14.383639378017849
+        ],
+        [
+          "f1",
+          11.847127978006998
+        ],
+        [
+          "f0",
+          8.414172352684869
+        ]
+      ],
+      "label0_hit_rate": 0.2885858585858586,
+      "class_distribution": {
+        "-1": 0.14816704736456493,
+        "0": 0.7008240313752532,
+        "1": 0.15100892126018187
+      },
+      "total_bars": 1160150,
+      "hold_rate": 0.7008240313752532,
+      "walkforward_mean_accuracy": 0.7165255244378597,
+      "walkforward_mean_directional_accuracy": 0.3333333333333333,
+      "walkforward_mean_expectancy": 7.086666666666666,
+      "walkforward_per_fold": [
+        {
+          "fold": 0,
+          "name": "Fold 1",
+          "train_days": "1-100",
+          "test_days": "101-150",
+          "accuracy": 0.7190194384449244,
+          "directional_accuracy": 0.0,
+          "n_directional_pairs": 0,
+          "directional_prediction_rate": 0.0,
+          "per_class_recall": {
+            "short": 0.0,
+            "hold": 1.0,
+            "long": 0.0
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 0.0,
+              "profit_factor": 0.0,
+              "n_trades": 0
+            },
+            "base": {
+              "expectancy": 0.0,
+              "profit_factor": 0.0,
+              "n_trades": 0
+            },
+            "pessimistic": {
+              "expectancy": 0.0,
+              "profit_factor": 0.0,
+              "n_trades": 0
+            }
+          },
+          "n_estimators_used": 148,
+          "n_train": 462500,
+          "n_test": 231500,
+          "elapsed_s": 3.7328481674194336,
+          "label0_hit_rate": 0.0
+        },
+        {
+          "fold": 1,
+          "name": "Fold 2",
+          "train_days": "1-150",
+          "test_days": "151-201",
+          "accuracy": 0.7229238131537712,
+          "directional_accuracy": 1.0,
+          "n_directional_pairs": 18,
+          "directional_prediction_rate": 0.00043196544276457883,
+          "per_class_recall": {
+            "short": 0.0005483458234326449,
+            "hold": 0.9995081103238274,
+            "long": 0.0
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 22.509999999999998,
+              "profit_factor": Infinity,
+              "n_trades": 18
+            },
+            "base": {
+              "expectancy": 21.259999999999998,
+              "profit_factor": Infinity,
+              "n_trades": 18
+            },
+            "pessimistic": {
+              "expectancy": 18.75,
+              "profit_factor": Infinity,
+              "n_trades": 18
+            }
+          },
+          "n_estimators_used": 323,
+          "n_train": 694000,
+          "n_test": 236130,
+          "elapsed_s": 8.998578310012817,
+          "label0_hit_rate": 0.8235294117647058
+        },
+        {
+          "fold": 2,
+          "name": "Fold 3 (holdout)",
+          "train_days": "1-201",
+          "test_days": "202-251",
+          "accuracy": 0.7076333217148832,
+          "directional_accuracy": 0.0,
+          "n_directional_pairs": 0,
+          "directional_prediction_rate": 0.00173841059602649,
+          "per_class_recall": {
+            "short": 0.0,
+            "hold": 0.9975493658446704,
+            "long": 0.0
+          },
+          "pnl": {
+            "optimistic": {
+              "expectancy": 0.0,
+              "profit_factor": 0.0,
+              "n_trades": 0
+            },
+            "base": {
+              "expectancy": 0.0,
+              "profit_factor": 0.0,
+              "n_trades": 0
+            },
+            "pessimistic": {
+              "expectancy": 0.0,
+              "profit_factor": 0.0,
+              "n_trades": 0
+            }
+          },
+          "n_estimators_used": 217,
+          "n_train": 930130,
+          "n_test": 229520,
+          "elapsed_s": 8.089393854141235,
+          "label0_hit_rate": 1.0
+        }
+      ],
+      "per_direction": {
+        "long": {
+          "n_triggered": 176296,
+          "wr": 0.9937,
+          "expectancy": 21.0801
+        },
+        "short": {
+          "n_triggered": 172999,
+          "wr": 0.9936,
+          "expectancy": 21.0767
+        },
+        "both_triggered_rate": 0.001
+      },
+      "time_of_day": {
+        "A_opening_range": {
+          "n_bars": 77810,
+          "class_dist": {
+            "-1": 0.16832026731782548,
+            "0": 0.665827014522555,
+            "+1": 0.16585271815961958
+          },
+          "directional_rate": 0.3342
+        },
+        "B_mid_session": {
+          "n_bars": 902340,
+          "class_dist": {
+            "-1": 0.158702927942904,
+            "0": 0.682502161047942,
+            "+1": 0.15879491100915397
+          },
+          "directional_rate": 0.3175
+        },
+        "C_closing": {
+          "n_bars": 90000,
+          "class_dist": {
+            "-1": 0.10516666666666667,
+            "0": 0.7723444444444444,
+            "+1": 0.12248888888888888
+          },
+          "directional_rate": 0.2277
+        }
+      },
+      "mean_fit_time_s": 6.160326729880439
+    }
+  },
+  "oracle_3600s": {
+    "10_5": {
+      "target": 10,
+      "stop": 5,
+      "label": "10:5 (control)",
+      "tb_total_trades": 5034,
+      "tb_win_rate": 0.751887,
+      "tb_expectancy": 6.47256,
+      "tb_profit_factor": 5.73116,
+      "fth_total_trades": 4869,
+      "fth_win_rate": 0.74122,
+      "fth_expectancy": 6.21277,
+      "days_processed": 19,
+      "max_time_horizon_s": 3600
+    },
+    "15_3": {
+      "target": 15,
+      "stop": 3,
+      "label": "15:3",
+      "tb_total_trades": 4706,
+      "tb_win_rate": 0.428177,
+      "tb_expectancy": 3.29185,
+      "tb_profit_factor": 2.88024,
+      "fth_total_trades": 4241,
+      "fth_win_rate": 0.412167,
+      "fth_expectancy": 2.84896,
+      "days_processed": 19,
+      "max_time_horizon_s": 3600
+    },
+    "19_7": {
+      "target": 19,
+      "stop": 7,
+      "label": "19:7",
+      "tb_total_trades": 2189,
+      "tb_win_rate": 0.61809,
+      "tb_expectancy": 9.4384,
+      "tb_profit_factor": 4.0054,
+      "fth_total_trades": 2108,
+      "fth_win_rate": 0.600569,
+      "fth_expectancy": 8.89135,
+      "days_processed": 19,
+      "max_time_horizon_s": 3600
+    },
+    "20_3": {
+      "target": 20,
+      "stop": 3,
+      "label": "20:3",
+      "tb_total_trades": 3668,
+      "tb_win_rate": 0.345692,
+      "tb_expectancy": 3.22344,
+      "tb_profit_factor": 2.60129,
+      "fth_total_trades": 3281,
+      "fth_win_rate": 0.334349,
+      "fth_expectancy": 2.79574,
+      "days_processed": 19,
+      "max_time_horizon_s": 3600
+    }
+  },
+  "hold_rate_comparison": {
+    "10_5": {
+      "phase1_300s": 0.907,
+      "current_3600s": 0.32580959358703615,
+      "delta": -0.5811904064129638
+    },
+    "15_3": {
+      "phase1_300s": 0.971,
+      "current_3600s": 0.6213455156660777,
+      "delta": -0.3496544843339223
+    },
+    "19_7": {
+      "phase1_300s": 0.986,
+      "current_3600s": 0.4743886566392277,
+      "delta": -0.5116113433607723
+    },
+    "20_3": {
+      "phase1_300s": 0.989,
+      "current_3600s": 0.7008240313752532,
+      "delta": -0.2881759686247468
+    }
+  },
+  "holdout": {
+    "19_7": {
+      "accuracy": 0.46353258975252704,
+      "directional_accuracy": 0.5,
+      "n_directional_pairs": 52,
+      "directional_prediction_rate": 0.0070887068665040085,
+      "per_class_recall": {
+        "short": 0.00013399437223636607,
+        "hold": 0.9854084251290081,
+        "long": 0.00029089968809089
+      },
+      "pnl": {
+        "optimistic": {
+          "expectancy": 5.009999999999997,
+          "profit_factor": 1.891459074733096,
+          "n_trades": 52
+        },
+        "base": {
+          "expectancy": 3.7599999999999976,
+          "profit_factor": 1.6020816653322658,
+          "n_trades": 52
+        },
+        "pessimistic": {
+          "expectancy": 1.25,
+          "profit_factor": 1.1666666666666667,
+          "n_trades": 52
+        }
+      },
+      "per_quarter": {
+        "Q4": {
+          "expectancy": 3.7599999999999976,
+          "profit_factor": 1.6020816653322658,
+          "n_trades": 52
+        }
+      },
+      "confusion_matrix": [
+        [
+          8,
+          59674,
+          22
+        ],
+        [
+          397,
+          106364,
+          1178
+        ],
+        [
+          4,
+          61855,
+          18
+        ]
+      ],
+      "n_holdout_bars": 229520,
+      "n_estimators_used": 217,
+      "elapsed_s": 7.927701950073242,
+      "label0_hit_rate": 0.968039336201598
+    },
+    "10_5": {
+      "accuracy": 0.35061432554897176,
+      "directional_accuracy": 0.5056309791310666,
+      "n_directional_pairs": 148642,
+      "directional_prediction_rate": 0.9523963053328686,
+      "per_class_recall": {
+        "short": 0.33740229286086504,
+        "hold": 0.07061527628309884,
+        "long": 0.6356574142180584
+      },
+      "pnl": {
+        "optimistic": {
+          "expectancy": 0.7405808587074979,
+          "profit_factor": 1.1713995991842183,
+          "n_trades": 148642
+        },
+        "base": {
+          "expectancy": -0.5094191412925021,
+          "profit_factor": 0.8968525435783615,
+          "n_trades": 148642
+        },
+        "pessimistic": {
+          "expectancy": -3.0194191412925013,
+          "profit_factor": 0.5113902346088944,
+          "n_trades": 148642
+        }
+      },
+      "per_quarter": {
+        "Q4": {
+          "expectancy": -0.5094191412925021,
+          "profit_factor": 0.8968525435783615,
+          "n_trades": 148642
+        }
+      },
+      "confusion_matrix": [
+        [
+          25899,
+          2476,
+          48385
+        ],
+        [
+          22984,
+          5315,
+          46968
+        ],
+        [
+          25099,
+          3135,
+          49259
+        ]
+      ],
+      "n_holdout_bars": 229520,
+      "n_estimators_used": 212,
+      "elapsed_s": 7.873650074005127,
+      "label0_hit_rate": 0.3200087834066809
+    }
+  },
+  "success_criteria": {
+    "SC-1": {
+      "description": "Re-export >= 1000 files (4 x 251)",
+      "value": 1004,
+      "pass": true
+    },
+    "SC-2": {
+      "description": "CPCV + WF for all 4 geometries",
+      "pass": true
+    },
+    "SC-3": {
+      "description": "At least one geometry CPCV directional accuracy > BEV WR + 2pp",
+      "pass": true,
+      "details": {
+        "10_5": {
+          "directional_accuracy": 0.5066828263189117,
+          "bev_wr": 0.5328,
+          "margin": -0.026117173681088346
+        },
+        "15_3": {
+          "directional_accuracy": 0.3423571579169302,
+          "bev_wr": 0.3328888888888889,
+          "margin": 0.00946826902804132
+        },
+        "19_7": {
+          "directional_accuracy": 0.5590169319457,
+          "bev_wr": 0.3843076923076923,
+          "margin": 0.17470923963800772
+        },
+        "20_3": {
+          "directional_accuracy": 0.08888888888888889,
+          "bev_wr": 0.2605217391304348,
+          "margin": -0.1716328502415459
+        }
+      }
+    },
+    "SC-4": {
+      "description": "At least one geometry CPCV expectancy > $0.00 (base)",
+      "pass": true
+    },
+    "SC-5": {
+      "description": "Best geometry holdout expectancy > -$0.10",
+      "pass": true,
+      "best_geometry": "19_7"
+    },
+    "SC-6": {
+      "description": "Walk-forward reported for all 4 geometries",
+      "pass": true
+    },
+    "SC-7": {
+      "description": "Per-direction + time-of-day reported",
+      "pass": true
+    },
+    "SC-8": {
+      "description": "Hold rate at 10:5 < 80%",
+      "pass": true,
+      "value": 0.32580959358703615
+    }
+  },
+  "sanity_checks": {
+    "SC-S1_baseline_acc_gt_040": false,
+    "SC-S2_no_feature_gt_60pct": true,
+    "SC-S3_152_columns": true,
+    "SC-S4_no_degenerate_labels": true,
+    "SC-S5_hold_rate_10_5_lt_80pct": true,
+    "SC-S6_oracle_positive_all_geom": true
+  },
+  "outcome": "A",
+  "outcome_description": "CONFIRMED \u2014 viable geometry exists",
+  "export_summary": {
+    "geom_10_5": {
+      "ok": 251,
+      "fail": 0,
+      "elapsed_s": 66.98875904083252
+    },
+    "geom_15_3": {
+      "ok": 251,
+      "fail": 0,
+      "elapsed_s": 68.68647313117981
+    },
+    "geom_19_7": {
+      "ok": 251,
+      "fail": 0,
+      "elapsed_s": 69.16764807701111
+    },
+    "geom_20_3": {
+      "ok": 251,
+      "fail": 0,
+      "elapsed_s": 68.85312104225159
+    }
+  },
+  "resource_usage": {
+    "wall_clock_seconds": 1776.4887371063232,
+    "wall_clock_minutes": 29.60814561843872,
+    "total_export_runs": 1004,
+    "total_oracle_runs": 4,
+    "total_cpcv_fits": 180,
+    "total_wf_fits": 12,
+    "total_holdout_fits": 2,
+    "gpu_hours": 0
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Executed locally on Apple Silicon. 4 geometries: 10:5 (control), 15:3, 19:7, 20:3. Time horizon: 3600s (vs Phase 1's 300s). Volume horizon: 50000. Wall clock: 29.6 minutes. Total exports: 1004. COMPUTE_TARGET: local."
+}

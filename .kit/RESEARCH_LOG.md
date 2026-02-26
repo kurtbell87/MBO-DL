@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## label-geometry-1h — INCONCLUSIVE
+**Date:** 2026-02-26
+**Hypothesis:** XGBoost at high-ratio geometries (15:3, 19:7, 20:3) with 1-hour time horizon achieves CPCV directional accuracy > breakeven WR + 2pp, producing positive expectancy.
+**Key result:** Time horizon fix SUCCESS (hold rate 90.7%→32.6% at 10:5). But model refuses to trade at high-ratio geometries (0.003-0.28% directional prediction rate at 15:3/19:7/20:3). At 10:5 (the only geometry with real trade volume), directional accuracy 50.67% is 2.6pp BELOW breakeven (53.28%), expectancy -$0.49/trade. 19:7 CPCV dir_acc 55.9% technically passes SC-3 but on 0.28% of bars — holdout collapses to 50.0% on 52 trades (coin flip, 96.8% label0_hit_rate). SC-S1 abort criterion triggered (baseline accuracy 0.384 < 0.40).
+**Lesson:** The model's directional accuracy is ~50-51% regardless of label type, geometry, or hyperparameters — a hard ceiling of the 20-feature set. High-ratio geometries lower breakeven but the model cannot be induced to trade (defaults to hold-prediction even at 47% hold rate). The geometry hypothesis is theoretically sound (oracle profitable at all geometries) but unexploitable with the current model/features. Balanced bidirectional labels are 6.5pp harder than long-perspective labels (0.384 vs 0.449 3-class accuracy).
+**Next:** (1) 2-class formulation (directional-vs-hold) to decouple barrier-reachability from direction prediction. (2) Class-weighted XGBoost to force directional predictions at 19:7. (3) Long-perspective labels at varied geometries (original P0 still open).
+**Details:** `.kit/results/label-geometry-1h/analysis.md`
+
 ## label-geometry-phase1 — REFUTED
 **Date:** 2026-02-26
 **Hypothesis:** XGBoost at high-ratio geometries (15:3, 19:7, 20:3) achieves directional accuracy > breakeven WR + 2pp on bidirectional labels, producing positive expectancy.
