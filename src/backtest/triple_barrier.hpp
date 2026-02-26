@@ -10,9 +10,9 @@
 struct TripleBarrierConfig {
     int target_ticks = 10;
     int stop_ticks = 5;
-    uint32_t volume_horizon = 500;
+    uint32_t volume_horizon = 50000;
     int min_return_ticks = 2;
-    uint32_t max_time_horizon_s = 300;
+    uint32_t max_time_horizon_s = 3600;
     float tick_size = 0.25f;
     bool bidirectional = true;
 };

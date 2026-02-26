@@ -1,13 +1,13 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-25)
+## Current State (updated 2026-02-26)
 
 - **Build:** Green.
-- **Unit tests:** 1144+ registered (label-exclude integration). Geometry CLI tests in `bar_feature_export_geometry_test.cpp`. TDD phases exited 0.
+- **Unit tests:** 1144+ registered (label-exclude integration). Time horizon CLI tests in `time_horizon_cli_test.cpp`. TDD phases exited 0.
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **30+ phases complete** (14 engineering + 17 research). CNN line closed (Outcome D). XGBoost tuning done (REFUTED, Outcome C). GBT-only path forward.
-- **Last completed:** bar-feature-export-geometry TDD (`--target`/`--stop` CLI flags). All label-design-sensitivity prerequisites now DONE.
-- **Prior TDD (COMPLETE):** Bidirectional export wiring (PR #27), bidirectional TB labels (PR #26), oracle expectancy CLI params.
+- **30+ phases complete** (15 engineering + 20 research). CNN line closed (Outcome D). GBT-only path forward. Label geometry phase 1 REFUTED (degenerate hold rate from 5-min time cap).
+- **Last completed:** time-horizon-cli TDD (`--max-time-horizon`/`--volume-horizon` CLI flags, defaults 300→3600s / 500→50000). Fixes root cause of 90.7-98.9% hold rate.
+- **Prior TDD (COMPLETE):** bar-feature-export-geometry (PR #28), bidirectional export wiring (PR #27), bidirectional TB labels (PR #26), oracle expectancy CLI params.
 - **Compute:** Local preferred for CPU-only experiments (<1GB). RunPod for GPU. EC2 spot for large data only.
 - **Bidirectional dataset:** 312 files, 152-col Parquet, S3: `s3://kenoma-labs-research/results/bidirectional-reexport/`.
 
@@ -43,10 +43,11 @@
 | Bidir-TB | bidirectional-label-export | done | done | done | done |
 | Bidir-Wire | bidirectional-export-wiring | done | done | done | done |
 | Geom-CLI | bar-feature-export-geometry | done | done | done | done |
+| TH-CLI | time-horizon-cli | done | done | done | done |
 
 ## Next Action
 
-1. **Label design sensitivity** (P1, FULLY UNBLOCKED): Oracle heatmap sweep (144 geometries) + GBT training on best geometries using bidirectional data. All prerequisites DONE (--target/--stop CLI, bidirectional re-export, oracle CLI params). Spec: `.kit/experiments/label-design-sensitivity.md`.
+1. **Geometry sweep on long-perspective labels** (P0, FULLY UNBLOCKED): Re-run geometry hypothesis with `--legacy-labels --max-time-horizon 3600` to fix degenerate hold rate from 5-minute cap. Spec needed (adapt from label-geometry-phase1.md).
 2. **Regime-conditional trading** (P2): Q1-Q2 only strategy. Spec not yet created.
 3. **Tick_100 multi-seed replication** (P3): Confirm tick_100 R²=0.124 with multi-seed. Spec not yet created.
 

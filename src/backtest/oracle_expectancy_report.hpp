@@ -138,6 +138,8 @@ struct ReportConfig {
     int target_ticks = 10;
     int stop_ticks = 5;
     int take_profit_ticks = 20;
+    uint32_t max_time_horizon_s = 3600;
+    uint32_t volume_horizon = 50000;
 };
 
 // ---------------------------------------------------------------------------
@@ -200,8 +202,8 @@ inline std::string to_json(const OracleExpectancyReport& report,
     ss << ",\"target_ticks\":" << cfg.target_ticks;
     ss << ",\"stop_ticks\":" << cfg.stop_ticks;
     ss << ",\"take_profit_ticks\":" << cfg.take_profit_ticks;
-    ss << ",\"volume_horizon\":500";
-    ss << ",\"max_time_horizon_s\":300";
+    ss << ",\"volume_horizon\":" << cfg.volume_horizon;
+    ss << ",\"max_time_horizon_s\":" << cfg.max_time_horizon_s;
     ss << "}";
 
     // Costs block

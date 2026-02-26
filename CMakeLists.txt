@@ -57,13 +57,21 @@ set(TEST_TARGETS
     tick_bar_fix_test
     oracle_expectancy_params_test
     bidirectional_tb_test
+    time_horizon_cli_test
+)
+
+set(WORKDIR_TEST_TARGETS
+    bar_feature_export_test
+    hybrid_model_tb_label_test
+    oracle_expectancy_params_test
+    time_horizon_cli_test
 )
 
 foreach(target ${TEST_TARGETS})
     add_executable(${target} tests/${target}.cpp)
     target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/src)
     target_link_libraries(${target} PRIVATE GTest::gtest_main)
-    if(target STREQUAL "bar_feature_export_test" OR target STREQUAL "hybrid_model_tb_label_test" OR target STREQUAL "oracle_expectancy_params_test")
+    if(target IN_LIST WORKDIR_TEST_TARGETS)
         gtest_discover_tests(${target} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     else()
         gtest_discover_tests(${target})

@@ -20,33 +20,27 @@
 
 ### Just Completed (2026-02-26)
 
-1. **Synthesis-v2 — GO Verdict (PR #30)** — Comprehensive synthesis of 23 experiments. Strategic pivot: breakeven WR (not oracle ceiling) is the correct viability metric. At 15:3 geometry, BEV WR = 33.3% — 12pp below model's 45% accuracy. 8 closed research lines. GBT-only on 20 features is canonical architecture. 55-60% prior of positive expectancy at favorable geometries.
+1. **Time Horizon CLI Flags — COMPLETE** — `bar_feature_export` and `oracle_expectancy` now accept `--max-time-horizon <seconds>` and `--volume-horizon <contracts>`. Defaults changed: `max_time_horizon_s` 300→3600 (1 hour), `volume_horizon` 500→50000 (effectively unlimited). Invalid values rejected. Spec: `.kit/docs/time-horizon-cli.md`. **Fixes root cause of 90.7-98.9% hold rate** (5-minute cap was too short for MES price to traverse barriers).
 
-2. **Label Design Sensitivity Phase 0 — REFUTED (Outcome C, PR #29)** — Oracle heatmap sweep across 123 valid geometries (16x9 grid). Peak oracle net expectancy: $4.13/trade at (16:10) — below $5.00 threshold. Abort triggered at Phase 0. **Critical caveat:** the $5.00 abort threshold was miscalibrated — multiple geometries have breakeven WRs of 29-38%, well below model's ~45% accuracy. Phase 1 training was never attempted.
+2. **Label Geometry Phase 1 — REFUTED (PR #31)** — Bidirectional TB labels on time_5s bars produce degenerate class distributions at ALL geometries under old 300s cap. 10:5 control: 90.7% hold. **Geometry hypothesis survives in principle — never properly tested.**
 
-3. **bar_feature_export --target/--stop CLI flags (TDD, PR #28)** — 47 tests pass.
+3. **Synthesis-v2 — GO Verdict (PR #30)** — 55-60% prior at high-ratio geometries. GBT-only on 20 features is canonical architecture.
 
-4. **Bidirectional Full-Year Re-Export (EC2)** — 312/312 files, 152-column schema.
+### Next: Re-run Geometry Sweep with 1-Hour Time Horizon
 
-### Next: Label Geometry Phase 1 Training (IN PROGRESS)
+**All CLI prerequisites are DONE.** `--max-time-horizon 3600` + `--legacy-labels` + `--target`/`--stop` flags all available. The 5-minute cap that caused degenerate hold rates is now configurable.
 
-**Experiment: `.kit/experiments/label-geometry-phase1.md`**
-**Branch: `experiment/label-geometry-phase1`**
+**Before a full experiment, verify:** Export 1 day at 10:5 with `--legacy-labels --max-time-horizon 3600` and check class distribution. If balanced (not >90% hold), proceed with full geometry sweep.
 
-This is the single highest-priority experiment from synthesis-v2. Train XGBoost at 4 geometries selected by breakeven WR diversity:
-
-| Geometry | Ratio | BEV WR | Model @ 45% |
-|----------|-------|--------|-------------|
-| 10:5 (ctrl) | 2:1 | 53.3% | -$1.56 |
-| 15:3 | 5:1 | 33.3% | +$2.63 |
-| 19:7 | 2.71:1 | 38.4% | +$2.14 |
-| 20:3 | 6.67:1 | 29.6% | +$5.45 |
-
-**Key question:** Does the model's ~45% directional accuracy transfer to high-ratio geometries? If yes, the favorable payoff structure converts that signal into positive expectancy.
+**Decision tree from analysis:**
+- **Option A (HIGHEST PRIORITY):** Geometry sweep on long-perspective labels with `--max-time-horizon 3600` — isolates geometry effect with proper time window
+- **Option B:** Characterize label distribution by label-type x geometry x time-horizon (30-min investigation)
+- **Option C:** Bidirectional labels on longer bars (30s/60s) — relaxes time_5s constraint
+- **Option D:** 2-class formulation (directional vs hold)
 
 ### After That
 
-1. **Regime-conditional trading** — Q1-Q2 only strategy (if label geometry doesn't pan out).
+1. **Regime-conditional trading** — Q1-Q2 only strategy.
 2. **Tick_100 multi-seed replication** — low priority.
 
 ### Background: Key Verdicts
@@ -73,7 +67,7 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 
 ## Project Status
 
-**30+ phases complete (14 engineering + 19 research). Branch: `experiment/label-geometry-phase1`. 1144+ unit tests registered. COMPUTE_TARGET=local.**
+**30+ phases complete (15 engineering + 20 research). Branch: `experiment/label-geometry-phase1`. 1144+ unit tests registered. COMPUTE_TARGET=local.**
 
 ### What's Built
 - **C++20 data pipeline**: Bar construction, order book replay, multi-day backtest, feature computation/export, oracle expectancy, Parquet export, bidirectional TB labels. 1144+ unit tests, 22 integration tests.
@@ -99,6 +93,7 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 | **XGB Tune** | **Accuracy plateau** | **0.33pp span, 64 configs** | **Feature set is binding constraint** |
 | **Label-Sens P0** | **Oracle heatmap** | **123 geometries, peak $4.13** | **Phase 1 training needed** |
 | **Synthesis-v2** | **GO verdict** | **55-60% prior** | **Label geometry is the lever** |
+| **Geom P1** | **REFUTED — degenerate labels** | **90.7-98.9% hold** | **Bidirectional + 5s bars = untestable** |
 | FYE | Full-year export | 251 days, 1.16M bars | 13x more data available |
 | Bidir-Export | Re-export complete | 312/312 files, 152-col | Label design sensitivity unblocked |
 
@@ -110,8 +105,8 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 2. **`CLAUDE.md`** — full protocol, absolute rules, current state, institutional memory
 3. **`.kit/RESEARCH_LOG.md`** — cumulative findings from all experiments
 4. **`.kit/QUESTIONS.md`** — open and answered research questions
-5. **`.kit/experiments/label-geometry-phase1.md`** — current experiment spec
+5. **`.kit/experiments/label-geometry-phase1.md`** — completed experiment spec (REFUTED)
 
 ---
 
-Updated: 2026-02-26. Next action: label-geometry-phase1 experiment (running).
+Updated: 2026-02-26. Next action: verify label distributions with `--max-time-horizon 3600 --legacy-labels`, then geometry sweep.
