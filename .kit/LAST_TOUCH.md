@@ -20,23 +20,22 @@
 
 ### Just Completed (2026-02-26)
 
-1. **Time Horizon CLI Flags — COMPLETE** — `bar_feature_export` and `oracle_expectancy` now accept `--max-time-horizon <seconds>` and `--volume-horizon <contracts>`. Defaults changed: `max_time_horizon_s` 300→3600 (1 hour), `volume_horizon` 500→50000 (effectively unlimited). Invalid values rejected. Spec: `.kit/docs/time-horizon-cli.md`. **Fixes root cause of 90.7-98.9% hold rate** (5-minute cap was too short for MES price to traverse barriers).
+1. **Label Geometry 1h — INCONCLUSIVE (practically Outcome B, PR #33)** — Time horizon fix WORKS (hold rates dropped 29-58pp). But model cannot exploit high-ratio geometries: at 10:5 (only geometry with real trade volume), directional accuracy 50.7% is 2.6pp BELOW 53.3% breakeven, exp=-$0.49/trade. At high-ratio geometries (15:3, 19:7, 20:3), model becomes near-total hold predictor (<0.3% directional prediction rate). Reported positive expectancy at those geometries is small-sample artifact (30-3,280 trades, Infinity profit factors). **Binding constraint: feature-label correlation ceiling (~50-51% directional accuracy), not geometry, not hyperparameters, not label design.**
 
-2. **Label Geometry Phase 1 — REFUTED (PR #31)** — Bidirectional TB labels on time_5s bars produce degenerate class distributions at ALL geometries under old 300s cap. 10:5 control: 90.7% hold. **Geometry hypothesis survives in principle — never properly tested.**
+2. **Time Horizon CLI Flags — COMPLETE (PR #32)** — `--max-time-horizon` and `--volume-horizon` CLI flags. Defaults: 300→3600s, 500→50000.
 
-3. **Synthesis-v2 — GO Verdict (PR #30)** — 55-60% prior at high-ratio geometries. GBT-only on 20 features is canonical architecture.
+3. **Label Geometry Phase 1 — REFUTED (PR #31)** — 90.7-98.9% hold at 300s cap. Root cause identified and fixed in PR #32.
 
-### Next: Re-run Geometry Sweep with 1-Hour Time Horizon
+4. **Synthesis-v2 — GO Verdict (PR #30)** — 55-60% prior at high-ratio geometries.
 
-**All CLI prerequisites are DONE.** `--max-time-horizon 3600` + `--legacy-labels` + `--target`/`--stop` flags all available. The 5-minute cap that caused degenerate hold rates is now configurable.
+### Next: Break Through the Feature-Label Ceiling
 
-**Before a full experiment, verify:** Export 1 day at 10:5 with `--legacy-labels --max-time-horizon 3600` and check class distribution. If balanced (not >90% hold), proceed with full geometry sweep.
+The model's directional accuracy is ~50-51% regardless of label type, geometry, or hyperparameters. This is the hard ceiling of 20 microstructure features on MES time_5s bars. Options:
 
-**Decision tree from analysis:**
-- **Option A (HIGHEST PRIORITY):** Geometry sweep on long-perspective labels with `--max-time-horizon 3600` — isolates geometry effect with proper time window
-- **Option B:** Characterize label distribution by label-type x geometry x time-horizon (30-min investigation)
-- **Option C:** Bidirectional labels on longer bars (30s/60s) — relaxes time_5s constraint
-- **Option D:** 2-class formulation (directional vs hold)
+- **Option A (HIGHEST PRIORITY): 2-Class Formulation** — Train binary "directional vs hold" at 19:7 (47.4% directional). If model predicts WHICH bars will be directional with >60% accuracy, a second-stage direction model on predicted-directional bars could exploit the 19:7 payoff. Decouples barrier-reachability from direction.
+- **Option B: Class-Weighted XGBoost at 19:7** — Force directional predictions with 3:1 weight. Accept lower accuracy for higher trade rate. Question: does forced directional accuracy stay above 38.4% BEV WR?
+- **Option C: Long-Perspective Labels at Varied Geometries** — Test if directional accuracy transfers when labels avoid the hold-prediction trap.
+- **Option D: Feature Engineering for Wider Barriers** — Add rolling VWAP slope, cumulative order flow over 50-500 bars, volatility regime markers. Highest effort, addresses root cause.
 
 ### After That
 
@@ -47,9 +46,10 @@
 
 - **CNN line CLOSED** for classification (GBT beats CNN by 5.9pp accuracy).
 - **XGBoost tuning EXHAUSTED** — 0.33pp plateau. Feature set is the constraint.
-- **Oracle edge EXISTS** — $4.00/trade at 10:5 geometry.
-- **GBT Q1-Q2 marginally profitable** (+$0.003, +$0.029) under base costs.
-- **Synthesis-v2 GO** — 55-60% prior. Label geometry is the remaining lever.
+- **Oracle edge EXISTS** — $3.22-$9.44/trade at 3600s across all 4 geometries.
+- **Directional accuracy ceiling** — ~50-51% regardless of geometry/labels/hyperparameters.
+- **Time horizon fix CONFIRMED** — hold rates dropped 90.7%→32.6% at 10:5.
+- **Bidirectional labels harder** — 3-class accuracy 38.4% vs 44.9% on long-perspective.
 
 ---
 
@@ -67,12 +67,12 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 
 ## Project Status
 
-**30+ phases complete (15 engineering + 20 research). Branch: `experiment/label-geometry-phase1`. 1144+ unit tests registered. COMPUTE_TARGET=local.**
+**30+ phases complete (15 engineering + 21 research). Branch: `experiment/label-geometry-1h`. 1144+ unit tests registered. COMPUTE_TARGET=local.**
 
 ### What's Built
 - **C++20 data pipeline**: Bar construction, order book replay, multi-day backtest, feature computation/export, oracle expectancy, Parquet export, bidirectional TB labels. 1144+ unit tests, 22 integration tests.
 - **Parquet schema**: 152 columns (149 original + `tb_both_triggered`, `tb_long_triggered`, `tb_short_triggered`). `--legacy-labels` flag for 149-column backward compat.
-- **Bidirectional dataset**: 312 Parquet files (152-col), S3 backed.
+- **CLI flags**: `--target`, `--stop`, `--max-time-horizon`, `--volume-horizon`, `--legacy-labels` on both tools.
 - **Full-year dataset**: 251 Parquet files (149-col, time_5s bars, 1,160,150 bars, zstd compression). S3 artifact store.
 - **Cloud pipeline**: Docker image in ECR, EBS snapshot with 49GB MBO data, IAM profile. Verified E2E.
 - **Parallel batch dispatch**: `cloud-run batch run` launches N experiments in parallel.
@@ -88,12 +88,13 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 | R6 | Synthesis | CONDITIONAL GO -> GO | CNN + GBT Hybrid architecture |
 | R7 | Oracle expectancy | $4.00/trade, PF=3.30 | Edge exists at oracle level |
 | 9B-9D | Normalization root cause | R2: -0.002 -> 0.089 | TICK_SIZE + per-day z-score required |
-| **9E** | **Pipeline bottleneck** | **exp=-$0.37/trade** | **Regression->classification gap** |
-| **10** | **E2E CNN classification** | **GBT wins by 5.9pp** | **CNN line closed** |
-| **XGB Tune** | **Accuracy plateau** | **0.33pp span, 64 configs** | **Feature set is binding constraint** |
-| **Label-Sens P0** | **Oracle heatmap** | **123 geometries, peak $4.13** | **Phase 1 training needed** |
-| **Synthesis-v2** | **GO verdict** | **55-60% prior** | **Label geometry is the lever** |
-| **Geom P1** | **REFUTED — degenerate labels** | **90.7-98.9% hold** | **Bidirectional + 5s bars = untestable** |
+| 9E | Pipeline bottleneck | exp=-$0.37/trade | Regression->classification gap |
+| 10 | E2E CNN classification | GBT wins by 5.9pp | CNN line closed |
+| XGB Tune | Accuracy plateau | 0.33pp span, 64 configs | Feature set is binding constraint |
+| Label-Sens P0 | Oracle heatmap | 123 geometries, peak $4.13 | Phase 1 training needed |
+| Synthesis-v2 | GO verdict | 55-60% prior | Label geometry is the lever |
+| Geom P1 | REFUTED — degenerate labels | 90.7-98.9% hold | 300s cap = untestable |
+| **Geom 1h** | **INCONCLUSIVE — hold predictor** | **Dir acc 50.7%, <0.3% trade rate** | **Feature ceiling, not geometry** |
 | FYE | Full-year export | 251 days, 1.16M bars | 13x more data available |
 | Bidir-Export | Re-export complete | 312/312 files, 152-col | Label design sensitivity unblocked |
 
@@ -105,8 +106,9 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 2. **`CLAUDE.md`** — full protocol, absolute rules, current state, institutional memory
 3. **`.kit/RESEARCH_LOG.md`** — cumulative findings from all experiments
 4. **`.kit/QUESTIONS.md`** — open and answered research questions
-5. **`.kit/experiments/label-geometry-phase1.md`** — completed experiment spec (REFUTED)
+5. **`.kit/experiments/label-geometry-1h.md`** — completed experiment spec (INCONCLUSIVE)
+6. **`.kit/results/label-geometry-1h/analysis.md`** — full analysis
 
 ---
 
-Updated: 2026-02-26. Next action: verify label distributions with `--max-time-horizon 3600 --legacy-labels`, then geometry sweep.
+Updated: 2026-02-26. Label geometry 1h INCONCLUSIVE. Feature-label correlation ceiling (~50-51% dir acc) is the binding constraint. Next: 2-class formulation or class-weighted training.
