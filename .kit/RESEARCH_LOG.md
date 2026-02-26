@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## label-geometry-phase1 — REFUTED
+**Date:** 2026-02-26
+**Hypothesis:** XGBoost at high-ratio geometries (15:3, 19:7, 20:3) achieves directional accuracy > breakeven WR + 2pp on bidirectional labels, producing positive expectancy.
+**Key result:** 3/4 geometries SKIPPED (>95% hold: 15:3=97.1%, 19:7=98.6%, 20:3=98.9%). Control (10:5) has 90.7% hold — model degenerates to hold-predictor (directional recall <2%, directional accuracy 53.65% = +0.37pp above breakeven). CPCV exp -$0.610. Holdout +$0.069 ($1.69/day on 0.53% trading rate).
+**Lesson:** Bidirectional triple barrier labels on time_5s bars produce fundamentally degenerate class distributions at ALL geometries. The ~45% accuracy baseline was on long-perspective labels with balanced classes. Bidirectional labels + 5s bars = ~91-99% hold. The geometry hypothesis was untestable under these label conditions.
+**Next:** Re-run geometry sweep on long-perspective labels (--legacy-labels) which produce balanced distributions. Verify class balance at varied geometries first. The geometry hypothesis survives in principle.
+**Details:** `.kit/results/label-geometry-phase1/analysis.md`
+
 ## synthesis-v2 — CONFIRMED
 **Date:** 2026-02-26
 **Hypothesis:** Comprehensive synthesis of 23 experiments establishes GO status — label geometry training at breakeven-favorable ratios has >50% prior of positive expectancy.
