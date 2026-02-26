@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## label-design-sensitivity — REFUTED (Outcome C — abort criterion miscalibrated)
+**Date:** 2026-02-26
+**Hypothesis:** Widening target/stop ratio from 2:1 (10:5) to >=3:1 lowers breakeven WR below model's ~45% accuracy, enabling positive expectancy. SC-2 gate: oracle net exp > $5.00/trade.
+**Key result:** 0/123 geometries pass $5.00 oracle net exp at base costs ($3.74 RT). Peak $4.126 at (16:10). BUT the $5.00 threshold was the wrong metric — breakeven WR at (15:3) is 33.3%, providing 12pp margin below model's 45% accuracy. Model profitable at (15:3) down to ~35% directional accuracy. Abort prevented Phase 1 training.
+**Lesson:** Oracle net expectancy and model viability are different metrics. High-ratio geometries (5:1+) have LOW oracle net exp but the most favorable breakeven WRs. The project was optimizing the wrong variable — the binding constraint is breakeven WR vs model accuracy, not oracle ceiling. Oracle margin (~10-12pp) is geometry-invariant. Cost sensitivity is extreme ($1.25 RT difference = 0 vs 8 geometries above $5.00).
+**Next:** (1) Rerun Phase 1 directly: train XGBoost at 4 geometries (10:5, 15:3, 19:7, 20:3) selected by breakeven WR diversity instead of oracle net exp. Skip oracle gate. (2) Key measurement: does model accuracy transfer to high-ratio geometries?
+**Details:** `.kit/results/label-design-sensitivity/analysis.md`
+
 ## xgb-hyperparam-tuning — REFUTED (Outcome C — MARGINAL)
 **Date:** 2026-02-25
 **Hypothesis:** Systematic XGBoost hyperparameter tuning on full-year 1.16M-bar dataset improves 3-class accuracy by ≥2.0pp (0.449→0.469) and pushes CPCV expectancy to breakeven ($0.00) under base costs.

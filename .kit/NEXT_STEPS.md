@@ -27,15 +27,20 @@ source .orchestration-kit.env
 
 ## Priority Experiments
 
-### 1. Label Design Sensitivity (HIGHEST PRIORITY — TDD PREREQUISITE REMAINING)
+### 1. Label Design Sensitivity (HIGHEST PRIORITY — FULLY UNBLOCKED)
 
 Test alternative triple barrier geometries using bidirectional labels. At 15:3 ratio, breakeven win rate drops to ~42.5% — well below current 51.3%. XGBoost tuning showed accuracy is plateaued at ~45% — label geometry is the remaining lever.
 
 **POLICY (2026-02-25):** Python NEVER computes labels. C++ binaries (`oracle_expectancy`, `bar_feature_export`) operate on raw .dbn.zst MBO data. Python only loads pre-computed Parquet for model training. Experiment spec rewritten to enforce this.
 
-**TDD prerequisite:** `bar_feature_export` needs `--target`/`--stop` CLI flags for Phase 1 re-export. Spec: `.kit/docs/bar-feature-export-geometry.md`. Run `.kit/tdd.sh full .kit/docs/bar-feature-export-geometry.md` first.
+**All prerequisites DONE:**
+- Oracle CLI params (`--target/--stop`) — DONE
+- Bidirectional TB labels — DONE (PR #26)
+- Bidirectional export wiring — DONE (PR #27)
+- Full-year re-export (312 files) — DONE (S3)
+- `bar_feature_export --target/--stop` flags — **DONE** (PR #28, TDD cycle complete, 47 tests pass)
 
-**Reexport diagnosis:** EC2 reexport produced 14KB header-only files (script/Docker path issue). Local binary works correctly (17MB, 152 cols, 87,970 rows). Will rebuild Docker image after TDD and re-run.
+**Reexport diagnosis:** EC2 reexport produced 14KB header-only files (script/Docker path issue, not code bug). Local binary produces 17MB / 152 cols / 87,970 rows correctly. Rebuild Docker image from current main (includes --target/--stop) and re-run.
 
 **Spec:** `.kit/experiments/label-design-sensitivity.md`
 **Branch:** `experiment/label-design-sensitivity`
@@ -68,6 +73,7 @@ R3b-genuine showed tick_100 R²=0.124 (+39%) but p=0.21 — driven by fold 5 out
 | Bidirectional Export Wiring | DONE (PR #27) | `bar_feature_export` defaults to bidirectional labels. |
 | Bidirectional TB Labels | DONE (PR #26) | `compute_bidirectional_tb_label()` — independent long/short races. |
 | Oracle Expectancy Params | DONE | CLI `--target/--stop/--take-profit/--output/--help` flags. |
+| bar-feature-export-geometry TDD | DONE (PR #28) | `--target/--stop` CLI flags, 47 tests, all passing. |
 
 ---
 
