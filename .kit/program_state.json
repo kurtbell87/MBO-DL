@@ -1,8 +1,8 @@
 {
-  "cycles_completed": 12,
+  "cycles_completed": 13,
   "gpu_hours_used": 0.0,
   "started_at": "2026-02-19T08:16:08.796351",
-  "last_cycle_at": "2026-02-27T02:21:06.044912",
+  "last_cycle_at": "2026-02-27T02:56:41.195875",
   "question_history": {
     "hybrid-model-corrected": [
       "REFUTED(OutcomeB)"
@@ -39,6 +39,9 @@
     ],
     "class-weighted-stage1": [
       "REFUTED(OutcomeC)"
+    ],
+    "cpcv-corrected-costs": [
+      "CONFIRMED(OutcomeA)"
     ]
   },
   "cycle_log": [
@@ -137,6 +140,14 @@
       "gpu_hours": 0.0,
       "spec_file": ".kit/experiments/class-weighted-stage1.md",
       "timestamp": "2026-02-27T02:21:06.044917"
+    },
+    {
+      "cycle": 13,
+      "question": "cpcv-corrected-costs",
+      "verdict": "CONFIRMED(OutcomeA)",
+      "gpu_hours": 0.0,
+      "spec_file": ".kit/experiments/cpcv-corrected-costs.md",
+      "timestamp": "2026-02-27T02:56:41.195880"
     }
   ]
 }

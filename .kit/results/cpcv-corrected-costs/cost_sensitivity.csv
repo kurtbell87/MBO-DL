@@ -1,0 +1,4 @@
+scenario,rt_cost,mean_expectancy,std_expectancy,ci_95_lower,ci_95_upper,fraction_positive,pbo
+optimistic,1.24,3.059859,1.179365,2.705539,3.414179,0.9778,0.0222
+base,2.49,1.809859,1.179365,1.455539,2.164179,0.9333,0.0667
+pessimistic,4.99,-0.690141,1.179365,-1.044461,-0.335821,0.2667,0.7333

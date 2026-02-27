@@ -1,0 +1,11 @@
+metric,value
+dir_accuracy,0.493167
+trade_rate,0.898954
+hold_fraction,0.448151
+n_trades,206328
+n_test,229520
+optimistic_expectancy,2.711524
+base_expectancy,1.461524
+pessimistic_expectancy,-1.038476
+dir_bar_pnl_base,4.787933
+hold_bar_pnl_base,-2.634594
