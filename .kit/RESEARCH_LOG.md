@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## class-weighted-stage1 — REFUTED (Outcome C)
+**Date:** 2026-02-27
+**Hypothesis:** There exists a (scale_pos_weight, threshold) pair such that the two-stage pipeline at 19:7 achieves realized WF expectancy > $1.50/trade with trade rate > 15%, by spreading the Stage 1 probability distribution.
+**Key result:** IQR DECREASES monotonically with lower weight (4.0pp -> 3.8 -> 3.2 -> 2.0 -> 0.8pp at weights 1.0/0.5/0.33/0.25/0.20). Class weighting COMPRESSES rather than spreads the probability surface. Recall collapses 465x (93% -> 0.2%) at first step. Precision also decreases (0.56 -> 0.43). Weights 0.25/0.20 produce zero trades. Baseline (w=1.0, T=0.50, $0.90/trade) remains optimal.
+**Lesson:** `scale_pos_weight < 1` in XGBoost binary:logistic is a logit-shift, not a spread mechanism — it shifts the sigmoid operating point uniformly, compressing ALL probabilities downward. The probability compression on this reachability task is structural and untuneable. Three experiments (threshold-sweep, class-weighting, geometry variation) have now exhausted all parameter-level interventions on the two-stage pipeline.
+**Next:** Long-perspective labels at 19:7 (P0 open question — changes labeling scheme, not model parameters). Probability recalibration (Platt/isotonic) as low-cost test. Regime-conditional trading (Q1-Q2 only).
+**Details:** `.kit/results/class-weighted-stage1/analysis.md`
+
 ## threshold-sweep — REFUTED (Outcome C)
 **Date:** 2026-02-27
 **Hypothesis:** There exists a Stage 1 probability threshold T* > 0.5 such that the two-stage pipeline at 19:7 achieves realized WF expectancy > $1.50/trade with trade rate > 15%, by reducing hold-bar fraction below 25%.

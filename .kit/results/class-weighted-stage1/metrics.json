@@ -1,0 +1,2162 @@
+{
+  "experiment": "class-weighted-stage1",
+  "timestamp": "2026-02-27T07:13:39",
+  "p_directional_distribution_per_weight": {
+    "1.00": {
+      "n_total": 697150,
+      "mean": 0.517755925655365,
+      "std": 0.13040484488010406,
+      "min": 0.002445733407512307,
+      "max": 0.9073226451873779,
+      "iqr": 0.040014028549194336,
+      "iqr_pp": 4.001402854919434,
+      "percentiles": {
+        "p5": 0.1355181187391281,
+        "p10": 0.37839311361312866,
+        "p25": 0.5355347990989685,
+        "p50": 0.5597617626190186,
+        "p75": 0.5755488276481628,
+        "p90": 0.5879645347595215,
+        "p95": 0.5984008312225342
+      },
+      "histogram": [
+        {
+          "bin_low": 0.0,
+          "bin_high": 0.1,
+          "count": 21084,
+          "fraction": 0.03024313275478735
+        },
+        {
+          "bin_low": 0.1,
+          "bin_high": 0.2,
+          "count": 27155,
+          "fraction": 0.03895144516961917
+        },
+        {
+          "bin_low": 0.2,
+          "bin_high": 0.3,
+          "count": 13544,
+          "fraction": 0.01942766979846518
+        },
+        {
+          "bin_low": 0.3,
+          "bin_high": 0.4,
+          "count": 10383,
+          "fraction": 0.014893494943699348
+        },
+        {
+          "bin_low": 0.4,
+          "bin_high": 0.45,
+          "count": 10897,
+          "fraction": 0.01563078247149107
+        },
+        {
+          "bin_low": 0.45,
+          "bin_high": 0.5,
+          "count": 20564,
+          "fraction": 0.029497238757799613
+        },
+        {
+          "bin_low": 0.5,
+          "bin_high": 0.55,
+          "count": 143816,
+          "fraction": 0.20629132898228503
+        },
+        {
+          "bin_low": 0.55,
+          "bin_high": 0.6,
+          "count": 418079,
+          "fraction": 0.599697339166607
+        },
+        {
+          "bin_low": 0.6,
+          "bin_high": 0.65,
+          "count": 28647,
+          "fraction": 0.0410915871763609
+        },
+        {
+          "bin_low": 0.65,
+          "bin_high": 0.7,
+          "count": 2046,
+          "fraction": 0.0029348059958402067
+        },
+        {
+          "bin_low": 0.7,
+          "bin_high": 0.75,
+          "count": 454,
+          "fraction": 0.0006512228358316001
+        },
+        {
+          "bin_low": 0.75,
+          "bin_high": 0.8,
+          "count": 441,
+          "fraction": 0.0006325754859069067
+        },
+        {
+          "bin_low": 0.8,
+          "bin_high": 0.85,
+          "count": 30,
+          "fraction": 4.303234598006168e-05
+        },
+        {
+          "bin_low": 0.85,
+          "bin_high": 0.9,
+          "count": 7,
+          "fraction": 1.0040880728681058e-05
+        },
+        {
+          "bin_low": 0.9,
+          "bin_high": 0.95,
+          "count": 3,
+          "fraction": 4.303234598006168e-06
+        },
+        {
+          "bin_low": 0.95,
+          "bin_high": 1.0,
+          "count": 0,
+          "fraction": 0.0
+        }
+      ],
+      "fraction_in_050_060": 0.8059886681488919,
+      "fraction_in_060_100": 0.04536756795524636,
+      "fraction_in_070_100": 0.0013411747830452557
+    },
+    "0.50": {
+      "n_total": 697150,
+      "mean": 0.35944053530693054,
+      "std": 0.09645414352416992,
+      "min": 0.003776062745600939,
+      "max": 0.6932627558708191,
+      "iqr": 0.03825446963310242,
+      "iqr_pp": 3.8254469633102417,
+      "percentiles": {
+        "p5": 0.07777639478445053,
+        "p10": 0.2382284551858902,
+        "p25": 0.36689361929893494,
+        "p50": 0.3895832300186157,
+        "p75": 0.40514808893203735,
+        "p90": 0.41640907526016235,
+        "p95": 0.4266291558742523
+      },
+      "histogram": [
+        {
+          "bin_low": 0.0,
+          "bin_high": 0.1,
+          "count": 44256,
+          "fraction": 0.063481316789787
+        },
+        {
+          "bin_low": 0.1,
+          "bin_high": 0.2,
+          "count": 20350,
+          "fraction": 0.029190274689808508
+        },
+        {
+          "bin_low": 0.2,
+          "bin_high": 0.3,
+          "count": 19372,
+          "fraction": 0.027787420210858494
+        },
+        {
+          "bin_low": 0.3,
+          "bin_high": 0.4,
+          "count": 373117,
+          "fraction": 0.5352033278347558
+        },
+        {
+          "bin_low": 0.4,
+          "bin_high": 0.45,
+          "count": 229808,
+          "fraction": 0.32963924549953383
+        },
+        {
+          "bin_low": 0.45,
+          "bin_high": 0.5,
+          "count": 8132,
+          "fraction": 0.011664634583662053
+        },
+        {
+          "bin_low": 0.5,
+          "bin_high": 0.55,
+          "count": 1453,
+          "fraction": 0.002084199956967654
+        },
+        {
+          "bin_low": 0.55,
+          "bin_high": 0.6,
+          "count": 537,
+          "fraction": 0.000770278993043104
+        },
+        {
+          "bin_low": 0.6,
+          "bin_high": 0.65,
+          "count": 72,
+          "fraction": 0.00010327763035214804
+        },
+        {
+          "bin_low": 0.65,
+          "bin_high": 0.7,
+          "count": 53,
+          "fraction": 7.60238112314423e-05
+        },
+        {
+          "bin_low": 0.7,
+          "bin_high": 0.75,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.75,
+          "bin_high": 0.8,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.8,
+          "bin_high": 0.85,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.85,
+          "bin_high": 0.9,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.9,
+          "bin_high": 0.95,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.95,
+          "bin_high": 1.0,
+          "count": 0,
+          "fraction": 0.0
+        }
+      ],
+      "fraction_in_050_060": 0.002854478950010758,
+      "fraction_in_060_100": 0.00017930144158359034,
+      "fraction_in_070_100": 0.0
+    },
+    "0.33": {
+      "n_total": 697150,
+      "mean": 0.2747434675693512,
+      "std": 0.07314974069595337,
+      "min": 0.0033540730364620686,
+      "max": 0.5831429362297058,
+      "iqr": 0.03245359659194946,
+      "iqr_pp": 3.2453596591949463,
+      "percentiles": {
+        "p5": 0.06690771877765656,
+        "p10": 0.1790623813867569,
+        "p25": 0.2781338393688202,
+        "p50": 0.2969556152820587,
+        "p75": 0.31058743596076965,
+        "p90": 0.31956177949905396,
+        "p95": 0.32893821597099304
+      },
+      "histogram": [
+        {
+          "bin_low": 0.0,
+          "bin_high": 0.1,
+          "count": 51149,
+          "fraction": 0.07336871548447249
+        },
+        {
+          "bin_low": 0.1,
+          "bin_high": 0.2,
+          "count": 22686,
+          "fraction": 0.032541060030122644
+        },
+        {
+          "bin_low": 0.2,
+          "bin_high": 0.3,
+          "count": 312452,
+          "fraction": 0.4481847522054077
+        },
+        {
+          "bin_low": 0.3,
+          "bin_high": 0.4,
+          "count": 309628,
+          "fraction": 0.44413397403715127
+        },
+        {
+          "bin_low": 0.4,
+          "bin_high": 0.45,
+          "count": 1056,
+          "fraction": 0.001514738578498171
+        },
+        {
+          "bin_low": 0.45,
+          "bin_high": 0.5,
+          "count": 78,
+          "fraction": 0.00011188409954816037
+        },
+        {
+          "bin_low": 0.5,
+          "bin_high": 0.55,
+          "count": 74,
+          "fraction": 0.00010614645341748548
+        },
+        {
+          "bin_low": 0.55,
+          "bin_high": 0.6,
+          "count": 27,
+          "fraction": 3.872911138205551e-05
+        },
+        {
+          "bin_low": 0.6,
+          "bin_high": 0.65,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.65,
+          "bin_high": 0.7,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.7,
+          "bin_high": 0.75,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.75,
+          "bin_high": 0.8,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.8,
+          "bin_high": 0.85,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.85,
+          "bin_high": 0.9,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.9,
+          "bin_high": 0.95,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.95,
+          "bin_high": 1.0,
+          "count": 0,
+          "fraction": 0.0
+        }
+      ],
+      "fraction_in_050_060": 0.000144875564799541,
+      "fraction_in_060_100": 0.0,
+      "fraction_in_070_100": 0.0
+    },
+    "0.25": {
+      "n_total": 697150,
+      "mean": 0.2332714945077896,
+      "std": 0.042393460869789124,
+      "min": 0.07383422553539276,
+      "max": 0.392753928899765,
+      "iqr": 0.020153656601905823,
+      "iqr_pp": 2.0153656601905823,
+      "percentiles": {
+        "p5": 0.12021742016077042,
+        "p10": 0.17775437235832214,
+        "p25": 0.2342851608991623,
+        "p50": 0.24688449501991272,
+        "p75": 0.2544388175010681,
+        "p90": 0.259114146232605,
+        "p95": 0.26436078548431396
+      },
+      "histogram": [
+        {
+          "bin_low": 0.0,
+          "bin_high": 0.1,
+          "count": 19849,
+          "fraction": 0.028471634511941474
+        },
+        {
+          "bin_low": 0.1,
+          "bin_high": 0.2,
+          "count": 58855,
+          "fraction": 0.08442229075521768
+        },
+        {
+          "bin_low": 0.2,
+          "bin_high": 0.3,
+          "count": 617349,
+          "fraction": 0.8855325252815033
+        },
+        {
+          "bin_low": 0.3,
+          "bin_high": 0.4,
+          "count": 1097,
+          "fraction": 0.0015735494513375887
+        },
+        {
+          "bin_low": 0.4,
+          "bin_high": 0.45,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.45,
+          "bin_high": 0.5,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.5,
+          "bin_high": 0.55,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.55,
+          "bin_high": 0.6,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.6,
+          "bin_high": 0.65,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.65,
+          "bin_high": 0.7,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.7,
+          "bin_high": 0.75,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.75,
+          "bin_high": 0.8,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.8,
+          "bin_high": 0.85,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.85,
+          "bin_high": 0.9,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.9,
+          "bin_high": 0.95,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.95,
+          "bin_high": 1.0,
+          "count": 0,
+          "fraction": 0.0
+        }
+      ],
+      "fraction_in_050_060": 0.0,
+      "fraction_in_060_100": 0.0,
+      "fraction_in_070_100": 0.0
+    },
+    "0.20": {
+      "n_total": 697150,
+      "mean": 0.2241329848766327,
+      "std": 0.0036121259909123182,
+      "min": 0.21676716208457947,
+      "max": 0.2294047325849533,
+      "iqr": 0.007858946919441223,
+      "iqr_pp": 0.7858946919441223,
+      "percentiles": {
+        "p5": 0.21888403594493866,
+        "p10": 0.2190486490726471,
+        "p25": 0.21947485208511353,
+        "p50": 0.22580964863300323,
+        "p75": 0.22733379900455475,
+        "p90": 0.2278924435377121,
+        "p95": 0.2278924435377121
+      },
+      "histogram": [
+        {
+          "bin_low": 0.0,
+          "bin_high": 0.1,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.1,
+          "bin_high": 0.2,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.2,
+          "bin_high": 0.3,
+          "count": 697150,
+          "fraction": 1.0
+        },
+        {
+          "bin_low": 0.3,
+          "bin_high": 0.4,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.4,
+          "bin_high": 0.45,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.45,
+          "bin_high": 0.5,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.5,
+          "bin_high": 0.55,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.55,
+          "bin_high": 0.6,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.6,
+          "bin_high": 0.65,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.65,
+          "bin_high": 0.7,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.7,
+          "bin_high": 0.75,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.75,
+          "bin_high": 0.8,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.8,
+          "bin_high": 0.85,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.85,
+          "bin_high": 0.9,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.9,
+          "bin_high": 0.95,
+          "count": 0,
+          "fraction": 0.0
+        },
+        {
+          "bin_low": 0.95,
+          "bin_high": 1.0,
+          "count": 0,
+          "fraction": 0.0
+        }
+      ],
+      "fraction_in_050_060": 0.0,
+      "fraction_in_060_100": 0.0,
+      "fraction_in_070_100": 0.0
+    }
+  },
+  "stage1_accuracy_per_weight": {
+    "1.00": {
+      "accuracy_mean": 0.5863669550480822,
+      "accuracy_per_fold": [
+        0.5952699784017279,
+        0.6006860627620378,
+        0.563144823980481
+      ],
+      "precision_mean": 0.5561094252749254,
+      "precision_per_fold": [
+        0.5550511187143808,
+        0.5617597203651257,
+        0.5515174367452698
+      ],
+      "recall_mean": 0.9303613020592619,
+      "recall_per_fold": [
+        0.9464768707954782,
+        0.9062367308116922,
+        0.9383703045706154
+      ]
+    },
+    "0.50": {
+      "accuracy_mean": 0.49054320830394094,
+      "accuracy_per_fold": [
+        0.5019697624190065,
+        0.50221911658832,
+        0.46744074590449636
+      ],
+      "precision_mean": 0.42561850350611213,
+      "precision_per_fold": [
+        0.6559139784946236,
+        0.5866558177379984,
+        0.03428571428571429
+      ],
+      "recall_mean": 0.0024593219360598295,
+      "recall_per_fold": [
+        0.0010576322907275123,
+        0.0061229342527642375,
+        0.00019739926468773905
+      ]
+    },
+    "0.33": {
+      "accuracy_mean": 0.4912033208126365,
+      "accuracy_per_fold": [
+        0.501719222462203,
+        0.5016092830220641,
+        0.4702814569536424
+      ],
+      "precision_mean": 0.28052805280528054,
+      "precision_per_fold": [
+        0.0,
+        0.8415841584158416,
+        0.0
+      ],
+      "recall_mean": 0.00024061461464861773,
+      "recall_per_fold": [
+        0.0,
+        0.0007218438439458532,
+        0.0
+      ]
+    },
+    "0.25": {
+      "accuracy_mean": 0.49110591684024846,
+      "accuracy_per_fold": [
+        0.501719222462203,
+        0.5013170711048999,
+        0.4702814569536424
+      ],
+      "precision_mean": 0.0,
+      "precision_per_fold": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recall_mean": 0.0,
+      "recall_per_fold": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "0.20": {
+      "accuracy_mean": 0.49110591684024846,
+      "accuracy_per_fold": [
+        0.501719222462203,
+        0.5013170711048999,
+        0.4702814569536424
+      ],
+      "precision_mean": 0.0,
+      "precision_per_fold": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "recall_mean": 0.0,
+      "recall_per_fold": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "threshold_curve_per_weight": {
+    "1.00": [
+      {
+        "threshold": 0.5,
+        "trade_rate_mean": 0.8518110743722463,
+        "hold_fraction_mean": 0.44389057472507454,
+        "realized_exp_mean": 0.901517613505994,
+        "realized_exp_std": 1.1589780860331114,
+        "realized_exp_cv_pct": 128.5585626581222,
+        "realized_exp_per_fold": [
+          0.010826135364183474,
+          2.5384366083743046,
+          0.1552900967794935
+        ],
+        "dir_bar_exp_mean": 3.774717324621069,
+        "hold_bar_exp_mean": -2.677496487511954,
+        "breakeven_rt_mean": 4.641517613505996,
+        "n_trades_mean": 197841.0,
+        "n_trades_per_fold": [
+          196699,
+          189962,
+          206862
+        ],
+        "daily_pnl_mean": 3380.030504575155
+      },
+      {
+        "threshold": 0.55,
+        "trade_rate_mean": 0.6451647298228649,
+        "hold_fraction_mean": 0.4377815635448099,
+        "realized_exp_mean": 0.8283398523778597,
+        "realized_exp_std": 1.106159797464237,
+        "realized_exp_cv_pct": 133.5393672402527,
+        "realized_exp_per_fold": [
+          -0.260504602235374,
+          2.3454889486115613,
+          0.4000352107573919
+        ],
+        "dir_bar_exp_mean": 3.865869502955498,
+        "hold_bar_exp_mean": -3.0604083497704253,
+        "breakeven_rt_mean": 4.5683398523778616,
+        "n_trades_mean": 149902.33333333334,
+        "n_trades_per_fold": [
+          167310,
+          144371,
+          138026
+        ],
+        "daily_pnl_mean": 2290.7413379084906
+      },
+      {
+        "threshold": 0.6,
+        "trade_rate_mean": 0.04512542837222563,
+        "hold_fraction_mean": 0.4197295623523465,
+        "realized_exp_mean": -4.294870368511543,
+        "realized_exp_std": 4.37636795276647,
+        "realized_exp_cv_pct": 101.89755632329297,
+        "realized_exp_per_fold": [
+          -10.480352811466377,
+          -1.018417694138008,
+          -1.385840599930243
+        ],
+        "dir_bar_exp_mean": 4.4880881992685655,
+        "hold_bar_exp_mean": -16.886682670618523,
+        "breakeven_rt_mean": -0.5548703685115396,
+        "n_trades_mean": 10542.666666666666,
+        "n_trades_per_fold": [
+          4535,
+          18492,
+          8601
+        ],
+        "daily_pnl_mean": -519.4088581699352
+      },
+      {
+        "threshold": 0.65,
+        "trade_rate_mean": 0.004250819007737126,
+        "hold_fraction_mean": 0.5380620127362804,
+        "realized_exp_mean": -9.108130492987177,
+        "realized_exp_std": 8.808969399028795,
+        "realized_exp_cv_pct": 96.71545006751143,
+        "realized_exp_per_fold": [
+          3.325746753246751,
+          -15.992852972399156,
+          -14.657285259809123
+        ],
+        "dir_bar_exp_mean": 6.070387789064045,
+        "hold_bar_exp_mean": -25.887984885319,
+        "breakeven_rt_mean": -5.368130492987173,
+        "n_trades_mean": 993.6666666666666,
+        "n_trades_per_fold": [
+          154,
+          1884,
+          943
+        ],
+        "daily_pnl_mean": -285.662634640523
+      },
+      {
+        "threshold": 0.7,
+        "trade_rate_mean": 0.0013368755632307296,
+        "hold_fraction_mean": 0.47148973277857403,
+        "realized_exp_mean": 1.3040885202862835,
+        "realized_exp_std": 13.60836902114264,
+        "realized_exp_cv_pct": 1043.5157437131052,
+        "realized_exp_per_fold": [
+          20.009999999999998,
+          -11.966547388781434,
+          -4.1311870503597135
+        ],
+        "dir_bar_exp_mean": 5.082463768115941,
+        "hold_bar_exp_mean": -14.349524885875107,
+        "breakeven_rt_mean": 5.0440885202862855,
+        "n_trades_mean": 311.6666666666667,
+        "n_trades_per_fold": [
+          1,
+          517,
+          417
+        ],
+        "daily_pnl_mean": -51.78728039215688
+      },
+      {
+        "threshold": 0.75,
+        "trade_rate_mean": 0.0006929083382717773,
+        "hold_fraction_mean": 0.4100719424460431,
+        "realized_exp_mean": -0.2915947242206241,
+        "realized_exp_std": 2.7044395160334065,
+        "realized_exp_cv_pct": 927.4651738853803,
+        "realized_exp_per_fold": [
+          0.0,
+          2.8652158273381287,
+          -3.740000000000001
+        ],
+        "dir_bar_exp_mean": 2.3164174454828657,
+        "hold_bar_exp_mean": -4.84359375,
+        "breakeven_rt_mean": 2.20173860911271,
+        "n_trades_mean": 160.33333333333334,
+        "n_trades_per_fold": [
+          0,
+          139,
+          342
+        ],
+        "daily_pnl_mean": -5.92416078431373
+      },
+      {
+        "threshold": 0.8,
+        "trade_rate_mean": 5.646607094961815e-05,
+        "hold_fraction_mean": 0.016666666666666666,
+        "realized_exp_mean": 0.2012499999999995,
+        "realized_exp_std": 0.2846104794275847,
+        "realized_exp_cv_pct": 141.4213562373095,
+        "realized_exp_per_fold": [
+          0.0,
+          0.6037499999999986,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.6831578947368419,
+        "hold_bar_exp_mean": -8.955,
+        "breakeven_rt_mean": 1.4479166666666667,
+        "n_trades_mean": 13.333333333333334,
+        "n_trades_per_fold": [
+          0,
+          40,
+          0
+        ],
+        "daily_pnl_mean": 0.1578431372549016
+      },
+      {
+        "threshold": 0.85,
+        "trade_rate_mean": 1.4116517737404537e-05,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": -3.0799999999999996,
+        "realized_exp_std": 4.355777772109131,
+        "realized_exp_cv_pct": 141.42135623730948,
+        "realized_exp_per_fold": [
+          0.0,
+          -9.239999999999998,
+          0.0
+        ],
+        "dir_bar_exp_mean": -3.0799999999999996,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": -1.8333333333333333,
+        "n_trades_mean": 3.3333333333333335,
+        "n_trades_per_fold": [
+          0,
+          10,
+          0
+        ],
+        "daily_pnl_mean": -0.6039215686274509
+      },
+      {
+        "threshold": 0.9,
+        "trade_rate_mean": 4.234955321221361e-06,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": -4.163333333333333,
+        "realized_exp_std": 5.887842464679986,
+        "realized_exp_cv_pct": 141.4213562373095,
+        "realized_exp_per_fold": [
+          0.0,
+          -12.49,
+          0.0
+        ],
+        "dir_bar_exp_mean": -4.163333333333333,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": -2.9166666666666665,
+        "n_trades_mean": 1.0,
+        "n_trades_per_fold": [
+          0,
+          3,
+          0
+        ],
+        "daily_pnl_mean": -0.24490196078431373
+      }
+    ],
+    "0.50": [
+      {
+        "threshold": 0.5,
+        "trade_rate_mean": 0.0030193529880822786,
+        "hold_fraction_mean": 0.5743814964938879,
+        "realized_exp_mean": -2.5058406649010103,
+        "realized_exp_std": 7.5673447486133325,
+        "realized_exp_cv_pct": 301.98826504047776,
+        "realized_exp_per_fold": [
+          7.496559139784943,
+          -10.802652563059402,
+          -4.211428571428573
+        ],
+        "dir_bar_exp_mean": 5.773243092345429,
+        "hold_bar_exp_mean": -13.595601791455067,
+        "breakeven_rt_mean": 1.2341593350989921,
+        "n_trades_mean": 705.0,
+        "n_trades_per_fold": [
+          186,
+          1229,
+          700
+        ],
+        "daily_pnl_mean": -97.13184836601312
+      },
+      {
+        "threshold": 0.55,
+        "trade_rate_mean": 0.0009496121010706653,
+        "hold_fraction_mean": 0.4812053432743088,
+        "realized_exp_mean": 6.1326312519415955,
+        "realized_exp_std": 10.123611857767218,
+        "realized_exp_cv_pct": 165.07778540511586,
+        "realized_exp_per_fold": [
+          20.009999999999998,
+          2.2427586206896515,
+          -3.8548648648648665
+        ],
+        "dir_bar_exp_mean": 4.8842138364779855,
+        "hold_bar_exp_mean": -2.4921893351637325,
+        "breakeven_rt_mean": 9.872631251941597,
+        "n_trades_mean": 220.66666666666666,
+        "n_trades_per_fold": [
+          2,
+          290,
+          370
+        ],
+        "daily_pnl_mean": -4.9908862745098155
+      },
+      {
+        "threshold": 0.6,
+        "trade_rate_mean": 0.00017649712620616085,
+        "hold_fraction_mean": 0.40322580645161293,
+        "realized_exp_mean": -9.101196236559142,
+        "realized_exp_std": 17.619304483899825,
+        "realized_exp_cv_pct": 193.59328187127514,
+        "realized_exp_per_fold": [
+          0.0,
+          6.436411290322579,
+          -33.74
+        ],
+        "dir_bar_exp_mean": 2.2482312925170063,
+        "hold_bar_exp_mean": -9.488525641025642,
+        "breakeven_rt_mean": -6.607862903225807,
+        "n_trades_mean": 41.666666666666664,
+        "n_trades_per_fold": [
+          0,
+          124,
+          1
+        ],
+        "daily_pnl_mean": 4.991504575163398
+      },
+      {
+        "threshold": 0.65,
+        "trade_rate_mean": 7.481754400824405e-05,
+        "hold_fraction_mean": 0.018867924528301886,
+        "realized_exp_mean": 2.809937106918238,
+        "realized_exp_std": 3.9738511660191898,
+        "realized_exp_cv_pct": 141.4213562373095,
+        "realized_exp_per_fold": [
+          0.0,
+          8.429811320754714,
+          0.0
+        ],
+        "dir_bar_exp_mean": 2.5533333333333323,
+        "hold_bar_exp_mean": 7.086666666666666,
+        "breakeven_rt_mean": 4.056603773584905,
+        "n_trades_mean": 17.666666666666668,
+        "n_trades_per_fold": [
+          0,
+          53,
+          0
+        ],
+        "daily_pnl_mean": 2.9201307189542476
+      },
+      {
+        "threshold": 0.7,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.75,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.8,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.85,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.9,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      }
+    ],
+    "0.33": [
+      {
+        "threshold": 0.5,
+        "trade_rate_mean": 0.00014257682914778583,
+        "hold_fraction_mean": 0.052805280528052806,
+        "realized_exp_mean": 3.078828382838282,
+        "realized_exp_std": 4.354120855229123,
+        "realized_exp_cv_pct": 141.42135623730954,
+        "realized_exp_per_fold": [
+          0.0,
+          9.236485148514847,
+          0.0
+        ],
+        "dir_bar_exp_mean": 2.4641176470588233,
+        "hold_bar_exp_mean": 6.344479166666666,
+        "breakeven_rt_mean": 4.3254950495049505,
+        "n_trades_mean": 33.666666666666664,
+        "n_trades_per_fold": [
+          0,
+          101,
+          0
+        ],
+        "daily_pnl_mean": 6.0972875816993435
+      },
+      {
+        "threshold": 0.55,
+        "trade_rate_mean": 3.811459789099225e-05,
+        "hold_fraction_mean": 0.012345679012345678,
+        "realized_exp_mean": 4.632962962962962,
+        "realized_exp_std": 6.55199905619446,
+        "realized_exp_cv_pct": 141.4213562373095,
+        "realized_exp_per_fold": [
+          0.0,
+          13.898888888888886,
+          0.0
+        ],
+        "dir_bar_exp_mean": 4.586666666666666,
+        "hold_bar_exp_mean": 5.836666666666666,
+        "breakeven_rt_mean": 5.87962962962963,
+        "n_trades_mean": 9.0,
+        "n_trades_per_fold": [
+          0,
+          27,
+          0
+        ],
+        "daily_pnl_mean": 2.452745098039215
+      },
+      {
+        "threshold": 0.6,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.65,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.7,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.75,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.8,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.85,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.9,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      }
+    ],
+    "0.25": [
+      {
+        "threshold": 0.5,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.55,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.6,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.65,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.7,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.75,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.8,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.85,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.9,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      }
+    ],
+    "0.20": [
+      {
+        "threshold": 0.5,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.55,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.6,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.65,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.7,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.75,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.8,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.85,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      },
+      {
+        "threshold": 0.9,
+        "trade_rate_mean": 0.0,
+        "hold_fraction_mean": 0.0,
+        "realized_exp_mean": 0.0,
+        "realized_exp_std": 0.0,
+        "realized_exp_cv_pct": 9999.0,
+        "realized_exp_per_fold": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "dir_bar_exp_mean": 0.0,
+        "hold_bar_exp_mean": 0.0,
+        "breakeven_rt_mean": 0.0,
+        "n_trades_mean": 0.0,
+        "n_trades_per_fold": [
+          0,
+          0,
+          0
+        ],
+        "daily_pnl_mean": 0.0
+      }
+    ]
+  },
+  "best_weight_threshold_pair": {
+    "weight": 1.0,
+    "threshold": 0.5
+  },
+  "best_realized_expectancy": 0.901517613505994,
+  "best_trade_rate": 0.8518110743722463,
+  "hold_fraction_at_best": 0.44389057472507454,
+  "dir_bar_pnl_at_best": 3.774717324621069,
+  "per_fold_cv_at_best": 128.5585626581222,
+  "breakeven_rt_at_best": 4.641517613505996,
+  "daily_pnl_at_best": 3380.030504575155,
+  "per_fold_at_best": [
+    {
+      "fold": "Fold 1",
+      "n_test": 231500,
+      "n_trades": 196699,
+      "trade_rate": 0.849671706263499,
+      "hold_fraction": 0.44494888128561916,
+      "n_dir_trades": 109178,
+      "n_hold_trades": 87521,
+      "realized_exp_base": 0.010826135364183474,
+      "realized_exp_optimistic": 1.2608261353641839,
+      "realized_exp_pessimistic": -2.499173864635814,
+      "dir_bar_exp": 4.010050376449466,
+      "hold_bar_exp": -4.978002879308967,
+      "directional_accuracy": 0.5076938577369067,
+      "breakeven_rt": 3.750826135364186,
+      "daily_pnl": 42.589799999990504,
+      "s2_accuracy_on_filtered": 0.5076938577369067
+    },
+    {
+      "fold": "Fold 2",
+      "n_test": 236130,
+      "n_trades": 189962,
+      "trade_rate": 0.8044805827298522,
+      "hold_fraction": 0.43824027963487433,
+      "n_dir_trades": 106713,
+      "n_hold_trades": 83249,
+      "realized_exp_base": 2.5384366083743046,
+      "realized_exp_optimistic": 3.7884366083743046,
+      "realized_exp_pessimistic": 0.02843660837430644,
+      "dir_bar_exp": 3.81162210789688,
+      "hold_bar_exp": 0.9063996564523276,
+      "directional_accuracy": 0.5015883725506733,
+      "breakeven_rt": 6.278436608374307,
+      "daily_pnl": 9455.029313725483,
+      "s2_accuracy_on_filtered": 0.5015883725506733
+    },
+    {
+      "fold": "Fold 3 (holdout)",
+      "n_test": 229520,
+      "n_trades": 206862,
+      "trade_rate": 0.901280934123388,
+      "hold_fraction": 0.4484825632547302,
+      "n_dir_trades": 114088,
+      "n_hold_trades": 92774,
+      "realized_exp_base": 0.1552900967794935,
+      "realized_exp_optimistic": 1.4052900967794935,
+      "realized_exp_pessimistic": -2.3547099032205043,
+      "dir_bar_exp": 3.502479489516862,
+      "hold_bar_exp": -3.9608862396792226,
+      "directional_accuracy": 0.4920762919851343,
+      "breakeven_rt": 3.8952900967794957,
+      "daily_pnl": 642.4723999999918,
+      "s2_accuracy_on_filtered": 0.4920762919851343
+    }
+  ],
+  "cost_sensitivity_at_best": {
+    "optimistic": {
+      "rt_cost": 2.49,
+      "mean": 2.151517613505994,
+      "per_fold": [
+        1.2608261353641839,
+        3.7884366083743046,
+        1.4052900967794935
+      ]
+    },
+    "base": {
+      "rt_cost": 3.74,
+      "mean": 0.901517613505994,
+      "per_fold": [
+        0.010826135364183474,
+        2.5384366083743046,
+        0.1552900967794935
+      ]
+    },
+    "pessimistic": {
+      "rt_cost": 6.25,
+      "mean": -1.608482386494004,
+      "per_fold": [
+        -2.499173864635814,
+        0.02843660837430644,
+        -2.3547099032205043
+      ]
+    }
+  },
+  "dir_bar_pnl_stability": {
+    "1.00": [
+      {
+        "threshold": 0.5,
+        "dir_bar_exp": 3.774717324621069
+      },
+      {
+        "threshold": 0.55,
+        "dir_bar_exp": 3.865869502955498
+      },
+      {
+        "threshold": 0.6,
+        "dir_bar_exp": 4.4880881992685655
+      },
+      {
+        "threshold": 0.65,
+        "dir_bar_exp": 6.070387789064045
+      },
+      {
+        "threshold": 0.7,
+        "dir_bar_exp": 5.082463768115941
+      },
+      {
+        "threshold": 0.75,
+        "dir_bar_exp": 2.3164174454828657
+      },
+      {
+        "threshold": 0.8,
+        "dir_bar_exp": 0.6831578947368419
+      },
+      {
+        "threshold": 0.85,
+        "dir_bar_exp": -3.0799999999999996
+      },
+      {
+        "threshold": 0.9,
+        "dir_bar_exp": -4.163333333333333
+      }
+    ],
+    "0.50": [
+      {
+        "threshold": 0.5,
+        "dir_bar_exp": 5.773243092345429
+      },
+      {
+        "threshold": 0.55,
+        "dir_bar_exp": 4.8842138364779855
+      },
+      {
+        "threshold": 0.6,
+        "dir_bar_exp": 2.2482312925170063
+      },
+      {
+        "threshold": 0.65,
+        "dir_bar_exp": 2.5533333333333323
+      },
+      {
+        "threshold": 0.7,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.75,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.8,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.85,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.9,
+        "dir_bar_exp": 0.0
+      }
+    ],
+    "0.33": [
+      {
+        "threshold": 0.5,
+        "dir_bar_exp": 2.4641176470588233
+      },
+      {
+        "threshold": 0.55,
+        "dir_bar_exp": 4.586666666666666
+      },
+      {
+        "threshold": 0.6,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.65,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.7,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.75,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.8,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.85,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.9,
+        "dir_bar_exp": 0.0
+      }
+    ],
+    "0.25": [
+      {
+        "threshold": 0.5,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.55,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.6,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.65,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.7,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.75,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.8,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.85,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.9,
+        "dir_bar_exp": 0.0
+      }
+    ],
+    "0.20": [
+      {
+        "threshold": 0.5,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.55,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.6,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.65,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.7,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.75,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.8,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.85,
+        "dir_bar_exp": 0.0
+      },
+      {
+        "threshold": 0.9,
+        "dir_bar_exp": 0.0
+      }
+    ]
+  },
+  "sanity_checks": {
+    "SC-S1": {
+      "description": "Weight 1.0 reproduces baseline realized exp $0.90 +/- $0.01",
+      "pass": true,
+      "value": 0.901517613505994,
+      "reference": 0.901517613505994,
+      "diff": 0.0
+    },
+    "SC-S1b": {
+      "description": "Weight 1.0 reproduces baseline trade rate 85.18%",
+      "pass": true,
+      "value": 0.8518110743722463,
+      "reference": 0.8518110743722463,
+      "diff": 0.0
+    },
+    "SC-S2": {
+      "description": "Precision increases as weight decreases",
+      "pass": false,
+      "values": {
+        "1.00": 0.5561094252749254,
+        "0.50": 0.42561850350611213,
+        "0.33": 0.28052805280528054,
+        "0.25": 0.0,
+        "0.20": 0.0
+      }
+    },
+    "SC-S3": {
+      "description": "Recall decreases as weight decreases",
+      "pass": true,
+      "values": {
+        "1.00": 0.9303613020592619,
+        "0.50": 0.0024593219360598295,
+        "0.33": 0.00024061461464861773,
+        "0.25": 0.0,
+        "0.20": 0.0
+      }
+    },
+    "SC-S4": {
+      "description": "IQR monotonically increases as weight decreases",
+      "pass": false,
+      "values": {
+        "1.00": 4.001402854919434,
+        "0.50": 3.8254469633102417,
+        "0.33": 3.2453596591949463,
+        "0.25": 2.0153656601905823,
+        "0.20": 0.7858946919441223
+      }
+    }
+  },
+  "success_criteria": {
+    "SC-1": {
+      "description": "Exists (weight, threshold) with realized WF exp > $1.50 and trade rate > 15%",
+      "pass": false,
+      "value": 0.901517613505994,
+      "trade_rate": 0.8518110743722463
+    },
+    "SC-2": {
+      "description": "P(directional) IQR at best weight > 10pp (vs baseline 4pp)",
+      "pass": false,
+      "max_iqr_pp": 4.001402854919434,
+      "max_iqr_weight": 1.0
+    },
+    "SC-3": {
+      "description": "Per-fold CV < 80% at optimal (weight, threshold)",
+      "pass": false,
+      "value": 128.5585626581222
+    },
+    "SC-4": {
+      "description": "Dir-bar PnL > $3.00/trade at optimal (weight, threshold)",
+      "pass": true,
+      "value": 3.774717324621069
+    }
+  },
+  "outcome": "C",
+  "outcome_description": "REFUTED \u2014 class weighting doesn't spread the probability surface.",
+  "baseline_vs_optimal": {
+    "baseline": {
+      "weight": 1.0,
+      "threshold": 0.5,
+      "realized_exp": 0.901517613505994,
+      "trade_rate": 0.8518110743722463,
+      "hold_fraction": 0.44389057472507454,
+      "per_fold_cv": 128.5585626581222,
+      "breakeven_rt": 4.641517613505996,
+      "daily_pnl": 3380.030504575155,
+      "dir_bar_exp": 3.774717324621069,
+      "p_iqr_pp": 4.001402854919434,
+      "p_in_050_060": 0.8059886681488919
+    },
+    "optimal": {
+      "weight": 1.0,
+      "threshold": 0.5,
+      "realized_exp": 0.901517613505994,
+      "trade_rate": 0.8518110743722463,
+      "hold_fraction": 0.44389057472507454,
+      "per_fold_cv": 128.5585626581222,
+      "breakeven_rt": 4.641517613505996,
+      "daily_pnl": 3380.030504575155,
+      "dir_bar_exp": 3.774717324621069,
+      "p_iqr_pp": 4.001402854919434,
+      "p_in_050_060": 0.8059886681488919
+    }
+  },
+  "mve_gates": {
+    "baseline_reproduces": true,
+    "precision_increases": false,
+    "iqr_increases": false,
+    "trade_rate_decreases": true,
+    "precision_increases_non_degenerate": true,
+    "degenerate_weights": 2,
+    "all_passed": false
+  },
+  "resource_usage": {
+    "wall_clock_seconds": 38.01515293121338,
+    "wall_clock_minutes": 0.6335858821868896,
+    "total_training_runs": 18,
+    "stage1_fits": 15,
+    "stage2_fits": 3,
+    "gpu_hours": 0,
+    "total_threshold_evaluations": 135
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Executed locally on Apple Silicon. Stage 2 trained ONCE per fold (weight=1.0). Stage 1 retrained per weight. Threshold sweep is post-hoc numpy on Stage 1 probabilities. Realized return PnL model identical to pnl-realized-return (PR #35). Only 19:7 geometry (10:5 excluded per spec)."
+}
