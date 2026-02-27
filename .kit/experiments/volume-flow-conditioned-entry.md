@@ -357,20 +357,20 @@ OUTCOME D — Implementation bug or sanity check abort:
 
 ## Exit Criteria
 
-- [ ] Stage 1 diagnostic runs and produces D1-D5 tables
-- [ ] Per-feature pp range computed and tier assigned (>= 5pp / 3-5pp / < 3pp)
-- [ ] D5 cross-table (volatility_50 × trade_count) populated
-- [ ] First-100-bars entry fraction reported
-- [ ] Outcome C check performed: all 5 features < 3pp? If yes, abort Stage 2 and report.
-- [ ] If Stage 2 warranted: all qualifying features × 3 gate levels × 45 splits simulated
-- [ ] If Stage 2 warranted: stacked config (cutoff=270 + best volume gate) simulated
-- [ ] Baseline reproduces PR #39 within tolerances (SC-S2, SC-S3, SC-S4)
-- [ ] Bar-level split 0 matches PR #38 within $0.01 (SC-S1/SC-8)
-- [ ] Four-way comparison table populated (unfiltered / cutoff=270 / volume-gated / stacked)
-- [ ] All SC-1 through SC-8 evaluated with explicit pass/fail
-- [ ] metrics.json and analysis.md complete
-- [ ] All output files written to `.kit/results/volume-flow-conditioned-entry/`
-- [ ] Outcome verdict (A/B/C/D) rendered
+- [x] Stage 1 diagnostic runs and produces D1-D5 tables — all 5 features × 4 quartiles, 19.7-21.7pp range (all strong tier)
+- [x] Per-feature pp range computed and tier assigned (>= 5pp / 3-5pp / < 3pp) — all 5 "strong"
+- [x] D5 cross-table (volatility_50 × trade_count) populated — 4×4 = 16 cells, v50_Q1×tc_Q1 = 71.5% timeout
+- [x] First-100-bars entry fraction reported — 4.1%, well below 15% threshold
+- [x] Outcome C check performed: all 5 features < 3pp? — NO, all >= 19pp. Stage 2 warranted and executed.
+- [x] If Stage 2 warranted: all qualifying features × 3 gate levels × 45 splits simulated — 810 simulations (18 configs × 45 splits)
+- [x] If Stage 2 warranted: stacked config (cutoff=270 + best volume gate) simulated — stacked_message_rate_p25: $3.10/trade, $33K min acct, Calmar 2.59
+- [x] Baseline reproduces PR #39 within tolerances (SC-S2, SC-S3, SC-S4) — all PASS
+- [x] Bar-level split 0 matches PR #38 within $0.01 (SC-S1/SC-8) — $1.0652 vs $1.065186 (PASS)
+- [x] Four-way comparison table populated (unfiltered / cutoff=270 / volume-gated / stacked)
+- [x] All SC-1 through SC-8 evaluated with explicit pass/fail — 5/8 pass, SC-2/3/5 fail
+- [x] metrics.json and analysis.md complete
+- [x] All output files written to `.kit/results/volume-flow-conditioned-entry/` — 8 files
+- [x] Outcome verdict (A/B/C/D) rendered — **Outcome B: REFUTED**
 
 ---
 
