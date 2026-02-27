@@ -49,8 +49,9 @@ Status: `Not started` | `In progress` | `Answered` | `Blocked` | `Deferred`
 | P2 | How sensitive is oracle expectancy to transaction cost assumptions? | Not started | — | — | Determines edge robustness under realistic execution | — |
 | P3 | Does regime-conditional trading (Q1-Q2 only) produce positive expectancy? | Not started | — | — | GBT profitable in H1 2022, negative in H2. Limited by single year of data. | — |
 | P3 | Does CNN spatial R² improve on genuine trade-triggered tick bars vs time_5s? | Answered | — | — | Determines whether event bars should replace time_5s | R3b-genuine-tick-bars (CONFIRMED low confidence) |
-| P1 | Does position-level stop-loss (intra-trade exit on unrealized loss) reduce max drawdown for sequential 19:7 trading? | Not started | — | Needs bar-level price path within outcome window or exit_bar column | Daily cumulative stop failed structurally (2.6% DD reduction). Tail risk is single-trade, not multi-trade. Determines if risk control is achievable without modifying entry logic. | — |
+| P1 | Does position-level stop-loss (intra-trade exit on unrealized loss) reduce max drawdown for sequential 19:7 trading? | Blocked | — | Needs exit_bar column in Parquet (TDD cycle) | Daily cumulative stop CONFIRMED effective (47% DD reduction, daily-stop-loss-sequential). Position-level stop may provide additional compression beyond DSL=$2K. Determines if intra-trade risk control adds value on top of daily stop. | — |
 | P1 | Does realistic lockout (actual exit time, not worst-case 720 bars) increase sequential trade count and total PnL? | Blocked | — | Needs exit_bar column in Parquet (TDD cycle) | Current lockout=720 is conservative lower bound. Directional bars exit before time horizon. Expected to roughly double trade count (~12/day). | — |
+| P2 | Does the DSL=$2,000 threshold remain effective across different market years (2021, 2023)? | Not started | — | Needs multi-year data | DSL confirmed on 2022. Broad effectiveness ($500-$5K all improve) suggests structural robustness, but specific optimal threshold may shift with volatility regime. | — |
 
 ---
 

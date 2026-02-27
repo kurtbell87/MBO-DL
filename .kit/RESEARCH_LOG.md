@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## daily-stop-loss-sequential — CONFIRMED (Outcome A)
+**Date:** 2026-02-27
+**Hypothesis:** Daily stop loss (halt trading when intra-day P&L drops to -$X) compresses max drawdown enough to reduce min_account from $34K to ≤$20K while preserving annual PnL ≥$50K and Calmar ≥2.0.
+**Key result:** DSL=$2,000 achieves min_acct **$18,000** (-47%), annual PnL **$114,352** (+35%), Calmar **6.37** (+156%), recovery sacrifice only **7.3%**. All 9 SC pass, all 5 sanity checks pass. PnL *increases* because removed post-threshold trades are net-negative (92.7% of stopped days end negative without DSL).
+**Lesson:** The model's worst trades cluster during intra-day drawdowns — trade outcomes are autocorrelated within days, not i.i.d. DSL exploits this by cutting genuinely bad intra-day regimes. Broad effectiveness across $500-$5K (all beat baseline PnL) means the finding is structural, not threshold-specific.
+**Next:** (1) Multi-year DSL robustness validation. (2) Paper trading with DSL=$2K + cutoff=270. (3) Position-level stop-loss for additional compression (blocked on exit_bar column).
+**Details:** `.kit/results/daily-stop-loss-sequential/analysis.md`
+
 ## volume-flow-conditioned-entry — REFUTED (Outcome B, diagnostic evaporates in simulation)
 **Date:** 2026-02-27
 **Hypothesis:** Volume/activity-based entry gating reduces timeout fraction below 41% and improves per-trade expectancy toward $3.50.
