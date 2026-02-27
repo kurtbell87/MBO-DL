@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## timeout-filtered-sequential — REFUTED (Outcome B, mechanism falsified)
+**Date:** 2026-02-27
+**Hypothesis:** Time-of-day entry cutoff (minutes_since_open <= cutoff) achieves >= $3.50/trade expectancy and <= $30K min account by avoiding timeout-prone late-day entries.
+**Key result:** Timeout fraction is **invariant at ~41.3%** across all 7 cutoff levels (range 0.21pp). Time-of-day does NOT determine timeouts. Best cutoff=270: exp $3.02/trade (< $3.50 target), min_acct $34K (> $30K target). Calmar +15%, DD -29%, but annual PnL -18% ($104K→$85K). ROC improves 216%→249%.
+**Lesson:** Timeouts are driven by the volume horizon (50,000 contracts), not clock time — even entries 4.5h into RTH have ample time for the typical 2.3-minute barrier race. The cutoff=270 improvement comes from hold-skip restructuring (66%→34%), not timeout avoidance. Late-day trades in the 5–5.75h window are actually BETTER than average (SC-S4 U-shape).
+**Next:** (1) Volume-flow conditioned entry — target the actual timeout mechanism. (2) Volatility-conditional entry (volatility_50 at entry). (3) Accept $34K/$25.5K account sizing and proceed to paper trading.
+**Details:** `.kit/results/timeout-filtered-sequential/analysis.md`
+
 ## trade-level-risk-metrics — REFUTED (SC-2, SC-4, SC-8 fail; productive)
 **Date:** 2026-02-27
 **Hypothesis:** Sequential 1-contract execution at 19:7 produces per-trade expectancy >= $0.50 with min account <= $5,000.

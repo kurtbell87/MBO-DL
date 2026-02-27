@@ -1,8 +1,8 @@
 {
-  "cycles_completed": 14,
+  "cycles_completed": 15,
   "gpu_hours_used": 0.0,
   "started_at": "2026-02-19T08:16:08.796351",
-  "last_cycle_at": "2026-02-27T04:03:13.381080",
+  "last_cycle_at": "2026-02-27T07:07:31.571734",
   "question_history": {
     "hybrid-model-corrected": [
       "REFUTED(OutcomeB)"
@@ -44,6 +44,9 @@
       "CONFIRMED(OutcomeA)"
     ],
     "trade-level-risk-metrics": [
+      "REFUTED"
+    ],
+    "timeout-filtered-sequential": [
       "REFUTED"
     ]
   },
@@ -159,6 +162,14 @@
       "gpu_hours": 0.0,
       "spec_file": ".kit/experiments/trade-level-risk-metrics.md",
       "timestamp": "2026-02-27T04:03:13.381085"
+    },
+    {
+      "cycle": 15,
+      "question": "timeout-filtered-sequential",
+      "verdict": "REFUTED",
+      "gpu_hours": 0.0,
+      "spec_file": ".kit/experiments/timeout-filtered-sequential.md",
+      "timestamp": "2026-02-27T07:07:31.571740"
     }
   ]
 }
