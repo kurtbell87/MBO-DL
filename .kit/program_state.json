@@ -1,8 +1,8 @@
 {
-  "cycles_completed": 15,
+  "cycles_completed": 16,
   "gpu_hours_used": 0.0,
   "started_at": "2026-02-19T08:16:08.796351",
-  "last_cycle_at": "2026-02-27T07:07:31.571734",
+  "last_cycle_at": "2026-02-27T08:10:16.573993",
   "question_history": {
     "hybrid-model-corrected": [
       "REFUTED(OutcomeB)"
@@ -48,6 +48,9 @@
     ],
     "timeout-filtered-sequential": [
       "REFUTED"
+    ],
+    "volume-flow-conditioned-entry": [
+      "REFUTED(OutcomeB)"
     ]
   },
   "cycle_log": [
@@ -170,6 +173,14 @@
       "gpu_hours": 0.0,
       "spec_file": ".kit/experiments/timeout-filtered-sequential.md",
       "timestamp": "2026-02-27T07:07:31.571740"
+    },
+    {
+      "cycle": 16,
+      "question": "volume-flow-conditioned-entry",
+      "verdict": "REFUTED(OutcomeB)",
+      "gpu_hours": 0.0,
+      "spec_file": ".kit/experiments/volume-flow-conditioned-entry.md",
+      "timestamp": "2026-02-27T08:10:16.573999"
     }
   ]
 }

@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## volume-flow-conditioned-entry — REFUTED (Outcome B, diagnostic evaporates in simulation)
+**Date:** 2026-02-27
+**Hypothesis:** Volume/activity-based entry gating reduces timeout fraction below 41% and improves per-trade expectancy toward $3.50.
+**Key result:** 20pp bar-level diagnostic signal (all 5 features "strong" tier) evaporates to **1.76pp max** in sequential simulation. Best config exp=$3.10/trade (stacked, vs $3.50 target), min_acct=$33K (vs $30K target), timeout=41.2% (vs 36.3% target). SC-2/3/5 FAIL.
+**Lesson:** Sequential execution's 66.1% hold-skip rate already self-selects for high-activity bars — gating on activity features provides negligible incremental selection. Timeout fraction (~41.3%) is a structural constant of the volume horizon mechanism at 19:7/50K, invariant to BOTH time-of-day (PR #40) and volume/activity gating. Entry-time filtering is exhausted as an intervention class.
+**Next:** (1) Barrier geometry re-parameterization (reduce volume horizon 50K→10-25K, or reduce time horizon 3600s→600-1200s). (2) Accept cutoff=270 ($3.02/trade, $34K, Calmar 2.49) and proceed to paper trading. (3) Regime-conditional trading (Q1-Q2 only).
+**Details:** `.kit/results/volume-flow-conditioned-entry/analysis.md`
+
 ## timeout-filtered-sequential — REFUTED (Outcome B, mechanism falsified)
 **Date:** 2026-02-27
 **Hypothesis:** Time-of-day entry cutoff (minutes_since_open <= cutoff) achieves >= $3.50/trade expectancy and <= $30K min account by avoiding timeout-prone late-day entries.
