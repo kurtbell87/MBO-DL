@@ -443,22 +443,22 @@ OUTCOME C — SC-1 fails (mean exp ≤ $0 at corrected-base):
 
 ## Exit Criteria
 
-- [ ] 3-fold WF reproduces PR #35 at old-base ($0.90 +/- $0.05)
-- [ ] 3-fold WF computed at corrected-base ($2.49)
-- [ ] CPCV 45 splits computed with purge (500 bars) and embargo (4,600 bars)
-- [ ] Per-split expectancy at 3 cost levels recorded
-- [ ] CPCV mean, std, CI, t-stat, p-value computed at corrected-base
-- [ ] PBO computed at all 3 cost levels
-- [ ] Per-group analysis completed (which groups drive profitability)
-- [ ] Per-quarter expectancy mapped
-- [ ] Worst/best 5 splits identified
-- [ ] Cost sensitivity table (3 scenarios) with break-even RT
-- [ ] CPCV vs WF comparison table
-- [ ] Holdout evaluation completed (one-shot, all 3 cost levels)
-- [ ] Feature importance reported (Stage 1 and Stage 2 separately)
-- [ ] All metrics in metrics.json
-- [ ] analysis.md with all required sections and verdict
-- [ ] SC-1 through SC-6 explicitly evaluated
+- [x] 3-fold WF reproduces PR #35 at old-base ($0.90 +/- $0.05) — $0.9013, delta $0.0013
+- [x] 3-fold WF computed at corrected-base ($2.49) — $2.15 mean
+- [x] CPCV 45 splits computed with purge (500 bars) and embargo (4,600 bars)
+- [x] Per-split expectancy at 3 cost levels recorded — cpcv_per_split.csv
+- [x] CPCV mean, std, CI, t-stat, p-value computed at corrected-base — $1.81, $1.18, [$1.46,$2.16], 10.29, 1.35e-13
+- [x] PBO computed at all 3 cost levels — opt 2.2%, base 6.7%, pess 73.3%
+- [x] Per-group analysis completed (which groups drive profitability) — groups 6-9 strongest
+- [x] Per-quarter expectancy mapped — Q1 $1.49, Q2 $1.39, Q3 $2.18, Q4 $2.93
+- [x] Worst/best 5 splits identified — worst: splits 32,3,17; best: splits 44,38,40
+- [x] Cost sensitivity table (3 scenarios) with break-even RT — BE RT $4.30
+- [x] CPCV vs WF comparison table — CPCV $0.34 lower than WF (expected)
+- [x] Holdout evaluation completed (one-shot, all 3 cost levels) — $1.46 base
+- [x] Feature importance reported (Stage 1 and Stage 2 separately) — message_rate dominates S1
+- [x] All metrics in metrics.json
+- [x] analysis.md with all required sections and verdict
+- [x] SC-1 through SC-6 explicitly evaluated — ALL PASS
 
 ---
 
