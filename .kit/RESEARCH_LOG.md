@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## trade-level-risk-metrics — REFUTED (SC-2, SC-4, SC-8 fail; productive)
+**Date:** 2026-02-27
+**Hypothesis:** Sequential 1-contract execution at 19:7 produces per-trade expectancy >= $0.50 with min account <= $5,000.
+**Key result:** seq_exp = **$2.50/trade** (5x threshold), annual $103,605/1-MES, BUT min_account = **$48,000** (9.6x the $5K target). 162 trades/day (vs expected 40-80), avg_bars_held = 28 (vs expected 75), hold_skip_rate = 66.1% (vs expected 43%). Win rate 49.93% — edge is pure payoff asymmetry, zero directional skill. Timeout trades dilute $5.00 barrier-hit expectancy to $2.50.
+**Lesson:** Sequential entry creates a non-random selection pattern: entries cluster during volatile moments (shorter barrier races, higher per-trade exp) but exit into calm periods (higher hold-skip at entry attempts). The edge is real and substantial, but risk sizing requires medium accounts ($48K all-paths, $26.6K 95%-paths), not the retail micro-accounts the hypothesis targeted. Three spec assumptions were wrong: avg hold (28 vs 75), hold-skip rate (66% vs 43%), and trades/day (162 vs 50-80). All trace to volatility-timing selection bias.
+**Next:** (1) Timeout-filtered sequential execution — avoid entries where barrier unlikely to resolve before day end (+$1-2/trade est.). (2) Multi-contract scaling analysis (N=2,5,10,20,36). (3) Long-perspective labels at 19:7 (existing P0).
+**Details:** `.kit/results/trade-level-risk-metrics/analysis.md`
+
 ## cpcv-corrected-costs — CONFIRMED (Outcome A)
 **Date:** 2026-02-27
 **Hypothesis:** Two-stage XGBoost at 19:7 (w=1.0, T=0.50) achieves CPCV mean realized expectancy > $0.00 under corrected-base costs ($2.49 RT) with PBO < 0.50 across 45 splits.
