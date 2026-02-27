@@ -1,8 +1,8 @@
 {
-  "cycles_completed": 16,
+  "cycles_completed": 17,
   "gpu_hours_used": 0.0,
   "started_at": "2026-02-19T08:16:08.796351",
-  "last_cycle_at": "2026-02-27T08:10:16.573993",
+  "last_cycle_at": "2026-02-27T11:05:16.916168",
   "question_history": {
     "hybrid-model-corrected": [
       "REFUTED(OutcomeB)"
@@ -51,6 +51,9 @@
     ],
     "volume-flow-conditioned-entry": [
       "REFUTED(OutcomeB)"
+    ],
+    "daily-stop-loss-sequential": [
+      "REFUTED(OutcomeB\u2014SC-2structuralfailure)"
     ]
   },
   "cycle_log": [
@@ -181,6 +184,14 @@
       "gpu_hours": 0.0,
       "spec_file": ".kit/experiments/volume-flow-conditioned-entry.md",
       "timestamp": "2026-02-27T08:10:16.573999"
+    },
+    {
+      "cycle": 17,
+      "question": "daily-stop-loss-sequential",
+      "verdict": "REFUTED(OutcomeB\u2014SC-2structuralfailure)",
+      "gpu_hours": 0.0,
+      "spec_file": ".kit/experiments/daily-stop-loss-sequential.md",
+      "timestamp": "2026-02-27T11:05:16.916173"
     }
   ]
 }
