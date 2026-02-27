@@ -16,53 +16,72 @@ source .orchestration-kit.env
 
 ## Current State
 
-- **30+ phases complete** (15 engineering + 26 research). Branch: `experiment/cpcv-corrected-costs`.
-- **CPCV Validation — CONFIRMED (Outcome A)** (2026-02-27). $1.81/trade at corrected-base costs ($2.49 RT). PBO 6.7%. 95% CI [$1.46, $2.16]. t=10.29, p<1e-13. First statistically validated pipeline. PR #38.
-- **Threshold Sweep — REFUTED** (PR #36). **Class-Weighted — REFUTED** (PR #37). All parameter-level interventions exhausted.
-- **CNN line CLOSED**. **XGBoost tuning DONE**.
-- **Critical finding:** Edge is structural (19:7 payoff asymmetry × ~50% accuracy > 34.6% BEV), NOT predictive. Cost correction ($3.74→$2.49) was the key unlock.
+- **32+ phases complete** (15 engineering + 28 research). Branch: `experiment/timeout-filtered-sequential`.
+- **Timeout-Filtered Sequential — REFUTED (Outcome B, mechanism falsified)** (2026-02-27). Timeout fraction invariant at 41.3% across all 7 cutoff levels. Timeouts are volume-driven, not time-driven. Best cutoff=270: $3.02/trade, $34K min acct, 249% ROC. PR #40.
+- **Trade-Level Risk Metrics — REFUTED (modified A)** (2026-02-27). Sequential 1-contract: $2.50/trade, 162 trades/day, $412.77/day, $103,605/year. Min account $48K (all paths) / $26.6K (95% paths). PR #39.
+- **CPCV Validation — CONFIRMED (Outcome A)** (2026-02-27). $1.81/trade at corrected-base. PBO 6.7%. PR #38.
+- **Edge is structural** — 49.93% win rate, 19:7 payoff asymmetry, breakeven 34.6%.
 
-## Priority: Deployment Path (Outcome A Triggers)
+## Critical New Finding: Timeouts Are Volume-Driven
 
-### 1. Paper Trading Infrastructure (HIGHEST PRIORITY)
+The timeout-filtered experiment **falsified** the time-of-day mechanism. Key facts:
+- Timeout fraction = 41.3% +/- 0.1pp regardless of entry time cutoff
+- The 50,000-contract volume horizon is the binding constraint
+- Even entries 4.5h into RTH have ~2 hours remaining — far more than the 2.3-minute avg barrier race
+- Any future timeout reduction must target the volume horizon mechanism, not clock time
 
-Rithmic R|API+ integration for live /MES paper trading. 1 contract. Validates:
-- Real-world fill rates and slippage vs assumed $2.49 RT
-- Latency (signal→order→fill)
-- Execution quality in different market regimes
+## Priority: Reduce Timeouts or Accept and Deploy
 
-R|API+ is installed at `~/.local/rapi/13.6.0.0/` but NOT integrated into any source code. CMake target `RApiPlus::RApiPlus` available. SDK docs at `/Users/brandonbell/Downloads/13.6.0.0/`.
+### 1. Volume-Flow Conditioned Entry (HIGHEST PRIORITY)
 
+Since timeouts are driven by the volume horizon, condition entry on recent volume flow. High-volume periods -> faster volume horizon consumption -> barrier resolution before stochastic expiry.
+
+**Hypothesis:** Entries during top-quartile volume flow have lower timeout rates.
+**IV:** Rolling N-bar volume quantile at entry time.
+**Spec:** Not yet created
+**Branch:** `experiment/volume-flow-entry`
+**Compute:** Local
+
+### 2. Volatility-Conditional Entry Filter (HIGH PRIORITY)
+
+volatility_50 is the dominant XGBoost feature (49.7% gain share) and directly relates to barrier reachability. Low-volatility entries may have longer barrier races and higher timeout rates.
+
+**Hypothesis:** Conditioning entry on volatility_50 > threshold reduces timeout fraction.
+**Spec:** Not yet created
+**Branch:** `experiment/volatility-entry-filter`
+**Compute:** Local
+
+### 3. Paper Trading at Cutoff=270 (HIGH PRIORITY)
+
+Cutoff=270 at 249% ROC is already operationally viable:
+- $34K account (all-path) or $25.5K (95%-path)
+- $3.02/trade, 117 trades/day, $337/day
+- Calmar 2.49, Sharpe 2.20
+
+Rithmic R|API+ integration for live /MES paper trading. 1 contract.
+
+**Validates:** Real-world fill rates, slippage, latency.
 **Spec:** Not yet created
 **Branch:** `feat/rithmic-paper-trading`
 **Compute:** Local
 
-### 2. Hold-Bar Exit Optimization (HIGH VALUE)
+### 4. Pure Time Horizon Re-Export (MODERATE PRIORITY)
 
-43% of traded bars are hold bars with unbounded returns (±63 ticks). Hold-bar PnL swings (-$9.39 to +$3.48 per CPCV split) drive the majority of per-split variance. Test stop-loss rules on hold bars (e.g., exit at -7 ticks) to bound downside while preserving directional-bar payoff asymmetry.
-
-**Rationale:** Could significantly reduce per-split variance without reducing mean expectancy. Dir-bar PnL std = $0.22; hold-bar PnL std = $2.87. Hold bars are 13x more variable.
+Re-export with `--max-time-horizon 1800` (30 min) instead of the volume horizon. If clock-based timeouts concentrate differently than volume-based ones, they may be more filterable by time-of-day.
 
 **Spec:** Not yet created
-**Branch:** `experiment/hold-bar-exits`
-**Compute:** Local
+**Branch:** `experiment/time-horizon-reexport`
+**Compute:** EC2 (full re-export of 312 files)
 
-### 3. Multi-Year Validation (STRONGEST POSSIBLE TEST)
+### 5. Accept $34K and Multi-Contract Scaling (MODERATE PRIORITY)
 
-2022 results are regime-specific (rising rates, elevated volatility). Testing on 2023/2024 MES data determines if the structural edge persists. This is the strongest validation short of live trading.
+At cutoff=270:
+- 1 contract: $34K capital, $337/day, 249% ROC
+- N contracts (independent sequential executors): N x $34K capital, ~N x $337/day, ~249% ROC
 
-**Requires:** Additional MBO data purchase from Databento.
-
+**Hypothesis:** N staggered sequential executors produce N-proportional daily PnL with sqrt(N) drawdown.
 **Spec:** Not yet created
-**Branch:** `experiment/multi-year-validation`
-**Compute:** Local or EC2
-
-### 4. Regime-Conditional Position Sizing (INDEPENDENT)
-
-Per-group analysis: groups 6-9 (Jul-Oct) average $2.37/trade vs groups 0-5 (Jan-Jun) $1.44. If message_rate or volatility_50 can predict regime quality, position sizing could increase exposure in high-edge regimes.
-
-**Spec:** Not yet created
-**Branch:** `experiment/regime-sizing`
+**Branch:** `experiment/multi-contract-scaling`
 **Compute:** Local
 
 ---
@@ -71,28 +90,44 @@ Per-group analysis: groups 6-9 (Jul-Oct) average $2.37/trade vs groups 0-5 (Jan-
 
 | Experiment | Verdict | Key Finding |
 |-----------|---------|-------------|
-| **CPCV Corrected Costs** | **CONFIRMED (Outcome A)** | **$1.81/trade, PBO 6.7%, p<1e-13. 42/45 splits positive. All 6 SC pass. First validated pipeline.** |
-| Threshold Sweep | REFUTED (PR #36) | Probability compression structural — threshold doesn't help. |
-| Class-Weighted Stage 1 | REFUTED (PR #37) | Weighting doesn't improve discrimination. |
-| PnL Realized Return | REFUTED SC-2, +$0.90/trade (PR #35) | Dir bars +$2.10, hold bars -$1.19. Fold instability. |
-| 2-Class Directional | CONFIRMED (PnL caveat, PR #34) | Trade rate 0.28%→85.2%. Dir-bar edge $3.77. |
+| **Timeout Filter** | **REFUTED (Outcome B)** | **Timeout fraction invariant at 41.3%. Volume-driven, not time-driven. Best cutoff=270: $3.02/trade, $34K min acct.** |
+| **Trade-Level Risk** | **REFUTED (modified A)** | **$2.50/trade seq, $48K min account. Edge real but larger account needed.** |
+| **CPCV Corrected** | **CONFIRMED (Outcome A)** | **$1.81/trade, PBO 6.7%, p<1e-13. 42/45 splits positive.** |
 
 ---
 
 ## Key Numbers to Remember
 
-- **CPCV mean expectancy:** $1.81/trade at corrected-base ($2.49 RT)
-- **95% CI:** [$1.46, $2.16] — entirely above zero
-- **PBO:** 6.7% (3/45 splits negative)
-- **Holdout:** $1.46/trade (consistent with CPCV lower CI bound)
-- **Break-even RT:** $4.30 ($1.81 margin above base costs)
-- **Pooled dir accuracy:** 50.16% (coin flip — edge is payoff asymmetry)
-- **Dir-bar PnL:** $5.06 ± $0.22 (stable)
-- **Hold-bar PnL:** -$2.50 ± $2.87 (volatile — the variance driver)
-- **Regime dispersion:** Late-year $2.37 vs early-year $1.44 (1.65x)
-- **Cost sensitivity:** Optimistic $3.06, Base $1.81, Pessimistic -$0.69
-- **Wall-clock:** 2.6 min for 98 XGB fits
+### Filtered Sequential (Cutoff=270) — Best Risk-Adjusted
+- **Expectancy/trade:** $3.02 (20.6% better than unfiltered)
+- **Trades/day:** 116.8 (28% fewer)
+- **Daily PnL:** $336.77 (18.4% lower absolute)
+- **Annual PnL:** $84,530
+- **Win rate:** 50.27%
+- **Timeout fraction:** 41.30% (invariant -- same as unfiltered!)
+- **Hold-skip rate:** 34.4% (vs 66.1% unfiltered)
+- **Worst drawdown:** $33,984 (29% better)
+- **Median drawdown:** $8,687 (33% better)
+- **Calmar ratio:** 2.49 (best of all cutoffs)
+- **Min account (all paths):** $34,000
+- **Min account (95% paths):** $25,500
+- **ROC (all-path):** 249% annual
+
+### Unfiltered Sequential (Cutoff=390) — Baseline
+- **Expectancy/trade:** $2.50
+- **Trades/day:** 162.2
+- **Daily PnL:** $412.77
+- **Annual PnL:** $103,605
+- **Worst drawdown:** $47,894
+- **Min account (all paths):** $48,000
+- **Min account (95% paths):** $26,500
+- **ROC (all-path):** 216% annual
+
+### Bar-Level (CPCV)
+- **Expectancy/trade:** $1.81 (95% CI [$1.46, $2.16])
+- **PBO:** 6.7%
+- **Break-even RT:** $4.30
 
 ---
 
-Written: 2026-02-27. CPCV CONFIRMED (Outcome A): $1.81/trade, PBO 6.7%, p<1e-13. PR #38. Next: paper trading (Rithmic R|API+).
+Written: 2026-02-27. Timeout filtering REFUTED (Outcome B): timeout fraction invariant at 41.3%, volume-driven not time-driven. Best cutoff=270: $3.02/trade, $34K min acct, 249% ROC. PR #40.

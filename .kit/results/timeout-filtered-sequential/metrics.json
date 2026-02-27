@@ -1,0 +1,456 @@
+{
+  "experiment": "timeout-filtered-sequential",
+  "timestamp": "2026-02-27T12:00:28",
+  "cutoff_sweep_table": [
+    {
+      "cutoff": 390,
+      "rtm_remaining": 0,
+      "trades_per_day": 162.21424119241192,
+      "exp_per_trade": 2.500825393333759,
+      "daily_pnl": 412.76830602981676,
+      "dd_worst": 47893.73000000187,
+      "dd_median": 12916.704999999927,
+      "min_acct_all": 48000,
+      "min_acct_95": 26500,
+      "win_rate": 0.4992951857108541,
+      "time_skip_pct": 0.0,
+      "hold_skip_pct": 0.6608631758598639,
+      "timeout_fraction": 0.4132902591429287,
+      "barrier_hit_fraction": 0.5867097408570713,
+      "avg_bars_held": 28.016281876132144,
+      "calmar": 2.1632235537612114,
+      "sharpe": 2.100987047611508,
+      "annual_pnl": 103604.844813484
+    },
+    {
+      "cutoff": 375,
+      "rtm_remaining": 15,
+      "trades_per_day": 158.8540921409214,
+      "exp_per_trade": 2.493917474859683,
+      "daily_pnl": 400.34331734417964,
+      "dd_worst": 47946.91500000267,
+      "dd_median": 12916.704999999927,
+      "min_acct_all": 48000,
+      "min_acct_95": 27000,
+      "win_rate": 0.49922001134711846,
+      "time_skip_pct": 0.06734401176874048,
+      "hold_skip_pct": 0.6336038575300047,
+      "timeout_fraction": 0.41349752252882666,
+      "barrier_hit_fraction": 0.5865024774711733,
+      "avg_bars_held": 28.260608048816646,
+      "calmar": 2.095779731675823,
+      "sharpe": 2.03349996130006,
+      "annual_pnl": 100486.17265338909
+    },
+    {
+      "cutoff": 360,
+      "rtm_remaining": 30,
+      "trades_per_day": 155.83475609756096,
+      "exp_per_trade": 2.4568094306329917,
+      "daily_pnl": 384.02898611111686,
+      "dd_worst": 47988.87000000362,
+      "dd_median": 12921.714999999927,
+      "min_acct_all": 48000,
+      "min_acct_95": 26500,
+      "win_rate": 0.4989018900725025,
+      "time_skip_pct": 0.1290383404767487,
+      "hold_skip_pct": 0.6081983444512531,
+      "timeout_fraction": 0.4139794425474407,
+      "barrier_hit_fraction": 0.5860205574525593,
+      "avg_bars_held": 28.371348599389925,
+      "calmar": 2.0086173213472844,
+      "sharpe": 1.958371182726851,
+      "annual_pnl": 96391.27551389033
+    },
+    {
+      "cutoff": 345,
+      "rtm_remaining": 45,
+      "trades_per_day": 153.14043360433604,
+      "exp_per_trade": 2.2808672238807555,
+      "daily_pnl": 346.4934639566452,
+      "dd_worst": 47923.4250000047,
+      "dd_median": 12906.269999999338,
+      "min_acct_all": 48000,
+      "min_acct_95": 30000,
+      "win_rate": 0.49840652640019667,
+      "time_skip_pct": 0.16995243863047182,
+      "hold_skip_pct": 0.6026785555030355,
+      "timeout_fraction": 0.414049218813763,
+      "barrier_hit_fraction": 0.585950781186237,
+      "avg_bars_held": 28.298518013584452,
+      "calmar": 1.8147671927269264,
+      "sharpe": 1.771234126808322,
+      "annual_pnl": 86969.85945311794
+    },
+    {
+      "cutoff": 330,
+      "rtm_remaining": 60,
+      "trades_per_day": 148.55495934959347,
+      "exp_per_trade": 2.265305096815787,
+      "daily_pnl": 331.22129654472076,
+      "dd_worst": 48088.96000000533,
+      "dd_median": 13330.719999999823,
+      "min_acct_all": 48500,
+      "min_acct_95": 32000,
+      "win_rate": 0.49939542613572924,
+      "time_skip_pct": 0.22898363751667677,
+      "hold_skip_pct": 0.5922124242944116,
+      "timeout_fraction": 0.41285820029489395,
+      "barrier_hit_fraction": 0.587141799705106,
+      "avg_bars_held": 28.022821856876934,
+      "calmar": 1.7288073069726544,
+      "sharpe": 1.69555960370436,
+      "annual_pnl": 83136.54543272492
+    },
+    {
+      "cutoff": 300,
+      "rtm_remaining": 90,
+      "trades_per_day": 131.269918699187,
+      "exp_per_trade": 2.4770381327641138,
+      "daily_pnl": 317.7110392953973,
+      "dd_worst": 43202.274999999994,
+      "dd_median": 12595.564999999971,
+      "min_acct_all": 43500,
+      "min_acct_95": 30500,
+      "win_rate": 0.5003380301116127,
+      "time_skip_pct": 0.4492192168040708,
+      "hold_skip_pct": 0.44072747453234223,
+      "timeout_fraction": 0.41191149149339246,
+      "barrier_hit_fraction": 0.5880885085066075,
+      "avg_bars_held": 28.73101921629931,
+      "calmar": 1.845862766790516,
+      "sharpe": 1.7808315255025602,
+      "annual_pnl": 79745.47086314473
+    },
+    {
+      "cutoff": 270,
+      "rtm_remaining": 120,
+      "trades_per_day": 116.77239837398372,
+      "exp_per_trade": 3.0161161330064905,
+      "daily_pnl": 336.7719414634183,
+      "dd_worst": 33983.58499999992,
+      "dd_median": 8686.84499999992,
+      "min_acct_all": 34000,
+      "min_acct_95": 25500,
+      "win_rate": 0.5026887206750185,
+      "time_skip_pct": 0.5801413873510881,
+      "hold_skip_pct": 0.34392039460503576,
+      "timeout_fraction": 0.4129820992256202,
+      "barrier_hit_fraction": 0.5870179007743798,
+      "avg_bars_held": 29.04806364588153,
+      "calmar": 2.487370220278943,
+      "sharpe": 2.2043338764369906,
+      "annual_pnl": 84529.75730731798
+    }
+  ],
+  "optimal_cutoff": 270,
+  "optimal_cutoff_reason": "Rule 2: max daily PnL subject to min_acct <= $35K",
+  "optimal_cutoff_expectancy": 3.0161161330064905,
+  "optimal_cutoff_min_account_all": 34000,
+  "optimal_cutoff_daily_pnl": 336.7719414634183,
+  "optimal_cutoff_calmar": 2.487370220278943,
+  "optimal_cutoff_sharpe": 2.2043338764369906,
+  "optimal_cutoff_trades_per_day": 116.77239837398372,
+  "timeout_fraction_by_cutoff": {
+    "390": 0.4132902591429287,
+    "375": 0.41349752252882666,
+    "360": 0.4139794425474407,
+    "345": 0.414049218813763,
+    "330": 0.41285820029489395,
+    "300": 0.41191149149339246,
+    "270": 0.4129820992256202
+  },
+  "barrier_hit_fraction_by_cutoff": {
+    "390": 0.5867097408570713,
+    "375": 0.5865024774711733,
+    "360": 0.5860205574525593,
+    "345": 0.585950781186237,
+    "330": 0.587141799705106,
+    "300": 0.5880885085066075,
+    "270": 0.5870179007743798
+  },
+  "splits_18_32_comparison": {
+    "390": {
+      "18": {
+        "test_groups": [
+          2,
+          4
+        ],
+        "expectancy": -2.2807801418439757,
+        "max_drawdown": 47893.73000000187,
+        "n_trades": 8460,
+        "trades_per_day": 211.5,
+        "timeout_fraction": 0.40709219858156026
+      },
+      "32": {
+        "test_groups": [
+          4,
+          7
+        ],
+        "expectancy": -5.709674556213021,
+        "max_drawdown": 46888.34000000252,
+        "n_trades": 6760,
+        "trades_per_day": 169.0,
+        "timeout_fraction": 0.40902366863905326
+      }
+    },
+    "375": {
+      "18": {
+        "test_groups": [
+          2,
+          4
+        ],
+        "expectancy": -2.4203644088080467,
+        "max_drawdown": 47946.91500000267,
+        "n_trades": 8356,
+        "trades_per_day": 208.9,
+        "timeout_fraction": 0.4070129248444232
+      },
+      "32": {
+        "test_groups": [
+          4,
+          7
+        ],
+        "expectancy": -5.731296296296301,
+        "max_drawdown": 46977.190000002636,
+        "n_trades": 6750,
+        "trades_per_day": 168.75,
+        "timeout_fraction": 0.4088888888888889
+      }
+    },
+    "360": {
+      "18": {
+        "test_groups": [
+          2,
+          4
+        ],
+        "expectancy": -2.6471385359951647,
+        "max_drawdown": 47988.87000000362,
+        "n_trades": 8265,
+        "trades_per_day": 206.625,
+        "timeout_fraction": 0.4068965517241379
+      },
+      "32": {
+        "test_groups": [
+          4,
+          7
+        ],
+        "expectancy": -5.730341753343244,
+        "max_drawdown": 46856.14000000269,
+        "n_trades": 6730,
+        "trades_per_day": 168.25,
+        "timeout_fraction": 0.40846953937592867
+      }
+    },
+    "345": {
+      "18": {
+        "test_groups": [
+          2,
+          4
+        ],
+        "expectancy": -2.8398134328358253,
+        "max_drawdown": 47923.4250000047,
+        "n_trades": 8174,
+        "trades_per_day": 204.35,
+        "timeout_fraction": 0.40653290922436996
+      },
+      "32": {
+        "test_groups": [
+          4,
+          7
+        ],
+        "expectancy": -5.754603849597139,
+        "max_drawdown": 46856.40000000275,
+        "n_trades": 6702,
+        "trades_per_day": 167.55,
+        "timeout_fraction": 0.40808713816771114
+      }
+    },
+    "330": {
+      "18": {
+        "test_groups": [
+          2,
+          4
+        ],
+        "expectancy": -3.0721231847771686,
+        "max_drawdown": 48088.96000000533,
+        "n_trades": 7988,
+        "trades_per_day": 199.7,
+        "timeout_fraction": 0.4043565348022033
+      },
+      "32": {
+        "test_groups": [
+          4,
+          7
+        ],
+        "expectancy": -5.867076032302305,
+        "max_drawdown": 46964.455000002876,
+        "n_trades": 6563,
+        "trades_per_day": 164.075,
+        "timeout_fraction": 0.4054548224897151
+      }
+    },
+    "300": {
+      "18": {
+        "test_groups": [
+          2,
+          4
+        ],
+        "expectancy": -2.7049433427762084,
+        "max_drawdown": 43202.274999999994,
+        "n_trades": 7060,
+        "trades_per_day": 176.5,
+        "timeout_fraction": 0.4018413597733711
+      },
+      "32": {
+        "test_groups": [
+          4,
+          7
+        ],
+        "expectancy": -5.682614424410545,
+        "max_drawdown": 41004.6450000012,
+        "n_trades": 5768,
+        "trades_per_day": 144.2,
+        "timeout_fraction": 0.40187239944521497
+      }
+    },
+    "270": {
+      "18": {
+        "test_groups": [
+          2,
+          4
+        ],
+        "expectancy": -1.082066698352349,
+        "max_drawdown": 33983.58499999992,
+        "n_trades": 6312,
+        "trades_per_day": 157.8,
+        "timeout_fraction": 0.3982889733840304
+      },
+      "32": {
+        "test_groups": [
+          4,
+          7
+        ],
+        "expectancy": -4.769354776206167,
+        "max_drawdown": 32662.35500000069,
+        "n_trades": 5161,
+        "trades_per_day": 129.025,
+        "timeout_fraction": 0.3960472776593683
+      }
+    }
+  },
+  "daily_pnl_percentiles_optimal": {
+    "p5": -3170.5289999999786,
+    "p25": -417.9500000000005,
+    "p50": 218.5249999999999,
+    "p75": 923.8749999999995,
+    "p95": 3968.57300000001
+  },
+  "annual_expectancy_optimal": 84529.75730731798,
+  "baseline_unfiltered": {
+    "exp_per_trade": 2.500825393333759,
+    "trades_per_day": 162.21424119241192,
+    "daily_pnl": 412.76830602981676,
+    "dd_worst": 47893.73000000187,
+    "min_acct_all": 48000,
+    "timeout_fraction": 0.4132902591429287
+  },
+  "success_criteria": {
+    "SC-1": {
+      "description": "All 7 cutoffs \u00d7 45 splits = 315 simulations completed",
+      "pass": true,
+      "value": "45 splits \u00d7 7 cutoffs"
+    },
+    "SC-2": {
+      "description": "Optimal cutoff exp >= $3.50",
+      "pass": false,
+      "value": 3.0161161330064905
+    },
+    "SC-3": {
+      "description": "Optimal cutoff min_acct <= $30K",
+      "pass": false,
+      "value": 34000
+    },
+    "SC-4": {
+      "description": "Sweep table fully populated (7 \u00d7 11+)",
+      "pass": true
+    },
+    "SC-5": {
+      "description": "Unfiltered vs filtered comparison populated",
+      "pass": true
+    },
+    "SC-6": {
+      "description": "Account sizing curve at recommended cutoff",
+      "pass": true
+    },
+    "SC-7": {
+      "description": "All output files written",
+      "pass": true
+    },
+    "SC-8": {
+      "description": "Bar-level split 0 matches PR #38 within $0.01",
+      "pass": true,
+      "value": 1.0651860450958002,
+      "reference": 1.065186
+    }
+  },
+  "sanity_checks": {
+    "SC-S1": {
+      "description": "bar-level split 0 within $0.01 of PR #38",
+      "pass": true,
+      "value": 1.0651860450958002,
+      "reference": 1.065186
+    },
+    "SC-S2": {
+      "description": "cutoff=390 exp within $0.10 of PR #39's $2.5",
+      "pass": true,
+      "value": 2.500825393333759,
+      "reference": 2.5
+    },
+    "SC-S3": {
+      "description": "cutoff=390 trades/day within 5 of PR #39's 162.2",
+      "pass": true,
+      "value": 162.21424119241192,
+      "reference": 162.2
+    },
+    "SC-S4": {
+      "description": "Expectancy non-decreasing as cutoff tightens",
+      "pass": false,
+      "values": {
+        "390": 2.500825393333759,
+        "375": 2.493917474859683,
+        "360": 2.4568094306329917,
+        "345": 2.2808672238807555,
+        "330": 2.265305096815787,
+        "300": 2.4770381327641138,
+        "270": 3.0161161330064905
+      }
+    },
+    "SC-S5": {
+      "description": "Trades/day non-increasing as cutoff tightens",
+      "pass": true,
+      "values": {
+        "390": 162.21424119241192,
+        "375": 158.8540921409214,
+        "360": 155.83475609756096,
+        "345": 153.14043360433604,
+        "330": 148.55495934959347,
+        "300": 131.269918699187,
+        "270": 116.77239837398372
+      }
+    }
+  },
+  "outcome": "B",
+  "outcome_description": "Filtering improves expectancy by $0.52 but neither SC-2 nor SC-3 met.",
+  "resource_usage": {
+    "wall_clock_seconds": 159.71602511405945,
+    "wall_clock_minutes": 2.6619337519009907,
+    "total_training_runs": 90,
+    "total_simulations": 315,
+    "gpu_hours": 0,
+    "total_runs": 45
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Local execution on Apple Silicon. Sequential 1-contract simulation with time-of-day cutoff sweep. Models trained ONCE per split, simulation repeated 7\u00d7 per cutoff. Corrected-base cost $2.49 RT."
+}
