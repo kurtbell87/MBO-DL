@@ -20,22 +20,22 @@
 
 ### Just Completed (2026-02-26)
 
-1. **Label Geometry 1h — INCONCLUSIVE (practically Outcome B, PR #33)** — Time horizon fix WORKS (hold rates dropped 29-58pp). But model cannot exploit high-ratio geometries: at 10:5 (only geometry with real trade volume), directional accuracy 50.7% is 2.6pp BELOW 53.3% breakeven, exp=-$0.49/trade. At high-ratio geometries (15:3, 19:7, 20:3), model becomes near-total hold predictor (<0.3% directional prediction rate). Reported positive expectancy at those geometries is small-sample artifact (30-3,280 trades, Infinity profit factors). **Binding constraint: feature-label correlation ceiling (~50-51% directional accuracy), not geometry, not hyperparameters, not label design.**
+1. **2-Class Directional — CONFIRMED with PnL caveat (PR #34, OPEN)** — Two-stage pipeline (Stage 1: reachability, Stage 2: direction) liberates trade volume: 0.28%→85.2% at 19:7 (301x increase). Stage 1 accuracy 58.6% (6pp above majority baseline). Stage 2 direction accuracy ~50% (essentially random at 19:7). Reported expectancy $3.78/trade BUT corrected estimate ~$0.44/trade (PnL model assigns full barrier payoffs to hold-bar trades instead of $0). Corrected 95% CI: [$0.04, $0.84]. Feature importance: Stage 2 at 19:7 does NOT learn directional features — same volatility features as Stage 1. **Key insight: reachability is solvable, direction at 19:7 is not. The favorable payoff ratio (2.71:1) is the economic driver, not prediction skill.**
 
-2. **Time Horizon CLI Flags — COMPLETE (PR #32)** — `--max-time-horizon` and `--volume-horizon` CLI flags. Defaults: 300→3600s, 500→50000.
+2. **Label Geometry 1h — INCONCLUSIVE (PR #33, merged)** — Time horizon fix WORKS (hold rates dropped 29-58pp). But directional accuracy ceiling ~50-51%. Model becomes hold predictor at high-ratio geometries (<0.3% trade rate).
 
-3. **Label Geometry Phase 1 — REFUTED (PR #31)** — 90.7-98.9% hold at 300s cap. Root cause identified and fixed in PR #32.
+3. **Time Horizon CLI Flags — COMPLETE (PR #32, merged)** — `--max-time-horizon` and `--volume-horizon` CLI flags.
 
-4. **Synthesis-v2 — GO Verdict (PR #30)** — 55-60% prior at high-ratio geometries.
+4. **Synthesis-v2 — GO Verdict (PR #30, merged)** — 55-60% prior at high-ratio geometries.
 
-### Next: Break Through the Feature-Label Ceiling
+### Next: Validate 2-Class Economics
 
-The model's directional accuracy is ~50-51% regardless of label type, geometry, or hyperparameters. This is the hard ceiling of 20 microstructure features on MES time_5s bars. Options:
+The 2-class formulation works structurally (trade rate liberated, reachability learnable). The open question is whether the corrected economics hold up:
 
-- **Option A (HIGHEST PRIORITY): 2-Class Formulation** — Train binary "directional vs hold" at 19:7 (47.4% directional). If model predicts WHICH bars will be directional with >60% accuracy, a second-stage direction model on predicted-directional bars could exploit the 19:7 payoff. Decouples barrier-reachability from direction.
-- **Option B: Class-Weighted XGBoost at 19:7** — Force directional predictions with 3:1 weight. Accept lower accuracy for higher trade rate. Question: does forced directional accuracy stay above 38.4% BEV WR?
-- **Option C: Long-Perspective Labels at Varied Geometries** — Test if directional accuracy transfers when labels avoid the hold-prediction trap.
-- **Option D: Feature Engineering for Wider Barriers** — Add rolling VWAP slope, cumulative order flow over 50-500 bars, volatility regime markers. Highest effort, addresses root cause.
+- **Option A (HIGHEST PRIORITY): Corrected PnL Validation** — Re-run walk-forward with PnL model that assigns $0 to hold-bar trades (or actual realized PnL at horizon expiry). Same data, same models — just fix the PnL computation. Resolves dominant uncertainty.
+- **Option B: CPCV at 19:7 with Corrected PnL** — 3 WF folds give CI [$0.04, $0.84]. Need 45 CPCV splits for reliable go/no-go.
+- **Option C: Stage 1 Threshold Optimization** — Raise P(directional) threshold from 0.5 to 0.6-0.8. Trades fewer bars but with higher fraction hitting directional barriers. Reduces sensitivity to hold-bar PnL assumption.
+- **Option D: Intermediate Geometry (14:6, 15:5)** — 19:7 has random direction prediction, 10:5 has marginal signal. Sweet spot may be in between: favorable BEV + partial directional signal.
 
 ### After That
 
@@ -67,7 +67,7 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 
 ## Project Status
 
-**30+ phases complete (15 engineering + 21 research). Branch: `experiment/label-geometry-1h`. 1144+ unit tests registered. COMPUTE_TARGET=local.**
+**30+ phases complete (15 engineering + 23 research). Branch: `experiment/2class-directional`. 1144+ unit tests registered. COMPUTE_TARGET=local.**
 
 ### What's Built
 - **C++20 data pipeline**: Bar construction, order book replay, multi-day backtest, feature computation/export, oracle expectancy, Parquet export, bidirectional TB labels. 1144+ unit tests, 22 integration tests.
@@ -95,6 +95,7 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 | Synthesis-v2 | GO verdict | 55-60% prior | Label geometry is the lever |
 | Geom P1 | REFUTED — degenerate labels | 90.7-98.9% hold | 300s cap = untestable |
 | **Geom 1h** | **INCONCLUSIVE — hold predictor** | **Dir acc 50.7%, <0.3% trade rate** | **Feature ceiling, not geometry** |
+| **2-Class Dir** | **CONFIRMED (PnL caveat)** | **Trade rate 0.28%→85.2%, corrected exp ~$0.44** | **Reachability solvable, direction random at 19:7** |
 | FYE | Full-year export | 251 days, 1.16M bars | 13x more data available |
 | Bidir-Export | Re-export complete | 312/312 files, 152-col | Label design sensitivity unblocked |
 
@@ -106,9 +107,11 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 2. **`CLAUDE.md`** — full protocol, absolute rules, current state, institutional memory
 3. **`.kit/RESEARCH_LOG.md`** — cumulative findings from all experiments
 4. **`.kit/QUESTIONS.md`** — open and answered research questions
-5. **`.kit/experiments/label-geometry-1h.md`** — completed experiment spec (INCONCLUSIVE)
-6. **`.kit/results/label-geometry-1h/analysis.md`** — full analysis
+5. **`.kit/experiments/2class-directional.md`** — completed experiment spec (CONFIRMED w/ caveat)
+6. **`.kit/results/2class-directional/analysis.md`** — full analysis with PnL model critique
+7. **`.kit/experiments/label-geometry-1h.md`** — completed experiment spec (INCONCLUSIVE)
+8. **`.kit/results/label-geometry-1h/analysis.md`** — full analysis
 
 ---
 
-Updated: 2026-02-26. Label geometry 1h INCONCLUSIVE. Feature-label correlation ceiling (~50-51% dir acc) is the binding constraint. Next: 2-class formulation or class-weighted training.
+Updated: 2026-02-26. 2-class directional CONFIRMED (trade rate liberated, corrected exp ~$0.44). PR #34 open. Next: corrected PnL validation or CPCV at 19:7.
