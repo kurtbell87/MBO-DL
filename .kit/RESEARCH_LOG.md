@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## threshold-sweep — REFUTED (Outcome C)
+**Date:** 2026-02-27
+**Hypothesis:** There exists a Stage 1 probability threshold T* > 0.5 such that the two-stage pipeline at 19:7 achieves realized WF expectancy > $1.50/trade with trade rate > 15%, by reducing hold-bar fraction below 25%.
+**Key result:** No threshold achieves exp > $1.50 at >15% trade rate. Optimal = baseline (T=0.50, $0.90/trade, 85.2%). Root cause: 80.6% of Stage 1 P(directional) predictions cluster in [0.50, 0.60] — trade rate cliff from 64.5% (T=0.55) to 4.5% (T=0.60). Dir-bar PnL improves at moderate thresholds ($3.77→$4.49→$6.07 at T=0.50/0.60/0.65), confirming signal exists, but model cannot generate enough high-confidence predictions for viable trading. SC-1/2/3 FAIL, SC-4 PASS ($3.77 > $3.00).
+**Lesson:** XGBoost binary:logistic on this reachability task produces near-degenerate probabilities (IQR [0.536, 0.576] — 4pp wide). Threshold optimization requires a smooth confidence gradient; this model provides a step function. The $0.90/trade at T=0.50 is the ceiling for this pipeline + geometry combination without changing the model or labeling scheme.
+**Next:** Long-perspective labels at varied geometries (P0 open question) — changes the labeling scheme, not the threshold. Probability recalibration (Platt/isotonic) unlikely to help but quick to test. Class-weighted loss could reshape probability distribution at source.
+**Details:** `.kit/results/threshold-sweep/analysis.md`
+
 ## pnl-realized-return — REFUTED (Outcome C — SC-2 fails, but SC-1 passes)
 **Date:** 2026-02-27
 **Hypothesis:** Under realized-return PnL model (actual forward returns on hold-bar trades instead of full barrier payoffs), two-stage pipeline at 19:7 achieves WF per-trade expectancy > $0.00 with hold-bar directional accuracy > 52%.

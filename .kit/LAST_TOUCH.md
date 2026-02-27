@@ -20,22 +20,22 @@
 
 ### Just Completed (2026-02-26)
 
-1. **2-Class Directional — CONFIRMED with PnL caveat (PR #34, OPEN)** — Two-stage pipeline (Stage 1: reachability, Stage 2: direction) liberates trade volume: 0.28%→85.2% at 19:7 (301x increase). Stage 1 accuracy 58.6% (6pp above majority baseline). Stage 2 direction accuracy ~50% (essentially random at 19:7). Reported expectancy $3.78/trade BUT corrected estimate ~$0.44/trade (PnL model assigns full barrier payoffs to hold-bar trades instead of $0). Corrected 95% CI: [$0.04, $0.84]. Feature importance: Stage 2 at 19:7 does NOT learn directional features — same volatility features as Stage 1. **Key insight: reachability is solvable, direction at 19:7 is not. The favorable payoff ratio (2.71:1) is the economic driver, not prediction skill.**
+1. **PnL Realized Return — REFUTED on SC-2 but $0.90/trade positive (PR #35, OPEN)** — Corrected PnL using actual realized forward returns on hold bars. **Realized expectancy: $0.90/trade at 19:7** (between conservative $0.44 and inflated $3.78). PnL decomposition: directional bars +$2.10, hold bars -$1.19 (57% destruction of edge). Hold-bar dir accuracy 51.04% (below 52% threshold). Fold instability: $0.01, $2.54, $0.16 (Fold 2 outlier). Critical confound: hold-bar returns unbounded (-63 to +63 ticks) due to volume horizon truncating barrier race. **Key: directional-bar edge ($3.77) is real; hold-bar exposure is the problem.**
 
-2. **Label Geometry 1h — INCONCLUSIVE (PR #33, merged)** — Time horizon fix WORKS (hold rates dropped 29-58pp). But directional accuracy ceiling ~50-51%. Model becomes hold predictor at high-ratio geometries (<0.3% trade rate).
+2. **2-Class Directional — CONFIRMED with PnL caveat (PR #34, merged)** — Two-stage pipeline liberates trade volume: 0.28%→85.2% at 19:7. Stage 1 reachability 58.6%. Stage 2 direction ~50%. Directional-bar edge $3.77/trade is stable across folds.
 
-3. **Time Horizon CLI Flags — COMPLETE (PR #32, merged)** — `--max-time-horizon` and `--volume-horizon` CLI flags.
+3. **Label Geometry 1h — INCONCLUSIVE (PR #33, merged)** — Dir accuracy ceiling ~50-51%. Model becomes hold predictor at wide barriers.
 
-4. **Synthesis-v2 — GO Verdict (PR #30, merged)** — 55-60% prior at high-ratio geometries.
+4. **Time Horizon CLI Flags — COMPLETE (PR #32, merged)** — `--max-time-horizon` and `--volume-horizon` CLI flags.
 
-### Next: Validate 2-Class Economics
+### Next: Reduce Hold-Bar Exposure via Threshold Optimization
 
-The 2-class formulation works structurally (trade rate liberated, reachability learnable). The open question is whether the corrected economics hold up:
+The directional-bar edge ($3.77/trade) is real and stable. Hold bars drag -$1.19/trade (57% destruction). The path to viability: raise Stage 1 threshold to reduce hold-bar fraction.
 
-- **Option A (HIGHEST PRIORITY): Corrected PnL Validation** — Re-run walk-forward with PnL model that assigns $0 to hold-bar trades (or actual realized PnL at horizon expiry). Same data, same models — just fix the PnL computation. Resolves dominant uncertainty.
-- **Option B: CPCV at 19:7 with Corrected PnL** — 3 WF folds give CI [$0.04, $0.84]. Need 45 CPCV splits for reliable go/no-go.
-- **Option C: Stage 1 Threshold Optimization** — Raise P(directional) threshold from 0.5 to 0.6-0.8. Trades fewer bars but with higher fraction hitting directional barriers. Reduces sensitivity to hold-bar PnL assumption.
-- **Option D: Intermediate Geometry (14:6, 15:5)** — 19:7 has random direction prediction, 10:5 has marginal signal. Sweet spot may be in between: favorable BEV + partial directional signal.
+- **Option A (HIGHEST PRIORITY): Stage 1 Threshold Sweep** — Sweep P(directional) threshold 0.5→0.9. At each level, measure trade rate, hold fraction, realized expectancy. PnL decomposition predicts: at 15% hold fraction (threshold ~0.70), expectancy ~$2.81/trade. Quick tier, same data, no re-training.
+- **Option B: CPCV at Optimal Threshold** — Once threshold is identified, 45-split CPCV for proper CI and PBO. 3 WF folds have insufficient statistical power (t-stat ~1.35, p≈0.31).
+- **Option C: Volume Horizon Fix** — Set volume_horizon to 10^9 so barrier race always runs full 3600s. Eliminates the unbounded hold-bar return confound. Requires re-export + re-train.
+- **Option D: Intermediate Geometry (14:6, 15:5)** — 19:7 direction is random; 10:5 has marginal signal. Sweet spot in between.
 
 ### After That
 
