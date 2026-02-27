@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## cpcv-corrected-costs — CONFIRMED (Outcome A)
+**Date:** 2026-02-27
+**Hypothesis:** Two-stage XGBoost at 19:7 (w=1.0, T=0.50) achieves CPCV mean realized expectancy > $0.00 under corrected-base costs ($2.49 RT) with PBO < 0.50 across 45 splits.
+**Key result:** CPCV mean exp = **$1.81/trade** (95% CI [$1.46, $2.16]), PBO = 0.067 (3/45 negative), t = 10.29, p < 1e-13. Holdout: $1.46/trade. All 6 SC pass, all 5 sanity checks pass. Break-even RT = $4.30. Edge is structural (payoff asymmetry, not directional skill — pooled dir acc = 50.16%). All 10 temporal groups positive. Q3-Q4 stronger ($2.18-$2.93) than Q1-Q2 ($1.39-$1.49) due to volatility-dependent barrier reachability.
+**Lesson:** The first statistically validated positive-expectancy configuration in the project. The edge comes from the 19:7 payoff ratio (breakeven acc = 34.6%) combined with Stage 1 volatility-based reachability filtering — not from direction prediction. Cost correction ($3.74 → $2.49) was the key unlock. Hold-bar variance (-$9.39 to +$3.48 per split) is the dominant risk factor. Pessimistic costs ($4.99) are not viable (mean -$0.69).
+**Next:** Paper trading infrastructure (R|API+ integration, 1 /MES). Hold-bar exit optimization. Multi-year validation.
+**Details:** `.kit/results/cpcv-corrected-costs/analysis.md`
+
 ## class-weighted-stage1 — REFUTED (Outcome C)
 **Date:** 2026-02-27
 **Hypothesis:** There exists a (scale_pos_weight, threshold) pair such that the two-stage pipeline at 19:7 achieves realized WF expectancy > $1.50/trade with trade rate > 15%, by spreading the Stage 1 probability distribution.
