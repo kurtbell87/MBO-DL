@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## pnl-realized-return — REFUTED (Outcome C — SC-2 fails, but SC-1 passes)
+**Date:** 2026-02-27
+**Hypothesis:** Under realized-return PnL model (actual forward returns on hold-bar trades instead of full barrier payoffs), two-stage pipeline at 19:7 achieves WF per-trade expectancy > $0.00 with hold-bar directional accuracy > 52%.
+**Key result:** Realized WF expectancy $0.90/trade (SC-1 PASS), but hold-bar dir accuracy 51.04% < 52% (SC-2 FAIL). Hold-bar gross PnL +$1.06 (SC-3 PASS), 3/3 folds positive (SC-4 PASS). Result driven by Fold 2 outlier ($2.54 vs $0.01/$0.16). Hold-bar fwd returns unbounded (p10/p90 = -63/+63 ticks, not ±19 as spec assumed — volume horizon ends barrier race early). PnL decomposition: 0.556 × $3.77 (dir) + 0.444 × (-$2.68) (hold) = $0.90. 10:5 uniformly negative (-$1.65). Break-even RT: $4.64. Strategy marginally viable but fragile.
+**Lesson:** Hold-bar directional signal exists (51.04% > 50%, gross PnL +$1.06) but is sub-threshold and unstable across folds (48-54%). Hold bars destroy 57% of directional-bar edge. The volume horizon (50,000) causes barrier race truncation, making hold-bar trades unbounded risk exposure rather than bounded range-bets. Spec's first-principles analysis was wrong about return bounds. Realized ($0.90) exceeds spec's conservative estimate ($0.44) — hold-bar model adds marginal value vs pure cost drag.
+**Next:** Stage 1 threshold optimization (sweep 0.5-0.9) to reduce hold-bar exposure. At threshold 0.80 (est. 5% hold), PnL decomposition predicts ~$3.45/trade. Then CPCV validation at optimal threshold.
+**Details:** `.kit/results/pnl-realized-return/analysis.md`
+
 ## 2class-directional — CONFIRMED (with critical PnL model caveat)
 **Date:** 2026-02-26
 **Hypothesis:** Two-stage XGBoost (Stage 1: directional-vs-hold filter, Stage 2: long-vs-short) at 19:7 geometry achieves positive WF expectancy with >10% trade rate.

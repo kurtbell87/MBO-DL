@@ -1,0 +1,405 @@
+{
+  "experiment": "pnl-realized-return",
+  "timestamp": "2026-02-27T00:20:36",
+  "19_7": {
+    "geometry": "19:7",
+    "target": 19,
+    "stop": 7,
+    "realized_wf_expectancy": 0.901517613505994,
+    "realized_wf_expectancy_std": 1.1589780860331114,
+    "inflated_wf_expectancy": 3.77471732462107,
+    "conservative_wf_expectancy": 2.099559075776735,
+    "hold_bar_mean_pnl_net": -2.677496487511954,
+    "hold_bar_mean_pnl_gross": 1.0625035124880478,
+    "hold_bar_directional_accuracy": 0.5104187443811505,
+    "hold_bar_mean_fwd_return_ticks": 0.8018828194288788,
+    "hold_bar_win_rate_gross": 0.5032320767946984,
+    "hold_bar_win_rate_net": 0.4835824852310673,
+    "hold_bar_fwd_return_distribution": {
+      "fwd_return_p10": -63.333333333333336,
+      "fwd_return_p25": -29.0,
+      "fwd_return_median": 3.3333333333333335,
+      "fwd_return_p75": 31.333333333333332,
+      "fwd_return_p90": 62.5
+    },
+    "hold_bar_pnl_distribution": {
+      "p10": -80.82333333333332,
+      "p25": -39.57333333333333,
+      "median": -2.9066666666666667,
+      "p75": 36.26,
+      "p90": 76.67666666666668
+    },
+    "pnl_decomposition": {
+      "mean_frac_directional": 0.5561094252749254,
+      "mean_frac_hold": 0.44389057472507454,
+      "mean_dir_mean_pnl": 3.774717324621069,
+      "mean_hold_mean_pnl": -2.677496487511954
+    },
+    "calm_vs_choppy": {
+      "calm": {
+        "count": 262130,
+        "mean_fwd_return_ticks": 0.7915910013525497,
+        "mean_pnl_net": -2.677731970902449,
+        "directional_accuracy": 0.5102515862457628
+      },
+      "choppy": {
+        "count": 1414,
+        "mean_fwd_return_ticks": 2.673586328205991,
+        "mean_pnl_net": -2.841989399947432,
+        "directional_accuracy": 0.5353481570781149
+      }
+    },
+    "directional_accuracy": 0.5004528407575713,
+    "trade_rate": 0.8518110743722463,
+    "label0_hit_rate": 0.44389057472507454,
+    "breakeven_rt_cost": 4.641517613505996,
+    "cost_sensitivity": {
+      "optimistic": {
+        "inflated_mean": 5.0247173246210695,
+        "conservative_mean": 2.794695857370391,
+        "realized_mean": 2.151517613505994,
+        "realized_per_fold": [
+          1.2608261353641839,
+          3.7884366083743046,
+          1.4052900967794935
+        ]
+      },
+      "base": {
+        "inflated_mean": 3.77471732462107,
+        "conservative_mean": 2.099559075776735,
+        "realized_mean": 0.901517613505994,
+        "realized_per_fold": [
+          0.010826135364183474,
+          2.5384366083743046,
+          0.1552900967794935
+        ]
+      },
+      "pessimistic": {
+        "inflated_mean": 1.2647173246210717,
+        "conservative_mean": 0.7037244183366727,
+        "realized_mean": -1.608482386494004,
+        "realized_per_fold": [
+          -2.499173864635814,
+          0.02843660837430644,
+          -2.3547099032205043
+        ]
+      }
+    },
+    "per_fold": [
+      {
+        "fold": "Fold 1",
+        "n_trades": 196699,
+        "n_dir_trades": 109178,
+        "n_hold_trades": 87521,
+        "trade_rate": 0.849671706263499,
+        "directional_accuracy": 0.5076938577369067,
+        "label0_hit_rate": 0.44494888128561916,
+        "inflated_per_dir_trade": 4.010050376449467,
+        "conservative_per_trade": 2.2257829475493005,
+        "realized_per_trade": 0.010826135364183474,
+        "breakeven_rt": 3.750826135364186,
+        "hold_dir_accuracy": 0.48140096618357486,
+        "hold_mean_pnl_net": -4.978002879308967,
+        "hold_mean_pnl_gross": -1.238002879308966,
+        "hold_win_rate_net": 0.4606323053895636,
+        "frac_directional": 0.5550511187143808,
+        "frac_hold": 0.44494888128561916,
+        "dir_mean_pnl": 4.010050376449466,
+        "hold_mean_pnl": -4.978002879308967,
+        "stage1_accuracy": 0.5952699784017279,
+        "stage1_recall": 0.9464768707954782
+      },
+      {
+        "fold": "Fold 2",
+        "n_trades": 189962,
+        "n_dir_trades": 106713,
+        "n_hold_trades": 83249,
+        "trade_rate": 0.8044805827298522,
+        "directional_accuracy": 0.5015883725506733,
+        "label0_hit_rate": 0.43824027963487433,
+        "inflated_per_dir_trade": 3.8116221078968806,
+        "conservative_per_trade": 2.1412157694696825,
+        "realized_per_trade": 2.5384366083743046,
+        "breakeven_rt": 6.278436608374307,
+        "hold_dir_accuracy": 0.5403696615876553,
+        "hold_mean_pnl_net": 0.9063996564523276,
+        "hold_mean_pnl_gross": 4.6463996564523296,
+        "hold_win_rate_net": 0.517159365277661,
+        "frac_directional": 0.5617597203651257,
+        "frac_hold": 0.43824027963487433,
+        "dir_mean_pnl": 3.81162210789688,
+        "hold_mean_pnl": 0.9063996564523276,
+        "stage1_accuracy": 0.6006860627620378,
+        "stage1_recall": 0.9062367308116922
+      },
+      {
+        "fold": "Fold 3 (holdout)",
+        "n_trades": 206862,
+        "n_dir_trades": 114088,
+        "n_hold_trades": 92774,
+        "trade_rate": 0.901280934123388,
+        "directional_accuracy": 0.4920762919851343,
+        "label0_hit_rate": 0.4484825632547302,
+        "inflated_per_dir_trade": 3.5024794895168623,
+        "conservative_per_trade": 1.9316785103112208,
+        "realized_per_trade": 0.1552900967794935,
+        "breakeven_rt": 3.8952900967794957,
+        "hold_dir_accuracy": 0.5094856053722213,
+        "hold_mean_pnl_net": -3.9608862396792226,
+        "hold_mean_pnl_gross": -0.22088623967922047,
+        "hold_win_rate_net": 0.4729557850259771,
+        "frac_directional": 0.5515174367452698,
+        "frac_hold": 0.4484825632547302,
+        "dir_mean_pnl": 3.502479489516862,
+        "hold_mean_pnl": -3.9608862396792226,
+        "stage1_accuracy": 0.563144823980481,
+        "stage1_recall": 0.9383703045706154
+      }
+    ]
+  },
+  "10_5": {
+    "geometry": "10:5",
+    "target": 10,
+    "stop": 5,
+    "realized_wf_expectancy": -1.6463823028271538,
+    "realized_wf_expectancy_std": 0.06356906668302831,
+    "inflated_wf_expectancy": -0.5134142356850878,
+    "conservative_wf_expectancy": -0.35289707909383133,
+    "hold_bar_mean_pnl_net": -4.133472128778555,
+    "hold_bar_mean_pnl_gross": -0.39347212877855303,
+    "hold_bar_directional_accuracy": 0.5118269712239694,
+    "hold_bar_mean_fwd_return_ticks": 0.683448161621282,
+    "hold_bar_win_rate_gross": 0.4991225042987589,
+    "hold_bar_win_rate_net": 0.47210508104889576,
+    "hold_bar_fwd_return_distribution": {
+      "fwd_return_p10": -62.0,
+      "fwd_return_p25": -25.666666666666668,
+      "fwd_return_median": 2.6666666666666665,
+      "fwd_return_p75": 29.166666666666668,
+      "fwd_return_p90": 61.333333333333336
+    },
+    "hold_bar_pnl_distribution": {
+      "p10": -81.865,
+      "p25": -38.32333333333333,
+      "median": -2.9066666666666667,
+      "p75": 30.843333333333334,
+      "p90": 72.51
+    },
+    "pnl_decomposition": {
+      "mean_frac_directional": 0.6869944015687081,
+      "mean_frac_hold": 0.313005598431292,
+      "mean_dir_mean_pnl": -0.5134142356850878,
+      "mean_hold_mean_pnl": -4.133472128778555
+    },
+    "calm_vs_choppy": {
+      "calm": {
+        "count": 203222,
+        "mean_fwd_return_ticks": 0.6796988290469214,
+        "mean_pnl_net": -4.1370301335389055,
+        "directional_accuracy": 0.5118327376179018
+      },
+      "choppy": {
+        "count": 1205,
+        "mean_fwd_return_ticks": 1.0923255989344496,
+        "mean_pnl_net": -3.479510819135197,
+        "directional_accuracy": 0.5201595716817059
+      }
+    },
+    "directional_accuracy": 0.5054179074301287,
+    "trade_rate": 0.9367599476539447,
+    "label0_hit_rate": 0.313005598431292,
+    "breakeven_rt_cost": 2.0936176971728475,
+    "cost_sensitivity": {
+      "optimistic": {
+        "inflated_mean": 0.7365857643149122,
+        "conservative_mean": 0.5058459228670538,
+        "realized_mean": -0.3963823028271538,
+        "realized_per_fold": [
+          -0.33139579327541685,
+          -0.48267243986062575,
+          -0.3750786753454188
+        ]
+      },
+      "base": {
+        "inflated_mean": -0.5134142356850878,
+        "conservative_mean": -0.35289707909383133,
+        "realized_mean": -1.6463823028271538,
+        "realized_per_fold": [
+          -1.581395793275417,
+          -1.732672439860626,
+          -1.625078675345419
+        ]
+      },
+      "pessimistic": {
+        "inflated_mean": -3.023414235685087,
+        "conservative_mean": -2.0772530270312886,
+        "realized_mean": -4.156382302827153,
+        "realized_per_fold": [
+          -4.091395793275416,
+          -4.242672439860624,
+          -4.135078675345418
+        ]
+      }
+    },
+    "per_fold": [
+      {
+        "fold": "Fold 1",
+        "n_trades": 213753,
+        "n_dir_trades": 147601,
+        "n_hold_trades": 66152,
+        "trade_rate": 0.9233390928725702,
+        "directional_accuracy": 0.5099762196733084,
+        "label0_hit_rate": 0.3094786973750076,
+        "inflated_per_dir_trade": -0.42794588112546716,
+        "conservative_per_trade": -0.29550574728775775,
+        "realized_per_trade": -1.581395793275417,
+        "breakeven_rt": 2.158604206724584,
+        "hold_dir_accuracy": 0.5028109145756204,
+        "hold_mean_pnl_net": -4.155019576127709,
+        "hold_mean_pnl_gross": -0.4150195761277059,
+        "hold_win_rate_net": 0.47085500060466806,
+        "frac_directional": 0.6905213026249925,
+        "frac_hold": 0.3094786973750076,
+        "dir_mean_pnl": -0.4279458811254673,
+        "hold_mean_pnl": -4.155019576127709,
+        "stage1_accuracy": 0.6958876889848812,
+        "stage1_recall": 0.9720120381163114
+      },
+      {
+        "fold": "Fold 2",
+        "n_trades": 214959,
+        "n_dir_trades": 148639,
+        "n_hold_trades": 66320,
+        "trade_rate": 0.9103417608944225,
+        "directional_accuracy": 0.4988461978350231,
+        "label0_hit_rate": 0.30852395107904296,
+        "inflated_per_dir_trade": -0.636633790593317,
+        "conservative_per_trade": -0.44021701812903885,
+        "realized_per_trade": -1.732672439860626,
+        "breakeven_rt": 2.0073275601393754,
+        "hold_dir_accuracy": 0.5214533503742925,
+        "hold_mean_pnl_net": -4.189157493968639,
+        "hold_mean_pnl_gross": -0.4491574939686369,
+        "hold_win_rate_net": 0.4923854041013269,
+        "frac_directional": 0.691476048920957,
+        "frac_hold": 0.30852395107904296,
+        "dir_mean_pnl": -0.6366337905933172,
+        "hold_mean_pnl": -4.189157493968639,
+        "stage1_accuracy": 0.6951636810231652,
+        "stage1_recall": 0.9633117303953338
+      },
+      {
+        "fold": "Fold 3 (holdout)",
+        "n_trades": 224149,
+        "n_dir_trades": 152194,
+        "n_hold_trades": 71955,
+        "trade_rate": 0.9765989891948414,
+        "directional_accuracy": 0.5074313047820544,
+        "label0_hit_rate": 0.3210141468398253,
+        "inflated_per_dir_trade": -0.4756630353364789,
+        "conservative_per_trade": -0.32296847186469746,
+        "realized_per_trade": -1.625078675345419,
+        "breakeven_rt": 2.1149213246545826,
+        "hold_dir_accuracy": 0.5112166487219952,
+        "hold_mean_pnl_net": -4.056239316239317,
+        "hold_mean_pnl_gross": -0.3162393162393162,
+        "hold_win_rate_net": 0.4530748384406921,
+        "frac_directional": 0.6789858531601747,
+        "frac_hold": 0.3210141468398253,
+        "dir_mean_pnl": -0.475663035336479,
+        "hold_mean_pnl": -4.056239316239317,
+        "stage1_accuracy": 0.6775270128964797,
+        "stage1_recall": 0.986651799316707
+      }
+    ]
+  },
+  "success_criteria": {
+    "SC-1": {
+      "description": "Realized WF expectancy > $0.00 at 19:7 (base)",
+      "pass": true,
+      "value": 0.901517613505994
+    },
+    "SC-2": {
+      "description": "Hold-bar directional accuracy > 52% at 19:7",
+      "pass": false,
+      "value": 0.5104187443811505
+    },
+    "SC-3": {
+      "description": "Hold-bar mean realized PnL (gross) > $0.00",
+      "pass": true,
+      "value": 1.0625035124880478
+    },
+    "SC-4": {
+      "description": "Per-fold realized exp positive in >=2 of 3 folds",
+      "pass": true,
+      "value": [
+        0.010826135364183474,
+        2.5384366083743046,
+        0.1552900967794935
+      ]
+    }
+  },
+  "sanity_checks": {
+    "SC-S1": {
+      "description": "Dir-bar PnL within $0.10 of 2-class",
+      "pass": true,
+      "value": 3.77471732462107,
+      "reference": 3.774717324621069,
+      "diff": 8.881784197001252e-16
+    },
+    "SC-S2": {
+      "description": "Trade rate within 0.1pp of 85.18%",
+      "pass": true,
+      "value": 0.8518110743722463,
+      "reference": 0.8518110743722463
+    },
+    "SC-S3": {
+      "description": "Dir accuracy within 0.1pp of 50.05%",
+      "pass": true,
+      "value": 0.5004528407575713,
+      "reference": 0.5004528407575713
+    },
+    "SC-S4": {
+      "description": "Hold-bar fwd_return bounded (-19,+19)",
+      "pass": false,
+      "note": "EXPECTED FAILURE: volume horizon (50000 contracts) causes barrier race to end early; 720-bar forward returns exceed race-window bounds. Not a bug.",
+      "outside_count": 172270,
+      "total_hold_trades": 263544
+    },
+    "SC-S5": {
+      "description": "Mean |fwd_return| > 0.5 ticks on hold bars",
+      "pass": true
+    }
+  },
+  "outcome": "C",
+  "outcome_description": "REFUTED \u2014 no hold-bar directional signal. Hold-bar trades are pure cost drag. Threshold optimization MUST-DO.",
+  "three_way_comparison": {
+    "19_7": {
+      "inflated": 3.77471732462107,
+      "conservative": 2.099559075776735,
+      "realized": 0.901517613505994
+    },
+    "10_5": {
+      "inflated": -0.5134142356850878,
+      "conservative": -0.35289707909383133,
+      "realized": -1.6463823028271538
+    }
+  },
+  "mve_gates": {
+    "trade_rate_ok": true,
+    "dir_pnl_ok": true,
+    "fwd_lookup_ok": true,
+    "mean_abs_fwd_ok": true,
+    "all_passed": true
+  },
+  "resource_usage": {
+    "wall_clock_seconds": 30.001967191696167,
+    "wall_clock_minutes": 0.5000327865282694,
+    "total_training_runs": 14,
+    "gpu_hours": 0,
+    "total_runs": 14
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Executed locally on Apple Silicon. SC-S4 (bounded fwd return) fails because volume horizon (50000 contracts) causes barrier race to end well before 3600s; the 720-bar forward return at time horizon expiry can exceed the barrier race bounds. This is expected behavior, not a bug. 20.5% of hold-bar forward returns are truncated (bars near end of day)."
+}

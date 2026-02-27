@@ -1,8 +1,8 @@
 {
-  "cycles_completed": 9,
+  "cycles_completed": 10,
   "gpu_hours_used": 0.0,
   "started_at": "2026-02-19T08:16:08.796351",
-  "last_cycle_at": "2026-02-26T15:38:09.527424",
+  "last_cycle_at": "2026-02-26T19:29:55.378258",
   "question_history": {
     "hybrid-model-corrected": [
       "REFUTED(OutcomeB)"
@@ -30,6 +30,9 @@
     ],
     "2class-directional": [
       "CONFIRMED(withcriticalPnLmodelcaveat)"
+    ],
+    "pnl-realized-return": [
+      "REFUTED(OutcomeC\u2014SC-2fails)"
     ]
   },
   "cycle_log": [
@@ -104,6 +107,14 @@
       "gpu_hours": 0.0,
       "spec_file": ".kit/experiments/2class-directional.md",
       "timestamp": "2026-02-26T15:38:09.527429"
+    },
+    {
+      "cycle": 10,
+      "question": "pnl-realized-return",
+      "verdict": "REFUTED(OutcomeC\u2014SC-2fails)",
+      "gpu_hours": 0.0,
+      "spec_file": ".kit/experiments/pnl-realized-return.md",
+      "timestamp": "2026-02-26T19:29:55.378268"
     }
   ]
 }
