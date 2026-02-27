@@ -1,8 +1,8 @@
 {
-  "cycles_completed": 11,
+  "cycles_completed": 12,
   "gpu_hours_used": 0.0,
   "started_at": "2026-02-19T08:16:08.796351",
-  "last_cycle_at": "2026-02-26T20:11:19.221589",
+  "last_cycle_at": "2026-02-27T02:21:06.044912",
   "question_history": {
     "hybrid-model-corrected": [
       "REFUTED(OutcomeB)"
@@ -35,6 +35,9 @@
       "REFUTED(OutcomeC\u2014SC-2fails)"
     ],
     "threshold-sweep": [
+      "REFUTED(OutcomeC)"
+    ],
+    "class-weighted-stage1": [
       "REFUTED(OutcomeC)"
     ]
   },
@@ -126,6 +129,14 @@
       "gpu_hours": 0.0,
       "spec_file": ".kit/experiments/threshold-sweep.md",
       "timestamp": "2026-02-26T20:11:19.221594"
+    },
+    {
+      "cycle": 12,
+      "question": "class-weighted-stage1",
+      "verdict": "REFUTED(OutcomeC)",
+      "gpu_hours": 0.0,
+      "spec_file": ".kit/experiments/class-weighted-stage1.md",
+      "timestamp": "2026-02-27T02:21:06.044917"
     }
   ]
 }
