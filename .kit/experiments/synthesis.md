@@ -1,430 +1,358 @@
-# Phase 6: Synthesis [Research]
+# Experiment: Full Research Synthesis v2 — Strategic Pivot Assessment
 
-**Spec**: TRAJECTORY.md §11 Phase 6
-**Depends on**: ALL prior phases — 1, 2, 3, R1, 4, 5, R2, R3, R4.
-**Unlocks**: Model architecture build spec.
-**GPU budget**: 0 hours (analysis only — no model training). **Max runs**: 1 (deterministic).
+## Hypothesis
 
----
+A comprehensive synthesis of all 22+ experiments will establish that: (1) the project's overall viability status is **GO** — at least one unexplored high-leverage intervention (label geometry training at breakeven-favorable ratios) has >50% prior probability of producing positive per-trade expectancy; (2) the prior focus on oracle net expectancy as the gate metric was the wrong optimization target — breakeven win rate vs. model accuracy is the binding constraint; and (3) the single highest-priority next experiment is Phase 1 label geometry training at 4 geometries (10:5, 15:3, 19:7, 20:3) selected by breakeven WR diversity.
 
-## Objective
+**Falsifiable direction:** If the synthesis finds that ALL plausible interventions have been tested or that the accuracy-transfer uncertainty makes the label geometry lever <50% likely to succeed, the verdict is NO-GO and the project closes.
 
-Collate findings from R1–R4 and the engineering phases into a single decision document that determines (a) whether to proceed with model training, and (b) the exact architecture, bar type, feature set, and labeling method to use.
+## Independent Variables
 
-This is a **pure analysis phase** — no new models are trained. The experiment reads existing results, resolves inter-experiment tensions, and produces the synthesis document.
+N/A — this is a pure analysis experiment with no model training. The "independent variable" is the analytical lens: the synthesis resolves tensions across 22+ experiments by examining each finding through the updated framework (breakeven WR as binding constraint, not oracle ceiling).
 
----
+## Controls
 
-## Prior Findings (Input Summary)
+| Control | Value | Rationale |
+|---------|-------|-----------|
+| Input data | All `.kit/results/*/metrics.json` and `analysis.md` files | No new computation — analysis of existing results only |
+| Methodology | Evidence matrix + explicit tension resolution | Structured analysis prevents cherry-picking |
+| Prior synthesis | R6 synthesis (2026-02-17) + SYNTHESIS.md (2026-02-24) | Baseline for what has changed |
+| Decision framework | GO/CONDITIONAL GO/NO-GO with explicit criteria | Pre-committed to prevent motivated reasoning |
 
-### R1: Subordination Test — REFUTED
-- Event-driven bars do not beat time bars on normality/heteroskedasticity.
-- 0/3 primary pairwise tests significant after Holm-Bonferroni.
-- Dollar bars show *higher* AR R² — opposite of theory's prediction.
-- Effect reverses across quarters (regime-dependent).
-- **Decision**: `time_5s` is the baseline bar type.
+## Metrics (ALL must be reported)
 
-### R2: Information Decomposition — FEATURES SUFFICIENT
-- Best R²=0.0067 (MLP on raw book, h=1). All h>1 horizons negative.
-- 0/40 tests pass dual threshold (relative >20% AND corrected p<0.05).
-- Δ_spatial=+0.003 (p=0.96): raw book vs. hand-crafted — not significant.
-- Δ_msg_summary=−0.001, Δ_msg_learned=−0.003: messages add nothing.
-- Δ_temporal=−0.006: lookback hurts (overfitting at 845 dims).
-- **Decision**: GBT_BASELINE architecture — no CNN/message-encoder/SSM justified by information gaps.
+### Primary
 
-### R3: Book Encoder Inductive Bias — CNN BEST
-- CNN mean R²=0.132 ± 0.048 (5-fold, ~12k params, predicting return_5).
-- CNN vs. Attention: Δ=+0.047, corrected p=0.042, Cohen's d=1.86 — **significant**.
-- CNN vs. MLP: Δ=+0.032, corrected p=0.251 — not significant but CNN never negative.
-- CNN 16-dim embedding linear probe R²=0.111 vs. raw 40-dim probe R²=0.027 (retention ratio=4.16x, p=0.012).
-- **Decision**: Conv1d spatial encoder with 16-dim output is the best spatial representation; CNN *amplifies* rather than merely compresses signal.
+1. **go_nogo_verdict**: {GO, CONDITIONAL_GO, NO_GO} — updated project status with full evidence chain
+2. **highest_priority_next_experiment**: Specific experiment with hypothesis, success criterion, compute cost, and prior probability of success
 
-### R4: Temporal Predictability — NO TEMPORAL SIGNAL
-- All 36 Tier 1 AR configs produce negative R².
-- 0/16 Tier 2 temporal augmentation gaps pass dual threshold.
-- Temporal-Only R² ≈ 0 at h=1, negative at all longer horizons.
-- Converges with R2 Δ_temporal finding.
-- **Decision**: Drop SSM / temporal encoder. Static current-bar features are sufficient.
+### Secondary
 
----
+| Metric | Description |
+|--------|-------------|
+| experiments_analyzed | Total experiments included in synthesis |
+| tensions_resolved | Count of T1–T4 tensions resolved with clear verdicts |
+| closed_lines_count | Number of permanently closed lines of investigation |
+| open_questions_ranked | Ordered list of remaining open questions with priors |
+| accuracy_gap_current | Best model accuracy (0.4504) minus best breakeven WR available (29.6% at 20:3) |
+| expectancy_gap_current | Best model expectancy (-$0.001) vs. $0.00 breakeven |
+| architecture_recommendation | Updated canonical architecture specification |
+| cpcv_vs_walkforward_gap | Expectancy divergence between CPCV and walk-forward evaluation |
+| label_geometry_viability_prior | Estimated probability that Phase 1 label training yields positive expectancy |
 
-## Key Tension to Resolve
+### Sanity Checks
 
-**R2 says "features sufficient" (Δ_spatial not significant) → drop spatial encoder.**
-**R3 says CNN R²=0.132 >> R2 MLP R²=0.007 → spatial encoder adds massive value.**
+| Check | Expected | Failure means |
+|-------|----------|---------------|
+| SC-S1: All 22+ experiments accounted for | Every experiment in RESEARCH_LOG.md has an entry in the evidence matrix | Analysis is incomplete |
+| SC-S2: No contradictory verdicts | Each tension resolves to a single consistent verdict | Logical error in synthesis |
+| SC-S3: Closed lines have complete evidence chains | Every "closed" line cites >=2 supporting experiments | Premature closure |
+| SC-S4: Open questions have falsifiable hypotheses | Each ranked question has a specific direction and magnitude | Vague research agenda |
 
-This is not a contradiction — it is a methodological difference:
-- R2 compared a **2-layer MLP (64 units)** on raw book (40-dim) vs. hand-crafted features (62-dim). Both achieved R²<0.007. The *gap* between them was not significant.
-- R3 compared a **matched-parameter Conv1d (12k params)** vs. Attention vs. MLP on raw book images with structured `(20, 2)` input. The CNN achieved R²=0.132 — **20× higher** than R2's best.
+## Baselines
 
-The resolution hinges on two factors:
-1. **Representation format**: R2 flattened the book to a 40-element vector (destroying spatial structure). R3 preserved the `(20, 2)` price-ladder layout.
-2. **Model capacity**: R2's MLP was a diagnostic tool (~5k params). R3's CNN was purpose-built (~12k params) with inductive bias for adjacent-level patterns.
+| Baseline | Source | Value | Notes |
+|----------|--------|-------|-------|
+| Prior synthesis verdict | R6 (2026-02-17) | CONDITIONAL GO | CNN+GBT Hybrid recommended |
+| Updated synthesis verdict | SYNTHESIS.md (2026-02-24) | GO (implicit) | XGB tuning + label design as next steps |
+| Best model accuracy | XGB tuning (2026-02-25) | 0.4504 (CPCV) | On 20 features, tuned params |
+| Best model expectancy | XGB tuning (2026-02-25) | -$0.001 (CPCV) / -$0.140 (WF) | At knife-edge of breakeven |
+| Oracle edge | R7 (2026-02-17) | $4.00/trade, WR 64.3% | At 10:5 geometry |
+| Label geometry oracle data | Label sensitivity (2026-02-26) | 123 geometries mapped, peak $4.13 | $5.00 gate failed but breakeven WR data is key finding |
 
-Synthesis must determine whether the R3 CNN's R²=0.132 represents **genuine exploitable signal** or **in-sample overfitting** that a GBT on hand-crafted features could match.
+## Success Criteria (immutable once RUN begins)
 
----
+- [ ] **SC-1**: Evidence matrix covers all 22+ experiments × 5 strategic questions (Q1–Q5)
+- [ ] **SC-2**: Go/no-go verdict rendered with explicit decision rule and full evidence chain
+- [ ] **SC-3**: Label geometry strategic pivot documented — why breakeven WR (not oracle ceiling) is the correct metric, with PnL projections at 4 candidate geometries
+- [ ] **SC-4**: Closed lines of investigation compiled — each with >=2 supporting experiments and an evidence chain
+- [ ] **SC-5**: Open questions ranked by priority — each with falsifiable hypothesis, success criterion, compute estimate, and prior probability
+- [ ] **SC-6**: Architecture status updated — CNN closed (evidence chain), XGB plateau (evidence chain), GBT canonical (justification)
+- [ ] **SC-7**: Statistical limitations inventory updated — abort miscalibration, WF-CPCV divergence, long/short asymmetry, single-year regime dependence
+- [ ] **SC-8**: Single highest-priority next experiment recommended with full specification
+- [ ] **SC-9**: Synthesis document produced at `.kit/results/synthesis-v2/analysis.md`
+- [ ] **SC-10**: `.kit/SYNTHESIS.md` updated with latest findings
+- [ ] No sanity check failures
 
-## Questions to Answer
+## Minimum Viable Experiment
 
-### Q1: Go/No-Go — Proceed with Model Training?
+Before the full synthesis, verify data availability and cross-reference the 3 most recent experiments:
 
-**Sub-questions**:
-- Is there positive out-of-sample R² at any horizon? (R2 + R3 results)
-- Is the signal magnitude economically meaningful after estimated transaction costs?
-- Do we have a labeling method with demonstrated oracle expectancy? (Phase 3 C++ backtest)
+1. **Data access gate.** Confirm all result files exist for: label-design-sensitivity, xgb-hyperparam-tuning, e2e-cnn-classification. Load `metrics.json` for each. Assert all 3 load without error.
 
-**Evidence sources**: R2 metrics.json, R3 metrics.json, Phase 3 oracle replay (C++ test output).
+2. **Quick tension check.** Cross-reference the 3 most recent findings:
+   - XGB tuning: accuracy plateau at 0.4504 (0.33pp range)
+   - Label sensitivity: breakeven WR at 15:3 = 33.3%, at 20:3 = 29.6%
+   - E2E CNN: GBT beats CNN by 5.9pp
 
-**Decision rule**:
-```
-If R² > 0 out-of-sample at ≥1 horizon AND oracle expectancy > 0:
-  → GO. Proceed to model build.
-If R² > 0 but oracle expectancy unknown or ≤ 0:
-  → CONDITIONAL GO. Proceed to model build but flag oracle gap.
-If R² ≤ 0 everywhere:
-  → NO-GO. The data does not support supervised learning on MES at 5s bars.
-```
+   Assert: These 3 findings are internally consistent (XGB accuracy plateau + low breakeven WR = geometry is the lever, not tuning; CNN closure is independent). If contradictory, investigate before full synthesis.
 
-### Q2: Bar Type
+3. **Prior synthesis delta.** Load SYNTHESIS.md (2026-02-24). Identify which of its 4 recommendations have been acted on:
+   - [x] XGBoost hyperparameter tuning → DONE (Outcome C)
+   - [ ] Label design sensitivity → PARTIALLY DONE (Phase 0 only, abort at oracle gate)
+   - [ ] Walk-forward as primary metric → NOTED but not formalized
+   - [ ] Regime-conditional trading → NOT STARTED
 
-**Evidence**: R1 (REFUTED subordination), R4 (no temporal structure in any bar type).
-**Expected answer**: `time_5s` — no competing evidence.
+   Assert: At least 1 recommendation has been completed. If 0, the synthesis has no new input.
 
-### Q3: Architecture — §7.2 Simplification Cascade (Final)
+Pass all 3 gates → proceed to full protocol.
 
-Resolve R2 vs. R3 tension. Fill in the cascade table with final decisions:
+## Full Protocol
 
-| Encoder Stage | R2 Gap | R2 Verdict | R3 Evidence | Final Decision |
-|---------------|--------|------------|-------------|----------------|
-| Spatial (CNN) | Δ_spatial=+0.003, p=0.96 | Drop | CNN R²=0.132 >> MLP R²=0.100 | **?** |
-| Message encoder | Δ_msg=−0.003 | Drop | N/A | Drop |
-| Temporal (SSM) | Δ_temporal=−0.006 | Drop | R4 confirms | Drop |
-
-**Decision rule for spatial encoder**:
-```
-OPTION A — GBT Baseline (R2 recommendation):
-  Use hand-crafted 62-dim features → XGBoost.
-  Justification: R2's Δ_spatial was not significant.
-  Risk: Leaves R3's R²=0.132 CNN signal on the table.
-
-OPTION B — CNN + GBT Hybrid:
-  Use Conv1d encoder on raw (20,2) book → 16-dim embedding → concatenate
-  with hand-crafted features → XGBoost or MLP head.
-  Justification: R3 shows CNN extracts 20× more signal than flat MLP.
-  The 16-dim embedding is a sufficient statistic (retention ratio=4.16x).
-  Risk: R3 used return_5; R2 found all h>1 horizons negative.
-  Need to reconcile horizon discrepancy.
-
-OPTION C — CNN Standalone:
-  Use Conv1d encoder on raw (20,2) book → 16-dim → linear head.
-  Justification: R3 sufficiency test shows CNN-16d outperforms raw-40d.
-  Risk: Ignores hand-crafted features that may capture non-spatial signal
-  (order flow, trade imbalance, etc.).
-```
-
-**Reconciliation protocol** (no new training — use existing data):
-1. Compare R3's CNN return_5 R² (0.132) with R2's MLP return_5 R² (negative in R2).
-2. Check R3's target: was `return_5` defined identically to R2's `fwd_return_5`?
-3. If definitions match but R² differs by 20×, the difference is architectural (CNN's inductive bias on structured input), not a data artifact.
-4. Document whether R3's R²=0.132 is on the same test days / CV folds as R2.
-
-### Q4: Feature Set — GBT Baseline Input Selection
-
-**Evidence sources**:
-- R2 Config (a): 62 hand-crafted features → R²=0.0036 (h=1)
-- R2 Config (b): 40 raw book features → R²=0.0067 (h=1)
-- R4 feature importance: top static features are book_snap_19, book_snap_21 (best bid/ask levels)
-- R3 CNN: 16-dim embedding encodes all predictive book structure
-
-**Decision rule**:
-```
-If OPTION A (GBT Baseline):
-  Input = 62 hand-crafted features (Track A).
-  Rationale: Simplest, and R2 showed Δ_spatial is not significant.
-
-If OPTION B (CNN + GBT Hybrid):
-  Input = CNN 16-dim embedding ⊕ non-spatial hand-crafted features.
-  Non-spatial features = Track A minus book-derived features (i.e., trade
-  features, order flow features, volatility features — ~20 dims).
-  Rationale: CNN already encodes spatial book structure; avoid redundancy.
-
-If OPTION C (CNN Standalone):
-  Input = CNN 16-dim embedding only.
-```
-
-### Q5: Prediction Horizon
-
-**Evidence**:
-- R2: Only h=1 (~5s) has positive R². All longer horizons negative.
-- R3: Tested h=5 only (return_5 = 5-bar ≈ 25s forward). Got R²=0.132.
-- R4: h=1 is the only horizon where Static-Book GBT R² > 0 (0.0046).
-
-**Tension**: R2 and R4 agree that only h=1 works. R3 used h=5 and got much higher R².
-**Resolution**: Document the discrepancy. If R3's return_5 target is identical to R2's fwd_return_5, the CNN's inductive bias explains the difference. Recommend testing both h=1 and h=5 in the model build.
-
-### Q6: Labeling Method
-
-**Evidence**: Phase 3 oracle_labeler implements first-to-hit labeling (target_ticks=10, stop_ticks=5, take_profit_ticks=20). Phase 3 multi-day backtest was a TDD engineering phase — results are in C++ test output, not `.kit/results/`.
-
-**Action**: Extract oracle expectancy from C++ test output if available, or note as an open question to resolve before model build.
-
-### Q7: Statistical Limitations
-
-Compile across all experiments:
-- **Single-year data**: 2022 was a bear market + rate hiking cycle. All findings may be regime-specific.
-- **Power**: R2 had 5 folds × ~84k bars. With R² < 0.007, the 95% CI on any gap overlaps zero. We cannot detect effect sizes < ~0.003 R² reliably.
-- **Failed corrections**: R2 Δ_spatial had uncorrected p=0.025 but corrected p=0.96. R3 CNN vs. MLP had corrected p=0.251. These are suggestive but inconclusive.
-- **R3 horizon**: R3 only tested return_5. CNN performance at h=1 is unknown.
-- **No regime stratification**: R1 showed quarter-level reversals. No regime-conditional analysis was performed in R2–R4.
-
----
-
-## Protocol
-
-### Step 1: Load Results
+### Step 1: Load ALL Results
 
 Read the following files (no new computation):
-- `.kit/results/subordination-test/metrics.json` — R1 findings
-- `.kit/results/info-decomposition/metrics.json` — R2 findings
-- `.kit/results/info-decomposition/analysis.md` — R2 detailed analysis
-- `.kit/results/book-encoder-bias/metrics.json` — R3 findings
-- `.kit/results/book-encoder-bias/model_comparison.csv` — R3 fold-level R²
-- `.kit/results/book-encoder-bias/sufficiency_test.csv` — R3 sufficiency test
-- `.kit/results/book-encoder-bias/pairwise_tests.csv` — R3 statistical tests
-- `.kit/results/temporal-predictability/metrics.json` — R4 findings
-- `.kit/results/temporal-predictability/analysis.md` — R4 detailed analysis
 
-### Step 2: Resolve R2–R3 Tension
+**Foundation (R1–R4):**
+- `.kit/results/subordination-test/metrics.json`
+- `.kit/results/info-decomposition/metrics.json`
+- `.kit/results/info-decomposition/analysis.md`
+- `.kit/results/book-encoder-bias/metrics.json`
+- `.kit/results/temporal-predictability/metrics.json`
+- `.kit/results/temporal-predictability/analysis.md`
 
-1. Extract R3's return_5 definition and confirm it matches R2's `fwd_return_5`.
-2. Tabulate R2 MLP R² on `fwd_return_5` vs. R3 CNN R² on `return_5` — same test days?
-3. Document whether the 20× R² difference is attributable to:
-   - (a) Structured (20,2) input vs. flattened 40-dim vector
-   - (b) Conv1d inductive bias vs. generic MLP
-   - (c) Model capacity (12k params vs. ~5k params in R2)
-   - (d) Different data splits or target definitions
-4. Produce a **reconciliation table** with side-by-side comparison.
+**Temporal Chain (R4b–R4d):**
+- `.kit/results/temporal-predictability-event-bars/analysis.md`
+- `.kit/results/temporal-predictability-completion/analysis.md`
+- `.kit/results/temporal-predictability-dollar-tick-actionable/analysis.md`
 
-### Step 3: Fill Architecture Cascade
+**CNN Pipeline (9B–9E, R3b):**
+- `.kit/results/hybrid-model-training/metrics.json`
+- `.kit/results/cnn-reproduction-diagnostic/metrics.json`
+- `.kit/results/r3-reproduction-pipeline-comparison/metrics.json`
+- `.kit/results/hybrid-model-corrected/metrics.json`
+- `.kit/results/e2e-cnn-classification/metrics.json`
+- `.kit/results/r3b-genuine-tick-bars/metrics.json`
 
-Using the reconciliation from Step 2, make the final architecture decision:
+**Oracle & Optimization:**
+- `.kit/results/oracle-expectancy/metrics.json`
+- `.kit/results/xgb-hyperparam-tuning/metrics.json`
+- `.kit/results/xgb-hyperparam-tuning/analysis.md`
+- `.kit/results/label-design-sensitivity/metrics.json`
+- `.kit/results/label-design-sensitivity/analysis.md`
+- `.kit/results/label-design-sensitivity/oracle_heatmap_data.json`
 
+**Other:**
+- `.kit/results/synthesis/metrics.json` (prior R6 synthesis)
+- `.kit/results/full-year-export/metrics.json`
+- `.kit/SYNTHESIS.md` (prior synthesis document, 2026-02-24)
+- `.kit/RESEARCH_LOG.md` (cumulative findings)
+
+### Step 2: Compile Evidence Matrix
+
+Build a complete experiment × question matrix showing how each experiment contributes to each strategic question. Include ALL 22+ experiments.
+
+**Rows:** Every experiment (R1, R2, R3, R4, R4b, R4c, R4d, R6, R7, 9B, 9C, 9D, 9E, R3b-original, R3b-genuine, full-year-export, e2e-cnn-classification, xgb-hyperparam-tuning, bidir-reexport, label-design-sensitivity, infrastructure phases, TB-Fix).
+
+**Columns:**
+- Q1: Go/No-Go Status
+- Q2: Highest-Priority Next Experiment
+- Q3: Architecture and Feature Set
+- Q4: What Has Been Eliminated
+- Q5: Statistical Limitations
+
+Each cell: verdict + key metric + confidence level.
+
+### Step 3: Resolve Tensions T1–T4
+
+For each tension, cite specific metrics from loaded results and produce a clear resolution with confidence level.
+
+**T1: What Is the Go/No-Go Status After All Evidence?**
+
+Decision rule:
 ```
-Encoder Stage       | Gap Evidence     | R3 Evidence           | Decision
---------------------|------------------|-----------------------|----------
-Spatial (CNN)       | R2: not signif.  | R3: CNN R²=0.132,     | [A/B/C]
-                    |                  | p=0.042 vs Attention   |
-Message encoder     | R2: negative     | —                     | DROP
-Temporal (SSM)      | R2+R4: negative  | —                     | DROP
+GO: At least one unexplored high-leverage intervention exists with
+    >50% prior probability of closing the viability gap.
+CONDITIONAL GO: Interventions exist but <50% prior, or require
+    significant additional data/compute.
+NO-GO: All plausible interventions have been exhausted.
 ```
 
-### Step 4: Compile Feature Set
+Evidence to weigh:
+- Oracle edge: $4.00/trade (R7) — exploitable edge exists
+- Best model: -$0.001/trade CPCV (XGB tuning) — $0.001 from breakeven
+- Walk-forward: -$0.140/trade — deployment-realistic estimate is worse
+- Label geometry: breakeven WR at 15:3 = 33.3% — 12pp below model's 45%
+- Accuracy transfer uncertainty: unknown (Phase 1 never ran)
+- XGB plateau: 0.33pp accuracy range — tuning exhausted
+- CNN closure: 5.9pp deficit — no viable CNN path
 
-Based on the architecture decision, specify the exact input features:
-- List features by name and dimension
-- Cite the evidence for each inclusion/exclusion
-- Specify preprocessing (normalization, encoding format)
+**T2: Was Optimizing Oracle Net Exp the Wrong Variable?**
 
-### Step 5: Document Limitations
+Compare oracle net exp ranking vs. breakeven WR ranking for the 123 mapped geometries. Show that the top-10 by oracle net exp (moderate ratios 1.6:1–2.7:1) are NOT the top-10 by model viability (high ratios 5:1+). Quantify the inverse correlation in the high-ratio region.
 
-Enumerate all statistical caveats with severity ratings:
-- **Critical**: Could invalidate the go/no-go decision
-- **Major**: Could change the architecture recommendation
-- **Minor**: Noted for future work
+**T3: Can the Model's ~45% Accuracy Transfer to High-Ratio Geometries?**
+
+This is the central unresolved question. Compile all available evidence:
+- Label distribution shifts with geometry (from Phase 0 data: monotonic trade count reduction with wider targets)
+- Long recall already 0.149 at 10:5 — what happens at 15:3 where hold fraction increases?
+- XGB accuracy plateau (0.33pp range) suggests the feature set determines accuracy, not the label distribution — potential positive signal for transfer
+- Counter-evidence: more imbalanced labels may cause accuracy to drop via majority-class prediction
+
+Assign a probability estimate (calibrated) with explicit reasoning.
+
+**T4: Is the CNN Line Truly Closed?**
+
+Evidence chain:
+- E2E CNN classification: 5.9pp worse than GBT (3 reasons: spatial signal encodes variance not boundaries, long recall 0.21, hold prediction dominance)
+- 9E hybrid: expectancy -$0.37/trade
+- 9B: CNN R²=-0.002 (pipeline broken, not architecture — but normalization fix in 9E still shows non-viable expectancy)
+- R3b-genuine: tick_100 R²=0.124 but p=0.21, single-fold driven
+- CNN regression R²=0.084 is genuine but does not convert to classification
+
+Verdict: CLOSED for classification. Regression signal acknowledged but non-actionable.
+
+### Step 4: Produce Recommendations
+
+Rank-order next experiments by expected information value. For each:
+- State the falsifiable hypothesis with direction and magnitude
+- Define the binary success criterion
+- Estimate compute cost (wall-clock, GPU hours, dollar cost)
+- Assign prior probability of success with explicit reasoning
+
+Candidates to evaluate:
+- (A) Phase 1 label geometry training — XGBoost at 4 geometries selected by breakeven WR
+- (B) Regime-conditional trading — Q1-Q2 only strategy
+- (C) 2-class short/not-short reformulation
+- (D) Cost reduction investigation (limit orders, maker rebates)
+- (E) Class-weighted XGBoost with PnL-aligned loss
+- (F) Accept no-edge and close the project
+
+### Step 5: Update Closed Lines
+
+Compile the definitive list of what has been eliminated with the evidence chain for each. Each closed line must cite >=2 supporting experiments.
+
+Known closed lines:
+1. Temporal encoder (R4, R4b, R4c, R4d — 0/168+ passes)
+2. Message encoder (R2 — 0/40 passes)
+3. Event-driven bars over time bars (R1 — 0/3 passes)
+4. CNN for classification (e2e-cnn, 9E, 9B)
+5. CNN+GBT hybrid for trading (9E, e2e-cnn)
+6. XGBoost hyperparameter tuning as accuracy lever (xgb-tuning — 0.33pp plateau)
+7. Oracle net expectancy as viability metric (label-design-sensitivity — inverse correlation with model viability)
 
 ### Step 6: Produce Decision Document
 
-Write the synthesis document to `.kit/results/synthesis/analysis.md`.
-
----
-
-## Document Structure
+Write the updated synthesis to `.kit/results/synthesis-v2/analysis.md` with this structure:
 
 ```
-.kit/results/synthesis/analysis.md
-
 1. Executive Summary
-   - Go/no-go: proceed with model training? [YES/CONDITIONAL/NO]
-   - Recommended architecture
-   - Recommended bar type: time_5s
-   - Recommended prediction horizon(s)
-   - Recommended labeling method (or flag as open)
+   - Updated go/no-go verdict
+   - Single highest-priority next experiment
+   - Architecture recommendation
+   - Key numbers: accuracy gap, breakeven WR gap, expectancy gap
 
-2. Bar Type Decision (R1 + R4)
-   - R1: Subordination REFUTED — time bars win
-   - R4: No temporal structure favoring any bar type
-   - Decision: time_5s with justification
+2. Complete Evidence Matrix (22+ experiments × 5 questions)
 
-3. Architecture Decision (R2 + R3 + R4)
-   - §7.2 Simplification Cascade — final table
-   - R2 vs. R3 reconciliation table
-   - Message encoder: DROP (R2 Tier 2)
-   - Temporal encoder: DROP (R2 + R4)
-   - Spatial encoder: [INCLUDE/DROP] with justification
-   - Final architecture diagram
+3. Strategic Pivot: Breakeven WR vs Oracle Ceiling
+   - Why the project was optimizing the wrong variable
+   - Inverse correlation between oracle net exp and model viability
+   - Payoff structure analysis with PnL projections at 4 geometries
 
-4. Feature Set Specification
-   - Exact feature list with dimensions
-   - Preprocessing pipeline
-   - Warmup and lookahead policy (§8.6)
+4. Tension Resolutions (T1–T4)
+   - Each with verdict, confidence, evidence chain
 
-5. Prediction Horizon Analysis
-   - R2: h=1 only has signal (R²=0.007)
-   - R3: h=5 CNN achieves R²=0.132
-   - Reconciliation and recommendation
+5. Architecture Status (Updated)
+   - CNN line: CLOSED
+   - GBT on 20 features: canonical
+   - XGBoost tuning: exhausted
+   - Feature set: binding constraint
 
-6. Oracle Expectancy (Phase 3)
-   - Available results from C++ oracle replay
-   - Labeling method comparison (if data available)
-   - Or: flag as open question
+6. Closed Lines of Investigation (7+ lines with evidence chains)
 
-7. Statistical Limitations
-   - Single-year caveat (2022 bear market)
-   - Power analysis (detectable effect sizes)
-   - Failed corrections (suggestive findings)
-   - R3 horizon gap (only tested h=5)
-   - No regime-conditional analysis
+7. Open Questions (Ranked by Priority)
+   - Each with hypothesis, success criterion, compute, prior
 
-8. Convergence Matrix
-   Table: Question × Experiment → Finding
-   Shows how each experiment contributes to each decision.
+8. Statistical Limitations (Updated)
+   - Abort criterion miscalibration
+   - Walk-forward divergence (-$0.140 vs -$0.001)
+   - Long/short recall asymmetry (0.149 vs 0.634)
+   - Single-year regime dependence
+   - volatility_50 feature monopoly (49.7% gain share)
 
-9. Open Questions for Model Build
-   - Items that synthesis cannot resolve
-   - Recommended experiments for the model build phase
+9. Recommendation
+   - Explicit next action with full justification
 ```
 
----
+Also update `.kit/SYNTHESIS.md` with the new findings.
 
-## Implementation
+## Resource Budget
 
-```
-Language: Python (analysis only — no model training)
-Entry point: research/R6_synthesis.py
+**Tier:** Quick
 
-Dependencies:
-  - polars (JSON/CSV loading)
-  - numpy (basic statistics)
+- Max GPU-hours: 0
+- Max wall-clock time: 30 minutes
+- Max training runs: 0 (analysis only)
+- Max seeds per configuration: N/A
 
-Input:
-  - .kit/results/subordination-test/metrics.json
-  - .kit/results/info-decomposition/metrics.json
-  - .kit/results/info-decomposition/analysis.md
-  - .kit/results/book-encoder-bias/metrics.json
-  - .kit/results/book-encoder-bias/model_comparison.csv
-  - .kit/results/book-encoder-bias/sufficiency_test.csv
-  - .kit/results/book-encoder-bias/pairwise_tests.csv
-  - .kit/results/temporal-predictability/metrics.json
-  - .kit/results/temporal-predictability/analysis.md
-
-Output:
-  - .kit/results/synthesis/analysis.md
-  - .kit/results/synthesis/convergence_matrix.csv
-  - .kit/results/synthesis/architecture_decision.json
+### Compute Profile
+```yaml
+compute_type: cpu
+estimated_rows: 0
+model_type: other
+sequential_fits: 0
+parallelizable: false
+memory_gb: 1
+gpu_type: none
+estimated_wall_hours: 0.5
 ```
 
----
+### Wall-Time Estimation
 
-## Compute Budget
+| Phase | Work | Estimate |
+|-------|------|----------|
+| MVE gates | Load 3 recent results, verify consistency | ~2 min |
+| Step 1: Load all results | Read 22+ metrics/analysis files | ~5 min |
+| Step 2: Evidence matrix | Cross-reference experiments × questions | ~5 min |
+| Step 3: Tension resolution | Analyze T1–T4 with specific metrics | ~5 min |
+| Step 4: Recommendations | Rank-order next experiments | ~3 min |
+| Step 5: Closed lines | Compile with evidence chains | ~3 min |
+| Step 6: Document production | Write synthesis-v2/analysis.md + SYNTHESIS.md | ~7 min |
+| **Total** | | **~30 min** |
 
-| Item | Estimate |
-|------|----------|
-| Load all result files | ~1 min |
-| R2–R3 reconciliation analysis | ~5 min |
-| Document generation | ~10 min |
-| **Total wall-clock** | **~15 min** |
-| **GPU hours** | **0** |
-| **Runs** | **1** |
+## Abort Criteria
 
----
+- **Result files missing:** If >3 of the listed result files are missing or unreadable → STOP. The synthesis cannot proceed without the input data.
+- **Internal contradiction in recent findings:** If xgb-tuning accuracy and label-sensitivity breakeven WR data are contradictory (e.g., reported accuracy at 10:5 differs by >5pp between experiments) → STOP. Investigate data integrity before synthesizing.
+- **Wall-clock > 45 minutes:** Abort and deliver partial synthesis with completed sections.
+
+## Confounds to Watch For
+
+1. **Confirmation bias toward GO.** The synthesis follows a successful (if aborted) label-sensitivity experiment that revealed a promising lever. Guard against treating the breakeven WR argument as a proven result — it remains a hypothesis that requires Phase 1 training to test. The prior probability assignment must be calibrated, not optimistic.
+
+2. **Walk-forward vs. CPCV expectancy divergence.** CPCV expectancy (-$0.001) paints a near-breakeven picture. Walk-forward (-$0.140) is dramatically worse. The synthesis must explicitly address which estimate to use for the go/no-go decision. Using CPCV alone would be misleading.
+
+3. **Single-year data.** All 22+ experiments use 2022 MES data only. GBT's Q1-Q2 profitability and Q3-Q4 losses may be year-specific regime effects. The synthesis should flag this as the single largest threat to external validity.
+
+4. **volatility_50 feature monopoly (49.7% gain share).** If the model's performance is almost entirely determined by one feature's relationship to the label, the model is fragile to volatility regime shifts. The synthesis should assess whether this risk changes the go/no-go calculus.
+
+5. **Accuracy-transfer uncertainty is large.** The model's 45% accuracy at 10:5 labels may not transfer to 15:3 or 20:3 labels. The label distribution shifts substantially (more holds, fewer directional labels). The synthesis must NOT assume accuracy transfers — it must quantify the uncertainty and present both scenarios (transfers vs. doesn't).
+
+6. **Anchoring on the $0.001 gap.** The tuned model is $0.001/trade from CPCV breakeven. This creates a psychological anchor suggesting the model is "almost there." But walk-forward says it's $0.14/trade away. The synthesis should present both numbers and let the evidence determine which is more relevant.
 
 ## Deliverables
 
-### Convergence Matrix
-
 ```
-Question               | R1          | R2               | R3                | R4              | Decision
------------------------|-------------|------------------|-------------------|-----------------|-------------------
-Bar type               | time_5s     | time_5s (used)   | —                 | time_5s (used)  | time_5s
-Spatial encoder        | —           | DROP (p=0.96)    | CNN (p=0.042)     | —               | [INCLUDE/DROP]
-Message encoder        | —           | DROP (Δ<0)       | —                 | —               | DROP
-Temporal encoder       | —           | DROP (Δ=−0.006)  | —                 | DROP (Δ≤+0.0004)| DROP
-Signal horizon         | —           | h=1 only (R²>0)  | h=5 (R²=0.132)   | h=1 only (R²>0)| [h=1/h=5/both]
-Signal magnitude       | —           | R²=0.007 (h=1)   | R²=0.132 (h=5)   | R²=0.005 (h=1) | [reconcile]
-Subordination theory   | REFUTED     | —                 | —                 | —               | REFUTED
-Book sufficiency       | —           | CONFIRMED         | CNN amplifies     | —               | [reconcile]
-Temporal predictability| —           | Δ_temporal<0      | —                 | Martingale      | NONE
+.kit/results/synthesis-v2/
+  analysis.md              # Full synthesis document (8 sections)
+  evidence_matrix.csv      # 22+ experiments × 5 questions
+  architecture_decision.json  # Updated architecture recommendation
+  metrics.json             # Summary metrics for synthesis
+
+.kit/SYNTHESIS.md          # Updated top-level synthesis (replaces 2026-02-24 version)
 ```
-
-### Architecture Decision JSON
-
-```json
-{
-  "go_no_go": "GO|CONDITIONAL|NO_GO",
-  "bar_type": "time_5s",
-  "bar_param": 5,
-  "architecture": "gbt_baseline|cnn_gbt_hybrid|cnn_standalone",
-  "spatial_encoder": {
-    "include": true|false,
-    "type": "conv1d",
-    "embedding_dim": 16,
-    "justification": "R3 p=0.042 vs attention, retention_ratio=4.16"
-  },
-  "message_encoder": {
-    "include": false,
-    "justification": "R2 Δ_msg_learned < 0 at all horizons"
-  },
-  "temporal_encoder": {
-    "include": false,
-    "justification": "R2 Δ_temporal = −0.006; R4 confirms martingale"
-  },
-  "features": {
-    "source": "track_a_62|cnn_16d|cnn_16d_plus_non_spatial",
-    "dimension": 62|16|36,
-    "preprocessing": "z-score per day, warmup=50 bars"
-  },
-  "prediction_horizons": [1, 5],
-  "labeling": {
-    "method": "first_to_hit|triple_barrier|open_question",
-    "params": {"target_ticks": 10, "stop_ticks": 5, "horizon": 100}
-  },
-  "limitations": [
-    "single_year_2022",
-    "r3_only_tested_h5",
-    "no_regime_conditioning",
-    "power_floor_r2_0.003"
-  ]
-}
-```
-
-### Required Outputs in `analysis.md`
-
-1. Executive summary with go/no-go verdict.
-2. Convergence matrix (all experiments × all questions).
-3. R2–R3 reconciliation table with side-by-side comparison.
-4. §7.2 simplification cascade — final filled table.
-5. Exact feature set specification with dimensions and preprocessing.
-6. Prediction horizon recommendation with evidence from R2, R3, R4.
-7. Statistical limitations with severity ratings.
-8. Open questions list for the model build phase.
-9. Explicit statement: "Architecture recommendation: [X]" with one-paragraph justification.
-
----
 
 ## Exit Criteria
 
-- [ ] All R1–R4 result files loaded and cross-referenced
-- [ ] R2 vs. R3 tension resolved with documented reconciliation
-- [ ] §7.2 simplification cascade filled with final decisions for all 3 encoder stages
-- [ ] Bar type decision documented (expected: time_5s)
-- [ ] Feature set specified (exact dimensions + preprocessing)
-- [ ] Prediction horizon recommendation documented with evidence
-- [ ] Oracle expectancy status documented (result or flagged as open)
-- [ ] Convergence matrix produced showing all experiments × all questions
-- [ ] Statistical limitations enumerated with severity ratings
-- [ ] Architecture decision JSON produced
-- [ ] Go/no-go decision documented with supporting evidence
-- [ ] Open questions for model build phase listed
-- [ ] Synthesis document produced at `.kit/results/synthesis/analysis.md`
+- [ ] All 22+ experiment result files loaded and cross-referenced
+- [ ] Complete evidence matrix produced (experiments × questions)
+- [ ] Go/no-go decision updated with full evidence chain
+- [ ] Label geometry as strategic lever documented with PnL projections
+- [ ] Closed lines of investigation compiled with evidence chains
+- [ ] Architecture status updated (CNN closed, XGB plateau, GBT canonical)
+- [ ] Open questions ranked by priority with success priors
+- [ ] Statistical limitations updated (abort miscalibration, WF divergence, feature monopoly)
+- [ ] Single highest-priority next experiment recommended
+- [ ] Synthesis document produced at `.kit/results/synthesis-v2/analysis.md`
+- [ ] `.kit/SYNTHESIS.md` updated with latest findings
 - [ ] Summary entry ready for `.kit/RESEARCH_LOG.md`

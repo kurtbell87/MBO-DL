@@ -104,8 +104,14 @@ EMBARGO_BARS = 4600  # ~1 trading day
 DEV_DAYS = 201
 HOLDOUT_START = 202
 
-# Device
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Device — CUDA > MPS > CPU
+if torch.cuda.is_available():
+    DEVICE = torch.device("cuda")
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+    DEVICE = torch.device("mps")
+else:
+    DEVICE = torch.device("cpu")
 
 
 # --- Seed ---
@@ -117,6 +123,10 @@ def set_seed(seed):
     random.seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
+        try:
+            torch.use_deterministic_algorithms(True)
+        except Exception:
+            pass
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
@@ -166,7 +176,7 @@ class E2ECNNFeatures(nn.Module):
 
     def forward(self, book_x, feat_x):
         x = self.relu(self.bn1(self.conv1(book_x)))
-        x = self.relu(self.bn2(self.conv2(book_x)))
+        x = self.relu(self.bn2(self.conv2(x)))  # Bug fix: was book_x, must be x
         x = self.pool(x).squeeze(-1)
         x = self.relu(self.fc1(x))
         x = torch.cat([x, feat_x], dim=1)
@@ -885,6 +895,52 @@ def main():
         print("  Gate C: PASS (test acc > 0.35)")
     else:
         print(f"  Gate C: MARGINAL (test acc = {mve_test_acc:.4f})")
+
+    # MVE — CNN+Features forward-pass sanity check (MANDATORY per spec Bug 1 fix)
+    print(f"\n[MVE] CNN+Features forward-pass sanity check:")
+    mve_feat_model = E2ECNNFeatures(n_features=20, n_classes=3).to(DEVICE)
+    try:
+        dummy_book = torch.randn(4, 2, 20).to(DEVICE)
+        dummy_feat = torch.randn(4, 20).to(DEVICE)
+        dummy_out = mve_feat_model(dummy_book, dummy_feat)
+        assert dummy_out.shape == (4, 3), f"Shape mismatch: {dummy_out.shape} != (4, 3)"
+        assert not torch.isnan(dummy_out).any(), "NaN in CNN+Features output"
+        print(f"  Forward pass OK: output shape {dummy_out.shape}")
+    except RuntimeError as e:
+        print(f"  *** ABORT: CNN+Features forward pass FAILED: {e} ***")
+        sys.exit(1)
+    del mve_feat_model, dummy_book, dummy_feat, dummy_out
+
+    # MVE — CNN+Features single split (split 0)
+    print(f"\n[MVE] CNN+Features single split:")
+    mve_ft_train = dev_feat[sd0["train_indices"]]
+    mve_ft_val = dev_feat[sd0["val_indices"]]
+    mve_ft_test = dev_feat[sd0["test_indices"]]
+    mve_ft_mean = np.nanmean(mve_ft_train, axis=0)
+    mve_ft_std = np.nanstd(mve_ft_train, axis=0)
+    mve_ft_std[mve_ft_std < 1e-10] = 1.0
+    mve_ft_train_z = np.nan_to_num((mve_ft_train - mve_ft_mean) / mve_ft_std, nan=0.0)
+    mve_ft_val_z = np.nan_to_num((mve_ft_val - mve_ft_mean) / mve_ft_std, nan=0.0)
+    mve_ft_test_z = np.nan_to_num((mve_ft_test - mve_ft_mean) / mve_ft_std, nan=0.0)
+
+    mve_feat_state, mve_feat_metrics = train_e2e_cnn_features(
+        dev_book[sd0["train_indices"]], mve_ft_train_z, dev_labels[sd0["train_indices"]],
+        dev_book[sd0["val_indices"]], mve_ft_val_z, dev_labels[sd0["val_indices"]],
+        seed=mve_seed, device=DEVICE,
+    )
+    if mve_feat_state is None:
+        print(f"  *** ABORT: CNN+Features training failed: {mve_feat_metrics} ***")
+        sys.exit(1)
+
+    mve_feat_preds, mve_feat_nans = predict_e2e_cnn_features(
+        mve_feat_state, dev_book[sd0["test_indices"]], mve_ft_test_z, device=DEVICE
+    )
+    mve_feat_test_acc = float(accuracy_score(dev_labels[sd0["test_indices"]], mve_feat_preds))
+    print(f"  Train acc: {mve_feat_metrics['train_acc']:.4f}, Val acc: {mve_feat_metrics['val_acc']:.4f}, "
+          f"Test acc: {mve_feat_test_acc:.4f}, Epochs: {mve_feat_metrics['epochs_trained']}")
+    if mve_feat_test_acc < 0.30:
+        print(f"  *** WARNING: CNN+Features test accuracy < 0.30 ***")
+    del mve_feat_state
 
     # MVE — GBT-only
     print(f"\n[MVE] XGBoost single split:")

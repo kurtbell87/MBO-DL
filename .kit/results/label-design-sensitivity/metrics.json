@@ -1,0 +1,204 @@
+{
+  "experiment": "label-design-sensitivity",
+  "timestamp": "2026-02-26T05:02:52.970646+00:00",
+  "outcome": "C",
+  "outcome_description": "REFUTED \u2014 no geometry (of 123 valid) has oracle net expectancy > $5.00/trade at base costs ($3.74 RT). Stopped at Phase 0 per abort criteria. No model training performed.",
+  "primary_metrics": {
+    "oracle_viable_count": 0,
+    "best_geometry_cpcv_expectancy": null,
+    "best_geometry": null
+  },
+  "secondary_metrics": {
+    "oracle_peak_expectancy": 4.126,
+    "oracle_peak_geometry": [
+      16,
+      10
+    ],
+    "oracle_peak_wr": 0.6079,
+    "oracle_peak_breakeven_wr": 0.4997,
+    "oracle_peak_margin": 0.1082,
+    "oracle_peak_trade_count": 2191,
+    "oracle_peak_profit_factor": 2.4152
+  },
+  "baseline": {
+    "geometry": [
+      10,
+      5
+    ],
+    "oracle_exp_native": 3.9973,
+    "net_exp_base": 2.7473,
+    "oracle_wr": 0.6429,
+    "breakeven_wr": 0.5328,
+    "oracle_margin": 0.1101,
+    "trade_count": 4873,
+    "profit_factor": 3.2969
+  },
+  "phase0_summary": {
+    "total_grid_cells": 144,
+    "total_valid_geometries": 123,
+    "total_invalid_geometries": 21,
+    "oracle_viable_above_5_base": 0,
+    "oracle_viable_above_4_base": 1,
+    "oracle_viable_above_3_base": 56,
+    "oracle_viable_above_2_base": 95,
+    "oracle_viable_above_1_base": 115,
+    "oracle_viable_above_5_optimistic": 8,
+    "oracle_viable_above_3_optimistic": 101,
+    "net_exp_distribution": {
+      "min": 0.7431,
+      "max": 4.126,
+      "mean": 2.6831,
+      "median": 2.9373,
+      "p25": 2.1383,
+      "p75": 3.3283
+    },
+    "top10_geometries": [
+      {
+        "target": 16,
+        "stop": 10,
+        "net_exp_base": 4.126,
+        "oracle_wr": 0.6079,
+        "breakeven_wr": 0.4997,
+        "margin": 0.1082,
+        "trade_count": 2191,
+        "profit_factor": 2.4152,
+        "geometry_score": 1.6982
+      },
+      {
+        "target": 18,
+        "stop": 8,
+        "net_exp_base": 3.9616,
+        "oracle_wr": 0.536,
+        "breakeven_wr": 0.4228,
+        "margin": 0.1133,
+        "trade_count": 2179,
+        "profit_factor": 2.4133,
+        "geometry_score": 1.6261
+      },
+      {
+        "target": 19,
+        "stop": 7,
+        "net_exp_base": 3.8777,
+        "oracle_wr": 0.5014,
+        "breakeven_wr": 0.3843,
+        "margin": 0.1171,
+        "trade_count": 2166,
+        "profit_factor": 2.4429,
+        "geometry_score": 1.5869
+      },
+      {
+        "target": 16,
+        "stop": 9,
+        "net_exp_base": 3.8496,
+        "oracle_wr": 0.5859,
+        "breakeven_wr": 0.4797,
+        "margin": 0.1062,
+        "trade_count": 2287,
+        "profit_factor": 2.4082,
+        "geometry_score": 1.6188
+      },
+      {
+        "target": 19,
+        "stop": 10,
+        "net_exp_base": 3.8406,
+        "oracle_wr": 0.5472,
+        "breakeven_wr": 0.448,
+        "margin": 0.0992,
+        "trade_count": 1831,
+        "profit_factor": 2.1678,
+        "geometry_score": 1.4451
+      },
+      {
+        "target": 19,
+        "stop": 8,
+        "net_exp_base": 3.834,
+        "oracle_wr": 0.516,
+        "breakeven_wr": 0.4071,
+        "margin": 0.1089,
+        "trade_count": 2062,
+        "profit_factor": 2.3269,
+        "geometry_score": 1.5309
+      },
+      {
+        "target": 19,
+        "stop": 9,
+        "net_exp_base": 3.7976,
+        "oracle_wr": 0.5295,
+        "breakeven_wr": 0.4283,
+        "margin": 0.1012,
+        "trade_count": 1947,
+        "profit_factor": 2.2367,
+        "geometry_score": 1.4735
+      },
+      {
+        "target": 18,
+        "stop": 9,
+        "net_exp_base": 3.792,
+        "oracle_wr": 0.546,
+        "breakeven_wr": 0.4441,
+        "margin": 0.1019,
+        "trade_count": 2053,
+        "profit_factor": 2.2783,
+        "geometry_score": 1.5108
+      },
+      {
+        "target": 17,
+        "stop": 8,
+        "net_exp_base": 3.7321,
+        "oracle_wr": 0.549,
+        "breakeven_wr": 0.4397,
+        "margin": 0.1093,
+        "trade_count": 2306,
+        "profit_factor": 2.3994,
+        "geometry_score": 1.5759
+      },
+      {
+        "target": 18,
+        "stop": 10,
+        "net_exp_base": 3.7172,
+        "oracle_wr": 0.5595,
+        "breakeven_wr": 0.464,
+        "margin": 0.0955,
+        "trade_count": 1959,
+        "profit_factor": 2.1851,
+        "geometry_score": 1.4467
+      }
+    ],
+    "cost_sensitivity_peak": {
+      "optimistic_2.49": 5.376,
+      "base_3.74": 4.126,
+      "pessimistic_6.25": 1.616
+    },
+    "trade_count_range": {
+      "min": 1756,
+      "max": 12933
+    },
+    "days_subsample": 19
+  },
+  "sanity_checks": {
+    "SC_S1_oracle_exp_positive_all": true,
+    "SC_S1_detail": "All 123 valid geometries have oracle expectancy > 0",
+    "SC_S2_higher_target_fewer_trades": true,
+    "SC_S3_narrower_stop_more_trades": false,
+    "SC_S3_detail": "107 violations. Non-monotonic due to take-profit/expiry/session-end exit interactions with stop width."
+  },
+  "success_criteria": {
+    "SC_1_oracle_heatmap_computed": true,
+    "SC_2_viable_geometry_exists": false,
+    "SC_3_accuracy_above_breakeven": null,
+    "SC_4_positive_expectancy": null,
+    "SC_5_holdout_less_negative": null,
+    "SC_6_per_direction_reported": false
+  },
+  "resource_usage": {
+    "wall_clock_seconds": 886,
+    "total_oracle_runs": 123,
+    "total_training_splits": 0,
+    "total_export_runs": 0,
+    "gpu_hours": 0,
+    "total_runs": 123
+  },
+  "abort_triggered": true,
+  "abort_reason": "Phase 0 gate: no geometry with oracle net exp > $5.00 at base costs ($3.74 RT). Peak: target=16, stop=10, net_exp=$4.13.",
+  "notes": "Stopped at Phase 0 per spec abort criteria. All 123 valid geometries (target>stop) processed. Peak oracle net expectancy at base costs: $4.13 (16:10). At optimistic costs ($2.49 RT), 8 geometries exceed $5.00. 56 geometries exceed $3.00 at base costs. Oracle margin (WR - breakeven) is positive for ALL valid geometries \u2014 the oracle always beats breakeven. The $5.00 threshold is about absolute per-trade profit, not about whether a realistic model could be profitable. SC-S3 failed: narrower stops do not monotonically increase trade count due to take-profit (20 ticks), expiry, and session-end exit interactions."
+}

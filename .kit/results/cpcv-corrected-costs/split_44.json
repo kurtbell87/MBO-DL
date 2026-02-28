@@ -1,0 +1,23 @@
+{
+  "split_idx": 44,
+  "test_groups": [
+    8,
+    9
+  ],
+  "n_purged": 500,
+  "n_embargoed": 4600,
+  "n_train": 592140,
+  "n_val": 147690,
+  "n_test": 185200,
+  "dir_accuracy": 0.5003347061960357,
+  "trade_rate": 0.8383153347732182,
+  "hold_fraction": 0.4323117947132478,
+  "n_trades": 155256,
+  "optimistic_expectancy": 5.606341687277785,
+  "base_expectancy": 4.356341687277784,
+  "pessimistic_expectancy": 1.8563416872777845,
+  "dir_bar_pnl_base": 5.020877951371158,
+  "hold_bar_pnl_base": 3.4837090093714123,
+  "breakeven_rt": 6.8463416872777865,
+  "wall_seconds": 3.8212857246398926
+}

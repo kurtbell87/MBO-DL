@@ -18,6 +18,118 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## daily-stop-loss-sequential — CONFIRMED (Outcome A)
+**Date:** 2026-02-27
+**Hypothesis:** Daily stop loss (halt trading when intra-day P&L drops to -$X) compresses max drawdown enough to reduce min_account from $34K to ≤$20K while preserving annual PnL ≥$50K and Calmar ≥2.0.
+**Key result:** DSL=$2,000 achieves min_acct **$18,000** (-47%), annual PnL **$114,352** (+35%), Calmar **6.37** (+156%), recovery sacrifice only **7.3%**. All 9 SC pass, all 5 sanity checks pass. PnL *increases* because removed post-threshold trades are net-negative (92.7% of stopped days end negative without DSL).
+**Lesson:** The model's worst trades cluster during intra-day drawdowns — trade outcomes are autocorrelated within days, not i.i.d. DSL exploits this by cutting genuinely bad intra-day regimes. Broad effectiveness across $500-$5K (all beat baseline PnL) means the finding is structural, not threshold-specific.
+**Next:** (1) Multi-year DSL robustness validation. (2) Paper trading with DSL=$2K + cutoff=270. (3) Position-level stop-loss for additional compression (blocked on exit_bar column).
+**Details:** `.kit/results/daily-stop-loss-sequential/analysis.md`
+
+## volume-flow-conditioned-entry — REFUTED (Outcome B, diagnostic evaporates in simulation)
+**Date:** 2026-02-27
+**Hypothesis:** Volume/activity-based entry gating reduces timeout fraction below 41% and improves per-trade expectancy toward $3.50.
+**Key result:** 20pp bar-level diagnostic signal (all 5 features "strong" tier) evaporates to **1.76pp max** in sequential simulation. Best config exp=$3.10/trade (stacked, vs $3.50 target), min_acct=$33K (vs $30K target), timeout=41.2% (vs 36.3% target). SC-2/3/5 FAIL.
+**Lesson:** Sequential execution's 66.1% hold-skip rate already self-selects for high-activity bars — gating on activity features provides negligible incremental selection. Timeout fraction (~41.3%) is a structural constant of the volume horizon mechanism at 19:7/50K, invariant to BOTH time-of-day (PR #40) and volume/activity gating. Entry-time filtering is exhausted as an intervention class.
+**Next:** (1) Barrier geometry re-parameterization (reduce volume horizon 50K→10-25K, or reduce time horizon 3600s→600-1200s). (2) Accept cutoff=270 ($3.02/trade, $34K, Calmar 2.49) and proceed to paper trading. (3) Regime-conditional trading (Q1-Q2 only).
+**Details:** `.kit/results/volume-flow-conditioned-entry/analysis.md`
+
+## timeout-filtered-sequential — REFUTED (Outcome B, mechanism falsified)
+**Date:** 2026-02-27
+**Hypothesis:** Time-of-day entry cutoff (minutes_since_open <= cutoff) achieves >= $3.50/trade expectancy and <= $30K min account by avoiding timeout-prone late-day entries.
+**Key result:** Timeout fraction is **invariant at ~41.3%** across all 7 cutoff levels (range 0.21pp). Time-of-day does NOT determine timeouts. Best cutoff=270: exp $3.02/trade (< $3.50 target), min_acct $34K (> $30K target). Calmar +15%, DD -29%, but annual PnL -18% ($104K→$85K). ROC improves 216%→249%.
+**Lesson:** Timeouts are driven by the volume horizon (50,000 contracts), not clock time — even entries 4.5h into RTH have ample time for the typical 2.3-minute barrier race. The cutoff=270 improvement comes from hold-skip restructuring (66%→34%), not timeout avoidance. Late-day trades in the 5–5.75h window are actually BETTER than average (SC-S4 U-shape).
+**Next:** (1) Volume-flow conditioned entry — target the actual timeout mechanism. (2) Volatility-conditional entry (volatility_50 at entry). (3) Accept $34K/$25.5K account sizing and proceed to paper trading.
+**Details:** `.kit/results/timeout-filtered-sequential/analysis.md`
+
+## trade-level-risk-metrics — REFUTED (SC-2, SC-4, SC-8 fail; productive)
+**Date:** 2026-02-27
+**Hypothesis:** Sequential 1-contract execution at 19:7 produces per-trade expectancy >= $0.50 with min account <= $5,000.
+**Key result:** seq_exp = **$2.50/trade** (5x threshold), annual $103,605/1-MES, BUT min_account = **$48,000** (9.6x the $5K target). 162 trades/day (vs expected 40-80), avg_bars_held = 28 (vs expected 75), hold_skip_rate = 66.1% (vs expected 43%). Win rate 49.93% — edge is pure payoff asymmetry, zero directional skill. Timeout trades dilute $5.00 barrier-hit expectancy to $2.50.
+**Lesson:** Sequential entry creates a non-random selection pattern: entries cluster during volatile moments (shorter barrier races, higher per-trade exp) but exit into calm periods (higher hold-skip at entry attempts). The edge is real and substantial, but risk sizing requires medium accounts ($48K all-paths, $26.6K 95%-paths), not the retail micro-accounts the hypothesis targeted. Three spec assumptions were wrong: avg hold (28 vs 75), hold-skip rate (66% vs 43%), and trades/day (162 vs 50-80). All trace to volatility-timing selection bias.
+**Next:** (1) Timeout-filtered sequential execution — avoid entries where barrier unlikely to resolve before day end (+$1-2/trade est.). (2) Multi-contract scaling analysis (N=2,5,10,20,36). (3) Long-perspective labels at 19:7 (existing P0).
+**Details:** `.kit/results/trade-level-risk-metrics/analysis.md`
+
+## cpcv-corrected-costs — CONFIRMED (Outcome A)
+**Date:** 2026-02-27
+**Hypothesis:** Two-stage XGBoost at 19:7 (w=1.0, T=0.50) achieves CPCV mean realized expectancy > $0.00 under corrected-base costs ($2.49 RT) with PBO < 0.50 across 45 splits.
+**Key result:** CPCV mean exp = **$1.81/trade** (95% CI [$1.46, $2.16]), PBO = 0.067 (3/45 negative), t = 10.29, p < 1e-13. Holdout: $1.46/trade. All 6 SC pass, all 5 sanity checks pass. Break-even RT = $4.30. Edge is structural (payoff asymmetry, not directional skill — pooled dir acc = 50.16%). All 10 temporal groups positive. Q3-Q4 stronger ($2.18-$2.93) than Q1-Q2 ($1.39-$1.49) due to volatility-dependent barrier reachability.
+**Lesson:** The first statistically validated positive-expectancy configuration in the project. The edge comes from the 19:7 payoff ratio (breakeven acc = 34.6%) combined with Stage 1 volatility-based reachability filtering — not from direction prediction. Cost correction ($3.74 → $2.49) was the key unlock. Hold-bar variance (-$9.39 to +$3.48 per split) is the dominant risk factor. Pessimistic costs ($4.99) are not viable (mean -$0.69).
+**Next:** Paper trading infrastructure (R|API+ integration, 1 /MES). Hold-bar exit optimization. Multi-year validation.
+**Details:** `.kit/results/cpcv-corrected-costs/analysis.md`
+
+## class-weighted-stage1 — REFUTED (Outcome C)
+**Date:** 2026-02-27
+**Hypothesis:** There exists a (scale_pos_weight, threshold) pair such that the two-stage pipeline at 19:7 achieves realized WF expectancy > $1.50/trade with trade rate > 15%, by spreading the Stage 1 probability distribution.
+**Key result:** IQR DECREASES monotonically with lower weight (4.0pp -> 3.8 -> 3.2 -> 2.0 -> 0.8pp at weights 1.0/0.5/0.33/0.25/0.20). Class weighting COMPRESSES rather than spreads the probability surface. Recall collapses 465x (93% -> 0.2%) at first step. Precision also decreases (0.56 -> 0.43). Weights 0.25/0.20 produce zero trades. Baseline (w=1.0, T=0.50, $0.90/trade) remains optimal.
+**Lesson:** `scale_pos_weight < 1` in XGBoost binary:logistic is a logit-shift, not a spread mechanism — it shifts the sigmoid operating point uniformly, compressing ALL probabilities downward. The probability compression on this reachability task is structural and untuneable. Three experiments (threshold-sweep, class-weighting, geometry variation) have now exhausted all parameter-level interventions on the two-stage pipeline.
+**Next:** Long-perspective labels at 19:7 (P0 open question — changes labeling scheme, not model parameters). Probability recalibration (Platt/isotonic) as low-cost test. Regime-conditional trading (Q1-Q2 only).
+**Details:** `.kit/results/class-weighted-stage1/analysis.md`
+
+## threshold-sweep — REFUTED (Outcome C)
+**Date:** 2026-02-27
+**Hypothesis:** There exists a Stage 1 probability threshold T* > 0.5 such that the two-stage pipeline at 19:7 achieves realized WF expectancy > $1.50/trade with trade rate > 15%, by reducing hold-bar fraction below 25%.
+**Key result:** No threshold achieves exp > $1.50 at >15% trade rate. Optimal = baseline (T=0.50, $0.90/trade, 85.2%). Root cause: 80.6% of Stage 1 P(directional) predictions cluster in [0.50, 0.60] — trade rate cliff from 64.5% (T=0.55) to 4.5% (T=0.60). Dir-bar PnL improves at moderate thresholds ($3.77→$4.49→$6.07 at T=0.50/0.60/0.65), confirming signal exists, but model cannot generate enough high-confidence predictions for viable trading. SC-1/2/3 FAIL, SC-4 PASS ($3.77 > $3.00).
+**Lesson:** XGBoost binary:logistic on this reachability task produces near-degenerate probabilities (IQR [0.536, 0.576] — 4pp wide). Threshold optimization requires a smooth confidence gradient; this model provides a step function. The $0.90/trade at T=0.50 is the ceiling for this pipeline + geometry combination without changing the model or labeling scheme.
+**Next:** Long-perspective labels at varied geometries (P0 open question) — changes the labeling scheme, not the threshold. Probability recalibration (Platt/isotonic) unlikely to help but quick to test. Class-weighted loss could reshape probability distribution at source.
+**Details:** `.kit/results/threshold-sweep/analysis.md`
+
+## pnl-realized-return — REFUTED (Outcome C — SC-2 fails, but SC-1 passes)
+**Date:** 2026-02-27
+**Hypothesis:** Under realized-return PnL model (actual forward returns on hold-bar trades instead of full barrier payoffs), two-stage pipeline at 19:7 achieves WF per-trade expectancy > $0.00 with hold-bar directional accuracy > 52%.
+**Key result:** Realized WF expectancy $0.90/trade (SC-1 PASS), but hold-bar dir accuracy 51.04% < 52% (SC-2 FAIL). Hold-bar gross PnL +$1.06 (SC-3 PASS), 3/3 folds positive (SC-4 PASS). Result driven by Fold 2 outlier ($2.54 vs $0.01/$0.16). Hold-bar fwd returns unbounded (p10/p90 = -63/+63 ticks, not ±19 as spec assumed — volume horizon ends barrier race early). PnL decomposition: 0.556 × $3.77 (dir) + 0.444 × (-$2.68) (hold) = $0.90. 10:5 uniformly negative (-$1.65). Break-even RT: $4.64. Strategy marginally viable but fragile.
+**Lesson:** Hold-bar directional signal exists (51.04% > 50%, gross PnL +$1.06) but is sub-threshold and unstable across folds (48-54%). Hold bars destroy 57% of directional-bar edge. The volume horizon (50,000) causes barrier race truncation, making hold-bar trades unbounded risk exposure rather than bounded range-bets. Spec's first-principles analysis was wrong about return bounds. Realized ($0.90) exceeds spec's conservative estimate ($0.44) — hold-bar model adds marginal value vs pure cost drag.
+**Next:** Stage 1 threshold optimization (sweep 0.5-0.9) to reduce hold-bar exposure. At threshold 0.80 (est. 5% hold), PnL decomposition predicts ~$3.45/trade. Then CPCV validation at optimal threshold.
+**Details:** `.kit/results/pnl-realized-return/analysis.md`
+
+## 2class-directional — CONFIRMED (with critical PnL model caveat)
+**Date:** 2026-02-26
+**Hypothesis:** Two-stage XGBoost (Stage 1: directional-vs-hold filter, Stage 2: long-vs-short) at 19:7 geometry achieves positive WF expectancy with >10% trade rate.
+**Key result:** All 4 SCs pass. Trade rate 85.2% (301x increase from 3-class's 0.28%). Dir accuracy 50.05% (above 38.4% BEV). Reported expectancy $3.78/trade BUT likely inflated ~8x by PnL model assigning full barrier payoffs to hold-bar trades (44.4% of trades). Corrected estimate ~$0.44/trade ± $0.16 — positive but marginal. 10:5 control matches 3-class baseline (-$0.51 vs -$0.50). Stage 2 at 19:7 learns NO directional features (top-10 all volatility/activity). Direction prediction is essentially a coin flip; economics driven entirely by 2.71:1 payoff ratio.
+**Lesson:** Two-stage decomposition successfully liberates trade volume at wide barriers by removing cross-entropy wrong-direction penalty from Stage 1. Reachability is learnable (58.6% Stage 1 acc). Direction at 19:7 is not (~50%). The favorable payoff ratio, not prediction skill, is the value driver. Hold-bar PnL treatment is the dominant factor in economic results.
+**Next:** (1) Corrected PnL model validation — highest priority, resolves the 8x uncertainty. (2) CPCV with corrected PnL for proper confidence intervals. (3) Stage 1 threshold optimization to reduce label0_hit_rate. (4) Intermediate geometry exploration (14:6, 15:5) for better direction/payoff trade-off.
+**Details:** `.kit/results/2class-directional/analysis.md`
+
+## label-geometry-1h — INCONCLUSIVE
+**Date:** 2026-02-26
+**Hypothesis:** XGBoost at high-ratio geometries (15:3, 19:7, 20:3) with 1-hour time horizon achieves CPCV directional accuracy > breakeven WR + 2pp, producing positive expectancy.
+**Key result:** Time horizon fix SUCCESS (hold rate 90.7%→32.6% at 10:5). But model refuses to trade at high-ratio geometries (0.003-0.28% directional prediction rate at 15:3/19:7/20:3). At 10:5 (the only geometry with real trade volume), directional accuracy 50.67% is 2.6pp BELOW breakeven (53.28%), expectancy -$0.49/trade. 19:7 CPCV dir_acc 55.9% technically passes SC-3 but on 0.28% of bars — holdout collapses to 50.0% on 52 trades (coin flip, 96.8% label0_hit_rate). SC-S1 abort criterion triggered (baseline accuracy 0.384 < 0.40).
+**Lesson:** The model's directional accuracy is ~50-51% regardless of label type, geometry, or hyperparameters — a hard ceiling of the 20-feature set. High-ratio geometries lower breakeven but the model cannot be induced to trade (defaults to hold-prediction even at 47% hold rate). The geometry hypothesis is theoretically sound (oracle profitable at all geometries) but unexploitable with the current model/features. Balanced bidirectional labels are 6.5pp harder than long-perspective labels (0.384 vs 0.449 3-class accuracy).
+**Next:** (1) 2-class formulation (directional-vs-hold) to decouple barrier-reachability from direction prediction. (2) Class-weighted XGBoost to force directional predictions at 19:7. (3) Long-perspective labels at varied geometries (original P0 still open).
+**Details:** `.kit/results/label-geometry-1h/analysis.md`
+
+## label-geometry-phase1 — REFUTED
+**Date:** 2026-02-26
+**Hypothesis:** XGBoost at high-ratio geometries (15:3, 19:7, 20:3) achieves directional accuracy > breakeven WR + 2pp on bidirectional labels, producing positive expectancy.
+**Key result:** 3/4 geometries SKIPPED (>95% hold: 15:3=97.1%, 19:7=98.6%, 20:3=98.9%). Control (10:5) has 90.7% hold — model degenerates to hold-predictor (directional recall <2%, directional accuracy 53.65% = +0.37pp above breakeven). CPCV exp -$0.610. Holdout +$0.069 ($1.69/day on 0.53% trading rate).
+**Lesson:** Bidirectional triple barrier labels on time_5s bars produce fundamentally degenerate class distributions at ALL geometries. The ~45% accuracy baseline was on long-perspective labels with balanced classes. Bidirectional labels + 5s bars = ~91-99% hold. The geometry hypothesis was untestable under these label conditions.
+**Next:** Re-run geometry sweep on long-perspective labels (--legacy-labels) which produce balanced distributions. Verify class balance at varied geometries first. The geometry hypothesis survives in principle.
+**Details:** `.kit/results/label-geometry-phase1/analysis.md`
+
+## synthesis-v2 — CONFIRMED
+**Date:** 2026-02-26
+**Hypothesis:** Comprehensive synthesis of 23 experiments establishes GO status — label geometry training at breakeven-favorable ratios has >50% prior of positive expectancy.
+**Key result:** GO verdict (55-60% prior). Strategic pivot: breakeven WR, not oracle ceiling, is the correct viability metric. At 15:3 geometry, BEV WR = 33.3% — 12pp below model's 45% accuracy. 8 closed lines (CNN, temporal, message, XGB tuning, oracle metric, event bars, pipeline hypothesis, CNN+GBT hybrid). GBT-only on 20 features is canonical architecture.
+**Lesson:** The project was optimizing the wrong variable for 6+ experiments. Oracle net exp ranking inversely correlates with model viability at high ratios. The model doesn't need to improve — the payoff structure needs to change.
+**Next:** Phase 1 label geometry training at 4 geometries (10:5, 15:3, 19:7, 20:3). Resolves the central uncertainty: does accuracy transfer to high-ratio geometries?
+**Details:** `.kit/results/synthesis/analysis.md`, `.kit/results/synthesis-v2/analysis.md`
+
+## label-design-sensitivity — REFUTED (Outcome C — abort criterion miscalibrated)
+**Date:** 2026-02-26
+**Hypothesis:** Widening target/stop ratio from 2:1 (10:5) to >=3:1 lowers breakeven WR below model's ~45% accuracy, enabling positive expectancy. SC-2 gate: oracle net exp > $5.00/trade.
+**Key result:** 0/123 geometries pass $5.00 oracle net exp at base costs ($3.74 RT). Peak $4.126 at (16:10). BUT the $5.00 threshold was the wrong metric — breakeven WR at (15:3) is 33.3%, providing 12pp margin below model's 45% accuracy. Model profitable at (15:3) down to ~35% directional accuracy. Abort prevented Phase 1 training.
+**Lesson:** Oracle net expectancy and model viability are different metrics. High-ratio geometries (5:1+) have LOW oracle net exp but the most favorable breakeven WRs. The project was optimizing the wrong variable — the binding constraint is breakeven WR vs model accuracy, not oracle ceiling. Oracle margin (~10-12pp) is geometry-invariant. Cost sensitivity is extreme ($1.25 RT difference = 0 vs 8 geometries above $5.00).
+**Next:** (1) Rerun Phase 1 directly: train XGBoost at 4 geometries (10:5, 15:3, 19:7, 20:3) selected by breakeven WR diversity instead of oracle net exp. Skip oracle gate. (2) Key measurement: does model accuracy transfer to high-ratio geometries?
+**Details:** `.kit/results/label-design-sensitivity/analysis.md`
+
+## xgb-hyperparam-tuning — REFUTED (Outcome C — MARGINAL)
+**Date:** 2026-02-25
+**Hypothesis:** Systematic XGBoost hyperparameter tuning on full-year 1.16M-bar dataset improves 3-class accuracy by ≥2.0pp (0.449→0.469) and pushes CPCV expectancy to breakeven ($0.00) under base costs.
+**Key result:** CPCV accuracy 0.4504 (delta +0.15pp — landscape is a plateau, 64 configs span only 0.33pp, std=0.0006). CPCV expectancy -$0.001 (delta +$0.065 from -$0.066 — 98.4% reduction via class rebalancing, not accuracy). Breakeven RT cost = $3.74 exactly. Walk-forward expectancy -$0.140 (much more pessimistic than CPCV). SC-1/2/3 FAIL, SC-4/5 PASS. 50/64 configs beat default. Holdout +2.0pp (0.403→0.423). Long recall worsened (0.201→0.149). volatility_50 gain share = 49.7%.
+**Lesson:** The 20-feature set, not hyperparameters, is the binding constraint on XGBoost accuracy — the entire search landscape is a 0.33pp plateau. Expectancy is more sensitive to class prediction distribution than raw accuracy (0.15pp acc → $0.065 exp via suppressed longs). Label design and class weighting are higher-leverage interventions than tuning.
+**Next:** (1) Label design sensitivity — wider target (15:3 ratio → breakeven ~42.5% vs current 45%) is highest priority. (2) 2-class short/no-short formulation — long recall 0.149 means the model can't predict longs. (3) Class-weighted XGBoost with PnL-aligned loss.
+**Details:** `.kit/results/xgb-hyperparam-tuning/analysis.md`
+
 ## e2e-cnn-classification — REFUTED (Outcome D)
 **Date:** 2026-02-22
 **Hypothesis:** End-to-end Conv1d CNN trained on 3-class triple barrier labels (cross-entropy, no intermediate regression) on full-year data (251 days, 1.16M bars) achieves accuracy >= 0.42 and breakeven expectancy.

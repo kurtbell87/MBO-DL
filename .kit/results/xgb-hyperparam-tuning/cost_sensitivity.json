@@ -1,0 +1,48 @@
+{
+  "tuned": {
+    "optimistic": {
+      "expectancy": 1.248914011668768,
+      "profit_factor": 1.3058189793726553,
+      "n_trades": 4252891,
+      "gross_profit": 22679596.94,
+      "gross_loss": 17368101.78
+    },
+    "base": {
+      "expectancy": -0.0010859883312321827,
+      "profit_factor": 0.9997673500305599,
+      "n_trades": 4252891,
+      "gross_profit": 19847479.44,
+      "gross_loss": 19852098.03
+    },
+    "pessimistic": {
+      "expectancy": -2.5110859883312315,
+      "profit_factor": 0.5700728211646857,
+      "n_trades": 4252891,
+      "gross_profit": 14160587.5,
+      "gross_loss": 24839962.5
+    }
+  },
+  "default": {
+    "optimistic": {
+      "expectancy": 1.1839781714680508,
+      "profit_factor": 1.2877852544432782,
+      "n_trades": 4281369,
+      "gross_profit": 22683040.380000003,
+      "gross_loss": 17613992.939999998
+    },
+    "base": {
+      "expectancy": -0.06602182853194909,
+      "profit_factor": 0.985960283608164,
+      "n_trades": 4281369,
+      "gross_profit": 19850492.880000003,
+      "gross_loss": 20133156.689999998
+    },
+    "pessimistic": {
+      "expectancy": -2.5760218285319487,
+      "profit_factor": 0.5621999562354769,
+      "n_trades": 4281369,
+      "gross_profit": 14162737.5,
+      "gross_loss": 25191637.5
+    }
+  }
+}

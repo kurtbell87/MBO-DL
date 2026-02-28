@@ -1,0 +1,150 @@
+{
+  "experiment": "trade-level-risk-metrics",
+  "timestamp": "2026-02-27T08:54:45",
+  "seq_trades_per_day_mean": 162.21424119241192,
+  "seq_trades_per_day_std": 90.2004980516172,
+  "seq_expectancy_per_trade": 2.500825393333759,
+  "seq_daily_pnl_mean": 412.76830602981676,
+  "seq_daily_pnl_std": 2885.3902014892606,
+  "seq_max_drawdown_worst": 47893.73000000187,
+  "seq_max_drawdown_median": 12916.704999999927,
+  "seq_max_consecutive_losses": 31,
+  "seq_median_consecutive_losses": 18,
+  "seq_drawdown_duration_worst": 39,
+  "seq_drawdown_duration_median": 13,
+  "seq_win_rate": 0.4992951857108541,
+  "seq_win_rate_dir_bars": 0.4995351432441328,
+  "seq_hold_skip_rate": 0.6608631758598639,
+  "seq_avg_bars_held": 28.016281876132144,
+  "time_of_day_distribution": {
+    "0-30": 30383,
+    "30-60": 30149,
+    "60-90": 25500,
+    "90-120": 22425,
+    "120-150": 19240,
+    "150-180": 19177,
+    "180-210": 18410,
+    "210-240": 22646,
+    "240-270": 23492,
+    "270-300": 26236,
+    "300-330": 31266,
+    "360-390": 11615,
+    "330-360": 13222
+  },
+  "concurrent_positions_mean": 35.91268108307434,
+  "concurrent_positions_max": 345,
+  "concurrent_positions_p95": 106.02222222222223,
+  "min_account_survive_all": 48000,
+  "min_account_survive_95pct": 26600,
+  "calmar_ratio": 2.1632235537612114,
+  "daily_pnl_percentiles": {
+    "p5": -3882.9679999999707,
+    "p25": -466.71000000000026,
+    "p50": 287.9549999999994,
+    "p75": 1157.1099999999983,
+    "p95": 4659.403000000043
+  },
+  "annual_expectancy_1mes": 103604.844813484,
+  "comparison": {
+    "bar_level": {
+      "trades_per_day": 4028,
+      "expectancy_per_trade": 1.8098590276245545,
+      "daily_pnl_theoretical": 7290.112163271706,
+      "annual_pnl_theoretical": 1829818.1529811982,
+      "hold_fraction": 0.43,
+      "concurrent_positions_mean": 35.91268108307434
+    },
+    "sequential": {
+      "trades_per_day": 162.21424119241192,
+      "expectancy_per_trade": 2.500825393333759,
+      "daily_pnl": 412.76830602981676,
+      "annual_pnl": 103604.844813484,
+      "hold_fraction": 0.0,
+      "concurrent_positions": 1
+    }
+  },
+  "scaling_sanity_check": {
+    "lhs_concurrent_mean_x_seq_exp_x_seq_tpd": 14568.679146431428,
+    "rhs_bar_level_daily_pnl": 7290.112163271706,
+    "ratio": 1.9984163233907224,
+    "within_2x": true
+  },
+  "success_criteria": {
+    "SC-1": {
+      "description": "Sequential simulation completes for all 45 splits",
+      "pass": true
+    },
+    "SC-2": {
+      "description": "seq_trades_per_day_mean in [20, 120]",
+      "pass": false,
+      "value": 162.21424119241192
+    },
+    "SC-3": {
+      "description": "seq_expectancy_per_trade >= $0.50",
+      "pass": true,
+      "value": 2.500825393333759
+    },
+    "SC-4": {
+      "description": "min_account_survive_all <= $5,000",
+      "pass": false,
+      "value": 48000
+    },
+    "SC-5": {
+      "description": "Bar-level vs sequential comparison table populated",
+      "pass": true
+    },
+    "SC-6": {
+      "description": "Concurrent positions analysis completed",
+      "pass": true
+    },
+    "SC-7": {
+      "description": "All output files written",
+      "pass": true
+    },
+    "SC-8": {
+      "description": "seq_hold_skip_rate in [35%, 55%]",
+      "pass": false,
+      "value": 0.6608631758598639
+    }
+  },
+  "sanity_checks": {
+    "S1": {
+      "description": "bar-level split 0 within $0.05 of PR #38",
+      "pass": true,
+      "value": 1.0651860450958002,
+      "reference": 1.065186
+    },
+    "S2": {
+      "description": "seq_hold_skip_rate 40-50%",
+      "pass": false,
+      "value": 0.6608631758598639
+    },
+    "S3": {
+      "description": "total test bars processed matches CPCV",
+      "pass": true,
+      "value": 8375670
+    },
+    "S4": {
+      "description": "seq_trades_per_day <= dir_predictions_per_day",
+      "pass": true,
+      "value": 162.21424119241192
+    },
+    "S5": {
+      "description": "seq_avg_bars_held in [50, 150]",
+      "pass": false,
+      "value": 28.016281876132144
+    }
+  },
+  "outcome": "B",
+  "outcome_description": "Sequential positive $2.50/trade (above $0.50 threshold) but min_account $48,000 exceeds $5K. Viable for medium accounts.",
+  "resource_usage": {
+    "wall_clock_seconds": 155.80995082855225,
+    "wall_clock_minutes": 2.596832513809204,
+    "total_training_runs": 90,
+    "gpu_hours": 0,
+    "total_runs": 45
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Local execution on Apple Silicon. Sequential 1-contract simulation on CPCV test sets. Corrected-base cost $2.49 RT."
+}

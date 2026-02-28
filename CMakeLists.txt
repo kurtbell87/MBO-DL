@@ -55,13 +55,23 @@ set(TEST_TARGETS
     bar_feature_export_test
     hybrid_model_tb_label_test
     tick_bar_fix_test
+    oracle_expectancy_params_test
+    bidirectional_tb_test
+    time_horizon_cli_test
+)
+
+set(WORKDIR_TEST_TARGETS
+    bar_feature_export_test
+    hybrid_model_tb_label_test
+    oracle_expectancy_params_test
+    time_horizon_cli_test
 )
 
 foreach(target ${TEST_TARGETS})
     add_executable(${target} tests/${target}.cpp)
     target_include_directories(${target} PRIVATE ${CMAKE_SOURCE_DIR}/src)
     target_link_libraries(${target} PRIVATE GTest::gtest_main)
-    if(target STREQUAL "bar_feature_export_test" OR target STREQUAL "hybrid_model_tb_label_test")
+    if(target IN_LIST WORKDIR_TEST_TARGETS)
         gtest_discover_tests(${target} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
     else()
         gtest_discover_tests(${target})
@@ -92,7 +102,7 @@ endforeach()
 FetchContent_Declare(
     databento
     GIT_REPOSITORY https://github.com/databento/databento-cpp.git
-    GIT_TAG        HEAD
+    GIT_TAG        v0.47.0
 )
 FetchContent_MakeAvailable(databento)
 
@@ -186,3 +196,15 @@ add_executable(parquet_export_test tests/parquet_export_test.cpp)
 target_include_directories(parquet_export_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(parquet_export_test PRIVATE GTest::gtest_main Arrow::arrow_shared Parquet::parquet_shared)
 gtest_discover_tests(parquet_export_test WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+# ---------- Bidirectional Export Test ----------
+add_executable(bidirectional_export_test tests/bidirectional_export_test.cpp)
+target_include_directories(bidirectional_export_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(bidirectional_export_test PRIVATE GTest::gtest_main Arrow::arrow_shared Parquet::parquet_shared)
+gtest_discover_tests(bidirectional_export_test WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
+# ---------- Geometry CLI Flag Test ----------
+add_executable(bar_feature_export_geometry_test tests/bar_feature_export_geometry_test.cpp)
+target_include_directories(bar_feature_export_geometry_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(bar_feature_export_geometry_test PRIVATE GTest::gtest_main Arrow::arrow_shared Parquet::parquet_shared)
+gtest_discover_tests(bar_feature_export_geometry_test WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})

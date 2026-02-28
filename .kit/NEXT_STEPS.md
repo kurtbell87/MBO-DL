@@ -1,4 +1,4 @@
-# Next Steps — Updated 2026-02-19
+# Next Steps — Updated 2026-02-27
 
 ## FIRST: Create a New Branch
 
@@ -16,55 +16,124 @@ source .orchestration-kit.env
 
 ## Current State
 
-- **22 phases complete** (9 engineering + 13 research). All on `main`, clean.
-- CNN spatial signal confirmed: R²=0.089 on time_5s (3 independent reproductions).
-- Genuine tick bars (tick_100): R²=0.124 (+39% vs baseline), but p=0.21 — not actionable without replication.
-- End-to-end pipeline NOT viable: expectancy=-$0.37/trade at base $3.74 RT costs.
-- Breakeven requires +2.0pp win rate (51.3% → 53.3%) or alternative architecture.
+- **33+ phases complete** (15 engineering + 29 research). Branch: `experiment/volume-flow-entry`.
+- **Volume-Flow Conditioned Entry — REFUTED (Outcome B)** (2026-02-27). 20pp bar-level diagnostic signal evaporates 91% in sequential simulation. Timeout fraction invariant at ~41.3%. Entry-time filtering exhausted as intervention class. Best stacked config: $3.10/trade, $33K min acct, Calmar 2.59. PR #41.
+- **Timeout-Filtered Sequential — REFUTED (Outcome B, mechanism falsified)** (2026-02-27). Timeout fraction invariant at 41.3% across all 7 cutoff levels. Best cutoff=270: $3.02/trade, $34K min acct, Calmar 2.49. PR #40.
+- **Trade-Level Risk Metrics — REFUTED (modified A)** (2026-02-27). Sequential 1-contract: $2.50/trade, 162 trades/day, $412.77/day, $103,605/year. Min account $48K (all paths) / $26.6K (95% paths). PR #39.
+- **CPCV Validation — CONFIRMED (Outcome A)** (2026-02-27). $1.81/trade at corrected-base. PBO 6.7%. PR #38.
+- **Edge is structural** — 49.93% win rate, 19:7 payoff asymmetry, breakeven 34.6%.
 
-## Priority Options (owner to choose)
+## Critical Finding: Entry-Time Filtering Is Exhausted
 
-### 1. End-to-End CNN Classification (HIGHEST PRIORITY)
+Two experiments confirm timeout fraction (~41.3%) is invariant to all observable entry-time features:
+- **PR #40 (time-of-day):** 0.21pp range across 7 cutoff levels
+- **PR #41 (volume/activity):** 1.76pp max across 15 gate configs (20pp bar-level signal evaporates 91%)
 
-Train CNN directly on tb_label (3-class cross-entropy) instead of regression→frozen embedding→XGBoost. Eliminates the regression-to-classification bottleneck identified as the key loss point in 9E.
+The sequential execution process (66.1% hold-skip) already self-selects for high-activity bars. Any entry gate duplicates what hold-skip already does.
 
-**Why:** The 16-dim penultimate layer currently learns return-prediction features. Direct classification would learn class-discriminative features — fundamentally different optimization target.
+**The next intervention must change the barrier parameters, not the entry timing.**
 
-**Branch:** `experiment/e2e-cnn-classification`
+## Priority: Change Barrier Geometry or Accept and Deploy
 
-### 2. XGBoost Hyperparameter Tuning (LOW-HANGING FRUIT)
+### 1. Barrier Geometry Re-Parameterization (HIGHEST PRIORITY)
 
-Grid search on max_depth, learning_rate, n_estimators, min_child_weight with 5-fold CV. Current hyperparameters inherited from 9B (broken pipeline era). The 2pp win rate gap is small enough that tuning could close it.
+The 41.3% timeout rate is a structural constant of the 50,000-contract volume horizon at 19:7 geometry. Only changing the race parameters can change it.
 
-**Branch:** `experiment/xgb-hyperparam-tuning`
+**Option A: Reduce volume horizon (50,000 → 10,000-25,000)**
+- Faster race resolution → fewer volume-horizon timeouts
+- BUT: more time-horizon timeouts if barriers don't hit in shorter volume window
+- Net effect unknown — this is the experiment
 
-### 3. Label Design Sensitivity (ARCHITECTURAL)
+**Option B: Reduce time horizon (3,600s → 600-1,200s)**
+- Directly caps race duration
+- Changes which barrier events are reachable
+- Requires full data re-export (EC2, ~10 min, ~$0.10)
 
-Test alternative triple barrier parameters: wider target (15 ticks), narrower stop (3 ticks). At 15:3 ratio, breakeven win rate drops to ~42.5% — well below current 51.3%.
+**Spec:** Not yet created
+**Branch:** `experiment/barrier-geometry-sweep`
+**Compute:** Option A: local (same Parquet). Option B: EC2 (re-export) + local.
 
-**Branch:** `experiment/label-design-sensitivity`
+### 2. Paper Trading at Cutoff=270 (HIGH PRIORITY)
 
-### 4. CNN at h=1 with Corrected Normalization (EXPLORATORY)
+Cutoff=270 (or stacked cutoff=270 + message_rate_p25) is the best risk-adjusted config:
+- Stacked: $3.10/trade, 115 trades/day, $338/day, $33K min acct, Calmar 2.59
+- Cutoff=270: $3.02/trade, 117 trades/day, $337/day, $34K min acct, Calmar 2.49
 
-R2 showed signal strongest at h=1. Test with corrected normalization to see if shorter horizon improves classification.
+Rithmic R|API+ integration for live /MES paper trading. 1 contract.
 
-**Branch:** `experiment/cnn-h1-corrected`
+**Validates:** Real-world fill rates, slippage, latency.
+**Spec:** Not yet created
+**Branch:** `feat/rithmic-paper-trading`
+**Compute:** Local
 
-### 5. Tick_100 Multi-Seed Replication (INDEPENDENT)
+### 3. Regime-Conditional Trading (MODERATE PRIORITY)
 
-R3b-genuine showed tick_100 R²=0.124 (+39%) but p=0.21 — driven by fold 5 outlier. Needs 3 seeds/fold and adjacent thresholds (tick_50, tick_200) to confirm.
+Q1-Q2 only strategy. GBT is marginally profitable in Q1 (+$0.003/trade) and Q2 (+$0.029/trade) under base costs, negative in Q3-Q4. A seasonal filter is a different class of intervention (regime gating, not entry-time gating) that hasn't been tested with sequential execution.
 
-**Branch:** `experiment/tick100-replication`
+**Spec:** Not yet created
+**Branch:** `experiment/regime-conditional`
+**Compute:** Local
+
+### 4. Multi-Contract Scaling (MODERATE PRIORITY)
+
+At cutoff=270 (or stacked):
+- 1 contract: $34K capital, $337/day, 249% ROC
+- N contracts (independent sequential executors): N × $34K capital, ~N × $337/day, ~249% ROC
+
+**Hypothesis:** N staggered sequential executors produce N-proportional daily PnL with sqrt(N) drawdown.
+**Spec:** Not yet created
+**Branch:** `experiment/multi-contract-scaling`
+**Compute:** Local
 
 ---
 
-## Key Constraints
+## Completed (This Cycle)
 
-- **CNN protocol MUST match 9E/9D**: R3-exact Conv1d(2→59→59), 12,128 params, TICK_SIZE ÷0.25, per-day z-scoring, 80/20 train/val, AdamW+CosineAnnealingLR, seed=42
-- **Baseline**: time_5s R²=0.089 (9E), XGBoost acc=0.419, expectancy=-$0.37
-- **All experiments use 19-day dataset** (DATA/GLBX-20260207-L953CAPU5B/)
-- **Orchestrator protocol**: YOU are the orchestrator. You NEVER write code. Delegate via kit phases.
+| Experiment | Verdict | Key Finding |
+|-----------|---------|-------------|
+| **Volume-Flow** | **REFUTED (Outcome B)** | **20pp diagnostic → 1.76pp simulation (91% evaporation). Entry-time gating exhausted.** |
+| **Timeout Filter** | **REFUTED (Outcome B)** | **Timeout fraction invariant at 41.3%. Volume-driven, not time-driven.** |
+| **Trade-Level Risk** | **REFUTED (modified A)** | **$2.50/trade seq, $48K min account. Edge real but larger account needed.** |
+| **CPCV Corrected** | **CONFIRMED (Outcome A)** | **$1.81/trade, PBO 6.7%, p<1e-13. 42/45 splits positive.** |
 
 ---
 
-Written: 2026-02-19. All branches clean. No worktrees active.
+## Key Numbers to Remember
+
+### Stacked (Cutoff=270 + message_rate_p25) — Best Risk-Adjusted
+- **Expectancy/trade:** $3.10 (+24% vs unfiltered)
+- **Trades/day:** 114.7 (-29%)
+- **Daily PnL:** $338 (-18%)
+- **Annual PnL:** $84,941
+- **Win rate:** 50.30%
+- **Timeout fraction:** 41.23% (invariant)
+- **Worst drawdown:** $32,830 (-31%)
+- **Median drawdown:** $8,684 (-33%)
+- **Calmar ratio:** 2.59 (best ever)
+- **Min account (all paths):** $33,000
+- **Min account (95% paths):** $25,500
+- **ROC (all-path):** 258% annual
+
+### Cutoff=270 Only — Simpler, Nearly Identical
+- **Expectancy/trade:** $3.02
+- **Trades/day:** 116.8
+- **Daily PnL:** $337
+- **Calmar:** 2.49
+- **Min account:** $34,000 / $25,500
+
+### Unfiltered Sequential (Baseline)
+- **Expectancy/trade:** $2.50
+- **Trades/day:** 162.2
+- **Daily PnL:** $413
+- **Annual PnL:** $103,605
+- **Min account:** $48,000 / $26,500
+- **ROC:** 216% annual
+
+### Bar-Level (CPCV)
+- **Expectancy/trade:** $1.81 (95% CI [$1.46, $2.16])
+- **PBO:** 6.7%
+- **Break-even RT:** $4.30
+
+---
+
+Written: 2026-02-27. Volume-flow conditioned entry REFUTED (Outcome B): 20pp bar-level signal evaporates 91% due to sequential self-selection. Entry-time filtering exhausted. Best stacked: $3.10/trade, $33K min acct, Calmar 2.59. PR #41.

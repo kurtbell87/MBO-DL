@@ -1,0 +1,77 @@
+{
+  "seed": 42,
+  "max_time_horizon_s": 3600,
+  "volume_horizon": 50000,
+  "geometries": [
+    {
+      "target": 10,
+      "stop": 5,
+      "label": "10:5 (control)"
+    },
+    {
+      "target": 15,
+      "stop": 3,
+      "label": "15:3"
+    },
+    {
+      "target": 19,
+      "stop": 7,
+      "label": "19:7"
+    },
+    {
+      "target": 20,
+      "stop": 3,
+      "label": "20:3"
+    }
+  ],
+  "xgb_params": {
+    "objective": "multi:softprob",
+    "num_class": 3,
+    "eval_metric": "mlogloss",
+    "learning_rate": 0.013396,
+    "reg_lambda": 6.586,
+    "max_depth": 6,
+    "min_child_weight": 20,
+    "subsample": 0.5613,
+    "colsample_bytree": 0.7483,
+    "reg_alpha": 0.001424,
+    "tree_method": "hist",
+    "seed": 42
+  },
+  "features": [
+    "weighted_imbalance",
+    "spread",
+    "microprice_offset",
+    "total_depth",
+    "depth_imbalance_1",
+    "depth_imbalance_3",
+    "depth_imbalance_5",
+    "trade_imbalance_50",
+    "trade_intensity_50",
+    "volume_imbalance_50",
+    "volatility_20",
+    "volatility_50",
+    "return_1",
+    "return_5",
+    "return_20",
+    "high_low_range_50",
+    "vwap_offset",
+    "bid_retreat_rate_50",
+    "ask_retreat_rate_50",
+    "effective_spread_50"
+  ],
+  "cpcv": {
+    "n_groups": 10,
+    "k_test": 2,
+    "purge_bars": 500,
+    "embargo_bars": 4600
+  },
+  "dev_days": 201,
+  "cost_scenarios": {
+    "optimistic": 2.49,
+    "base": 3.74,
+    "pessimistic": 6.25
+  },
+  "tick_value": 1.25,
+  "bar_type": "time_5s"
+}

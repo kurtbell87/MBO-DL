@@ -1,0 +1,82 @@
+{
+  "seed": 42,
+  "geometries": [
+    {
+      "target": 10,
+      "stop": 5,
+      "label": "10:5 (control)",
+      "bev_wr": 0.533
+    },
+    {
+      "target": 15,
+      "stop": 3,
+      "label": "15:3",
+      "bev_wr": 0.333
+    },
+    {
+      "target": 19,
+      "stop": 7,
+      "label": "19:7",
+      "bev_wr": 0.384
+    },
+    {
+      "target": 20,
+      "stop": 3,
+      "label": "20:3",
+      "bev_wr": 0.296
+    }
+  ],
+  "tuned_xgb_params": {
+    "max_depth": 6,
+    "learning_rate": 0.0134,
+    "min_child_weight": 20,
+    "subsample": 0.561,
+    "colsample_bytree": 0.748,
+    "reg_alpha": 0.0014,
+    "reg_lambda": 6.586,
+    "n_estimators": 2000,
+    "early_stopping_rounds": 50,
+    "objective": "multi:softmax",
+    "num_class": 3,
+    "eval_metric": "mlogloss",
+    "tree_method": "hist",
+    "random_state": 42,
+    "verbosity": 0,
+    "n_jobs": -1
+  },
+  "non_spatial_features": [
+    "weighted_imbalance",
+    "spread",
+    "net_volume",
+    "volume_imbalance",
+    "trade_count",
+    "avg_trade_size",
+    "vwap_distance",
+    "return_1",
+    "return_5",
+    "return_20",
+    "volatility_20",
+    "volatility_50",
+    "high_low_range_50",
+    "close_position",
+    "cancel_add_ratio",
+    "message_rate",
+    "modify_fraction",
+    "time_sin",
+    "time_cos",
+    "minutes_since_open"
+  ],
+  "cost_scenarios": {
+    "optimistic": 2.49,
+    "base": 3.74,
+    "pessimistic": 6.25
+  },
+  "n_groups": 10,
+  "k_test": 2,
+  "purge_bars": 500,
+  "embargo_bars": 4600,
+  "dev_days": 201,
+  "export_workers": 8,
+  "main_root": "/Users/brandonbell/LOCAL_DEV/MBO-DL-02152026",
+  "worktree_root": "/Users/brandonbell/LOCAL_DEV/MBO-DL-label-geom-p1"
+}

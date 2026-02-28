@@ -1,0 +1,4 @@
+fold,old_base_expectancy,corrected_base_expectancy,optimistic_expectancy,pessimistic_expectancy,trade_rate,hold_fraction,dir_accuracy,breakeven_rt
+Fold 1,0.013980,1.263980,2.513980,-1.236020,0.850048,0.444966,0.507805,3.753980
+Fold 2,2.534609,3.784609,5.034609,1.284609,0.805179,0.438139,0.501512,6.274609
+Fold 3 (holdout),0.155413,1.405413,2.655413,-1.094587,0.901211,0.448653,0.492082,3.895413

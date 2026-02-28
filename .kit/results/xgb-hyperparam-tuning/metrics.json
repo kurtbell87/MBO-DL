@@ -1,0 +1,525 @@
+{
+  "experiment": "xgb-hyperparam-tuning",
+  "timestamp": "2026-02-25T05:16:05",
+  "baseline": {
+    "cpcv_mean_accuracy": 0.44893836005314697,
+    "cpcv_mean_expectancy_base": -0.06602182853194909,
+    "cpcv_accuracy_std": 0.011638906398438967,
+    "holdout_accuracy": 0.40297141861275704,
+    "holdout_expectancy_base": -0.20456656154037733,
+    "profit_factor": 0.985960283608164,
+    "per_class_recall": {
+      "-1": 0.5862790397737153,
+      "0": 0.5470364633114707,
+      "1": 0.20071046907290585
+    },
+    "per_quarter_expectancy": {
+      "Q1": 0.1196388558006077,
+      "Q2": -0.021655842829670122,
+      "Q3": -0.2681770986477622,
+      "Q4": -0.27751178323804143
+    },
+    "top_10_importance": [
+      [
+        "volatility_50",
+        4078.835563659668
+      ],
+      [
+        "volatility_20",
+        1190.5622272491455
+      ],
+      [
+        "message_rate",
+        488.12882804870605
+      ],
+      [
+        "spread",
+        371.7235174179077
+      ],
+      [
+        "high_low_range_50",
+        371.3544864654541
+      ],
+      [
+        "time_sin",
+        303.8670687675476
+      ],
+      [
+        "time_cos",
+        288.8802194595337
+      ],
+      [
+        "minutes_since_open",
+        255.356538772583
+      ],
+      [
+        "weighted_imbalance",
+        228.6453914642334
+      ],
+      [
+        "avg_trade_size",
+        207.687509059906
+      ]
+    ],
+    "pbo": 0.7333333333333333
+  },
+  "treatment": {
+    "best_config": {
+      "max_depth": "6",
+      "learning_rate": 0.0134137354910996,
+      "min_child_weight": "20",
+      "subsample": 0.5610191174223894,
+      "colsample_bytree": 0.7475884550556351,
+      "reg_alpha": 0.0013726318898045872,
+      "reg_lambda": 6.586289317583112
+    },
+    "search_best_cv_accuracy": 0.45090267607859663,
+    "cpcv_mean_accuracy": 0.45036233296458233,
+    "cpcv_mean_expectancy_base": -0.0010859883312321827,
+    "cpcv_accuracy_std": 0.01165431100837166,
+    "cpcv_expectancy_std": 0.12236010603036807,
+    "holdout_accuracy": 0.42263855001742767,
+    "holdout_expectancy_base": -0.13227861771058366,
+    "profit_factor": 0.9997673500305599,
+    "per_class_recall": {
+      "-1": 0.6341603600899612,
+      "0": 0.5515419179767751,
+      "1": 0.14859363851578916
+    },
+    "per_quarter_expectancy": {
+      "Q1": 0.13712453551382756,
+      "Q2": 0.05847189974197113,
+      "Q3": -0.21903668856386316,
+      "Q4": -0.17985220160528015
+    },
+    "top_10_importance": [
+      [
+        "volatility_50",
+        8534.802169799805
+      ],
+      [
+        "volatility_20",
+        3521.0892601013184
+      ],
+      [
+        "high_low_range_50",
+        1360.8711013793945
+      ],
+      [
+        "message_rate",
+        1210.3264741897583
+      ],
+      [
+        "time_sin",
+        505.74481678009033
+      ],
+      [
+        "time_cos",
+        480.27581310272217
+      ],
+      [
+        "spread",
+        449.18866539001465
+      ],
+      [
+        "minutes_since_open",
+        444.0384612083435
+      ],
+      [
+        "trade_count",
+        330.8971061706543
+      ],
+      [
+        "weighted_imbalance",
+        329.6254692077637
+      ]
+    ],
+    "best_n_estimators_mean": 384.46666666666664,
+    "pbo": 0.5555555555555556,
+    "walkforward_accuracy": 0.45240126504165384,
+    "walkforward_expectancy": -0.1395141988538686,
+    "long_recall_vs_short": {
+      "tuned_long": 0.14859363851578916,
+      "tuned_short": 0.6341603600899612,
+      "default_long": 0.20071046907290585,
+      "default_short": 0.5862790397737153
+    },
+    "cost_sensitivity": {
+      "tuned": {
+        "optimistic": {
+          "expectancy": 1.248914011668768,
+          "profit_factor": 1.3058189793726553,
+          "n_trades": 4252891,
+          "gross_profit": 22679596.94,
+          "gross_loss": 17368101.78
+        },
+        "base": {
+          "expectancy": -0.0010859883312321827,
+          "profit_factor": 0.9997673500305599,
+          "n_trades": 4252891,
+          "gross_profit": 19847479.44,
+          "gross_loss": 19852098.03
+        },
+        "pessimistic": {
+          "expectancy": -2.5110859883312315,
+          "profit_factor": 0.5700728211646857,
+          "n_trades": 4252891,
+          "gross_profit": 14160587.5,
+          "gross_loss": 24839962.5
+        }
+      },
+      "default": {
+        "optimistic": {
+          "expectancy": 1.1839781714680508,
+          "profit_factor": 1.2877852544432782,
+          "n_trades": 4281369,
+          "gross_profit": 22683040.380000003,
+          "gross_loss": 17613992.939999998
+        },
+        "base": {
+          "expectancy": -0.06602182853194909,
+          "profit_factor": 0.985960283608164,
+          "n_trades": 4281369,
+          "gross_profit": 19850492.880000003,
+          "gross_loss": 20133156.689999998
+        },
+        "pessimistic": {
+          "expectancy": -2.5760218285319487,
+          "profit_factor": 0.5621999562354769,
+          "n_trades": 4281369,
+          "gross_profit": 14162737.5,
+          "gross_loss": 25191637.5
+        }
+      }
+    },
+    "breakeven_rt_cost": 3.738914011668768,
+    "label0_trade_fraction": 0.22356951385223636
+  },
+  "search_landscape": {
+    "total_configs": 64,
+    "configs_above_default": 50,
+    "accuracy_distribution": {
+      "min": 0.4476406785018174,
+      "max": 0.45090267607859663,
+      "mean": 0.45016516546054364,
+      "std": 0.0005993528202303556,
+      "p25": 0.4500072103987779,
+      "p50": 0.45028247642627617,
+      "p75": 0.45054648237897066,
+      "n_above_default": 50,
+      "default_acc": 0.4499727914449771
+    },
+    "all_configs_accuracy": [
+      {
+        "config_idx": 54,
+        "mean_acc": 0.45090267607859663
+      },
+      {
+        "config_idx": 3,
+        "mean_acc": 0.4507631038297424
+      },
+      {
+        "config_idx": 59,
+        "mean_acc": 0.45075175156719177
+      },
+      {
+        "config_idx": 50,
+        "mean_acc": 0.45070015276826636
+      },
+      {
+        "config_idx": 53,
+        "mean_acc": 0.4506829531686246
+      },
+      {
+        "config_idx": 63,
+        "mean_acc": 0.4506742085023442
+      },
+      {
+        "config_idx": 51,
+        "mean_acc": 0.4506658589264078
+      },
+      {
+        "config_idx": 7,
+        "mean_acc": 0.45065811515566556
+      },
+      {
+        "config_idx": 60,
+        "mean_acc": 0.4506521624611494
+      },
+      {
+        "config_idx": 5,
+        "mean_acc": 0.45064989727651056
+      },
+      {
+        "config_idx": 14,
+        "mean_acc": 0.4506399146604857
+      },
+      {
+        "config_idx": 48,
+        "mean_acc": 0.4506014065216246
+      },
+      {
+        "config_idx": 62,
+        "mean_acc": 0.4506000895538113
+      },
+      {
+        "config_idx": 56,
+        "mean_acc": 0.45059650740135915
+      },
+      {
+        "config_idx": 57,
+        "mean_acc": 0.4505859189801401
+      },
+      {
+        "config_idx": 22,
+        "mean_acc": 0.4505531001422326
+      },
+      {
+        "config_idx": 49,
+        "mean_acc": 0.45054427645788336
+      },
+      {
+        "config_idx": 8,
+        "mean_acc": 0.45053458357477744
+      },
+      {
+        "config_idx": 52,
+        "mean_acc": 0.4505319232997945
+      },
+      {
+        "config_idx": 58,
+        "mean_acc": 0.45052799873571087
+      },
+      {
+        "config_idx": 42,
+        "mean_acc": 0.450524943370384
+      },
+      {
+        "config_idx": 17,
+        "mean_acc": 0.45051883263973025
+      },
+      {
+        "config_idx": 32,
+        "mean_acc": 0.45049317810672707
+      },
+      {
+        "config_idx": 55,
+        "mean_acc": 0.4504847495127219
+      },
+      {
+        "config_idx": 16,
+        "mean_acc": 0.4504605436443133
+      },
+      {
+        "config_idx": 26,
+        "mean_acc": 0.4504504556708634
+      },
+      {
+        "config_idx": 39,
+        "mean_acc": 0.45044002528578203
+      },
+      {
+        "config_idx": 37,
+        "mean_acc": 0.45040765421693096
+      },
+      {
+        "config_idx": 61,
+        "mean_acc": 0.45034941790022653
+      },
+      {
+        "config_idx": 40,
+        "mean_acc": 0.4503442290470421
+      },
+      {
+        "config_idx": 28,
+        "mean_acc": 0.4503410419849339
+      },
+      {
+        "config_idx": 25,
+        "mean_acc": 0.4502843860296054
+      },
+      {
+        "config_idx": 43,
+        "mean_acc": 0.45028056682294687
+      },
+      {
+        "config_idx": 31,
+        "mean_acc": 0.4502742717167993
+      },
+      {
+        "config_idx": 11,
+        "mean_acc": 0.45025686140230736
+      },
+      {
+        "config_idx": 33,
+        "mean_acc": 0.4502491966496339
+      },
+      {
+        "config_idx": 15,
+        "mean_acc": 0.45017905494389715
+      },
+      {
+        "config_idx": 44,
+        "mean_acc": 0.45016196070168035
+      },
+      {
+        "config_idx": 24,
+        "mean_acc": 0.45016140757519885
+      },
+      {
+        "config_idx": 4,
+        "mean_acc": 0.45013872938945376
+      },
+      {
+        "config_idx": 21,
+        "mean_acc": 0.45011086235052417
+      },
+      {
+        "config_idx": 23,
+        "mean_acc": 0.4500658483906654
+      },
+      {
+        "config_idx": 47,
+        "mean_acc": 0.4500478586103355
+      },
+      {
+        "config_idx": 35,
+        "mean_acc": 0.45004501395985885
+      },
+      {
+        "config_idx": 34,
+        "mean_acc": 0.4500405626086499
+      },
+      {
+        "config_idx": 2,
+        "mean_acc": 0.4500272085550229
+      },
+      {
+        "config_idx": 46,
+        "mean_acc": 0.4500249697097403
+      },
+      {
+        "config_idx": 41,
+        "mean_acc": 0.4500151978085656
+      },
+      {
+        "config_idx": 27,
+        "mean_acc": 0.4499832481694147
+      },
+      {
+        "config_idx": 10,
+        "mean_acc": 0.4499816678080387
+      },
+      {
+        "config_idx": 0,
+        "mean_acc": 0.4499727914449771
+      },
+      {
+        "config_idx": 29,
+        "mean_acc": 0.4499155033450982
+      },
+      {
+        "config_idx": 36,
+        "mean_acc": 0.4498955117736923
+      },
+      {
+        "config_idx": 13,
+        "mean_acc": 0.44988911131011955
+      },
+      {
+        "config_idx": 18,
+        "mean_acc": 0.4498819206658589
+      },
+      {
+        "config_idx": 19,
+        "mean_acc": 0.449803245008692
+      },
+      {
+        "config_idx": 38,
+        "mean_acc": 0.44980090080598434
+      },
+      {
+        "config_idx": 45,
+        "mean_acc": 0.44966277722172465
+      },
+      {
+        "config_idx": 12,
+        "mean_acc": 0.449654691039351
+      },
+      {
+        "config_idx": 6,
+        "mean_acc": 0.4488826581678344
+      },
+      {
+        "config_idx": 30,
+        "mean_acc": 0.4487883369330453
+      },
+      {
+        "config_idx": 1,
+        "mean_acc": 0.4485184902280988
+      },
+      {
+        "config_idx": 20,
+        "mean_acc": 0.4483034293841858
+      },
+      {
+        "config_idx": 9,
+        "mean_acc": 0.4476406785018174
+      }
+    ]
+  },
+  "sanity_checks": {
+    "train_acc_gt_test_acc": true,
+    "no_single_feature_gt_50pct_gain": true,
+    "holdout_within_5pp_of_cpcv": true,
+    "early_stopping_triggers_90pct": true,
+    "default_reproduces_baseline": true,
+    "early_stopping_trigger_rate": "45/45",
+    "max_single_feature_gain_share": 0.49716736195540523,
+    "holdout_cpcv_delta": 0.027723782947154663,
+    "default_cpcv_accuracy": 0.44893836005314697
+  },
+  "success_criteria": {
+    "SC-1": {
+      "description": "CPCV mean accuracy >= 0.469",
+      "value": 0.45036233296458233,
+      "threshold": 0.469,
+      "pass": false
+    },
+    "SC-2": {
+      "description": "CPCV mean expectancy >= $0.00 (base costs)",
+      "value": -0.0010859883312321827,
+      "threshold": 0.0,
+      "pass": false
+    },
+    "SC-3": {
+      "description": "Holdout accuracy >= 0.441",
+      "value": 0.42263855001742767,
+      "threshold": 0.441,
+      "pass": false
+    },
+    "SC-4": {
+      "description": "At least 3 search configs outperform default on 5-fold CV",
+      "value": 50,
+      "threshold": 3,
+      "pass": true
+    },
+    "SC-5": {
+      "description": "Best config CPCV accuracy std < 0.05",
+      "value": 0.01165431100837166,
+      "threshold": 0.05,
+      "pass": true
+    }
+  },
+  "outcome": "C",
+  "outcome_description": "MARGINAL \u2014 some configs better, but <2pp gain",
+  "resource_usage": {
+    "wall_clock_seconds": 5150.971081018448,
+    "wall_clock_minutes": 85.84951801697413,
+    "total_training_runs": 493,
+    "total_configs_evaluated": 79
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Executed locally on Apple Silicon. Default config default 5-fold CV accuracy: 0.4500. Best search config 5-fold CV accuracy: 0.4509. Wall clock: 85.8 minutes."
+}

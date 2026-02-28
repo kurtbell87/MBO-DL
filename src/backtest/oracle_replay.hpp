@@ -15,8 +15,8 @@
 struct OracleConfig {
     enum class LabelMethod { FIRST_TO_HIT, TRIPLE_BARRIER };
 
-    uint32_t volume_horizon = 500;
-    uint32_t max_time_horizon_s = 300;
+    uint32_t volume_horizon = 50000;
+    uint32_t max_time_horizon_s = 3600;
     int target_ticks = 10;
     int stop_ticks = 5;
     int take_profit_ticks = 20;

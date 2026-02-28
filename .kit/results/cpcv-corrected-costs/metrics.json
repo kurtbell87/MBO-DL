@@ -1,0 +1,434 @@
+{
+  "experiment": "cpcv-corrected-costs",
+  "timestamp": "2026-02-27T07:49:25",
+  "cpcv_mean_expectancy_base": 1.8098590276245545,
+  "cpcv_pbo": 0.06666666666666667,
+  "cpcv_ci_95_lower": 1.4555386427503683,
+  "holdout_expectancy_base": 1.4615237873676843,
+  "cpcv_std_expectancy_base": 1.179364712084202,
+  "cpcv_fraction_positive_base": 0.9333333333333333,
+  "cpcv_mean_expectancy_optimistic": 3.059859027624555,
+  "cpcv_mean_expectancy_pessimistic": -0.6901409723754465,
+  "cpcv_t_stat": 10.294443544037213,
+  "cpcv_p_value": 1.3545411470140841e-13,
+  "cpcv_ci_95_upper": 2.164179412498741,
+  "cpcv_mean_trade_rate": 0.8700043723331403,
+  "cpcv_mean_hold_fraction": 0.4307631679982679,
+  "cpcv_mean_dir_bar_pnl": 5.063230609808459,
+  "cpcv_mean_hold_bar_pnl": -2.501796440215069,
+  "cpcv_mean_dir_accuracy": 0.5016378649171833,
+  "cpcv_breakeven_rt": 4.2998590276245565,
+  "profit_factor": 36.55714783066143,
+  "deflated_sharpe": 0.0,
+  "per_group_expectancy": {
+    "0": {
+      "mean_expectancy": 1.4110018481114999,
+      "std_expectancy": 0.9294549106917733,
+      "n_splits": 9,
+      "frac_positive": 0.8888888888888888
+    },
+    "1": {
+      "mean_expectancy": 1.6412817960687174,
+      "std_expectancy": 0.667245024445484,
+      "n_splits": 9,
+      "frac_positive": 1.0
+    },
+    "2": {
+      "mean_expectancy": 1.4107811447539222,
+      "std_expectancy": 1.1534343481152878,
+      "n_splits": 9,
+      "frac_positive": 0.8888888888888888
+    },
+    "3": {
+      "mean_expectancy": 1.1881321462169423,
+      "std_expectancy": 1.1128212843420786,
+      "n_splits": 9,
+      "frac_positive": 0.8888888888888888
+    },
+    "4": {
+      "mean_expectancy": 1.078341815228423,
+      "std_expectancy": 1.2634431063422122,
+      "n_splits": 9,
+      "frac_positive": 0.7777777777777778
+    },
+    "5": {
+      "mean_expectancy": 1.8886554686764936,
+      "std_expectancy": 1.1529413389100527,
+      "n_splits": 9,
+      "frac_positive": 1.0
+    },
+    "6": {
+      "mean_expectancy": 2.4488140680026143,
+      "std_expectancy": 0.7716636320838737,
+      "n_splits": 9,
+      "frac_positive": 1.0
+    },
+    "7": {
+      "mean_expectancy": 1.4004347767270144,
+      "std_expectancy": 1.3397866313414755,
+      "n_splits": 9,
+      "frac_positive": 0.8888888888888888
+    },
+    "8": {
+      "mean_expectancy": 2.6990315359631443,
+      "std_expectancy": 0.9047204853741528,
+      "n_splits": 9,
+      "frac_positive": 1.0
+    },
+    "9": {
+      "mean_expectancy": 2.9321156764967657,
+      "std_expectancy": 0.9482920002551767,
+      "n_splits": 9,
+      "frac_positive": 1.0
+    }
+  },
+  "per_quarter_expectancy": {
+    "Q1": {
+      "mean_expectancy": 1.4876882629780466,
+      "n_observations": 27,
+      "frac_positive": 0.9259259259259259
+    },
+    "Q2": {
+      "mean_expectancy": 1.385043143373953,
+      "n_observations": 27,
+      "frac_positive": 0.8888888888888888
+    },
+    "Q3": {
+      "mean_expectancy": 2.182760126897591,
+      "n_observations": 27,
+      "frac_positive": 0.9629629629629629
+    },
+    "Q4": {
+      "mean_expectancy": 2.9321156764967657,
+      "n_observations": 9,
+      "frac_positive": 1.0
+    }
+  },
+  "worst_5_splits": [
+    {
+      "split_idx": 32,
+      "test_groups": [
+        4,
+        7
+      ],
+      "expectancy": -1.2842539638227841
+    },
+    {
+      "split_idx": 3,
+      "test_groups": [
+        0,
+        4
+      ],
+      "expectancy": -0.5648093735242312
+    },
+    {
+      "split_idx": 17,
+      "test_groups": [
+        2,
+        3
+      ],
+      "expectancy": -0.4240123689925439
+    },
+    {
+      "split_idx": 10,
+      "test_groups": [
+        1,
+        3
+      ],
+      "expectancy": 0.10777554593847337
+    },
+    {
+      "split_idx": 21,
+      "test_groups": [
+        2,
+        7
+      ],
+      "expectancy": 0.108828457359773
+    }
+  ],
+  "best_5_splits": [
+    {
+      "split_idx": 43,
+      "test_groups": [
+        7,
+        9
+      ],
+      "expectancy": 3.2853234866924415
+    },
+    {
+      "split_idx": 41,
+      "test_groups": [
+        6,
+        9
+      ],
+      "expectancy": 3.4159334541356627
+    },
+    {
+      "split_idx": 40,
+      "test_groups": [
+        6,
+        8
+      ],
+      "expectancy": 3.5324027896572123
+    },
+    {
+      "split_idx": 38,
+      "test_groups": [
+        5,
+        9
+      ],
+      "expectancy": 4.097083155194524
+    },
+    {
+      "split_idx": 44,
+      "test_groups": [
+        8,
+        9
+      ],
+      "expectancy": 4.356341687277784
+    }
+  ],
+  "cost_sensitivity": {
+    "optimistic": {
+      "rt_cost": 1.24,
+      "mean_expectancy": 3.059859027624555,
+      "std_expectancy": 1.179364712084202,
+      "ci_95_lower": 2.7055386427503687,
+      "ci_95_upper": 3.4141794124987412,
+      "fraction_positive": 0.9777777777777777,
+      "pbo": 0.022222222222222223
+    },
+    "base": {
+      "rt_cost": 2.49,
+      "mean_expectancy": 1.8098590276245545,
+      "std_expectancy": 1.179364712084202,
+      "ci_95_lower": 1.4555386427503683,
+      "ci_95_upper": 2.164179412498741,
+      "fraction_positive": 0.9333333333333333,
+      "pbo": 0.06666666666666667
+    },
+    "pessimistic": {
+      "rt_cost": 4.99,
+      "mean_expectancy": -0.6901409723754465,
+      "std_expectancy": 1.179364712084202,
+      "ci_95_lower": -1.0444613572496326,
+      "ci_95_upper": -0.3358205875012603,
+      "fraction_positive": 0.26666666666666666,
+      "pbo": 0.7333333333333333
+    }
+  },
+  "wf_reproduction": {
+    "old_base_per_fold": [
+      0.0139795767991604,
+      2.5346085511263503,
+      0.1554131334422687
+    ],
+    "old_base_mean": 0.9013337537892597,
+    "corrected_base_per_fold": [
+      1.2639795767991604,
+      3.78460855112635,
+      1.4054131334422686
+    ],
+    "corrected_base_mean": 2.1513337537892596
+  },
+  "holdout": {
+    "expectancy_optimistic": 2.7115237873676867,
+    "expectancy_base": 1.4615237873676843,
+    "expectancy_pessimistic": -1.0384762126323155,
+    "trade_rate": 0.8989543394911119,
+    "dir_accuracy": 0.4931671672726634,
+    "hold_fraction": 0.4481505176224264,
+    "dir_bar_pnl_base": 4.787932936361559,
+    "hold_bar_pnl_base": -2.634593688490907
+  },
+  "feature_importance_pooled": {
+    "stage1_top10": [
+      {
+        "feature": "message_rate",
+        "mean_gain": 717.6526947869195,
+        "n_splits": 45
+      },
+      {
+        "feature": "volatility_50",
+        "mean_gain": 179.24459313286675,
+        "n_splits": 45
+      },
+      {
+        "feature": "trade_count",
+        "mean_gain": 150.620390786065,
+        "n_splits": 45
+      },
+      {
+        "feature": "volatility_20",
+        "mean_gain": 106.44052810668946,
+        "n_splits": 45
+      },
+      {
+        "feature": "time_sin",
+        "mean_gain": 67.56612082587348,
+        "n_splits": 45
+      },
+      {
+        "feature": "time_cos",
+        "mean_gain": 61.07760628594293,
+        "n_splits": 45
+      },
+      {
+        "feature": "minutes_since_open",
+        "mean_gain": 51.67029232449002,
+        "n_splits": 45
+      },
+      {
+        "feature": "spread",
+        "mean_gain": 35.549321026272246,
+        "n_splits": 45
+      },
+      {
+        "feature": "high_low_range_50",
+        "mean_gain": 34.56816296047634,
+        "n_splits": 45
+      },
+      {
+        "feature": "modify_fraction",
+        "mean_gain": 15.563839785257976,
+        "n_splits": 45
+      }
+    ],
+    "stage2_top10": [
+      {
+        "feature": "volatility_50",
+        "mean_gain": 58.99009585910373,
+        "n_splits": 45
+      },
+      {
+        "feature": "minutes_since_open",
+        "mean_gain": 46.56851281060113,
+        "n_splits": 45
+      },
+      {
+        "feature": "message_rate",
+        "mean_gain": 42.01889474656847,
+        "n_splits": 45
+      },
+      {
+        "feature": "time_sin",
+        "mean_gain": 39.19479285346137,
+        "n_splits": 45
+      },
+      {
+        "feature": "time_cos",
+        "mean_gain": 39.18568878173828,
+        "n_splits": 45
+      },
+      {
+        "feature": "trade_count",
+        "mean_gain": 35.72988586425781,
+        "n_splits": 45
+      },
+      {
+        "feature": "high_low_range_50",
+        "mean_gain": 32.2357602013482,
+        "n_splits": 45
+      },
+      {
+        "feature": "volatility_20",
+        "mean_gain": 30.14927643669976,
+        "n_splits": 45
+      },
+      {
+        "feature": "modify_fraction",
+        "mean_gain": 26.29622302585178,
+        "n_splits": 45
+      },
+      {
+        "feature": "weighted_imbalance",
+        "mean_gain": 23.758544370863174,
+        "n_splits": 45
+      }
+    ]
+  },
+  "dir_accuracy_pooled": 0.5016378649171833,
+  "success_criteria": {
+    "SC-1": {
+      "description": "CPCV mean exp > $0 at corrected-base ($2.49)",
+      "pass": true,
+      "value": 1.8098590276245545
+    },
+    "SC-2": {
+      "description": "CPCV PBO < 0.50",
+      "pass": true,
+      "value": 0.06666666666666667
+    },
+    "SC-3": {
+      "description": "95% CI lower > -$0.50",
+      "pass": true,
+      "value": 1.4555386427503683
+    },
+    "SC-4": {
+      "description": "Fraction positive > 0.60",
+      "pass": true,
+      "value": 0.9333333333333333
+    },
+    "SC-5": {
+      "description": "Pessimistic mean > -$1.00",
+      "pass": true,
+      "value": -0.6901409723754465
+    },
+    "SC-6": {
+      "description": "Holdout exp > -$1.00 at corrected-base",
+      "pass": true,
+      "value": 1.4615237873676843
+    }
+  },
+  "sanity_checks": {
+    "SC-S1": {
+      "description": "3-fold WF reproduces $0.90 +/- $0.05 at old-base",
+      "pass": true,
+      "value": 0.9013337537892597,
+      "reference": 0.9
+    },
+    "SC-S2": {
+      "description": "Trade rate ~85% +/- 10pp across splits",
+      "pass": true,
+      "value": 0.8700043723331403
+    },
+    "SC-S3": {
+      "description": "CPCV mean within 2x of WF mean",
+      "pass": true,
+      "value": 1.8098590276245545
+    },
+    "SC-S4": {
+      "description": "No single group in >80% of top-10 splits",
+      "pass": true,
+      "value": 0.6,
+      "group_counts_top10": {
+        "8": 4,
+        "9": 6,
+        "5": 2,
+        "6": 3,
+        "7": 1,
+        "0": 1,
+        "2": 1,
+        "3": 2
+      }
+    },
+    "SC-S5": {
+      "description": "Holdout trade rate within 10pp of CPCV mean",
+      "pass": true,
+      "holdout_tr": 0.8989543394911119,
+      "cpcv_mean_tr": 0.8700043723331403
+    }
+  },
+  "outcome": "A",
+  "outcome_description": "CONFIRMED. Pipeline statistically validated as positive-expectancy under corrected costs.",
+  "resource_usage": {
+    "wall_clock_seconds": 156.96782112121582,
+    "wall_clock_minutes": 2.6161303520202637,
+    "total_training_runs": 98,
+    "gpu_hours": 0,
+    "total_runs": 49
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Local execution on Apple Silicon. Corrected AMP costs: opt=$1.24, base=$2.49, pess=$4.99."
+}

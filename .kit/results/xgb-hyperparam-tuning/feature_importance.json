@@ -1,0 +1,26 @@
+{
+  "tuned": {
+    "volatility_50": 8534.802169799805,
+    "volatility_20": 3521.0892601013184,
+    "high_low_range_50": 1360.8711013793945,
+    "message_rate": 1210.3264741897583,
+    "time_sin": 505.74481678009033,
+    "time_cos": 480.27581310272217,
+    "spread": 449.18866539001465,
+    "minutes_since_open": 444.0384612083435,
+    "trade_count": 330.8971061706543,
+    "weighted_imbalance": 329.6254692077637
+  },
+  "default": {
+    "volatility_50": 4078.835563659668,
+    "volatility_20": 1190.5622272491455,
+    "message_rate": 488.12882804870605,
+    "spread": 371.7235174179077,
+    "high_low_range_50": 371.3544864654541,
+    "time_sin": 303.8670687675476,
+    "time_cos": 288.8802194595337,
+    "minutes_since_open": 255.356538772583,
+    "weighted_imbalance": 228.6453914642334,
+    "avg_trade_size": 207.687509059906
+  }
+}

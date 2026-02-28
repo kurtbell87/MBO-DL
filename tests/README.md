@@ -25,6 +25,9 @@
 | `oracle_expectancy_test.cpp` | OracleExpectancyReport (to_json, aggregation, per-quarter splits) |
 | `bar_feature_export_test.cpp` | bar_feature_export CLI (arg parsing, CSV header, metadata, warmup/NaN exclusion, TB columns) |
 | `hybrid_model_tb_label_test.cpp` | Triple barrier label computation (label correctness, exit type, bars held, volume, time cap, min_return) |
+| `bidirectional_tb_test.cpp` | Bidirectional triple barrier labels (independent long/short races, both-triggered diagnostic) |
+| `bidirectional_export_test.cpp` | Bidirectional export wiring (bar_feature_export integration, 152-column schema, --legacy-labels flag) |
+| `parquet_export_test.cpp` | Parquet export schema validation (column count, column names, data types) |
 | `test_helpers.hpp` | Shared test utilities |
 | `test_bar_helpers.hpp` | Bar construction test helpers |
 | `test_export_helpers.hpp` | Export test helpers |

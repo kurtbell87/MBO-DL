@@ -346,7 +346,9 @@ struct DayOracleResult {
     bool valid = false;
 };
 
-DayOracleResult process_day(int date, const ExecutionCosts& costs) {
+DayOracleResult process_day(int date, const ExecutionCosts& costs,
+                            int target_ticks, int stop_ticks, int take_profit_ticks,
+                            uint32_t max_time_horizon_s, uint32_t volume_horizon) {
     DayOracleResult result;
     result.date = date;
 
@@ -411,11 +413,11 @@ DayOracleResult process_day(int date, const ExecutionCosts& costs) {
     // Run FTH oracle
     OracleConfig fth_cfg;
     fth_cfg.label_method = OracleConfig::LabelMethod::FIRST_TO_HIT;
-    fth_cfg.target_ticks = 10;
-    fth_cfg.stop_ticks = 5;
-    fth_cfg.take_profit_ticks = 20;
-    fth_cfg.volume_horizon = 500;
-    fth_cfg.max_time_horizon_s = 300;
+    fth_cfg.target_ticks = target_ticks;
+    fth_cfg.stop_ticks = stop_ticks;
+    fth_cfg.take_profit_ticks = take_profit_ticks;
+    fth_cfg.volume_horizon = volume_horizon;
+    fth_cfg.max_time_horizon_s = max_time_horizon_s;
     fth_cfg.tick_size = 0.25f;
 
     OracleReplay fth_replay(fth_cfg, costs);
@@ -451,9 +453,118 @@ DayOracleResult process_day(int date, const ExecutionCosts& costs) {
 }
 
 // ===========================================================================
+// Usage
+// ===========================================================================
+void print_usage(const char* prog) {
+    std::cout << "Usage: " << prog << " [OPTIONS]\n\n"
+              << "Options:\n"
+              << "  --target <ticks>          Target ticks (positive integer, default: 10)\n"
+              << "  --stop <ticks>            Stop-loss ticks (positive integer, default: 5)\n"
+              << "  --take-profit <ticks>     Take-profit ticks (positive integer, default: 20)\n"
+              << "  --max-time-horizon <sec>  Max time horizon in seconds, 1-86400 (default: 3600)\n"
+              << "  --volume-horizon <vol>    Volume horizon in contracts, >0 (default: 50000)\n"
+              << "  --output <path>           Write JSON results to <path>\n"
+              << "  --help                    Show this usage message and exit\n";
+}
+
+// Try to parse a string as a positive integer. Returns -1 on failure.
+int parse_positive_int(const std::string& s) {
+    if (s.empty()) return -1;
+    // Reject if first char is not a digit (covers negatives and non-numeric)
+    if (s[0] == '-' || s[0] == '+') {
+        // Allow '+' prefix only if rest is digits
+        if (s[0] == '-') return -1;
+        if (s.size() == 1) return -1;
+    }
+    try {
+        size_t pos = 0;
+        int val = std::stoi(s, &pos);
+        if (pos != s.size()) return -1;  // trailing garbage
+        if (val <= 0) return -1;
+        return val;
+    } catch (...) {
+        return -1;
+    }
+}
+
+// Parse a required positive-integer CLI flag. Returns true on success.
+// On failure, prints an error message with usage and returns false.
+bool parse_tick_flag(const char* flag_name, int argc, char* argv[], int& i,
+                     int& out, const char* prog) {
+    if (i + 1 >= argc) {
+        std::cerr << "Error: " << flag_name << " requires a value\n\n";
+        print_usage(prog);
+        return false;
+    }
+    int val = parse_positive_int(argv[++i]);
+    if (val < 0) {
+        std::cerr << "Error: " << flag_name << " must be a positive integer\n\n";
+        print_usage(prog);
+        return false;
+    }
+    out = val;
+    return true;
+}
+
+// ===========================================================================
 // Main
 // ===========================================================================
-int main() {
+int main(int argc, char* argv[]) {
+    // --- Parse CLI arguments ---
+    int target_ticks = 10;
+    int stop_ticks = 5;
+    int take_profit_ticks = 20;
+    int max_time_horizon = 3600;
+    int volume_horizon = 50000;
+    std::string output_path;
+
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+
+        if (arg == "--help") {
+            print_usage(argv[0]);
+            return 0;
+        } else if (arg == "--target") {
+            if (!parse_tick_flag("--target", argc, argv, i, target_ticks, argv[0]))
+                return 1;
+        } else if (arg == "--stop") {
+            if (!parse_tick_flag("--stop", argc, argv, i, stop_ticks, argv[0]))
+                return 1;
+        } else if (arg == "--take-profit") {
+            if (!parse_tick_flag("--take-profit", argc, argv, i, take_profit_ticks, argv[0]))
+                return 1;
+        } else if (arg == "--max-time-horizon") {
+            if (!parse_tick_flag("--max-time-horizon", argc, argv, i, max_time_horizon, argv[0]))
+                return 1;
+        } else if (arg == "--volume-horizon") {
+            if (!parse_tick_flag("--volume-horizon", argc, argv, i, volume_horizon, argv[0]))
+                return 1;
+        } else if (arg == "--output") {
+            if (i + 1 >= argc) {
+                std::cerr << "Error: --output requires a path\n\n";
+                print_usage(argv[0]);
+                return 1;
+            }
+            output_path = argv[++i];
+        } else {
+            std::cerr << "Error: unknown option '" << arg << "'\n\n";
+            print_usage(argv[0]);
+            return 1;
+        }
+    }
+
+    // Validate new flags
+    if (max_time_horizon <= 0 || max_time_horizon > 86400) {
+        std::cerr << "Error: --max-time-horizon must be between 1 and 86400, got: " << max_time_horizon << "\n\n";
+        print_usage(argv[0]);
+        return 1;
+    }
+    if (volume_horizon <= 0) {
+        std::cerr << "Error: --volume-horizon must be > 0, got: " << volume_horizon << "\n\n";
+        print_usage(argv[0]);
+        return 1;
+    }
+
     std::cout << "=== Oracle Expectancy Extraction ===\n\n";
 
     // --- Execution costs (spec defaults) ---
@@ -465,6 +576,10 @@ int main() {
     costs.contract_multiplier = 5.0f;
     costs.tick_size = 0.25f;
     costs.tick_value = 1.25f;
+
+    std::cout << "Config: target=" << target_ticks
+              << " stop=" << stop_ticks
+              << " take_profit=" << take_profit_ticks << "\n\n";
 
     // --- Day selection: 20 stratified days (5 per quarter) ---
     std::cout << "Selecting 20 stratified days...\n";
@@ -485,7 +600,9 @@ int main() {
     std::vector<int> dates_processed;
 
     for (int date : selected_days) {
-        auto day = process_day(date, costs);
+        auto day = process_day(date, costs, target_ticks, stop_ticks, take_profit_ticks,
+                               static_cast<uint32_t>(max_time_horizon),
+                               static_cast<uint32_t>(volume_horizon));
         if (day.valid) {
             fth_results.push_back(std::move(day.fth));
             tb_results.push_back(std::move(day.tb));
@@ -581,15 +698,34 @@ int main() {
         std::cout << "\n  VERDICT: NO GO — Oracle does not produce positive expectancy.\n";
     }
 
+    // --- Build report config from parsed CLI params ---
+    oracle_expectancy::ReportConfig report_cfg;
+    report_cfg.target_ticks = target_ticks;
+    report_cfg.stop_ticks = stop_ticks;
+    report_cfg.take_profit_ticks = take_profit_ticks;
+    report_cfg.max_time_horizon_s = static_cast<uint32_t>(max_time_horizon);
+    report_cfg.volume_horizon = static_cast<uint32_t>(volume_horizon);
+
     // --- Write JSON ---
     std::filesystem::create_directories(".kit/results/oracle-expectancy");
 
     // Use the tested to_json serializer for the report
-    std::string json = oracle_expectancy::to_json(report);
+    std::string json = oracle_expectancy::to_json(report, report_cfg);
 
     std::ofstream out(".kit/results/oracle-expectancy/metrics.json");
     out << json;
     out.close();
+
+    // --- Write JSON to --output path if specified ---
+    if (!output_path.empty()) {
+        std::ofstream output_file(output_path);
+        if (!output_file.is_open()) {
+            std::cerr << "ERROR: Cannot write to " << output_path << "\n";
+            return 1;
+        }
+        output_file << json;
+        output_file.close();
+    }
 
     // Write a separate summary with days list and verdict
     std::ofstream summary(".kit/results/oracle-expectancy/summary.json");

@@ -37,20 +37,26 @@
 | 8 | bar-feature-export | done | done | done | done |
 | 9A | hybrid-model | done | done | done | done |
 | TB-Fix | tick-bar-fix | done | done | done | done |
-| CRR | cloud-run-reliability | done | done | done | done |
+| 7-params | oracle-expectancy-params | done | done | done | done |
+| Bidir-TB | bidirectional-label-export | done | done | done | done |
+| Bidir-Wire | bidirectional-export-wiring | done | done | done | done |
+| Geom-CLI | bar-feature-export-geometry | done | done | done | done |
+| TH-CLI | time-horizon-cli | done | done | done | done |
 
 ## Next Action
 
-1. **XGBoost hyperparameter tuning on full-year data (HIGHEST PRIORITY):** Default params from 9B never optimized. GBT shows Q1-Q2 positive expectancy with defaults. Grid/random search over max_depth, learning_rate, n_estimators, subsample, colsample, min_child_weight.
-2. **Label design sensitivity:** Test wider target (15 ticks) / narrower stop (3 ticks).
-3. **Regime-conditional trading:** Q1-Q2 only strategy. GBT profitable in H1 2022, negative in H2.
+1. **Geometry sweep on long-perspective labels** (P0, FULLY UNBLOCKED): Re-run geometry hypothesis with `--legacy-labels --max-time-horizon 3600` to fix degenerate hold rate from 5-minute cap. Spec needed (adapt from label-geometry-phase1.md).
+2. **Regime-conditional trading** (P2): Q1-Q2 only strategy. Spec not yet created.
+3. **Tick_100 multi-seed replication** (P3): Confirm tick_100 R²=0.124 with multi-seed. Spec not yet created.
 
 ## Agent Roles
 
 | Agent | Scope | Entry point |
 |-------|-------|-------------|
-| Orchestrator | Sequences TDD phases, reads state files only | `CLAUDE.md` → `.kit/LAST_TOUCH.md` |
-| TDD sub-agent | Executes red/green/refactor phases | `.kit/tdd.sh <phase> <spec>` |
+| Orchestrator | Sequences phases, reads state files only, never writes code | `CLAUDE.md` → `.kit/LAST_TOUCH.md` |
+| TDD sub-agent | Executes red/green/refactor phases (C++ engineering) | `.kit/tdd.sh <phase> <spec>` |
+| Research sub-agent | Executes survey/frame/run/read/log phases (experiments) | `.kit/experiment.sh <phase> <spec>` |
+| Research Synthesist | Reads all results, produces `.kit/SYNTHESIS.md` with cross-experiment findings | `/synthesize` command |
 | Breadcrumb steward | Updates navigation docs before ship | This file, `CLAUDE.md`, `.kit/LAST_TOUCH.md` |
 
 ## Constraints

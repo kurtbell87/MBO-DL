@@ -1,0 +1,4 @@
+geometry,target,stop,band,n_bars,class_neg1,class_0,class_pos1,directional_rate
+10_5,10,5,A_opening_range,77810,0.0840,0.8359,0.0801,0.1641
+10_5,10,5,B_mid_session,902340,0.0469,0.9066,0.0465,0.0934
+10_5,10,5,C_closing,90000,0.0299,0.9418,0.0283,0.0582

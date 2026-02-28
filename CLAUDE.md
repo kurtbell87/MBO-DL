@@ -13,21 +13,31 @@ WHEN WORKING FROM A PROVIDED SPEC ALWAYS REFER TO THE  ## Exit Criteria SECTION 
 5. **ALWAYS delegate through kit phases.** C++ work → `.kit/tdd.sh` (red/green/refactor/ship). Python experiments → `.kit/experiment.sh` (survey/frame/run/read). Math → `.kit/math.sh`.
 6. **Your only tools are:** MCP tools (`kit.tdd`, `kit.research_cycle`, `kit.research_full`, `kit.research_program`, `kit.math`, `kit.status`, `kit.runs`, `kit.capsule`, `kit.research_status`), bash fallbacks (`source .orchestration-kit.env`, `.kit/tdd.sh`, `.kit/experiment.sh`, `.kit/math.sh`, `orchestration-kit/tools/*`), reading/writing state `.md` files, and checking exit codes.
 7. **Exit-Criteria in Specs are 1st Class Citizens**, you must always cross off ALL exit-criteria as they are completed and include them in your final report 
+8. **Python NEVER computes labels, features, or triple-barrier calculations.** All label/feature computation uses C++ binaries (`bar_feature_export`, `oracle_expectancy`) operating on raw `.dbn.zst` MBO data. Python is permitted ONLY for: (1) thin wrappers that call C++ binaries, (2) model training (XGBoost, PyTorch), (3) loading/analyzing pre-computed Parquet data, (4) validation comparisons against C++ output.
+
 **If you catch yourself about to grep a source file, write a line of code, or run a test — STOP. That is a protocol violation. Delegate to a kit phase instead.**
 
-## Compute Execution — EC2 MANDATORY
+## Compute Execution — Cost-Aware Tiered Strategy
 
-**ALL compute-heavy work runs on EC2. No exceptions.**
+**Choose the cheapest backend that fits the workload. Do NOT default to EC2 on-demand.**
 
-- **Research RUN phases** (model training, data processing, experiment scripts): launch on EC2 via `orchestration-kit/tools/cloud-run`
-- **Claude sub-agent phases** (survey, frame, read, log): run locally (LLM conversations, no heavy compute)
-- **TDD phases**: if build/test is lightweight, local is fine. If heavy (large builds, long test suites), use EC2.
-- **Preflight check**: use `orchestration-kit/tools/preflight` if unsure. Default to EC2 for anything with model training.
-- **Never run model training, large data processing, or GPU workloads locally.**
+| Workload | Data Size | Backend | Rationale |
+|----------|-----------|---------|-----------|
+| XGBoost / sklearn / CPU-only | < 1 GB | **Local** | Apple Silicon handles it; free; no cloud overhead |
+| PyTorch CNN / GPU training | < 1 GB | **RunPod** (GPU) | Cheaper than EC2 on-demand; no EBS needed for small data |
+| Large data processing | > 10 GB | **EC2** (spot preferred) | EBS snapshot pre-loading; spot saves ~70% vs on-demand |
+| Full pipeline (build + train) | > 10 GB | **EC2** (Docker/ECR) | Full pipeline needs EBS + ECR image |
 
-### Research Hybrid Workflow (Local + EC2)
+- **Claude sub-agent phases** (survey, frame, read, log): always local (LLM conversations, no heavy compute)
+- **TDD phases**: local unless build/test is heavy
+- **Preflight check**: use `orchestration-kit/tools/preflight` if unsure
+- **NEVER use EC2 on-demand for CPU-only experiments on small datasets.** This wastes money.
+- **RunPod** requires `RUNPOD_API_KEY` in `.orchestration-kit.env`. Use `--backend runpod` flag with `cloud-run`.
+- **EC2 spot** is acceptable for long-running GPU jobs (>4h). Use `--spot` flag.
 
-`experiment.sh full` and `experiment.sh cycle` now handle EC2 execution automatically. When `COMPUTE_TARGET=ec2` (set in `.orchestration-kit.env`):
+### Research Hybrid Workflow (Local + Cloud)
+
+`experiment.sh full` and `experiment.sh cycle` handle cloud execution automatically. When `COMPUTE_TARGET=ec2` (set in `.orchestration-kit.env`), RUN phases launch on EC2. Set `COMPUTE_TARGET=local` to run locally instead.
 
 1. The RUN phase injects a **mandatory** cloud-run directive into the sub-agent prompt
 2. `sync_results()` runs automatically between RUN and READ, pulling results from cloud-run/S3
@@ -116,7 +126,8 @@ git worktree remove ../MBO-DL-cnn-fix
 
 Kit state files, working directories, and utility scripts live in `.kit/`. Project source code (`src/`, `tests/`, etc.) stays at the project root. The kit prompts reference bare filenames (e.g., `LAST_TOUCH.md`) — the `KIT_STATE_DIR` environment variable tells the scripts to resolve these inside `.kit/`.
 
-Files at project root: `CLAUDE.md`, `.claude/`, `.orchestration-kit.env`, `.gitignore`
+Files at project root: `CLAUDE.md`, `.claude/`, `.orchestration-kit.env` (tracked — contains local MCP token, no external secrets), `.gitignore`
+Not tracked (gitignored): `.env.local`, `.master-kit.env` — machine-specific overrides with per-machine tokens
 Everything else kit-related: `.kit/`
 
 ## Available Kits
@@ -143,6 +154,7 @@ The orchestration-kit exposes MCP tools via `.mcp.json` (stdio transport). **Use
 | `kit.research_cycle` | `spec_path` | `experiment.sh cycle <spec>` |
 | `kit.research_full` | `question`, `spec_path` | `experiment.sh full <q> <spec>` |
 | `kit.research_program` | _(none)_ | `experiment.sh program` |
+| `kit.research_batch` | `spec_paths` (list) | `experiment.sh batch <spec1> <spec2> ...` |
 | `kit.math` | `spec_path` | `math.sh full <spec>` |
 
 #### Dashboard Queries (synchronous — returns data inline)
@@ -462,9 +474,21 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-23, Cloud-Run Reliability Overhaul Complete)
+## Current State (updated 2026-02-27, daily-stop-loss-sequential — CONFIRMED Outcome A)
 
-**Cloud-Run Reliability Overhaul (2026-02-23) — COMPLETE.** Bootstrap scripts (GPU + CPU) now run a sync daemon: heartbeat every 60s, log upload every 60s, incremental results sync every 5 min. EXIT trap syncs results before writing exit_code. `s3.py` has `check_heartbeat()` and `tail_log()` (with `--follow` mode). `remote.py` `poll_status()` checks EC2 instance state + heartbeat when no exit_code found. `cloud-run` CLI has new `logs` subcommand (`--lines`, `--follow`), enhanced `status`/`ls` with elapsed time + cost estimates, and `--validate`/`--skip-smoke` pre-flight code validation on `run`. `validate.py` provides syntax check, import check, and smoke test. `state.py` has `gc_stale()` for cleaning local state. `experiment.sh` compute directive template includes `--validate`. All tests pass. See `.kit/docs/cloud-run-reliability.md`.
+**Daily Stop Loss Sequential — CONFIRMED (Outcome A, PR #42).** DSL=$2000 at cutoff=270 compresses min_account from $34K to **$18K** (-47%) while **increasing** annual PnL from $84.5K to **$114.4K** (+35%). Calmar 2.49→6.37 (+156%), Sharpe 2.20→3.48 (+58%). 405 simulations (9 DSL levels x 45 CPCV splits), 2.7 min wall-clock. Recovery sacrifice only 7.3% at DSL=$2000 (0% at $3000+). Key insight: continuation trades on days down $2000+ have **-$11.56/trade expectancy** (vs +$3.02 baseline) — being down $2K+ is predictive of further losses, not mean-reverting. Spec: `.kit/experiments/daily-stop-loss-sequential.md`. Results: `.kit/results/daily-stop-loss-sequential/`.
+
+**Time horizon CLI flags — COMPLETE.** `bar_feature_export` and `oracle_expectancy` now accept `--max-time-horizon <seconds>` and `--volume-horizon <contracts>` CLI flags. Defaults changed: `max_time_horizon_s` 300→3600 (1 hour), `volume_horizon` 500→50000 (effectively unlimited for MES). Invalid values (<=0) rejected with clear errors. Works with all existing flags (`--target`, `--stop`, `--legacy-labels`). Spec: `.kit/docs/time-horizon-cli.md`. **Unblocks label geometry re-run with 1-hour time horizon (fixes 90.7-98.9% hold rate from 5-minute cap).**
+
+**bar_feature_export --target/--stop CLI flags — COMPLETE (prior cycle).** `bar_feature_export` now accepts `--target <ticks>` and `--stop <ticks>` CLI flags to vary triple barrier geometry per-export. Defaults (10, 5) produce identical output to prior binary. Invalid params (target<=0, stop<=0, target<=stop) rejected with clear error. Works with `--legacy-labels`. Spec: `.kit/docs/bar-feature-export-geometry.md`.
+
+**Bidirectional full-year re-export — COMPLETE (prior cycle).** 312/312 files exported on EC2 (c5.2xlarge, ~10 min, ~$0.10). 152-column Parquet with bidirectional labels. Results in S3: `s3://kenoma-labs-research/results/bidirectional-reexport/`. Docker image `mbo-dl:66bbf9e`. Run ID: `cloud-20260225T223324Z-9de47093`. Note: 312 = all .dbn.zst files; downstream experiments filter to ~251 RTH days. Label distribution validation pending.
+
+**Bidirectional export wiring — COMPLETE (prior cycle).** `bar_feature_export` now defaults to bidirectional triple barrier labels via `compute_bidirectional_tb_label()`. Parquet schema expanded 149 → 152 columns with `tb_both_triggered`, `tb_long_triggered`, `tb_short_triggered`. `--legacy-labels` flag restores old 149-column output. Tests T1-T6 pass. PR #27.
+
+**Bidirectional triple barrier labels — COMPLETE (prior cycle).** Added `compute_bidirectional_tb_label()` to `triple_barrier.hpp` with independent long/short race evaluation. Tests T1-T10 pass. Spec: `.kit/docs/bidirectional-label-export.md`.
+
+**Oracle expectancy CLI parameterized — COMPLETE (prior cycle).** `oracle_expectancy` now accepts `--target <ticks>`, `--stop <ticks>`, `--take-profit <ticks>`, `--output <path>`, and `--help` flags. 49 new tests all pass. Spec: `.kit/docs/oracle-expectancy-params.md`.
 
 **VERDICT: CNN LINE CLOSED FOR CLASSIFICATION. GBT-only is the path forward.** End-to-end CNN classification (Outcome D) — GBT-only beats CNN by 5.9pp accuracy and $0.069 expectancy. CNN spatial signal (R²=0.089 regression) does not encode class-discriminative boundaries. Full-year CPCV (45 splits, 1.16M bars, PBO=0.222): GBT accuracy 0.449, expectancy -$0.064 (base). GBT is **marginally profitable in Q1 (+$0.003) and Q2 (+$0.029)** under base costs — edge exists but consumed by Q3-Q4 losses. Holdout accuracy 0.421, expectancy -$0.204. Next: XGBoost hyperparameter tuning (never optimized, default params from 9B), label design sensitivity, or regime-conditional trading.
 
@@ -537,17 +561,22 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | **FYE** | **`.kit/experiments/full-year-export.md`** | **Research** | **Done (CONFIRMED)** — 251 days, 1.16M bars, 10/10 SC pass |
 | **Infra** | **Dockerfile + ec2-bootstrap** | **Chore** | **Done** — Docker/ECR/EBS pipeline verified E2E |
 | **10** | **`.kit/experiments/e2e-cnn-classification.md`** | **Research** | **Done (REFUTED — Outcome D)** — GBT beats CNN by 5.9pp; CNN line closed |
-| **CRR** | **`.kit/docs/cloud-run-reliability.md`** | **TDD** | **Done** — sync daemon, heartbeat, log tailing, pre-flight validation, stale GC |
+| **Batch** | **`.kit/docs/parallel-batch-dispatch.md`** | **TDD** | **Done** — parallel batch dispatch for cloud-run |
+| **Batch-sh** | **`.kit/docs/experiment-batch-command.md`** | **TDD** | **Done** — `experiment.sh batch` command |
+| **7-params** | **`.kit/docs/oracle-expectancy-params.md`** | **TDD** | **Done** — CLI `--target/--stop/--take-profit/--output/--help` flags |
+| **Bidir-TB** | **`.kit/docs/bidirectional-label-export.md`** | **TDD** | **Done** — bidirectional triple barrier labels (independent long/short races) |
+| **Bidir-Wire** | **`.kit/docs/bidirectional-export-wiring.md`** | **TDD** | **Done** — wired into bar_feature_export, 3 new Parquet columns, --legacy-labels flag |
+| **Geom-CLI** | **`.kit/docs/bar-feature-export-geometry.md`** | **TDD** | **Done** — `--target`/`--stop` CLI flags for variable barrier geometry |
+| **TH-CLI** | **`.kit/docs/time-horizon-cli.md`** | **TDD** | **Done** — `--max-time-horizon`/`--volume-horizon` CLI flags, defaults 300→3600s / 500→50000 |
+| **DSL** | **`.kit/experiments/daily-stop-loss-sequential.md`** | **Research** | **Done (CONFIRMED — Outcome A)** — DSL=$2000 at cutoff=270: min_acct $34K→$18K, annual PnL $84.5K→$114.4K, Calmar 6.37, Sharpe 3.48. PR #42 |
 
 - **Build:** Green.
-- **Tests:** All pass. 1003/1004 unit tests (1 disabled, 1 skipped) + tick_bar_fix + cloud-run reliability tests. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
+- **Tests:** 1144+ unit tests registered (label-exclude integration). Time horizon CLI tests in `time_horizon_cli_test.cpp`. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
 - **Corrected Hybrid Model COMPLETE (2026-02-19):** CNN normalization fix verified (3rd independent reproduction). R²=0.089 with proper validation. But end-to-end pipeline not economically viable: expectancy=-$0.37/trade (base), PF=0.924. Breakeven RT=$3.37. Hybrid outperforms GBT-only but delta too small to flip sign.
 - **Next task options (in priority order):**
-  1. **XGBoost hyperparameter tuning on full-year data** — default params from 9B never optimized. GBT already shows Q1-Q2 positive expectancy (+$0.003, +$0.029) with default hyperparams. Grid/random search over max_depth, learning_rate, n_estimators, subsample, colsample, min_child_weight. Most promising path given Outcome D.
-  2. **Label design sensitivity** — test wider target (15 ticks) / narrower stop (3 ticks). At 15:3 ratio, breakeven win rate drops to ~42.5% (well below current ~45%). Also test asymmetric cost functions.
-  3. **Regime-conditional trading** — Q1-Q2 only strategy. GBT profitable in H1 2022, negative in H2. Cannot validate with only 1 year of data, but could explore what regime features predict profitability.
-  4. **2-class formulation** — directional only (merge tb_label=0 into abstain). Long recall is only 0.21 — model struggles with longs. Might perform better as binary short/no-short.
-  5. **CNN line CLOSED** — do not revisit CNN for classification. Signal exists for regression but does not transfer.
+  1. **Paper trading deployment** — DSL=$2000 + cutoff=270 on 19:7 geometry. Min account $18K, expected $454/day. Capitalization math: P(ruin|$6K) ≈ 28%, P(ruin|$10K) ≈ 12%.
+  2. **Barrier geometry exploration** — spec written at `.kit/experiments/barrier-geometry-exploration.md` but NOT needed given DSL success. Could stack for further compression.
+  3. **CNN line CLOSED** — do not revisit CNN for classification.
 - **Volume bars confirmed genuine** (2026-02-19): R1 metrics show bar_count_cv=9-10% for vol_50/100/200. R4b volume_100 null result is valid.
 - **R3b-genuine tick bars COMPLETE** (2026-02-19): tick_100 R²=0.124 (Δ+0.035 vs 0.089), inverted-U curve, but p=0.21 — statistically fragile, driven by fold 5 anomaly.
