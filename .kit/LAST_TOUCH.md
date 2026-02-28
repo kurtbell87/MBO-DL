@@ -76,8 +76,6 @@ Three prior experiments (9B, 9C, R3b) failed because of normalization errors. Th
 2. **Book sizes (channel 1)**: log1p() -> z-score PER DAY (not per-fold, not globally).
 3. **Non-spatial features**: z-score using train-fold stats only.
 
-If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on sizes, that's the bug that cost us 3 experiment cycles.
-
 ---
 
 ## Project Status
