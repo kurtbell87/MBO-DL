@@ -18,6 +18,14 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
+## timeout-filtered-sequential — REFUTED (Outcome B)
+**Date:** 2026-02-27
+**Hypothesis:** Filtering sequential entries to `minutes_since_open <= cutoff` increases per-trade expectancy to >= $3.50 and reduces min_account to <= $30K.
+**Key result:** Best cutoff=270 achieves exp=$3.02/trade (+21% vs $2.50 baseline) and min_acct=$34K (-29% vs $48K), but both miss targets ($3.50, $30K). **Critical finding: timeout fraction is only 0.40% at baseline — the $5→$2.50 dilution is from sequential selection dynamics, not timeouts.** Expectancy is U-shaped (dips at moderate cutoffs, rises at extreme), not monotonic — SC-S4 fails. Calmar +15%, Sharpe +39%, but daily PnL -18.4% ($413→$337). Splits 18 & 32 improve but remain deeply negative.
+**Lesson:** The timeout premise was factually wrong (0.4% of trades, not 50%). Time-of-day filtering reduces risk (drawdown) more than it improves quality (expectancy) — the benefit is mechanical (fewer trades = less variance). ROC favors filtering (249% vs 216%) but absolute income is lower. The hold-skip mechanism (66.1%) is the dominant factor in sequential execution economics, not timeouts.
+**Next:** (1) Volatility-conditional entry filtering (direct proxy vs time-of-day proxy). (2) Hold-skip analysis — are skipped signals better or worse? (3) Multi-contract scaling (N=2) to reduce wasted signals.
+**Details:** `.kit/results/timeout-filtered-sequential/analysis.md`
+
 ## trade-level-risk-metrics — REFUTED (SC-2, SC-4, SC-8 fail; productive)
 **Date:** 2026-02-27
 **Hypothesis:** Sequential 1-contract execution at 19:7 produces per-trade expectancy >= $0.50 with min account <= $5,000.

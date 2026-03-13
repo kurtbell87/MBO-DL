@@ -20,46 +20,48 @@
 
 ### Just Completed (2026-02-27)
 
-1. **CPCV Validation at Corrected Costs — CONFIRMED (Outcome A), PR #38** — 45-split CPCV (N=10, k=2) on the two-stage pipeline at 19:7 (w=1.0, T=0.50) under corrected AMP costs. **First statistically validated positive-expectancy configuration in the project.** All 6 SC pass. All 5 sanity checks pass.
+1. **Trade-Level Risk Metrics — REFUTED (modified Outcome A), PR #39** — Sequential 1-contract execution simulation on top of the validated CPCV pipeline. The edge is real ($2.50/trade) but account sizing is 10x worse than hypothesized ($48K, not $5K).
 
    | Metric | Value |
    |--------|-------|
-   | CPCV mean expectancy (base $2.49) | **$1.81/trade** |
-   | 95% CI | [$1.46, $2.16] — entirely above zero |
-   | PBO | 6.7% (3/45 splits negative) |
-   | Fraction positive (base) | 93.3% (42/45) |
-   | t-stat / p-value | 10.29 / 1.35e-13 |
-   | Holdout expectancy (base) | $1.46/trade |
-   | Break-even RT | $4.30 |
-   | Pooled dir accuracy | 50.16% (coin flip — edge is payoff asymmetry) |
-   | Wall-clock | 2.6 min (98 XGB fits) |
+   | Sequential expectancy/trade | **$2.50** (vs $1.81 bar-level — higher due to hold-skip) |
+   | Sequential trades/day | **162.2** (not ~62 — barrier races resolve 2.7x faster under sequential selection) |
+   | Daily PnL (1 MES) | **$412.77** |
+   | Annual PnL (1 MES) | **$103,605** |
+   | Win rate | **49.93%** (coin flip — edge is entirely payoff asymmetry) |
+   | Min account (all 45 paths survive) | **$48,000** |
+   | Min account (95% paths survive) | **$26,600** |
+   | Worst max drawdown | **$47,894** |
+   | Median max drawdown | **$12,917** |
+   | Calmar ratio | **2.16** |
+   | Annualized Sharpe | **2.27** |
+   | Concurrent positions (mean) | **35.9** (scaling ceiling) |
 
-   **Critical insight:** Edge comes from 19:7 payoff asymmetry (breakeven at 34.6% accuracy), NOT directional prediction skill (50.16%). Strategy is "bet on asymmetric payoffs when volatility makes barriers reachable."
+   **Key insights:**
+   - Sequential execution selects shorter barrier races (28 bars avg vs 75 overall) due to volatility-timing bias from Stage 1 reachability filter.
+   - Hold-skip rate at entry points is 66.1% (not 43%) because barrier resolution lands in calmer periods.
+   - Timeout trades dilute pure barrier-hit expectancy by ~50% ($5/trade theoretical -> $2.50 observed).
+   - The $48K account minimum is driven by the worst-path drawdown across 45 CPCV paths.
+   - Strategy captures 5.7% of bar-level daily PnL on 1 contract. Full capture needs ~36 MES (~7 ES).
 
-   **Regime dependence:** All 10 groups positive. Late-year (groups 6-9, Jul-Oct) $2.37/trade vs early-year (groups 0-5, Jan-Jun) $1.44. 2022's elevated volatility helps barrier reachability.
+2. **CPCV Validation — CONFIRMED (Outcome A), PR #38** — $1.81/trade at corrected-base costs ($2.49 RT). PBO 6.7%. 95% CI [$1.46, $2.16]. t=10.29, p<1e-13. First statistically validated pipeline.
 
-   **Cost sensitivity:** Viable at base ($1.81), strong at optimistic ($3.06), fails at pessimistic (-$0.69). Break-even RT $4.30 provides $1.81 margin above base.
+### Next: Optimize or Scale
 
-2. **Prior experiments building to this:** PnL Realized Return (PR #35), Threshold Sweep (PR #36, REFUTED), Class-Weighted Stage 1 (PR #37, REFUTED). All parameter-level interventions exhausted — the baseline pipeline at $0.90/trade (old costs) was the ceiling. Cost correction ($3.74 → $2.49) unlocked the positive result.
+The edge is validated under sequential execution. Two paths forward:
 
-### Next: Paper Trading Infrastructure (Rithmic R|API+)
-
-Outcome A triggers the deployment path per the decision rules. Begin with 1 /MES contract.
-
-**Other high-value follow-ups:**
-- **Hold-bar exit optimization** — 43% hold fraction with unbounded returns is the largest variance driver. Test stop-loss on hold bars.
-- **Multi-year validation** — 2022 is regime-specific (rising rates, elevated vol). Test on 2023/2024 data if available.
-- **Regime-conditional position sizing** — Groups 6-9 are 1.65x more profitable. Position size by message_rate/volatility.
+1. **Timeout filtering** — Remove entries that are unlikely to resolve before day end. Could increase per-trade expectancy from $2.50 toward $5.00 (the barrier-hit theoretical max) and reduce drawdowns.
+2. **Multi-contract scaling** — Run N sequential executors. ~36 MES captures full bar-level edge at $1.73M capital.
+3. **Paper trading** — Deploy at $48K+ account. Validates real-world fill rates/slippage.
 
 ### Background: Key Verdicts
 
+- **Trade-Level Risk REFUTED** (modified A) — Edge real ($2.50), account sizing fails ($48K vs $5K target)
 - **CPCV CONFIRMED (Outcome A)** — $1.81/trade, PBO 6.7%, p < 1e-13. First validated pipeline.
 - **CNN line CLOSED** for classification (GBT beats CNN by 5.9pp accuracy).
-- **XGBoost tuning EXHAUSTED** — 0.33pp plateau. Feature set is the constraint.
-- **Oracle edge EXISTS** — $3.22-$9.44/trade at 3600s across all 4 geometries.
-- **Directional accuracy ceiling** — ~50-51% regardless of geometry/labels/hyperparameters.
-- **Cost correction was the key unlock** — $3.74 → $2.49 base RT recovered $1.25/trade.
-- **Edge is structural, not predictive** — 19:7 payoff asymmetry × coin-flip accuracy > 34.6% BEV.
+- **Edge is structural, not predictive** — 19:7 payoff asymmetry x coin-flip accuracy > 34.6% BEV.
+- **Cost correction was the key unlock** — $3.74 -> $2.49 base RT recovered $1.25/trade.
+- **Sequential expectancy > bar-level** — $2.50 > $1.81 (hold-skip removes negative-EV hold bars).
 
 ---
 
@@ -77,32 +79,25 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 
 ## Project Status
 
-**30+ phases complete (15 engineering + 26 research). Branch: `experiment/cpcv-corrected-costs`. 1144+ unit tests registered. COMPUTE_TARGET=local.**
+**31+ phases complete (15 engineering + 27 research). Branch: `experiment/trade-level-risk-metrics`. 1144+ unit tests registered. COMPUTE_TARGET=local.**
 
 ### What's Built
 - **C++20 data pipeline**: Bar construction, order book replay, multi-day backtest, feature computation/export, oracle expectancy, Parquet export, bidirectional TB labels. 1144+ unit tests, 22 integration tests.
-- **Parquet schema**: 152 columns (149 original + `tb_both_triggered`, `tb_long_triggered`, `tb_short_triggered`). `--legacy-labels` flag for 149-column backward compat.
-- **CLI flags**: `--target`, `--stop`, `--max-time-horizon`, `--volume-horizon`, `--legacy-labels` on both tools.
-- **Full-year dataset**: 251 Parquet files (149-col, time_5s bars, 1,160,150 bars, zstd compression). S3 artifact store.
-- **Cloud pipeline**: Docker image in ECR, EBS snapshot with 49GB MBO data, IAM profile. Verified E2E.
-- **Parallel batch dispatch**: `cloud-run batch run` launches N experiments in parallel.
+- **Full-year dataset**: 251 Parquet files (152-col, time_5s bars, 1,160,150 bars, zstd compression).
+- **Validated pipeline**: Two-stage XGBoost (reachability + direction) at 19:7 geometry.
+- **Sequential simulator**: 1-contract execution with trade logging, equity curves, account sizing.
 
 ### Key Research Results
 
 | Experiment | Finding | Key Number | Implication |
 |-----------|---------|------------|-------------|
+| **Trade-Level Risk** | **Edge real, account too large** | **$2.50/trade, $48K min** | **Viable for medium accounts; timeout filtering next** |
+| **CPCV Corrected** | **CONFIRMED (Outcome A)** | **$1.81/trade, PBO 6.7%, p<1e-13** | **First validated pipeline. Deploy.** |
 | R1 | Subordination refuted | 0/3 significant | Time bars are the baseline |
 | R2 | Features sufficient | R2=0.0067 | Book snapshot is sufficient statistic |
-| R3 | CNN best encoder | R2=0.132 (leaked) / 0.084 (proper) | Spatial structure matters |
 | R4/R4b/R4c/R4d | No temporal signal | 0/168+ passes | Drop SSM/temporal encoder permanently |
-| R6 | Synthesis | CONDITIONAL GO -> GO | CNN + GBT Hybrid architecture |
-| R7 | Oracle expectancy | $4.00/trade, PF=3.30 | Edge exists at oracle level |
-| 9B-9D | Normalization root cause | R2: -0.002 -> 0.089 | TICK_SIZE + per-day z-score required |
 | 9E | Pipeline bottleneck | exp=-$0.37/trade | Regression->classification gap |
 | 10 | E2E CNN classification | GBT wins by 5.9pp | CNN line closed |
-| XGB Tune | Accuracy plateau | 0.33pp span, 64 configs | Feature set is binding constraint |
-| Label-Sens P0 | Oracle heatmap | 123 geometries, peak $4.13 | Phase 1 training needed |
-| **CPCV Corrected** | **CONFIRMED (Outcome A)** | **$1.81/trade, PBO 6.7%, p<1e-13** | **First validated pipeline. Deploy.** |
 
 ---
 
@@ -112,9 +107,9 @@ If you see the sub-agent z-scoring channel 0 or using per-fold z-scoring on size
 2. **`CLAUDE.md`** — full protocol, absolute rules, current state, institutional memory
 3. **`.kit/RESEARCH_LOG.md`** — cumulative findings from all experiments
 4. **`.kit/QUESTIONS.md`** — open and answered research questions
-5. **`.kit/experiments/cpcv-corrected-costs.md`** — CONFIRMED experiment spec
-6. **`.kit/results/cpcv-corrected-costs/analysis.md`** — full CPCV analysis with confound discussion
+5. **`.kit/experiments/trade-level-risk-metrics.md`** — latest experiment spec
+6. **`.kit/results/trade-level-risk-metrics/analysis.md`** — full sequential risk analysis
 
 ---
 
-Updated: 2026-02-27. CPCV validation CONFIRMED (Outcome A): $1.81/trade, PBO 6.7%, p<1e-13. PR #38. Next: paper trading (Rithmic R|API+).
+Updated: 2026-02-27. Trade-level risk metrics REFUTED (modified A): $2.50/trade, $48K min account. PR #39. Next: timeout filtering or paper trading at $48K+.
