@@ -312,19 +312,19 @@ OUTCOME D — Simulation fails or sanity check abort:
 
 ## Exit Criteria
 
-- [ ] All 7 cutoff levels simulated across all 45 CPCV splits (315 simulations)
-- [ ] Per-cutoff summary table populated (7 rows × 11+ columns)
-- [ ] Timeout fraction per cutoff reported (does filtering reduce timeouts?)
-- [ ] Optimal cutoff identified with rationale per selection rule
-- [ ] Full risk metrics at recommended cutoff (all 24 from PR #39 + timeout_fraction + time_filter_skip_rate + barrier_hit_fraction)
-- [ ] Unfiltered vs filtered comparison table populated
-- [ ] Account sizing curve at recommended cutoff ($500-$50K)
-- [ ] min_account_survive_all and min_account_survive_95pct at recommended cutoff reported
-- [ ] Effect on outlier paths (splits 18 & 32) reported
-- [ ] All output files written to `.kit/results/timeout-filtered-sequential/`
-- [ ] metrics.json and analysis.md complete
-- [ ] Bar-level split 0 matches PR #38 (training unchanged)
-- [ ] SC-S1 through SC-S5 all evaluated and reported
+- [x] All 7 cutoff levels simulated across all 45 CPCV splits (315 simulations)
+- [x] Per-cutoff summary table populated (7 rows × 14 columns)
+- [x] Timeout fraction per cutoff reported — **invariant at 41.3%, filtering does NOT reduce timeouts**
+- [x] Optimal cutoff identified: **270** (Rule 2: max daily PnL subject to min_acct <= $35K)
+- [x] Full risk metrics at recommended cutoff (exp $3.02, DD $33,984, Calmar 2.49, timeout 41.3%)
+- [x] Unfiltered vs filtered comparison table populated
+- [x] Account sizing curve at recommended cutoff ($500-$50K)
+- [x] min_account_survive_all = $34,000 and min_account_survive_95pct = $25,500 reported
+- [x] Effect on outlier paths: splits 18 & 32 DD drops ~29-30%, but both remain negative-expectancy
+- [x] All output files written to `.kit/results/timeout-filtered-sequential/` (12 files)
+- [x] metrics.json and analysis.md complete
+- [x] Bar-level split 0 matches PR #38 ($1.0652 vs $1.065186, delta < $0.001)
+- [x] SC-S1 through SC-S5 all evaluated: S1 PASS, S2 PASS, S3 PASS, S4 FAIL (U-shape), S5 PASS
 
 ---
 

@@ -1,0 +1,6 @@
+feature,Q1_timeout_frac,Q2_timeout_frac,Q3_timeout_frac,Q4_timeout_frac,pp_range,tier
+trade_count,0.612826,0.442382,0.429018,0.415630,19.7196,strong
+message_rate,0.622441,0.442399,0.426809,0.409812,21.2628,strong
+volatility_50,0.621287,0.449662,0.426460,0.404080,21.7207,strong
+trade_count_20,0.618547,0.442186,0.431359,0.409119,20.9428,strong
+message_rate_20,0.623769,0.442494,0.428382,0.406957,21.6812,strong

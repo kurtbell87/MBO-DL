@@ -474,7 +474,9 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 
 **Kit state convention**: All kit state files live in `.kit/` (not project root). `KIT_STATE_DIR=".kit"` is set in `.orchestration-kit.env`.
 
-## Current State (updated 2026-02-26, time-horizon-cli TDD — COMPLETE)
+## Current State (updated 2026-02-27, daily-stop-loss-sequential — CONFIRMED Outcome A)
+
+**Daily Stop Loss Sequential — CONFIRMED (Outcome A, PR #42).** DSL=$2000 at cutoff=270 compresses min_account from $34K to **$18K** (-47%) while **increasing** annual PnL from $84.5K to **$114.4K** (+35%). Calmar 2.49→6.37 (+156%), Sharpe 2.20→3.48 (+58%). 405 simulations (9 DSL levels x 45 CPCV splits), 2.7 min wall-clock. Recovery sacrifice only 7.3% at DSL=$2000 (0% at $3000+). Key insight: continuation trades on days down $2000+ have **-$11.56/trade expectancy** (vs +$3.02 baseline) — being down $2K+ is predictive of further losses, not mean-reverting. Spec: `.kit/experiments/daily-stop-loss-sequential.md`. Results: `.kit/results/daily-stop-loss-sequential/`.
 
 **Time horizon CLI flags — COMPLETE.** `bar_feature_export` and `oracle_expectancy` now accept `--max-time-horizon <seconds>` and `--volume-horizon <contracts>` CLI flags. Defaults changed: `max_time_horizon_s` 300→3600 (1 hour), `volume_horizon` 500→50000 (effectively unlimited for MES). Invalid values (<=0) rejected with clear errors. Works with all existing flags (`--target`, `--stop`, `--legacy-labels`). Spec: `.kit/docs/time-horizon-cli.md`. **Unblocks label geometry re-run with 1-hour time horizon (fixes 90.7-98.9% hold rate from 5-minute cap).**
 
@@ -566,14 +568,15 @@ R | API+ v13.6.0.0 is installed but **not yet integrated into any source code**.
 | **Bidir-Wire** | **`.kit/docs/bidirectional-export-wiring.md`** | **TDD** | **Done** — wired into bar_feature_export, 3 new Parquet columns, --legacy-labels flag |
 | **Geom-CLI** | **`.kit/docs/bar-feature-export-geometry.md`** | **TDD** | **Done** — `--target`/`--stop` CLI flags for variable barrier geometry |
 | **TH-CLI** | **`.kit/docs/time-horizon-cli.md`** | **TDD** | **Done** — `--max-time-horizon`/`--volume-horizon` CLI flags, defaults 300→3600s / 500→50000 |
+| **DSL** | **`.kit/experiments/daily-stop-loss-sequential.md`** | **Research** | **Done (CONFIRMED — Outcome A)** — DSL=$2000 at cutoff=270: min_acct $34K→$18K, annual PnL $84.5K→$114.4K, Calmar 6.37, Sharpe 3.48. PR #42 |
 
 - **Build:** Green.
 - **Tests:** 1144+ unit tests registered (label-exclude integration). Time horizon CLI tests in `time_horizon_cli_test.cpp`. 22 integration tests (labeled, excluded from default ctest). TDD phases exited 0.
 - **Exit criteria audit:** TRAJECTORY.md §13 audited — 21/21 engineering PASS, 13/13 research PASS (R4c closes MI/decay gap).
 - **Corrected Hybrid Model COMPLETE (2026-02-19):** CNN normalization fix verified (3rd independent reproduction). R²=0.089 with proper validation. But end-to-end pipeline not economically viable: expectancy=-$0.37/trade (base), PF=0.924. Breakeven RT=$3.37. Hybrid outperforms GBT-only but delta too small to flip sign.
 - **Next task options (in priority order):**
-  1. **Geometry sweep on long-perspective labels** — re-run with `--legacy-labels --max-time-horizon 3600` to fix degenerate hold rate. All CLI prerequisites DONE. Spec needed (adapt from label-geometry-phase1.md).
-  2. **Regime-conditional trading** — Q1-Q2 only strategy.
+  1. **Paper trading deployment** — DSL=$2000 + cutoff=270 on 19:7 geometry. Min account $18K, expected $454/day. Capitalization math: P(ruin|$6K) ≈ 28%, P(ruin|$10K) ≈ 12%.
+  2. **Barrier geometry exploration** — spec written at `.kit/experiments/barrier-geometry-exploration.md` but NOT needed given DSL success. Could stack for further compression.
   3. **CNN line CLOSED** — do not revisit CNN for classification.
 - **Volume bars confirmed genuine** (2026-02-19): R1 metrics show bar_count_cv=9-10% for vol_50/100/200. R4b volume_100 null result is valid.
 - **R3b-genuine tick bars COMPLETE** (2026-02-19): tick_100 R²=0.124 (Δ+0.035 vs 0.089), inverted-U curve, but p=0.21 — statistically fragile, driven by fold 5 anomaly.

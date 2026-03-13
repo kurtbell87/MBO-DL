@@ -18,12 +18,28 @@ Read this file FIRST when starting any new research task. It is the institutiona
 
 -->
 
-## timeout-filtered-sequential — REFUTED (Outcome B)
+## daily-stop-loss-sequential — CONFIRMED (Outcome A)
 **Date:** 2026-02-27
-**Hypothesis:** Filtering sequential entries to `minutes_since_open <= cutoff` increases per-trade expectancy to >= $3.50 and reduces min_account to <= $30K.
-**Key result:** Best cutoff=270 achieves exp=$3.02/trade (+21% vs $2.50 baseline) and min_acct=$34K (-29% vs $48K), but both miss targets ($3.50, $30K). **Critical finding: timeout fraction is only 0.40% at baseline — the $5→$2.50 dilution is from sequential selection dynamics, not timeouts.** Expectancy is U-shaped (dips at moderate cutoffs, rises at extreme), not monotonic — SC-S4 fails. Calmar +15%, Sharpe +39%, but daily PnL -18.4% ($413→$337). Splits 18 & 32 improve but remain deeply negative.
-**Lesson:** The timeout premise was factually wrong (0.4% of trades, not 50%). Time-of-day filtering reduces risk (drawdown) more than it improves quality (expectancy) — the benefit is mechanical (fewer trades = less variance). ROC favors filtering (249% vs 216%) but absolute income is lower. The hold-skip mechanism (66.1%) is the dominant factor in sequential execution economics, not timeouts.
-**Next:** (1) Volatility-conditional entry filtering (direct proxy vs time-of-day proxy). (2) Hold-skip analysis — are skipped signals better or worse? (3) Multi-contract scaling (N=2) to reduce wasted signals.
+**Hypothesis:** Daily stop loss (halt trading when intra-day P&L drops to -$X) compresses max drawdown enough to reduce min_account from $34K to ≤$20K while preserving annual PnL ≥$50K and Calmar ≥2.0.
+**Key result:** DSL=$2,000 achieves min_acct **$18,000** (-47%), annual PnL **$114,352** (+35%), Calmar **6.37** (+156%), recovery sacrifice only **7.3%**. All 9 SC pass, all 5 sanity checks pass. PnL *increases* because removed post-threshold trades are net-negative (92.7% of stopped days end negative without DSL).
+**Lesson:** The model's worst trades cluster during intra-day drawdowns — trade outcomes are autocorrelated within days, not i.i.d. DSL exploits this by cutting genuinely bad intra-day regimes. Broad effectiveness across $500-$5K (all beat baseline PnL) means the finding is structural, not threshold-specific.
+**Next:** (1) Multi-year DSL robustness validation. (2) Paper trading with DSL=$2K + cutoff=270. (3) Position-level stop-loss for additional compression (blocked on exit_bar column).
+**Details:** `.kit/results/daily-stop-loss-sequential/analysis.md`
+
+## volume-flow-conditioned-entry — REFUTED (Outcome B, diagnostic evaporates in simulation)
+**Date:** 2026-02-27
+**Hypothesis:** Volume/activity-based entry gating reduces timeout fraction below 41% and improves per-trade expectancy toward $3.50.
+**Key result:** 20pp bar-level diagnostic signal (all 5 features "strong" tier) evaporates to **1.76pp max** in sequential simulation. Best config exp=$3.10/trade (stacked, vs $3.50 target), min_acct=$33K (vs $30K target), timeout=41.2% (vs 36.3% target). SC-2/3/5 FAIL.
+**Lesson:** Sequential execution's 66.1% hold-skip rate already self-selects for high-activity bars — gating on activity features provides negligible incremental selection. Timeout fraction (~41.3%) is a structural constant of the volume horizon mechanism at 19:7/50K, invariant to BOTH time-of-day (PR #40) and volume/activity gating. Entry-time filtering is exhausted as an intervention class.
+**Next:** (1) Barrier geometry re-parameterization (reduce volume horizon 50K→10-25K, or reduce time horizon 3600s→600-1200s). (2) Accept cutoff=270 ($3.02/trade, $34K, Calmar 2.49) and proceed to paper trading. (3) Regime-conditional trading (Q1-Q2 only).
+**Details:** `.kit/results/volume-flow-conditioned-entry/analysis.md`
+
+## timeout-filtered-sequential — REFUTED (Outcome B, mechanism falsified)
+**Date:** 2026-02-27
+**Hypothesis:** Time-of-day entry cutoff (minutes_since_open <= cutoff) achieves >= $3.50/trade expectancy and <= $30K min account by avoiding timeout-prone late-day entries.
+**Key result:** Timeout fraction is **invariant at ~41.3%** across all 7 cutoff levels (range 0.21pp). Time-of-day does NOT determine timeouts. Best cutoff=270: exp $3.02/trade (< $3.50 target), min_acct $34K (> $30K target). Calmar +15%, DD -29%, but annual PnL -18% ($104K→$85K). ROC improves 216%→249%.
+**Lesson:** Timeouts are driven by the volume horizon (50,000 contracts), not clock time — even entries 4.5h into RTH have ample time for the typical 2.3-minute barrier race. The cutoff=270 improvement comes from hold-skip restructuring (66%→34%), not timeout avoidance. Late-day trades in the 5–5.75h window are actually BETTER than average (SC-S4 U-shape).
+**Next:** (1) Volume-flow conditioned entry — target the actual timeout mechanism. (2) Volatility-conditional entry (volatility_50 at entry). (3) Accept $34K/$25.5K account sizing and proceed to paper trading.
 **Details:** `.kit/results/timeout-filtered-sequential/analysis.md`
 
 ## trade-level-risk-metrics — REFUTED (SC-2, SC-4, SC-8 fail; productive)

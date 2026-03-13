@@ -1,0 +1,412 @@
+{
+  "experiment": "daily-stop-loss-sequential",
+  "timestamp": "2026-02-27T16:14:42",
+  "dsl_sweep_table": [
+    {
+      "dsl_level": "None",
+      "trades_per_day": 116.77239837398372,
+      "exp_per_trade": 3.0161161330064905,
+      "daily_pnl_mean": 336.7719414634183,
+      "daily_pnl_std": 2229.4743457602985,
+      "daily_pnl_skew": 0.8973480632895223,
+      "daily_pnl_kurtosis": 19.524704260945516,
+      "dd_worst": 33983.58499999992,
+      "dd_median": 8686.84499999992,
+      "min_acct_all": 34000,
+      "min_acct_95": 25500,
+      "calmar": 2.487370220278943,
+      "sharpe": 2.2043338764369906,
+      "annual_pnl": 84529.75730731798,
+      "win_rate": 0.5026887206750185,
+      "dsl_trigger_rate": 0.0,
+      "recovery_sacrifice_rate": 0.0
+    },
+    {
+      "dsl_level": "$5000",
+      "trades_per_day": 115.05481029810295,
+      "exp_per_trade": 3.162394243008169,
+      "daily_pnl_mean": 353.99107147696816,
+      "daily_pnl_std": 2137.2125450695844,
+      "daily_pnl_skew": 2.115741936535008,
+      "daily_pnl_kurtosis": 15.3434417379862,
+      "dd_worst": 27188.834999999643,
+      "dd_median": 8683.534999999983,
+      "min_acct_all": 27500,
+      "min_acct_95": 17500,
+      "calmar": 3.2679502060577503,
+      "sharpe": 2.4461411904036696,
+      "annual_pnl": 88851.75894071901,
+      "win_rate": 0.5030723233189127,
+      "dsl_trigger_rate": 0.025352303523035226,
+      "recovery_sacrifice_rate": 0.0
+    },
+    {
+      "dsl_level": "$4000",
+      "trades_per_day": 113.73444444444445,
+      "exp_per_trade": 3.386623079908495,
+      "daily_pnl_mean": 378.1935097561006,
+      "daily_pnl_std": 2087.790382017365,
+      "daily_pnl_skew": 2.41724580192047,
+      "daily_pnl_kurtosis": 16.622177558119894,
+      "dd_worst": 26155.99499999966,
+      "dd_median": 8226.669999999982,
+      "min_acct_all": 26500,
+      "min_acct_95": 16500,
+      "calmar": 3.629247174453982,
+      "sharpe": 2.679361357073261,
+      "annual_pnl": 94926.57094878124,
+      "win_rate": 0.504254542171465,
+      "dsl_trigger_rate": 0.04196476964769648,
+      "recovery_sacrifice_rate": 0.0
+    },
+    {
+      "dsl_level": "$3000",
+      "trades_per_day": 111.07853658536585,
+      "exp_per_trade": 3.755255710642808,
+      "daily_pnl_mean": 413.1496911924144,
+      "daily_pnl_std": 2021.5078461531596,
+      "daily_pnl_skew": 2.8082045583071817,
+      "daily_pnl_kurtosis": 18.64402708735262,
+      "dd_worst": 22775.569999999872,
+      "dd_median": 6979.374999999949,
+      "min_acct_all": 23000,
+      "min_acct_95": 15500,
+      "calmar": 4.553149382838567,
+      "sharpe": 3.0228107098393133,
+      "annual_pnl": 103700.57248929601,
+      "win_rate": 0.5062735491197503,
+      "dsl_trigger_rate": 0.0685230352303523,
+      "recovery_sacrifice_rate": 0.0
+    },
+    {
+      "dsl_level": "$2500",
+      "trades_per_day": 109.62600271002711,
+      "exp_per_trade": 4.043179762111546,
+      "daily_pnl_mean": 438.6787718834712,
+      "daily_pnl_std": 1974.525270737826,
+      "daily_pnl_skew": 3.0646619098712606,
+      "daily_pnl_kurtosis": 20.218321018201205,
+      "dd_worst": 20437.340000000142,
+      "dd_median": 6506.155000000115,
+      "min_acct_all": 20500,
+      "min_acct_95": 15000,
+      "calmar": 5.387607768073072,
+      "sharpe": 3.2794785270794593,
+      "annual_pnl": 110108.37174275127,
+      "win_rate": 0.5077252894079697,
+      "dsl_trigger_rate": 0.07845528455284552,
+      "recovery_sacrifice_rate": 0.02112676056338028
+    },
+    {
+      "dsl_level": "$2000",
+      "trades_per_day": 106.50407859078591,
+      "exp_per_trade": 4.3197220362460556,
+      "daily_pnl_mean": 455.5865855013571,
+      "daily_pnl_std": 1931.5219220919082,
+      "daily_pnl_skew": 3.318025412926247,
+      "daily_pnl_kurtosis": 21.888892533520476,
+      "dd_worst": 17945.255000000223,
+      "dd_median": 6389.359999999946,
+      "min_acct_all": 18000,
+      "min_acct_95": 13000,
+      "calmar": 6.372282420107109,
+      "sharpe": 3.475577911564782,
+      "annual_pnl": 114352.23296084063,
+      "win_rate": 0.5093314202272596,
+      "dsl_trigger_rate": 0.10608401084010839,
+      "recovery_sacrifice_rate": 0.07291666666666667
+    },
+    {
+      "dsl_level": "$1500",
+      "trades_per_day": 101.9827506775068,
+      "exp_per_trade": 4.7709811403578595,
+      "daily_pnl_mean": 482.63102330623497,
+      "daily_pnl_std": 1874.510267770831,
+      "daily_pnl_skew": 3.6305286674236275,
+      "daily_pnl_kurtosis": 24.327836129252724,
+      "dd_worst": 14653.380000000338,
+      "dd_median": 5953.924999999951,
+      "min_acct_all": 15000,
+      "min_acct_95": 10500,
+      "calmar": 8.267061036420415,
+      "sharpe": 3.7829333975635224,
+      "annual_pnl": 121140.38684986498,
+      "win_rate": 0.5121239393786481,
+      "dsl_trigger_rate": 0.143130081300813,
+      "recovery_sacrifice_rate": 0.09652509652509653
+    },
+    {
+      "dsl_level": "$1000",
+      "trades_per_day": 93.98598915989159,
+      "exp_per_trade": 5.04129008951363,
+      "daily_pnl_mean": 468.2023937669397,
+      "daily_pnl_std": 1760.7255496605148,
+      "daily_pnl_skew": 4.172136943657882,
+      "daily_pnl_kurtosis": 29.805665560730297,
+      "dd_worst": 10954.960000000372,
+      "dd_median": 5083.559999999985,
+      "min_acct_all": 11000,
+      "min_acct_95": 8500,
+      "calmar": 10.727451385993,
+      "sharpe": 3.854269455951236,
+      "annual_pnl": 117518.80083550185,
+      "win_rate": 0.5144835938020376,
+      "dsl_trigger_rate": 0.22592140921409212,
+      "recovery_sacrifice_rate": 0.15892420537897312
+    },
+    {
+      "dsl_level": "$500",
+      "trades_per_day": 78.23738482384825,
+      "exp_per_trade": 5.717650831740694,
+      "daily_pnl_mean": 444.39543279132977,
+      "daily_pnl_std": 1507.5182067477215,
+      "daily_pnl_skew": 4.889375288907519,
+      "daily_pnl_kurtosis": 40.95463255491451,
+      "dd_worst": 8199.270000000655,
+      "dd_median": 3986.099999999915,
+      "min_acct_all": 8500,
+      "min_acct_95": 6500,
+      "calmar": 13.604046900591744,
+      "sharpe": 4.164877074910433,
+      "annual_pnl": 111543.25363062377,
+      "win_rate": 0.5193480460985712,
+      "dsl_trigger_rate": 0.3878590785907859,
+      "recovery_sacrifice_rate": 0.24074074074074073
+    }
+  ],
+  "optimal_dsl_min_account_all": 18000,
+  "optimal_dsl_annual_pnl": 114352.23296084063,
+  "recovery_sacrifice_table": [
+    {
+      "dsl_threshold": 5000,
+      "total_day_observations": 1809,
+      "dipped_days": 46,
+      "dipped_rate": 0.02542841348811498,
+      "recovered_days": 0,
+      "sacrifice_rate": 0.0
+    },
+    {
+      "dsl_threshold": 4000,
+      "total_day_observations": 1809,
+      "dipped_days": 76,
+      "dipped_rate": 0.04201216141514649,
+      "recovered_days": 0,
+      "sacrifice_rate": 0.0
+    },
+    {
+      "dsl_threshold": 3000,
+      "total_day_observations": 1809,
+      "dipped_days": 124,
+      "dipped_rate": 0.0685461580983969,
+      "recovered_days": 0,
+      "sacrifice_rate": 0.0
+    },
+    {
+      "dsl_threshold": 2500,
+      "total_day_observations": 1809,
+      "dipped_days": 142,
+      "dipped_rate": 0.07849640685461581,
+      "recovered_days": 3,
+      "sacrifice_rate": 0.02112676056338028
+    },
+    {
+      "dsl_threshold": 2000,
+      "total_day_observations": 1809,
+      "dipped_days": 192,
+      "dipped_rate": 0.10613598673300166,
+      "recovered_days": 14,
+      "sacrifice_rate": 0.07291666666666667
+    },
+    {
+      "dsl_threshold": 1500,
+      "total_day_observations": 1809,
+      "dipped_days": 259,
+      "dipped_rate": 0.14317302377003868,
+      "recovered_days": 25,
+      "sacrifice_rate": 0.09652509652509653
+    },
+    {
+      "dsl_threshold": 1000,
+      "total_day_observations": 1809,
+      "dipped_days": 409,
+      "dipped_rate": 0.22609176340519624,
+      "recovered_days": 65,
+      "sacrifice_rate": 0.15892420537897312
+    },
+    {
+      "dsl_threshold": 500,
+      "total_day_observations": 1809,
+      "dipped_days": 702,
+      "dipped_rate": 0.3880597014925373,
+      "recovered_days": 169,
+      "sacrifice_rate": 0.24074074074074073
+    }
+  ],
+  "intraday_pnl_stats": {
+    "n_day_observations": 1809,
+    "intraday_min_pnl": {
+      "mean": -789.6325704809276,
+      "p5": -3624.6009999999933,
+      "p25": -912.0700000000002,
+      "p50": -282.2350000000006,
+      "p75": -33.72,
+      "p95": 42.133999999999844,
+      "worst": -21395.220000000034
+    },
+    "intraday_max_pnl": {
+      "mean": 1137.68540077391,
+      "p50": 551.37,
+      "best": 22429.779999999962
+    },
+    "final_pnl": {
+      "mean": 336.4900331674995,
+      "p50": 218.5249999999999
+    },
+    "trade_count_per_day": {
+      "mean": 116.87230514096186,
+      "p50": 98.0
+    },
+    "max_consecutive_losses_per_day": {
+      "mean": 8.462686567164178,
+      "p50": 8.0,
+      "max": 27
+    }
+  },
+  "optimal_dsl_calmar": 6.372282420107109,
+  "optimal_dsl_sharpe": 3.475577911564782,
+  "optimal_dsl_trades_per_day": 106.50407859078591,
+  "daily_pnl_percentiles_optimal": {
+    "p1": -2194.5768000000003,
+    "p5": -2050.335000000001,
+    "p10": -2003.4110000000003,
+    "p25": -448.5200000000001,
+    "p50": 203.41999999999945,
+    "p75": 898.4399999999993,
+    "p90": 2245.227000000012,
+    "p95": 3968.57300000001,
+    "p99": 9381.273400000035
+  },
+  "dsl_trigger_rate_by_level": {
+    "None": 0.0,
+    "$5000": 0.025352303523035226,
+    "$4000": 0.04196476964769648,
+    "$3000": 0.0685230352303523,
+    "$2500": 0.07845528455284552,
+    "$2000": 0.10608401084010839,
+    "$1500": 0.143130081300813,
+    "$1000": 0.22592140921409212,
+    "$500": 0.3878590785907859
+  },
+  "optimal_dsl": "$2000",
+  "optimal_dsl_reason": "Rule 1: loosest DSL achieving min_acct<=$20K, annual_pnl>=$50K, Calmar>=2.0, sacrifice<=20%",
+  "optimal_dsl_level_dollar": 2000,
+  "baseline_dsl_none": {
+    "exp_per_trade": 3.0161161330064905,
+    "trades_per_day": 116.77239837398372,
+    "daily_pnl_mean": 336.7719414634183,
+    "dd_worst": 33983.58499999992,
+    "min_acct_all": 34000,
+    "calmar": 2.487370220278943,
+    "sharpe": 2.2043338764369906,
+    "annual_pnl": 84529.75730731798
+  },
+  "success_criteria": {
+    "SC-1": {
+      "description": "Min account (all) <= $20,000 at recommended DSL",
+      "pass": true,
+      "value": 18000
+    },
+    "SC-2": {
+      "description": "Annual PnL >= $50,000 at recommended DSL",
+      "pass": true,
+      "value": 114352.23296084063
+    },
+    "SC-3": {
+      "description": "Calmar >= 2.0 at recommended DSL",
+      "pass": true,
+      "value": 6.372282420107109
+    },
+    "SC-4": {
+      "description": "Recovery sacrifice rate <= 20% at recommended DSL",
+      "pass": true,
+      "value": 0.07291666666666667
+    },
+    "SC-5": {
+      "description": "All 9 DSL levels \u00d7 45 splits = 405 simulations completed",
+      "pass": true,
+      "value": "45 splits \u00d7 9 DSL levels"
+    },
+    "SC-6": {
+      "description": "Per-DSL sweep table fully populated (9 \u00d7 16+ columns)",
+      "pass": true
+    },
+    "SC-7": {
+      "description": "Recovery sacrifice analysis for all 8 non-baseline DSL levels",
+      "pass": true
+    },
+    "SC-8": {
+      "description": "All output files written to results directory",
+      "pass": true
+    },
+    "SC-9": {
+      "description": "Bar-level split 0 matches PR #38 within $0.01",
+      "pass": true,
+      "value": 1.0651860450958002,
+      "reference": 1.065186
+    }
+  },
+  "sanity_checks": {
+    "SC-S1": {
+      "description": "bar-level split 0 within $0.01 of PR #38",
+      "pass": true,
+      "value": 1.0651860450958002,
+      "reference": 1.065186
+    },
+    "SC-S2": {
+      "description": "DSL=None exp within $0.10 of PR #40's $3.016",
+      "pass": true,
+      "value": 3.0161161330064905,
+      "reference": 3.016
+    },
+    "SC-S3": {
+      "description": "DSL=None trades/day within 5 of PR #40's 116.8",
+      "pass": true,
+      "value": 116.77239837398372,
+      "reference": 116.8
+    },
+    "SC-S4": {
+      "description": "DSL=None min_acct within $1K of PR #40's $34,000",
+      "pass": true,
+      "value": 34000,
+      "reference": 34000
+    },
+    "SC-S5": {
+      "description": "Trades/day non-increasing as DSL tightens (None -> $500)",
+      "pass": true,
+      "values": {
+        "None": 116.77239837398372,
+        "$5000": 115.05481029810295,
+        "$4000": 113.73444444444445,
+        "$3000": 111.07853658536585,
+        "$2500": 109.62600271002711,
+        "$2000": 106.50407859078591,
+        "$1500": 101.9827506775068,
+        "$1000": 93.98598915989159,
+        "$500": 78.23738482384825
+      }
+    }
+  },
+  "outcome": "A",
+  "outcome_description": "DSL effective. $2000 achieves min_acct=$18,000, annual PnL=$114,352, Calmar=6.37.",
+  "resource_usage": {
+    "wall_clock_seconds": 164.84616899490356,
+    "wall_clock_minutes": 2.7474361499150595,
+    "total_training_runs": 90,
+    "total_simulations": 405,
+    "gpu_hours": 0,
+    "total_runs": 45
+  },
+  "abort_triggered": false,
+  "abort_reason": null,
+  "notes": "Local execution on Apple Silicon. Sequential 1-contract simulation with fixed cutoff=270 and DSL sweep. Models trained ONCE per split, simulation repeated 9x per DSL level. Corrected-base cost $2.49 RT."
+}

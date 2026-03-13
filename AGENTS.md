@@ -1,15 +1,13 @@
 # AGENTS.md — MBO-DL Agent Coordination
 
-## Current State (updated 2026-02-26)
+## Current State (updated 2026-02-23, Cloud-Run Reliability Overhaul — COMPLETE)
 
 - **Build:** Green.
-- **Unit tests:** 1144+ registered (label-exclude integration). Time horizon CLI tests in `time_horizon_cli_test.cpp`. TDD phases exited 0.
+- **Tests:** All pass. 1003/1004 unit tests (1 disabled, 1 skipped) + cloud-run reliability tests. TDD phases exited 0.
 - **Integration tests:** 22 tests, excluded from default ctest (`--label-exclude integration`).
-- **30+ phases complete** (15 engineering + 20 research). CNN line closed (Outcome D). GBT-only path forward. Label geometry phase 1 REFUTED (degenerate hold rate from 5-min time cap).
-- **Last completed:** time-horizon-cli TDD (`--max-time-horizon`/`--volume-horizon` CLI flags, defaults 300→3600s / 500→50000). Fixes root cause of 90.7-98.9% hold rate.
-- **Prior TDD (COMPLETE):** bar-feature-export-geometry (PR #28), bidirectional export wiring (PR #27), bidirectional TB labels (PR #26), oracle expectancy CLI params.
-- **Compute:** Local preferred for CPU-only experiments (<1GB). RunPod for GPU. EC2 spot for large data only.
-- **Bidirectional dataset:** 312 files, 152-col Parquet, S3: `s3://kenoma-labs-research/results/bidirectional-reexport/`.
+- **Cloud-run reliability (cloud-run-reliability):** Complete. Bootstrap scripts have sync daemon (heartbeat 60s, log 60s, results 5min). `poll_status()` checks EC2 instance state + heartbeat. `cloud-run logs` subcommand with `--follow`. Pre-flight `--validate` flag (syntax + imports + smoke test). `gc_stale()` cleans orphaned local state. Enhanced `status`/`ls` with elapsed time + cost estimates.
+- **Cloud execution (research-cloud-execution):** Complete. `experiment.sh` mandates EC2 via `cloud-run` when `COMPUTE_TARGET=ec2`. Compute directive template now includes `--validate`.
+- **26+ phases complete** (10 engineering + 12 research + 1 data export + 2 infra + 1 kit modification). Full-year dataset + cloud GPU pipeline ready.
 
 ## Completed TDD Phases (Orchestrator Spec — predecessor)
 
